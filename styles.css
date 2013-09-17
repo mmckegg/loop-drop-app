@@ -1,0 +1,356 @@
+
+html, body {
+  background: #555;
+  margin: 0;
+  font-family: 'Optima';
+  overflow:hidden;
+}
+
+* {
+  box-sizing:border-box;
+}
+
+.ViewPort {
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  height: 100%;
+}
+
+.SoundEditor{
+  position: relative;
+  background: #555;
+  -webkit-flex: 1;
+  height: 50%;
+}
+
+.WaveView {
+  height: 100%;
+  width: 100%;
+}
+
+.Controls {
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left:0;
+  right:0;
+  z-index: 100
+}
+
+.Controls .transpose {
+  position: absolute  !important;
+  opacity: 0.3;
+  bottom: 50px;
+  left: 10px;
+}
+
+.Controls .transpose:hover, .Controls .gain:hover, .Controls .transpose.-active, .Controls .gain.-active {
+  opacity: 0.8;
+}
+
+.Controls .gain {
+  position: absolute !important;
+  opacity: 0.3;
+  bottom: 50px;
+  right: 10px;
+}
+
+.Controls .startOffset{
+  cursor: e-resize;
+
+  position: absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:40px;
+  margin:0 -10px;
+  background: -webkit-gradient(linear, left top, left bottom, 
+    color-stop(0%,rgba(34,34,34,1)), 
+    color-stop(100%,rgba(34,34,34,0))
+  );
+  -webkit-appearance: none;
+}
+.Controls .endOffset{
+  cursor: w-resize;
+  position: absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:40px;
+  margin:0 -5px;
+  background: -webkit-gradient(linear, left top, left bottom, 
+    color-stop(0%,rgba(34,34,34,0)), 
+    color-stop(100%,rgba(34,34,34,1))
+  );
+  -webkit-appearance: none;
+}
+
+
+.Controls .startOffset::-webkit-slider-thumb:after{
+  content: 'start';
+  display:block;
+  position: absolute;
+  margin-top:10px;
+  margin-left:23px;
+}
+
+.Controls .endOffset::-webkit-slider-thumb:after{
+  content: 'end';
+  display:block;
+  position: absolute;
+  margin-top:10px;
+  margin-left:-23px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  position: relative;
+  top: 0px;
+  z-index: 1;
+  width: 20px;
+  height: 40px;
+  box-shadow: 0 0 20px #222;
+  border-radius: 40px;
+  background: #AAA
+}
+
+.Controls .action {
+  margin-top:5px;
+  margin-left:auto;
+  margin-right: auto;
+  display: block;
+  opacity:0.4;
+}
+
+.Controls .bus {
+  margin-top:5px;
+  margin-left:auto;
+  margin-right: auto;
+  display: block;
+  opacity:0.4;
+}
+
+.Controls .mode {
+  margin-top:40px;
+  margin-left:auto;
+  margin-right: auto;
+  display: block;
+  opacity:0.4;
+}
+.Controls .mode:hover, .Controls .action:hover  {
+  opacity: 0.9
+}
+
+.KitHolder {
+  background: #555;
+  height: 25vw;
+}
+
+.Kit {
+  border:10px solid #555;
+  border-bottom: none;
+  background: #555;
+  width: 25%;
+  height: 25vw;
+  float:left;
+  -webkit-flex-wrap: wrap;
+  display: -webkit-flex;
+  -webkit-transition: background, border-color 0.1s;
+}
+
+.Kit.-selected {
+  background: #222;
+  border-color: #222;
+}
+
+.Kit > div {
+  width:12.5%;
+  border: 2px solid #555;
+  border-radius: 5px;
+  background: #666;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.Kit > div.-present {
+  opacity: 1;
+}
+
+.Kit.-recording > div {
+  background: #966;
+}
+
+.Kit > div:hover {
+  background: rgb(146, 123, 0);
+  z-index: 1000000;
+}
+
+.Kit > div.-selected, .Kit > div.-selected:hover {
+  background: gold;
+  z-index: 1000000;
+}
+
+.Kit > div.-active {
+  background: green;
+  -webkit-animation: note-flash 0.2s 1;
+}
+
+.Kit > div.-recording {
+  background: maroon;
+  opacity: 1;
+  -webkit-animation: record-flash 0.2s 1;
+}
+
+.Kit > div.-dragover {
+  background: yellow;
+}
+
+.Kit.-selected > div {
+  border: 2px solid #222;
+}
+
+.KitLoader {
+  font-size:85%;
+  height:34px;
+  background: -webkit-gradient(linear, left top, left bottom, 
+    color-stop(0%,rgba(34,34,34,1)), 
+    color-stop(100%,rgba(34,34,34,0))
+  );
+  display: -webkit-flex;
+  color: #EEE;
+}
+
+.RecordButton {
+  -webkit-appearance: none;
+  padding: 6px;
+  border: 1px solid silver;
+  border-radius: 3px;
+  display: inline-block;
+  position: absolute;
+  background: #444;
+  right: 10px;
+  cursor: pointer;
+  top: 0px;
+  margin: 3px 0.5ex;
+}
+.RecordButton:checked {
+  background: #522;
+  border-color: #F44;
+}
+.RecordButton:checked:after{
+  background: #F44;
+  -webkit-animation: record-pulse 0.5s infinite;
+}
+.RecordButton:after {
+  content: ' ';
+  display: inline-block;
+  background: silver;
+  height: 8px;
+  width: 8px;
+  border-radius: 4px;
+}
+
+.KitSelector {
+  position: absolute;
+  left: 10px;
+  right: 60px;
+  top: 4px;
+  height: 21px;
+  background: #555;
+  color: white;
+  border: none;
+}
+
+.SaveButton {
+  -webkit-appearance: none;
+  padding: 6px;
+  border: 1px solid white;
+  border-radius: 3px;
+  display: inline-block;
+  position: absolute;
+  background: white no-repeat center url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciA5LjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAgLS0+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL3dlYi5yZXNvdXJjZS5vcmcvY2MvIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9pbmtzY2FwZS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgd2lkdGg9IjQ4IgogICBoZWlnaHQ9IjQ4IgogICB2aWV3Qm94PSIwIDAgNDggNDgiCiAgIHhtbDpzcGFjZT0icHJlc2VydmUiCiAgIGlkPSJzdmcyIgogICBzb2RpcG9kaTp2ZXJzaW9uPSIwLjMyIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIwLjQzIgogICBzb2RpcG9kaTpkb2NuYW1lPSJkb2N1bWVudC1zYXZlLnN2ZyIKICAgc29kaXBvZGk6ZG9jYmFzZT0iL2hvbWUvbHVjYS9BcnR3b3JrL2JsYWNrd2hpdGUtaWNvbi10aGVtZS9zY2FsYWJsZS9hY3Rpb25zIgogICB2ZXJzaW9uPSIxLjAiPjxtZXRhZGF0YQogICBpZD0ibWV0YWRhdGEyNSI+PHJkZjpSREY+PGNjOldvcmsKICAgICAgIHJkZjphYm91dD0iIj48ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD48ZGM6dHlwZQogICAgICAgICByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIiAvPjwvY2M6V29yaz48L3JkZjpSREY+PC9tZXRhZGF0YT48ZGVmcwogICBpZD0iZGVmczIzIj4KCQkKCQoJCQkKCQkJCgkJCQoJCQkKCQkJCgkJCQoJCTwvZGVmcz48c29kaXBvZGk6bmFtZWR2aWV3CiAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9Ijk3NCIKICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxMjgwIgogICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICBib3JkZXJvcGFjaXR5PSIxLjAiCiAgIGJvcmRlcmNvbG9yPSIjNjY2NjY2IgogICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgIGlkPSJiYXNlIgogICBzaG93Z3JpZD0idHJ1ZSIKICAgaW5rc2NhcGU6Z3JpZC1iYm94PSJ0cnVlIgogICBpbmtzY2FwZTpncmlkLXBvaW50cz0idHJ1ZSIKICAgaW5rc2NhcGU6em9vbT0iMTYuNDE2NjY3IgogICBpbmtzY2FwZTpjeD0iMjMuOTc4MDY5IgogICBpbmtzY2FwZTpjeT0iMjQuMDExOTc0IgogICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgaW5rc2NhcGU6d2luZG93LXk9IjAiCiAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzIiIC8+Cgk8cGF0aAogICBzb2RpcG9kaTpub2RldHlwZXM9ImNjY2NjYyIKICAgaWQ9InBhdGg0ODM3IgogICBkPSJNIDQwLDM5IEwgMTIsMzkgTCA4LDM1IEwgOCw4IEwgNDAsOCBMIDQwLDM5IHogIgogICBzdHlsZT0iZmlsbDpub25lO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTojZmZmZmZmO3N0cm9rZS13aWR0aDoxNDtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MSIgLz48cGF0aAogICBzdHlsZT0iZmlsbDpub25lO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDo2O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtbWl0ZXJsaW1pdDo0O3N0cm9rZS1kYXNoYXJyYXk6bm9uZSIKICAgZD0iTSA0MCwzOSBMIDEyLDM5IEwgOCwzNSBMIDgsOCBMIDQwLDggTCA0MCwzOSB6ICIKICAgaWQ9InBhdGg5IgogICBzb2RpcG9kaTpub2RldHlwZXM9ImNjY2NjYyIgLz48cGF0aAogICBzdHlsZT0iZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmU7c3Ryb2tlLW1pdGVybGltaXQ6NCIKICAgZD0iTSAzOS44LDM4LjcgTCAxMiwzOC43IEwgOC4yLDM0LjkgTCA4LjIsOC44IEwgMzkuOCw4LjggTCAzOS44LDM4LjcgeiAiCiAgIGlkPSJwYXRoMTEiIC8+PHBhdGgKICAgc3R5bGU9ImZpbGw6I2ZmZmZmZjtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6MS42NzM5MDAwMTtzdHJva2UtbWl0ZXJsaW1pdDo0IgogICBkPSJNIDMzLDM3IEMgMzMsMzguMSAzMi4xLDM5IDMxLDM5IEwgMTQsMzkgQyAxMi45LDM5IDEyLDM4LjEgMTIsMzcgTCAxMiwyOCBDIDEyLDI2LjkgMTIuOSwyNiAxNCwyNiBMIDMxLDI2IEMgMzIuMSwyNiAzMywyNi45IDMzLDI4IEwgMzMsMzcgeiAiCiAgIGlkPSJwYXRoMTMiCiAgIHNvZGlwb2RpOm5vZGV0eXBlcz0iY2NjY2NjY2NjIiAvPjxwYXRoCiAgIHN0eWxlPSJmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZTtzdHJva2UtbWl0ZXJsaW1pdDo0IgogICBkPSJNIDIxLDM3IEwgMTUsMzcgTCAxNSwyOCBMIDIxLDI4IEwgMjEsMzcgeiAiCiAgIGlkPSJwYXRoMTUiCiAgIHNvZGlwb2RpOm5vZGV0eXBlcz0iY2NjY2MiIC8+PHBhdGgKICAgc3R5bGU9ImZpbGw6I2ZmZmZmZjtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6MS42NzM5MDAwMTtzdHJva2UtbWl0ZXJsaW1pdDo0IgogICBkPSJNIDM4LDIyIEwgMTAsMjIgTCAxMCw5IEwgMzgsOSBMIDM4LDIyIHogIgogICBpZD0icGF0aDE3IgogICBzb2RpcG9kaTpub2RldHlwZXM9ImNjY2NjIiAvPgoJPGcKICAgaWQ9ImNyb3BfeDAwMjBfbWFya3MiCiAgIHN0eWxlPSJmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6IzAwMDAwMDtzdHJva2UtbWl0ZXJsaW1pdDo0Ij4KCQk8cGF0aAogICBzdHlsZT0iZmlsbDpub25lO3N0cm9rZTpub25lIgogICBkPSJNIDQ4LDQ4IEwgMCw0OCBMIDAsMCBMIDQ4LDAgTCA0OCw0OCB6ICIKICAgaWQ9InBhdGgyMCIgLz4KCTwvZz4KPC9zdmc+");
+  background-size: 22px;
+  margin: 3px 0.5ex;
+  right: 34px;
+  width: 22px;
+  height:22px;
+  cursor: pointer;
+  top: 0px;
+  opacity: 0.6;
+}
+
+.SaveButton:hover {
+  opacity: 0.9;
+}
+
+.Metro {
+  position: absolute;
+  width: 122px;
+  height: 10px;
+  left: 50%;
+  margin-left:-61px;
+  margin-top:-5px;
+  border-radius: 5px;
+  background: #444;
+  z-index: 100;
+  opacity:0.8;
+  pointer-events: none;
+  box-shadow: 0px 0px 6px black;
+  overflow: hidden;
+}
+
+.Metro > div {
+  border-radius: 5px;
+  float:left;
+  width: 15px;
+  height: 10px;
+  opacity: 0.2;
+  background: lime;
+}
+
+.Metro.-tap {
+  -webkit-animation: beat-tap 0.1s 1;
+}
+
+.Metro > div:nth-child(5) {
+  margin-left:2px;
+}
+
+.Metro > div.-active {
+  opacity: 1;
+  -webkit-animation: beat-flash 0.2s 1;
+}
+
+.KitLoader > div {
+  -webkit-flex: 1;
+  padding: 6px 12px;
+  position: relative;
+  border-bottom-left-radius: 20px;
+  background: #555;
+  border-bottom-right-radius: 20px;
+}
+.KitLoader > div.-selected {
+  background: #222;
+}
+@-webkit-keyframes note-flash {
+  0%   { background: lime; }
+  100% { background: green; }
+}
+
+@-webkit-keyframes beat-flash {
+  0%   { background: white; }
+  100% { background: lime; }
+}
+@-webkit-keyframes beat-tap {
+  0%   { background: silver; }
+}
+
+@-webkit-keyframes record-flash {
+  0%   { background: red; }
+  100% { background: #464; }
+}
+@-webkit-keyframes record-pulse {
+  0% { background: red; }
+  50% { background: #722; }
+  100% { background: red; }
+}

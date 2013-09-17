@@ -1,0 +1,22 @@
+{
+  "name": "loop-drop",
+  "browser": "index.js",
+  "version": "0.0.0",
+  "author": "Matt McKegg",
+  "scripts": {
+    "start": "beefy index.js"
+  },
+  "dependencies": {
+    "pause-stream": "0.0.9",
+    "through": "~2.2.7",
+    "view-buffer": "0.0.7",
+    "midi-clock": "*",
+    "midi-looper": "*",
+    "soundbank": "*",
+    "wave-recorder": "*",
+    "wave-view": "*",
+    "hyperscript": "~1.1.0",
+    "xtend": "~2.0.3",
+    "ever": "0.0.3"
+  }
+}
