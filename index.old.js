@@ -51,12 +51,13 @@ window.bopper = bopper
 window.ditty = ditty
 
 var playback = Through(function(event){
+
   if (Array.isArray(event)){
     var position = event[3] || bopper.getCurrentPosition()
     event[3] = position
     event = {
       time: audioContext.currentTime,
-      data: event,
+      data: event
     }
   }
   this.queue(event)

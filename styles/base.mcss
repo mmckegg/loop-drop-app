@@ -1,0 +1,10 @@
+html, body {
+  background: #555;
+  margin: 0;
+  font-family: 'Optima';
+  overflow:hidden;
+}
+
+* {
+  box-sizing:border-box;
+}
