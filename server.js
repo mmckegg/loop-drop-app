@@ -42,8 +42,8 @@ var server = Server(function(req, res){
   }
 })
 
-server.listen(8888)
-console.log("Navigate to http://localhost:8888/")
+server.listen(9966)
+console.log("Navigate to http://localhost:9966/")
 
 
 //////////////////////////////
