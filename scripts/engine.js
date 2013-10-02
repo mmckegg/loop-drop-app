@@ -2,6 +2,8 @@ var Engine = require('loop-drop-engine')
 var Launchpad = require('midi-looper-launchpad')
 var MidiStream = require('web-midi')
 
+var SoundRecorder = require('../lib/sound_recorder')
+
 var WindowStream = require('window-stream')
 
 ////////////////////////////
@@ -14,11 +16,15 @@ var clock = engine.getClock()
 // instance A
 var instanceA = engine.createInstance('a')
 var launchpadA = Launchpad(MidiStream('Launchpad', 0), instanceA.looper)
+var soundRecorderA = SoundRecorder(launchpadA, instanceA)
+
 clock.pipe(launchpadA).pipe(instanceA)
 
 // instance B
 var instanceB = engine.createInstance('b')
-var launchpadB = Launchpad(MidiStream('Launchpad', 0), instanceB.looper)
+var launchpadB = Launchpad(MidiStream('Launchpad', 1), instanceB.looper)
+var soundRecorderB = SoundRecorder(launchpadB, instanceB)
+
 clock.pipe(launchpadB).pipe(instanceB)
 
 // connect to UI in parent window
@@ -27,3 +33,11 @@ engine.connect(parentStream)
 
 clock.setTempo(120)
 clock.start()
+
+setTimeout(function(){
+  soundRecorderA.start()
+}, 3000)
+
+setTimeout(function(){
+  soundRecorderA.stop()
+}, 10000)

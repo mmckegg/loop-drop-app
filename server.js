@@ -19,7 +19,7 @@ var server = Server(function(req, res){
 
     sendHtml(res, {
       title: 'Loop Drop',
-      css: ['base'],
+      css: ['base', 'editor', 'holder', 'kit', 'loader'],
       script: ['ui'],
       externalPages: ['engine']
     })
@@ -27,8 +27,8 @@ var server = Server(function(req, res){
   } else if (url.pathname == '/engine.html'){
 
     sendHtml(res, {
-      script: ['engine'],
-      preScript: ['WebMIDIAPI']
+      script: ['engine']//,
+      //preScript: ['WebMIDIAPI']
     })
 
   } else if (url.pathname == '/scripts/ui.js'){

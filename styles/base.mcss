@@ -3,6 +3,12 @@ html, body {
   margin: 0;
   font-family: 'Optima';
   overflow:hidden;
+  height: 100%
+}
+
+body {
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
 }
 
 * {

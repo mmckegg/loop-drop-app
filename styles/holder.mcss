@@ -1,0 +1,19 @@
+Holder {
+
+  background: #555;
+  height: 25vw;
+
+
+
+  div {
+    width: 50%;
+    height: 100%;
+    float:left;
+
+    div {
+      float:left;
+      width: 50%;
+      height: 100%;
+    }
+  }
+}
