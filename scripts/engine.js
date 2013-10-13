@@ -34,10 +34,18 @@ engine.connect(parentStream)
 clock.setTempo(120)
 clock.start()
 
-setTimeout(function(){
-  soundRecorderA.start()
-}, 3000)
-
-setTimeout(function(){
-  soundRecorderA.stop()
-}, 10000)
+engine.handleCommand('toggleRecord', function(command){
+  if (command.deck == 'a'){
+    if (soundRecorderA.getState()){
+      soundRecorderA.stop()
+    } else {
+      soundRecorderA.start()
+    }
+  } else if (command.deck == 'b'){
+    if (soundRecorderA.getState()){
+      soundRecorderB.stop()
+    } else {
+      soundRecorderB.start()
+    }
+  }
+})

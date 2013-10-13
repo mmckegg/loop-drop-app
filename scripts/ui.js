@@ -3,6 +3,7 @@ var Through = require('through')
 
 var Editor = require('../controls/editor')
 var Holder = require('../controls/holder')
+var Metro = require('../controls/metro')
 
 var engineWindow = document.getElementById('engineFrame').contentWindow
 var engineStream = WindowStream(engineWindow, '/engine.html')
@@ -15,6 +16,9 @@ var clock = Plex(engineStream, 'clock')
 
 var changeStreamA = Plex(engineStream, 'soundbank[a]')
 var changeStreamB = Plex(engineStream, 'soundbank[b]')
+
+var beatStream = Plex(engineStream, 'beat')
+var commandStream = Plex(engineStream, 'commands')
 
 
 var soundsA = {}
@@ -31,36 +35,41 @@ changeStreamB.on('data', function(data){
 var editor = Editor()
 
 var holder = Holder({
-  noteStreamA: noteStreamA, 
-  noteStreamB: noteStreamB, 
-  soundStreamA: changeStreamA, 
-  soundStreamB: changeStreamB
+  notesA: noteStreamA, 
+  notesB: noteStreamB, 
+  soundsA: changeStreamA, 
+  soundsB: changeStreamB,
+  commands: commandStream,
+  beats: beatStream,
+  clock: clock
 })
 
+var metro = Metro()
+beatStream.on('data', metro.setBeat)
 
 
 holder.kitA.on('select', function(id){
   var sound = soundsA[id]
   if (sound){
-    editor.edit(sound)
+    editor.edit(sound, changeStreamA)
   }
 })
 
 holder.kitB.on('select', function(id){
   var sound = soundsB[id]
   if (sound){
-    editor.edit(sound)
+    editor.edit(sound, changeStreamB)
   }
 })
 
 document.body.appendChild(editor)
+document.body.appendChild(metro)
 document.body.appendChild(holder)
-
 
 setTimeout(function(){
 
-  for (var i=0;i<32;i++){
-    changeStreamA.write({
+  for (var i=0;i<64;i++){
+    changeStreamB.write({
       id: i, 
       source: {
         type: 'oscillator', 
@@ -69,9 +78,8 @@ setTimeout(function(){
         vibrato: [5,5]
       }, 
       envelope: [0, 0], 
-      gain: 0.3,
+      gain: 0.2,
     })
-    holder.kitA.setState(i, 1)
   }
 
 }, 200)

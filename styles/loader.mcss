@@ -1,18 +1,42 @@
 Loader {
+  padding: 10px 0
+  flex: 7
 
-  position: relative
+  padding-right:5px
 
-  div {
+  display: flex
+  flex-direction: column
 
-    height: 25vw
-    width: 50%
-
-    div {
-      width: 50%
-      height: 100%
+  div.current{
+    width:100%
+    display: flex
+    input {
+      border-radius: 4px;
+      background: #444;
+      border: none;
+      padding: 4px;
+      color: white;
+      font-size: 80%;
+      flex: 1
     }
-
-
   }
 
+  div.kits {
+    border-radius: 4px;
+    flex: 1
+    overflow-y: scroll
+    color: #CCC
+    font-size: 80%;
+
+    padding: 4px 0
+
+    div {
+      padding: 4px
+      cursor: pointer
+      :hover {
+        border-radius: 5px
+        background: rgba(173, 133, 3, 0.45)
+      }
+    }
+  }
 }

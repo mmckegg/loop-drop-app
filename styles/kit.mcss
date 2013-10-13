@@ -1,11 +1,13 @@
 Kit {
 
-  border:10px solid #555;
-  background: #555;
-  -webkit-transition: background, border-color 0.1s;
+  flex: 8
 
-  -webkit-flex-wrap: wrap;
-  display: -webkit-flex;
+  border:10px solid #555;
+
+  width: 25vw
+
+  flex-wrap: wrap;
+  display: flex;
 
   -recording {
     div {
@@ -51,5 +53,41 @@ Kit {
       background: yellow;
     }
 
+  }
+}
+
+KitBusses {
+  width: 8% !important
+  border:10px solid #555;
+  border-left:none
+
+  flex: 1
+
+  flex-wrap: wrap;
+  display: flex;
+
+  div {
+    padding-top:20%
+    font-size: 1.3vw
+    color: #333
+    text-align: center
+    border: 2px solid #555;
+    border-radius: 5px;
+    background: #696;
+    cursor: pointer;
+    opacity: 0.5;
+    width: 100%
+
+    :hover {
+      background: rgb(0, 146, 0);
+      z-index: 1000000;
+    }
+
+    -selected {
+      opacity: 1 !important
+      background: lime !important;
+      z-index: 1000000;
+      border-color:#333
+    }
   }
 }

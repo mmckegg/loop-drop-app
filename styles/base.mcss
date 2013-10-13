@@ -7,8 +7,8 @@ html, body {
 }
 
 body {
-  display: -webkit-flex;
-  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 * {

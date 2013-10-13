@@ -19,7 +19,7 @@ var server = Server(function(req, res){
 
     sendHtml(res, {
       title: 'Loop Drop',
-      css: ['base', 'editor', 'holder', 'kit', 'loader'],
+      css: ['base', 'editor', 'holder', 'kit', 'loader', 'metro'],
       script: ['ui'],
       externalPages: ['engine']
     })

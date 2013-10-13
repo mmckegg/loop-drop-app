@@ -1,12 +1,92 @@
 Editor {
-  background: #555
-  -webkit-flex: 1;
+  background: #222
+  flex: 1;
   position: relative
+
+  div {
+    height: 100%
+  }
+
+}
+
+SampleEditor {
+
+  background: #555
+  position: absolute;
+  left: 0;
+  right: 0;
 
   svg {
     display:block
     position: absolute
     top:0; left:0; right:0
     height: 100%
+  }
+
+  input.start { 
+    $slider
+    
+    cursor: e-resize;
+
+    top:0; left:0; right:0
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,1)), color-stop(100%,rgba(34,34,34,0)))
+    
+    ::-webkit-slider-thumb {
+      :after {
+        content: 'start'
+      }
+    }
+
+  }
+
+  input.end { 
+    $slider
+
+    cursor: w-resize;
+
+    bottom:0; left:0; right:0
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0)), color-stop(100%,rgba(34,34,34,1)))
+    
+    ::-webkit-slider-thumb {
+
+      :after {
+        content: 'end'
+        margin-left:-23px;
+      }
+
+    }
+
+  }
+
+}
+
+$slider {
+  outline: none
+  position: absolute;
+
+  height:40px;
+  margin:0 -10px;
+
+  -webkit-appearance: none;
+
+  ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    position: relative;
+    top: 0px;
+    z-index: 1;
+    width: 20px;
+    height: 40px;
+    box-shadow: 0 0 20px #222;
+    border-radius: 40px;
+    background: #AAA
+  }
+
+  ::-webkit-slider-thumb {
+    :after {
+      display:block;
+      position: absolute;
+      margin-top:10px;
+      margin-left:23px;
+    }
   }
 }

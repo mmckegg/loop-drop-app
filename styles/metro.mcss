@@ -1,0 +1,38 @@
+Metro {
+  position: absolute;
+  width: 122px;
+  height: 10px;
+  left: 50%;
+  margin-left:-61px;
+  margin-top:-5px;
+  border-radius: 5px;
+  background: #444;
+  z-index: 100;
+  opacity:0.8;
+  pointer-events: none;
+  box-shadow: 0px 0px 6px black;
+  overflow: hidden;
+
+  div {
+    border-radius: 5px;
+    float:left;
+    width: 15px;
+    height: 10px;
+    opacity: 0.2;
+    background: lime;
+
+    :nth-child(5){
+      margin-left:2px;
+    }
+
+    -active {
+      opacity: 1;
+      -webkit-animation: beat-flash 0.2s 1;
+    }
+  }
+
+  -tap {
+    -webkit-animation: beat-tap 0.1s 1;
+  }
+
+}
