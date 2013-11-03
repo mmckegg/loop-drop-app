@@ -14,7 +14,7 @@ RawEditor {
 
   display: flex
   position: relative;
-  width: 300px
+  width: 350px
 
   textarea {
     background: transparent
