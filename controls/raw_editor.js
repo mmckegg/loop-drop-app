@@ -12,7 +12,10 @@ module.exports = function(sound, changeStream){
     if (!animating){
       animating = true
       window.requestAnimationFrame(function(cb){
-        textEditor.value = JSON.stringify(sound, null, 4).slice(2, -2).replace(/^    /gm, '')
+        textEditor.value = JSON.stringify(sound, null, 4).slice(2, -2)
+          .replace(/^    /gm, '')
+          .replace(/\[\s*([0-9\.\-]+),\s*([0-9\.\-]+)\s*\]/g, "[ $1, $2 ]")
+          .replace(/^(\s+\{)\n\s+/gm, '$1   ')
         lastValue = textEditor.value
         animating = false
       })
