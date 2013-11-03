@@ -3,11 +3,13 @@ var WaveView = require('wave-view')
 var h = require('hyperscript')
 var ever = require('ever')
 
+var Knob = require('knob')
+
 
 module.exports = function(sound, changeStream){
 
   var waveView = WaveView()
-  var offset = sound.source.offset || [0,1]
+  var disableRefresh = false
 
   var startSlider = h('input', {
     className: '.start',
@@ -23,10 +25,59 @@ module.exports = function(sound, changeStream){
     step: 0.00125
   })
 
-  startSlider.value = offset[0]
-  endSlider.value = offset[1]
+  var transposeKnob = Knob({
+    value: 0,
+    label: 'transpose',
+    cursor: 20, angleOffset: -125, angleArc: 250,
+    min: -24, max: 24,
+    fgColor: '#FFF', bgColor: '#222',
+    labelColor: '#EEE',
+    width: 130,
+    height: 110,
+    className: '.transpose',
+    activeClass: '-active'
+  })
 
-  waveView.setOffset(sound.source.offset || [0,1])
+  var gainKnob = Knob({
+    value: 0,
+    label: 'gain (dB)',
+    angleOffset: -125, angleArc: 250,
+    min: -40, max: 20,
+    fgColor: '#FFF', bgColor: '#222',
+    labelColor: '#EEE',
+    width: 130,
+    height: 110,
+    className: '.gain',
+    activeClass: '-active'
+  })
+
+  function handleData(data){
+    if (data.id == sound.id){
+
+      if (data.source && sound.source && sound.source.url != data.source.url){
+        setWave(data.source.url)
+      }
+
+      sound = data
+      refresh()
+    }
+  }
+
+  changeStream.on('data', handleData)
+
+  function refresh(){
+    if (!disableRefresh){
+      var offset = sound.source.offset || [0,1]
+      startSlider.value = offset[0]
+      endSlider.value = offset[1]
+      transposeKnob.setValue(sound.source.transpose || 0)
+      gainKnob.setValue(getDecibels(sound.gain))
+
+      waveView.setOffset(sound.source.offset || [0,1])
+      waveView.setGain(sound.gain)
+
+    }
+  }
 
   startSlider.onchange = updateOffset
   endSlider.onchange = updateOffset
@@ -34,22 +85,75 @@ module.exports = function(sound, changeStream){
   function updateOffset(){
     var offset = [parseFloat(startSlider.value), parseFloat(endSlider.value)]
     sound.source.offset = offset
-    changeStream.write(sound)
+    save()
 
     waveView.setOffset(offset)
   }
 
-  var editor = h('div.SampleEditor', waveView, startSlider, endSlider)
+  transposeKnob.onchange = function(){
+    sound.source.transpose = this.value
+    save()
+  }
 
-  loadSample(sound.source.url, function(err, buffer){
-    waveView.setValue(buffer)
-  })
+  gainKnob.onchange = function(){
+    sound.gain = getGain(this.value)
+    waveView.setGain(sound.gain)
+    save()
+  }
+
+
+
+  var disableRefreshTimer = null
+  function save(){
+
+    // disable refreshing while change being made
+    disableRefresh = true
+    clearTimeout(disableRefreshTimer)
+    disableRefreshTimer = setTimeout(function(){
+      disableRefresh = false
+      refresh()
+    }, 400)
+
+    changeStream.write(sound)
+  }
+
+  var editor = h('div.SampleEditor', waveView, startSlider, endSlider, transposeKnob, gainKnob)
+
+  function setWave(url){
+    loadSample(url, function(err, buffer){
+      waveView.setValue(buffer)
+    })
+  }
+
+  refresh()
+  setWave(sound.source.url)
+
+  editor.destroy = function(){
+    changeStream.removeListener('data', handleData)
+  }
 
   return editor
 
 }
 
+function getGain(value) {
+  if (value <= -40){
+    return 0
+  }
+  return Math.round(Math.exp(value / 8.6858) * 1000) / 1000
+}
+
+function getDecibels(value) {
+  if (value == null) return 0
+  return Math.round(Math.round(20 * (0.43429 * Math.log(value)) * 100) / 100)
+}
+
 function loadSample(url, cb){
+  
+  if (!/^(([a-z0-9\-]+)?:)|\//.test(url)){
+    url = 'filesystem:' + window.location.origin + '/persistent/' + url
+  }
+
   readFileArrayBuffer(url, function(err, data){  if(err)return cb&&cb(err)
     new webkitAudioContext().decodeAudioData(data, function(buffer){
       cb(null, buffer)

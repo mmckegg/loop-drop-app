@@ -2,19 +2,37 @@ Editor {
   background: #222
   flex: 1;
   position: relative
+  display: flex
 
   div {
-    height: 100%
+    height: inherit
   }
 
 }
 
+RawEditor {
+
+  display: flex
+  position: relative;
+  width: 300px
+
+  textarea {
+    background: transparent
+    color: #CCC
+    font-size: 15px
+    border: none
+    padding: 20px
+    display: block
+    width: 100%
+  }
+}
+
 SampleEditor {
 
+  flex: 1
+
   background: #555
-  position: absolute;
-  left: 0;
-  right: 0;
+  position: relative;
 
   svg {
     display:block
@@ -22,6 +40,39 @@ SampleEditor {
     top:0; left:0; right:0
     height: 100%
   }
+
+  div.transpose {
+    position: absolute  !important;
+    opacity: 0.3;
+    bottom: 50px;
+    left: 10px;
+
+    :hover {
+      opacity: 0.8;
+    }
+
+    -active {
+      opacity: 0.8;
+    }
+
+  }
+
+  div.gain {
+    position: absolute  !important;
+    opacity: 0.3;
+    bottom: 50px;
+    right: 10px;
+
+    :hover {
+      opacity: 0.8;
+    }
+
+    -active {
+      opacity: 0.8;
+    }
+
+  }
+
 
   input.start { 
     $slider
@@ -34,6 +85,8 @@ SampleEditor {
     ::-webkit-slider-thumb {
       :after {
         content: 'start'
+        border-top-left-radius: 0
+        border-bottom-left-radius: 0
       }
     }
 
@@ -51,7 +104,9 @@ SampleEditor {
 
       :after {
         content: 'end'
-        margin-left:-23px;
+        margin-left:-40px;
+        border-top-right-radius: 0
+        border-bottom-right-radius: 0
       }
 
     }
@@ -65,7 +120,9 @@ $slider {
   position: absolute;
 
   height:40px;
-  margin:0 -10px;
+  width: 100%
+
+  margin: 0
 
   -webkit-appearance: none;
 
@@ -74,19 +131,21 @@ $slider {
     position: relative;
     top: 0px;
     z-index: 1;
-    width: 20px;
+    width: 0px;
     height: 40px;
-    box-shadow: 0 0 20px #222;
-    border-radius: 40px;
-    background: #AAA
   }
 
   ::-webkit-slider-thumb {
     :after {
+      pointer-events: none
+      background: #AAA
+      box-shadow: 0 0 20px #222;
+      border-radius: 40px;
       display:block;
       position: absolute;
-      margin-top:10px;
-      margin-left:23px;
+      padding:10px
+      margin: 3px 0
+      color: #555
     }
   }
 }
