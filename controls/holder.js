@@ -9,8 +9,8 @@ module.exports = function(streams){
   var kitA = Kit(streams.notesA, streams.soundsA)
   var kitB = Kit(streams.notesB, streams.soundsB)
 
-  var kitBusA = KitBus(streams.notesA)
-  var kitBusB = KitBus(streams.notesB)
+  var kitBusA = KitBus(streams.notesA, streams.soundsA)
+  var kitBusB = KitBus(streams.notesB, streams.soundsB)
 
   var loaderA = Loader(streams.soundsA)
   var loaderB = Loader(streams.soundsB)
@@ -62,6 +62,8 @@ module.exports = function(streams){
 
   holder.kitA = kitA
   holder.kitB = kitB
+  holder.kitBusA = kitBusA
+  holder.kitBusB = kitBusB
 
   return holder
 }

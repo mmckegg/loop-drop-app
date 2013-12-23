@@ -8,6 +8,8 @@ var Knob = require('knob')
 
 module.exports = function(sound, changeStream){
 
+  var source = sound.sources[0]
+
   var waveView = WaveView()
   var disableRefresh = false
 
@@ -54,11 +56,15 @@ module.exports = function(sound, changeStream){
   function handleData(data){
     if (data.id == sound.id){
 
-      if (data.source && sound.source && sound.source.url != data.source.url){
-        setWave(data.source.url)
+      var newSource = data.sources[0]
+
+      if (source && newSource && source.url != newSource.url){
+        setWave(newSource.url)
       }
 
       sound = data
+      source = newSource
+
       refresh()
     }
   }
@@ -67,13 +73,14 @@ module.exports = function(sound, changeStream){
 
   function refresh(){
     if (!disableRefresh){
-      var offset = sound.source.offset || [0,1]
+
+      var offset = source.offset || [0,1]
       startSlider.value = offset[0]
       endSlider.value = offset[1]
-      transposeKnob.setValue(sound.source.transpose || 0)
+      transposeKnob.setValue(source.transpose || 0)
       gainKnob.setValue(getDecibels(sound.gain))
 
-      waveView.setOffset(sound.source.offset || [0,1])
+      waveView.setOffset(source.offset || [0,1])
       waveView.setGain(sound.gain)
 
     }
@@ -84,14 +91,14 @@ module.exports = function(sound, changeStream){
 
   function updateOffset(){
     var offset = [parseFloat(startSlider.value), parseFloat(endSlider.value)]
-    sound.source.offset = offset
+    source.offset = offset
     save()
 
     waveView.setOffset(offset)
   }
 
   transposeKnob.onchange = function(){
-    sound.source.transpose = this.value
+    source.transpose = this.value
     save()
   }
 
@@ -126,7 +133,7 @@ module.exports = function(sound, changeStream){
   }
 
   refresh()
-  setWave(sound.source.url)
+  setWave(source.url)
 
   editor.destroy = function(){
     changeStream.removeListener('data', handleData)

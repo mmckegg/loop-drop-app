@@ -24,8 +24,8 @@ module.exports = function(){
       editor.removeChild(activeRawEditor)
     }
 
-    if (sound.source && editors[sound.source.type]){
-      activeEditor = editors[sound.source.type](sound, changeStream)
+    if (sound.sources && sound.sources.length === 1 && editors[sound.sources[0].type]){
+      activeEditor = editors[sound.sources[0].type](sound, changeStream)
       editor.appendChild(activeEditor)
     }
 

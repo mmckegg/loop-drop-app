@@ -50,9 +50,15 @@ module.exports = function(changeStream){
   }
 
   function save(name){
+    var names = 'ABCDEFGH'.split('')
     var kitStorage = {sounds: [], busses: []}
     for (var i=0;i<64;i++){
       var sound = currentSounds[i] || {id: i}
+      kitStorage.sounds.push(sound)
+    }
+    for (var i=0;i<8;i++){
+      var id = names[i]
+      var sound = currentSounds[id] || {id: id}
       kitStorage.sounds.push(sound)
     }
     window.localStorage['kit/' + name] = JSON.stringify(kitStorage)

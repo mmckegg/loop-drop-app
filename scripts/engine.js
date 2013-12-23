@@ -34,6 +34,30 @@ engine.connect(parentStream)
 clock.setTempo(120)
 clock.start()
 
+engine.handleCommand('clock', function(command){
+  if (command.tempo){
+    clock.setTempo(command.tempo)
+  }
+
+  if (command.restart){
+    clock.restart(8)
+  }
+
+  if (command.toggle){
+    if (clock.isPlaying()){
+      clock.stop()
+    } else {
+      clock.start()
+    }
+  }
+
+  if (command.start){
+    clock.start()
+  } else if (command.stop){
+    clock.stop()
+  }
+})
+
 engine.handleCommand('toggleRecord', function(command){
   if (command.deck == 'a'){
     if (soundRecorderA.getState()){

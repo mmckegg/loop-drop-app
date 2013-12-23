@@ -43,6 +43,10 @@ Kit {
       background: gold !important;
     }
 
+    -inputActive {
+      border-color: gold !important
+    }
+
     -recording {
       background: maroon;
       opacity: 1;
@@ -88,6 +92,10 @@ KitBusses {
       background: lime !important;
       z-index: 1000000;
       border-color:#333
+    }
+
+    -active {
+      border: 2px solid gold !important;
     }
   }
 }

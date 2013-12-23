@@ -5,6 +5,9 @@ var Editor = require('../controls/editor')
 var Holder = require('../controls/holder')
 var Metro = require('../controls/metro')
 
+var tapTempo = require('tap-tempo')()
+var handleKey = require('../lib/handle-key')
+
 var engineWindow = document.getElementById('engineFrame').contentWindow
 var engineStream = WindowStream(engineWindow, '/engine.html')
 
@@ -46,20 +49,55 @@ var holder = Holder({
 
 var metro = Metro()
 beatStream.on('data', metro.setBeat)
-
-
-holder.kitA.on('select', function(id){
-  var sound = soundsA[id]
-  if (sound){
-    editor.edit(sound, changeStreamA)
-  }
+tapTempo.on('tap', metro.flash)
+tapTempo.on('tempo', function(tempo){
+  commandStream.write({command: 'clock', tempo: tempo})
 })
 
+// tap tempo
+handleKey(38, tapTempo.tap)
+
+handleKey(37, function(){
+  commandStream.write({command: 'clock', speed: 0.95})
+}, function(){
+  commandStream.write({command: 'clock', speed: 1})
+})
+
+handleKey(39, function(){
+  commandStream.write({command: 'clock', speed: 1.05})
+}, function(){
+  commandStream.write({command: 'clock', speed: 1})
+})
+
+handleKey(40, function(){
+  commandStream.write({command: 'clock', restart: true})
+})
+
+// space = play/pause
+handleKey(32, function(){
+  commandStream.write({command: 'clock', toggle: true})
+})
+
+holder.kitA.on('select', function(id){
+  var sound = soundsA[id] || {id: id}
+  editor.edit(sound, changeStreamA)
+})
+
+
+holder.kitBusA.on('select', function(id){
+  var sound = soundsA[id] || {id: id}
+  editor.edit(sound, changeStreamA)
+})
+
+
 holder.kitB.on('select', function(id){
-  var sound = soundsB[id]
-  if (sound){
-    editor.edit(sound, changeStreamB)
-  }
+  var sound = soundsB[id] || {id: id}
+  editor.edit(sound, changeStreamB)
+})
+
+holder.kitBusB.on('select', function(id){
+  var sound = soundsB[id] || {id: id}
+  editor.edit(sound, changeStreamB)
 })
 
 document.body.appendChild(editor)
@@ -69,16 +107,17 @@ document.body.appendChild(holder)
 setTimeout(function(){
 
   for (var i=0;i<64;i++){
-    changeStreamB.write({
+    changeStreamA.write({
       id: i, 
-      source: {
+      sources: [{
         type: 'oscillator', 
         pitch: 34+i, 
         shape: 2,
-        vibrato: [5,5]
-      }, 
-      envelope: [0, 0], 
+        vibrato: [5,5],
+        envelope: [0, 0]
+      }],
       gain: 0.2,
+      output: 'A'
     })
   }
 
