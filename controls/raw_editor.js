@@ -1,7 +1,6 @@
 var behave = require('../lib/textarea-behavior')
 var h = require('hyperscript')
-var safeEval = require('notevil')
-
+var JSMN = require('../lib/jsmn')
 module.exports = function(sound, changeStream){
   var textEditor = h('textarea')
 
@@ -12,10 +11,7 @@ module.exports = function(sound, changeStream){
     if (!animating){
       animating = true
       window.requestAnimationFrame(function(cb){
-        textEditor.value = JSON.stringify(sound, null, 4).slice(2, -2)
-          .replace(/^    /gm, '')
-          .replace(/\[\s*([0-9\.\-]+),\s*([0-9\.\-]+)\s*\]/g, "[ $1, $2 ]")
-          .replace(/^(\s+\{)\n\s+/gm, '$1   ')
+        textEditor.value = JSMN.stringify(sound)
         lastValue = textEditor.value
         animating = false
       })
@@ -27,7 +23,7 @@ module.exports = function(sound, changeStream){
     if (textEditor.value != lastValue){
       lastValue = textEditor.value
       try {
-        var object = safeEval('sound = {' + textEditor.value + '}')
+        var object = JSMN.parse(textEditor.value)
         object.id = sound.id
         changeStream.write(object)
       } catch (ex) {}

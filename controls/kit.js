@@ -1,5 +1,6 @@
 var h = require('hyperscript')
 var ever = require('ever')
+var getNotesInside = require('midi-looper-launchpad/lib/get_notes_inside')
 
 var EventEmitter = require('events').EventEmitter
 
@@ -10,9 +11,11 @@ module.exports = function(noteStream, changeStream){
   var selectedElement = null
 
   for (var i=0;i<64;i++){
-    var element = h('div', {'data-id': i, 'draggable': true})
+    var fillHandle = h('div', {className: '.fill', 'draggable': false})
+    var element = h('div', {'data-id': i, 'draggable': true}, fillHandle)
     element.activeCount = 0
     addDragEvents(element)
+    addFillEvents(fillHandle)
     elements.push(element)
   }
 
@@ -55,7 +58,10 @@ module.exports = function(noteStream, changeStream){
       element.sound = sound
       if (sound.sources && sound.sources.length){
         element.classList.add('-present')
+      } else if (sound.sources && sound.sources.$){
+        element.classList.add('-linked')
       } else {
+        element.classList.remove('-linked')
         element.classList.remove('-present')
       }
     }
@@ -86,6 +92,97 @@ module.exports = function(noteStream, changeStream){
   })
 
   return kit
+}
+
+function addFillEvents(element){
+  element.addEventListener('mousedown', onMouseDown, true)
+}
+
+var startSlot = null
+var targetSlot = null
+var currentKit = null
+var fillSelection = null
+
+function onMouseDown(event){
+  event.preventDefault()
+  event.stopPropagation()
+
+  document.addEventListener('mouseup', onMouseUp, true)
+
+  startSlot = event.target.parentNode
+  fillSelection = []
+  currentKit = startSlot.parentNode
+  currentKit.addEventListener('mouseover', onMouseEnter, true)
+  currentKit.select(startSlot.getAttribute('data-id'))
+}
+
+function onMouseUp(event){
+
+  event.stopPropagation()
+  event.preventDefault()
+  document.removeEventListener('mouseup', onMouseUp)
+
+  if (currentKit){
+    currentKit.removeEventListener('mouseover', onMouseEnter, true)
+
+    var startId = startSlot.getAttribute('data-id')
+    var template = startSlot.sound
+
+    fillSelection.forEach(function(id, i){
+      var newSound = fillFrom(template, id, i)
+      currentKit.changeStream.write(newSound)
+    })
+
+    targetSlot = null
+    refreshHighlight()
+  }
+
+  startSlot = null
+  currentKit = null
+  fillSelection = null
+}
+
+function fillFrom(template, id, offset){
+  var newSound = JSON.parse(JSON.stringify(template))
+  newSound.id = String(id)
+  newSound.sources = {$: 'get(' + template.id + ').sources'}
+  if (template.gain) newSound.gain = {$: 'get(' + template.id + ').gain'}
+  if (template.output) newSound.output = {$: 'get(' + template.id + ').output'}
+  if (typeof template.offset === 'number'){
+    newSound.offset = template.offset + 1 + offset
+  } else {
+    newSound.offset = offset + 1
+  }
+  return newSound
+}
+
+function onMouseEnter(event){
+  if (event.target.getAttribute('data-id')){
+    targetSlot = event.target
+    refreshHighlight()
+  }
+}
+
+function refreshHighlight(){
+  var startId = startSlot.getAttribute('data-id')
+  var endId = targetSlot && targetSlot.getAttribute('data-id')
+  var ids = getNotesInside('144/' + startId, '144/' + (endId||startId)).map(getSecondAsString)
+  ids.push(endId)
+
+  for (var i=0;i<currentKit.children.length;i++){
+    var slot = currentKit.children[i]
+    if (slot === targetSlot || ~ids.indexOf(slot.getAttribute('data-id'))){
+      slot.classList.add('-filling')
+    } else {
+      slot.classList.remove('-filling')
+    }
+  }
+
+  fillSelection = ids
+}
+
+function getSecondAsString(ary){
+  return String(ary[1])
 }
 
 function addDragEvents(element){
