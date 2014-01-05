@@ -1,5 +1,5 @@
 html, body {
-  background: #555;
+  background: #444;
   margin: 0;
   font-family: 'Optima';
   overflow:hidden;

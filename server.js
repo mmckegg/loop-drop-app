@@ -19,7 +19,8 @@ var server = Server(function(req, res){
 
     sendHtml(res, {
       title: 'Loop Drop',
-      css: ['base', 'editor', 'holder', 'kit', 'loader', 'metro'],
+      css: ['base', 'editor', 'deck', 'holder', 'kit', 'loader', 'metro'],
+      rawCss: ['codemirror'],
       script: ['ui'],
       externalPages: ['engine']
     })
@@ -70,23 +71,35 @@ function sendHtml(res, options){
       console.error(err)
     }
 
-    res.write('<body>\n')
-    if (options.externalPages){
-      options.externalPages.forEach(function(page){
-        res.write('<iframe style="display:none" id="' + page + 'Frame" src="/' + page + '.html" ></iframe>\n')
-      })
-    }
+    getRawCss(options.rawCss, function(err, data){
 
-    if (options.preScript){
-      res.write('<script src="/resources/' + options.preScript + '.js"></script>')
-    }
+      if (data){
+        res.write(data + "\n")
+      }
+      if (err){
+        console.error(err)
+      }
 
-    if (options.script){
-      res.write('<script src="/scripts/' + options.script + '.js"></script>')
-    }
-    res.write('</body>')
+      res.write('<body>\n')
+      if (options.externalPages){
+        options.externalPages.forEach(function(page){
+          res.write('<iframe style="display:none" id="' + page + 'Frame" src="/' + page + '.html" ></iframe>\n')
+        })
+      }
 
-    res.end()
+      if (options.preScript){
+        res.write('<script src="/resources/' + options.preScript + '.js"></script>')
+      }
+
+      if (options.script){
+        res.write('<script src="/scripts/' + options.script + '.js"></script>')
+      }
+      res.write('</body>')
+
+      res.end()
+    })
+
+
   })
 
 }
@@ -110,6 +123,31 @@ function getCss(files, cb){
         cb(err)
       } else {
         cb(null, '<style>' + microCss(data) + '</style>')
+      }
+    })
+  } else {
+    cb()
+  }
+}
+
+function getRawCss(files, cb){
+  console.log('CSS:', files)
+
+  if (files){
+    var data = ''
+    forEach(files, function(file, next){
+      var path = join(__dirname, 'styles', file + '.css')
+      fs.readFile(path, function(err, res){
+        if (res){
+          data += res + "\n"
+        }
+        next(err)
+      })
+    }, function(err){
+      if (err){
+        cb(err)
+      } else {
+        cb(null, '<style>' + data + '</style>')
       }
     })
   } else {

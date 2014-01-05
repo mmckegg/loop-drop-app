@@ -4,50 +4,55 @@ var ever = require('ever')
 var Kit = require('./kit')
 var KitBus = require('./kit_busses')
 var Loader = require('./loader')
+var Editor = require('../controls/editor')
 
 module.exports = function(streams){
   var kitA = Kit(streams.notesA, streams.soundsA)
   var kitB = Kit(streams.notesB, streams.soundsB)
 
-  var kitBusA = KitBus(streams.notesA, streams.soundsA)
-  var kitBusB = KitBus(streams.notesB, streams.soundsB)
+  var soundsA = {}
+  var soundsB = {}
+
+  streams.soundsA.on('data', function(data){
+    soundsA[data.id] = data
+  })
+
+  streams.soundsB.on('data', function(data){
+    soundsB[data.id] = data
+  })
 
   var loaderA = Loader(streams.soundsA)
   var loaderB = Loader(streams.soundsB)
 
-  var slotA = h('div', kitA, kitBusA, loaderA)
-  var slotB = h('div', kitB, kitBusB, loaderB)
+  var deckA = h('div.Deck', loaderA, kitA)
+  var deckB = h('div.Deck', loaderB, kitB)
 
-  kitA.on('select', function(){
-    slotB.classList.remove('-selected')
-    slotA.classList.add('-selected')
+
+  deckA.classList.add('-left')
+  deckB.classList.add('-right')
+
+  var editor = Editor()
+
+  kitA.on('select', function(id){
+    var sound = soundsA[id] || {id: id}
+    editor.edit(sound, streams.soundsA)
+    editor.classList.add('-left')
+    editor.classList.remove('-right')
+
+    deckB.classList.remove('-selected')
+    deckA.classList.add('-selected')
     kitB.deselect()
-    kitBusB.deselect()
-    kitBusA.deselect()
   })
 
-  kitB.on('select', function(){
-    slotA.classList.remove('-selected')
-    slotB.classList.add('-selected')
-    kitA.deselect()
-    kitBusB.deselect()
-    kitBusA.deselect()
-  })
+  kitB.on('select', function(id){
+    var sound = soundsB[id] || {id: id}
+    editor.edit(sound, streams.soundsB)
+    editor.classList.add('-right')
+    editor.classList.remove('-left')
 
-  kitBusB.on('select', function(){
-    slotA.classList.remove('-selected')
-    slotB.classList.add('-selected')
+    deckA.classList.remove('-selected')
+    deckB.classList.add('-selected')
     kitA.deselect()
-    kitB.deselect()
-    kitBusA.deselect()
-  })
-
-  kitBusA.on('select', function(){
-    slotB.classList.remove('-selected')
-    slotA.classList.add('-selected')
-    kitA.deselect()
-    kitB.deselect()
-    kitBusB.deselect()
   })
 
   loaderA.on('record', function(state){
@@ -58,12 +63,10 @@ module.exports = function(streams){
     streams.commands.write({command: 'toggleRecord', deck: 'b'})
   })
 
-  var holder = h('div.Holder', slotA, slotB)
+  var holder = h('div.Holder', deckA, editor, deckB)
 
   holder.kitA = kitA
   holder.kitB = kitB
-  holder.kitBusA = kitBusA
-  holder.kitBusB = kitBusB
 
   return holder
 }

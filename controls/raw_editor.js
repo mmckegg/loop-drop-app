@@ -1,18 +1,29 @@
 var behave = require('../lib/textarea-behavior')
 var h = require('hyperscript')
 var JSMN = require('../lib/jsmn')
-module.exports = function(sound, changeStream){
-  var textEditor = h('textarea')
+var ace = require('brace')
+require('brace/mode/javascript');
+require('brace/theme/ambiance');
 
-  behave(textEditor)
+//require('code-mirror/theme/default')
+
+module.exports = function(sound, changeStream){
+
+  var element = h('div')
+  var textEditor = ace.edit(element)
+  textEditor.getSession().setMode('ace/mode/javascript');
+  textEditor.setTheme('ace/theme/ambiance');
+  textEditor.session.setUseWorker(false)
+  textEditor.renderer.setShowGutter(false)
+  //textEditor.setSize('100%', '100%')
 
   var animating = false
   function update(){
     if (!animating){
       animating = true
       window.requestAnimationFrame(function(cb){
-        textEditor.value = JSMN.stringify(sound)
-        lastValue = textEditor.value
+        textEditor.setValue(JSMN.stringify(sound),-1)
+        lastValue = textEditor.getValue()
         animating = false
       })
     }
@@ -20,10 +31,11 @@ module.exports = function(sound, changeStream){
 
   var lastValue = null
   function save(){
-    if (textEditor.value != lastValue){
-      lastValue = textEditor.value
+    var value = textEditor.getValue()
+    if (value != lastValue){
+      lastValue = value
       try {
-        var object = JSMN.parse(textEditor.value)
+        var object = JSMN.parse(value)
         object.id = sound.id
         changeStream.write(object)
       } catch (ex) {}
@@ -33,9 +45,9 @@ module.exports = function(sound, changeStream){
   function handleData(data){
     if (data.id == sound.id){
       sound = data
-      if (document.activeElement != textEditor){
+      //if (!textEditor.hasFocus()){
         update()
-      }
+      //}
     }
   }
 
@@ -44,13 +56,11 @@ module.exports = function(sound, changeStream){
   textEditor.oninput = save
   textEditor.onkeyup = save
 
-  textEditor.onblur = function(){
-    update()
-  }
+  textEditor.on('blur', update)
 
   update()
 
-  var result = h('div.RawEditor', textEditor)
+  var result = h('div.RawEditor', element)
   result.destroy = function(){
     changeStream.removeListener('data', handleData)
   }

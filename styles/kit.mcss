@@ -1,10 +1,7 @@
 Kit {
-
-  flex: 8
-
   border:10px solid #555;
 
-  width: 25vw
+  height: 310px
 
   flex-wrap: wrap;
   display: flex;
@@ -17,6 +14,9 @@ Kit {
 
   div {
     position: relative
+    font-size: 1.3vw
+    color: #333
+    text-align: center
     width:12.5%;
     border: 2px solid #555;
     border-radius: 5px;
@@ -86,45 +86,30 @@ Kit {
       }
     }
 
-  }
-}
+    -bus {
+      background: #696;
 
-KitBusses {
-  width: 8% !important
-  border:10px solid #555;
-  border-left:none
+      span {
+        position: absolute
+        top: 4px; bottom: 0; right: 0; left: 0
+      }
 
-  flex: 1
+      :hover {
+        background: rgb(0, 146, 0);
+        z-index: 1000000;
+      }
 
-  flex-wrap: wrap;
-  display: flex;
+      -selected {
+        opacity: 1 !important
+        background: lime !important;
+        z-index: 1000000;
+        border-color:#333
+      }
 
-  div {
-    padding-top:20%
-    font-size: 1.3vw
-    color: #333
-    text-align: center
-    border: 2px solid #555;
-    border-radius: 5px;
-    background: #696;
-    cursor: pointer;
-    opacity: 0.5;
-    width: 100%
-
-    :hover {
-      background: rgb(0, 146, 0);
-      z-index: 1000000;
+      -active {
+        border: 2px solid gold !important;
+      }
     }
 
-    -selected {
-      opacity: 1 !important
-      background: lime !important;
-      z-index: 1000000;
-      border-color:#333
-    }
-
-    -active {
-      border: 2px solid gold !important;
-    }
   }
 }

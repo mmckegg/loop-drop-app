@@ -27,31 +27,31 @@ module.exports = function(sound, changeStream){
     step: 0.00125
   })
 
-  var transposeKnob = Knob({
-    value: 0,
-    label: 'transpose',
-    cursor: 20, angleOffset: -125, angleArc: 250,
-    min: -24, max: 24,
-    fgColor: '#FFF', bgColor: '#222',
-    labelColor: '#EEE',
-    width: 130,
-    height: 110,
-    className: '.transpose',
-    activeClass: '-active'
-  })
-
-  var gainKnob = Knob({
-    value: 0,
-    label: 'gain (dB)',
-    angleOffset: -125, angleArc: 250,
-    min: -40, max: 20,
-    fgColor: '#FFF', bgColor: '#222',
-    labelColor: '#EEE',
-    width: 130,
-    height: 110,
-    className: '.gain',
-    activeClass: '-active'
-  })
+  //var transposeKnob = Knob({
+  //  value: 0,
+  //  label: 'transpose',
+  //  cursor: 20, angleOffset: -125, angleArc: 250,
+  //  min: -24, max: 24,
+  //  fgColor: '#FFF', bgColor: '#222',
+  //  labelColor: '#EEE',
+  //  width: 130,
+  //  height: 110,
+  //  className: '.transpose',
+  //  activeClass: '-active'
+  //})
+//
+  //var gainKnob = Knob({
+  //  value: 0,
+  //  label: 'gain (dB)',
+  //  angleOffset: -125, angleArc: 250,
+  //  min: -40, max: 20,
+  //  fgColor: '#FFF', bgColor: '#222',
+  //  labelColor: '#EEE',
+  //  width: 130,
+  //  height: 110,
+  //  className: '.gain',
+  //  activeClass: '-active'
+  //})
 
   function handleData(data){
     if (data.id == sound.id){
@@ -77,8 +77,8 @@ module.exports = function(sound, changeStream){
       var offset = source.offset || [0,1]
       startSlider.value = offset[0]
       endSlider.value = offset[1]
-      transposeKnob.setValue(source.transpose || 0)
-      gainKnob.setValue(getDecibels(sound.gain))
+      //transposeKnob.setValue(source.transpose || 0)
+      //gainKnob.setValue(getDecibels(sound.gain))
 
       waveView.setOffset(source.offset || [0,1])
       waveView.setGain(sound.gain)
@@ -97,16 +97,16 @@ module.exports = function(sound, changeStream){
     waveView.setOffset(offset)
   }
 
-  transposeKnob.onchange = function(){
-    source.transpose = this.value
-    save()
-  }
-
-  gainKnob.onchange = function(){
-    sound.gain = getGain(this.value)
-    waveView.setGain(sound.gain)
-    save()
-  }
+  //transposeKnob.onchange = function(){
+  //  source.transpose = this.value
+  //  save()
+  //}
+//
+  //gainKnob.onchange = function(){
+  //  sound.gain = getGain(this.value)
+  //  waveView.setGain(sound.gain)
+  //  save()
+  //}
 
 
 
@@ -124,7 +124,7 @@ module.exports = function(sound, changeStream){
     changeStream.write(sound)
   }
 
-  var editor = h('div.SampleEditor', waveView, startSlider, endSlider, transposeKnob, gainKnob)
+  var editor = h('div.SampleEditor', waveView, startSlider, endSlider)
 
   function setWave(url){
     loadSample(url, function(err, buffer){

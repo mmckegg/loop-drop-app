@@ -1,7 +1,6 @@
 var WindowStream = require('window-stream')
 var Through = require('through')
 
-var Editor = require('../controls/editor')
 var Holder = require('../controls/holder')
 var Metro = require('../controls/metro')
 
@@ -22,20 +21,6 @@ var changeStreamB = Plex(engineStream, 'soundbank[b]')
 
 var beatStream = Plex(engineStream, 'beat')
 var commandStream = Plex(engineStream, 'commands')
-
-
-var soundsA = {}
-var soundsB = {}
-
-changeStreamA.on('data', function(data){
-  soundsA[data.id] = data
-})
-
-changeStreamB.on('data', function(data){
-  soundsB[data.id] = data
-})
-
-var editor = Editor()
 
 var holder = Holder({
   notesA: noteStreamA, 
@@ -78,29 +63,6 @@ handleKey(32, function(){
   commandStream.write({command: 'clock', toggle: true})
 })
 
-holder.kitA.on('select', function(id){
-  var sound = soundsA[id] || {id: id}
-  editor.edit(sound, changeStreamA)
-})
-
-
-holder.kitBusA.on('select', function(id){
-  var sound = soundsA[id] || {id: id}
-  editor.edit(sound, changeStreamA)
-})
-
-
-holder.kitB.on('select', function(id){
-  var sound = soundsB[id] || {id: id}
-  editor.edit(sound, changeStreamB)
-})
-
-holder.kitBusB.on('select', function(id){
-  var sound = soundsB[id] || {id: id}
-  editor.edit(sound, changeStreamB)
-})
-
-document.body.appendChild(editor)
 document.body.appendChild(metro)
 document.body.appendChild(holder)
 

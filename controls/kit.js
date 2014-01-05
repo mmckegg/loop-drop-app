@@ -9,13 +9,25 @@ module.exports = function(noteStream, changeStream){
   var elements = []
   var outputLookup = {}
   var selectedElement = null
+  var elementLookup = {}
+
+  var busNames = 'ABCDEFGH'.split('')
 
   for (var i=0;i<64;i++){
     var fillHandle = h('div', {className: '.fill', 'draggable': false})
     var element = h('div', {'data-id': i, 'draggable': true}, fillHandle)
+    elementLookup[i] = element
     element.activeCount = 0
     addDragEvents(element)
     addFillEvents(fillHandle)
+    elements.push(element)
+  }
+
+  for (var i=0;i<8;i++){
+    var element = h('div.-bus', {'data-id': busNames[i], 'draggable': true}, h('span', busNames[i]))
+    element.activeCount = 0
+    elementLookup[busNames[i]] = element
+    addDragEvents(element)
     elements.push(element)
   }
 
@@ -28,7 +40,7 @@ module.exports = function(noteStream, changeStream){
   }
 
   noteStream.on('data', function(event){
-    var element = elements[event.data[1]]
+    var element = elementLookup[event.data[1]]
     if (element){
       if (event.data[2]){
         element.classList.add('-active')
@@ -53,7 +65,7 @@ module.exports = function(noteStream, changeStream){
   })
 
   changeStream.on('data', function(sound){
-    var element = elements[sound.id]
+    var element = elementLookup[sound.id]
     if (element){
       element.sound = sound
       if (sound.sources && sound.sources.length){
@@ -66,14 +78,14 @@ module.exports = function(noteStream, changeStream){
       }
     }
 
-    outputLookup[sound.id] = elements[sound.output] || null
+    outputLookup[sound.id] = elementLookup[sound.output] || null
   })
 
   kit.select = function(id){
     if (selectedElement){
       selectedElement.classList.remove('-selected')
     }
-    selectedElement = elements[id]
+    selectedElement = elementLookup[id]
     selectedElement.classList.add('-selected')
     kit.events.emit('select', id)
   }
@@ -86,12 +98,20 @@ module.exports = function(noteStream, changeStream){
   }
 
   ever(kit).on('mousedown', function(e){
-    if (e.srcElement.getAttribute('data-id') != null){
-      kit.select(e.srcElement.getAttribute('data-id'))
+    var slot = getSlotElement(e.target)
+    if (slot && slot.getAttribute('data-id') != null){
+      kit.select(slot.getAttribute('data-id'))
     }
   })
 
   return kit
+}
+
+function getSlotElement(node){
+  while (node && !node.getAttribute('data-id')){
+    node = node.parentNode
+  }
+  return node
 }
 
 function addFillEvents(element){
