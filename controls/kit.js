@@ -226,7 +226,7 @@ function addDragEvents(element){
 }
 
 function onDragStart(event){
-  window.currentDrag = event.target
+  window.currentDrag = getSlotElement(event.target)
 }
 
 function onDragEnd(event){
@@ -249,8 +249,8 @@ function onDrop(event){
   event.preventDefault()
   this.classList.remove('-dragover')
 
-  var destinationKit = event.target.parentNode
-  var destinationId = event.target.getAttribute('data-id')
+  var destinationKit = getSlotElement(event.target).parentNode
+  var destinationId = getSlotElement(event.target).getAttribute('data-id')
 
   if (window.currentDrag){
 
