@@ -11,9 +11,10 @@ module.exports = function(sound, changeStream){
 
   var element = h('div')
   var textEditor = ace.edit(element)
-  textEditor.getSession().setMode('ace/mode/javascript');
   textEditor.setTheme('ace/theme/ambiance');
+  textEditor.session.setMode('ace/mode/javascript')
   textEditor.session.setUseWorker(false)
+  textEditor.session.setTabSize(2)
   textEditor.renderer.setShowGutter(false)
   //textEditor.setSize('100%', '100%')
 
@@ -32,7 +33,7 @@ module.exports = function(sound, changeStream){
   var lastValue = null
   function save(){
     var value = textEditor.getValue()
-    if (value != lastValue){
+    if (!animating && value != lastValue){
       lastValue = value
       try {
         var object = JSMN.parse(value)
@@ -45,18 +46,16 @@ module.exports = function(sound, changeStream){
   function handleData(data){
     if (data.id == sound.id){
       sound = data
-      //if (!textEditor.hasFocus()){
+      if (!textEditor.isFocused()){
         update()
-      //}
+      }
     }
   }
 
   changeStream.on('data', handleData)
 
-  textEditor.oninput = save
-  textEditor.onkeyup = save
-
   textEditor.on('blur', update)
+  textEditor.on('change', save)
 
   update()
 
