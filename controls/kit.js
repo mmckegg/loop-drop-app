@@ -68,14 +68,25 @@ module.exports = function(noteStream, changeStream){
     var element = elementLookup[sound.id]
     if (element){
       element.sound = sound
+
       if (sound.sources && sound.sources.length){
         element.classList.add('-present')
-      } else if (sound.sources && sound.sources.$){
+      } else {
+        element.classList.remove('-present')
+      } 
+
+      if (sound.sources && sound.sources.$){
         element.classList.add('-linked')
       } else {
         element.classList.remove('-linked')
-        element.classList.remove('-present')
       }
+
+      if (sound.downAction || sound.upAction){
+        element.classList.add('-action')
+      } else {
+        element.classList.remove('-action')
+      }
+      
     }
 
     outputLookup[sound.id] = elementLookup[sound.output] || null

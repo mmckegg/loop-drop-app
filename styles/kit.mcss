@@ -39,6 +39,11 @@ Kit {
       background-color: #6F5785
     }
 
+    -action {
+      opacity: 0.9;
+      background-color: #576F85
+    }
+
     -selected {
       opacity: 1 !important
       background: lime !important;

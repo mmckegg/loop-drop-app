@@ -35,7 +35,7 @@ RawEditor {
   margin: 10px
   display: flex
   position: relative;
-  flex: 2
+  flex: 3
 
   div {
     position: absolute
