@@ -86,7 +86,7 @@ module.exports = function(noteStream, changeStream){
       } else {
         element.classList.remove('-action')
       }
-      
+
     }
 
     outputLookup[sound.id] = elementLookup[sound.output] || null
@@ -176,7 +176,8 @@ function onMouseUp(event){
 function fillFrom(template, id, offset){
   var newSound = JSON.parse(JSON.stringify(template))
   newSound.id = String(id)
-  newSound.sources = {$: 'get(' + template.id + ').sources'}
+  if (template.sources) newSound.sources = {$: 'get(' + template.id + ').sources'}
+  if (template.processors) newSound.processors = {$: 'get(' + template.id + ').processors'}
   if (template.gain) newSound.gain = {$: 'get(' + template.id + ').gain'}
   if (template.output) newSound.output = {$: 'get(' + template.id + ').output'}
   if (typeof template.offset === 'number'){
