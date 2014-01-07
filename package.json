@@ -11,8 +11,17 @@
     "web-midi": "*",
     "browserify": "*",
     "micro-css": "*",
+    "wave-recorder": "~0.0.0",
+    "notevil": "~0.8.0",
+    "wave-view": "~0.0.0",
     "window-stream": "*",
-    "mux-demux": "~3.7.8",
-    "ecstatic": "*"
+    "ecstatic": "*",
+    "tap-tempo": "~0.0.0",
+    "brace": "~0.1.3",
+    "hyperscript": "~1.1.0",
+    "ever": "~0.0.3"
+  },
+  "devDependencies": {
+    "tape": "*"
   }
 }

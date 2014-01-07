@@ -3,7 +3,7 @@ var WaveView = require('wave-view')
 var h = require('hyperscript')
 var ever = require('ever')
 
-var Knob = require('knob')
+//var Knob = require('knob')
 
 
 module.exports = function(sound, changeStream){
