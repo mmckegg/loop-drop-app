@@ -6,10 +6,9 @@ var Metro = require('../controls/metro')
 
 var tapTempo = require('tap-tempo')()
 var handleKey = require('../lib/handle-key')
+var RemoteStream = require('../lib/remote_stream')
 
-var engineWindow = document.getElementById('engineFrame').contentWindow
-var engineStream = WindowStream(engineWindow, '/engine.html')
-
+var engineStream = RemoteStream()
 
 var noteStreamA = Plex(engineStream, 'playback[a]')
 var noteStreamB = Plex(engineStream, 'playback[b]')
@@ -66,48 +65,4 @@ handleKey(32, function(){
 document.body.appendChild(metro)
 document.body.appendChild(holder)
 
-setTimeout(function(){
-
-  for (var i=0;i<64;i++){
-    changeStreamA.write({
-      id: i, 
-      sources: [{
-        type: 'oscillator', 
-        pitch: 34+i, 
-        shape: 2,
-        vibrato: [5,5],
-        envelope: [0, 0]
-      }],
-      gain: 0.2,
-      output: 'A'
-    })
-  }
-
-}, 200)
-
-
-
-
-
-window.changeStream = changeStreamA
-
-
-
-function Plex(stream, channel){
-  var result = Through(function(data){
-    stream.write(JSON.stringify({channel: result.channel, data: data}))
-  })
-  result.channel = channel
-  stream.on('data', function(data){
-    var object = null
-
-    try {
-      object = JSON.parse(data)
-    } catch (ex){}
-
-    if (object && object.channel == result.channel){
-      result.queue(object.data)
-    }
-  })
-  return result
-}
+module.exports = engineStream.remote

@@ -14,22 +14,18 @@ var engine = Engine(audioContext)
 var clock = engine.getClock()
 
 // instance A
-var instanceA = engine.createInstance('a')
+var instanceA = engine.createInstance('left')
 var launchpadA = Launchpad(MidiStream('Launchpad', 0), instanceA.looper)
 var soundRecorderA = SoundRecorder(launchpadA, instanceA)
 
 clock.pipe(launchpadA).pipe(instanceA)
 
 // instance B
-var instanceB = engine.createInstance('b')
+var instanceB = engine.createInstance('right')
 var launchpadB = Launchpad(MidiStream('Launchpad', 1), instanceB.looper)
 var soundRecorderB = SoundRecorder(launchpadB, instanceB)
 
 clock.pipe(launchpadB).pipe(instanceB)
-
-// connect to UI in parent window
-var parentStream = WindowStream(window.parent, '/')
-engine.connect(parentStream)
 
 clock.setTempo(120)
 clock.start()
@@ -59,13 +55,13 @@ engine.handleCommand('clock', function(command){
 })
 
 engine.handleCommand('toggleRecord', function(command){
-  if (command.deck == 'a'){
+  if (command.deck == 'left'){
     if (soundRecorderA.getState()){
       soundRecorderA.stop()
     } else {
       soundRecorderA.start()
     }
-  } else if (command.deck == 'b'){
+  } else if (command.deck == 'right'){
     if (soundRecorderA.getState()){
       soundRecorderB.stop()
     } else {
@@ -73,3 +69,5 @@ engine.handleCommand('toggleRecord', function(command){
     }
   }
 })
+
+module.exports = engine

@@ -1,0 +1,20 @@
+<? require './deck.html' as deck ?>
+<? require './editor.html' as editor ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Loop Drop</title>
+  <link rel='stylesheet' href='bundle.css' />
+  <link rel='stylesheet' href='extra.css' />
+</head>
+<body>
+  <div class='Metro' data-behavior='metro' />
+  <div class='Holder'>
+    <div class='Deck -left' data-id='left' t:view='deck' data-behavior='deck.selected' />
+    <div class='Editor' t:view='editor' />
+    <div class='Deck -right' data-id='right' t:view='deck' data-behavior='deck.selected' />
+  </div>
+  <script src='bundle.js' />
+</body>
+</html>

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "author": "Matt McKegg",
   "scripts": {
-    "start": "node server.js"
+    "watch": "node build -w -d",
+    "build": "node build"
   },
   "dependencies": {
     "loop-drop-engine": "*",
@@ -19,8 +20,24 @@
     "tap-tempo": "~0.0.0",
     "brace": "~0.1.3",
     "hyperscript": "~1.1.0",
-    "ever": "~0.0.3"
+    "ever": "~0.0.3",
+    "watchify": "~0.5.0",
+    "catw": "~0.2.0",
+    "concat-stream": "~1.4.1",
+    "dom-behavior": "~1.1.1",
+    "create-element": "~0.2.3",
+    "module-deps": "~1.2.2"
   },
+  "window": {
+    "bounds": {
+      "width": 1200,
+      "height": 700
+    }
+  },
+  "permissions": [
+    {"fileSystem": ["write", "retainEntries", "directory"]},
+    "storage"
+  ],
   "devDependencies": {
     "tape": "*"
   }
