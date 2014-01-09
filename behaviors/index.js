@@ -10,8 +10,10 @@ var behaviors = {
     raw: require('./editor/raw')
   },
   'deck': {
-    selected: require('./deck/selected')
-  }
+    selected: require('./deck/selected'),
+    kits: require('./deck/kits')
+  },
+  'project': require('./project')
 }
 
 module.exports = function(target){

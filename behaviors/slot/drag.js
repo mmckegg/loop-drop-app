@@ -48,6 +48,7 @@ function onDrop(event){
       if (destinationDeckId == fromDeckId){
         descriptor.output = destinationId
         fromStream.write(descriptor)
+        window.events.emit('kitChange', fromDeckId)
       }
 
     } else if (!(fromDeckId == destinationDeckId && fromId == destinationId)){
@@ -57,11 +58,15 @@ function onDrop(event){
 
       destinationStream.write(descriptor)
 
-      window.events.emit('selectSlot', destinationDeckId, destinationId)
-
       if (!event.altKey){ // remove old
         fromStream.write({id: fromId})
+        if (fromDeckId !== destinationDeckId){
+          window.events.emit('kitChange', fromDeckId)
+        }
       }
+
+      window.events.emit('selectSlot', destinationDeckId, destinationId)
+      window.events.emit('kitChange', destinationDeckId)
     }
 
   } else if (event.dataTransfer.files.length == 1) {

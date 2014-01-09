@@ -47,6 +47,8 @@ function onMouseUp(event){
       changeStream.write(descriptor)
     })
 
+    window.events.emit('kitChange', deckId)
+
     targetId = null
     refreshHighlight()
   }

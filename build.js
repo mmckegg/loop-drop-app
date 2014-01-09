@@ -75,7 +75,7 @@ catw('styles/*.css', function(stream){
 })
 
 var w = watchify('./index.js')
-w.require('through')
+//w.require('through')
 w.on('update', bundle)
 bundle()
 function bundle(){

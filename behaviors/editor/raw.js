@@ -62,12 +62,13 @@ module.exports = function(element){
 
   function save(){
     var value = textEditor.getValue()
-    if (!updating && value != lastValue && changeStream){
+    if (!updating && value != lastValue && currentStream){
       lastValue = value
       try {
         var object = JSMN.parse(value)
         object.id = currentId
-        changeStream.write(object)
+        currentStream.write(object)
+        window.events.emit('kitChange', currentDeckId)
       } catch (ex) {}
     }
   }

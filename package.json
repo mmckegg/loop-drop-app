@@ -10,7 +10,7 @@
     "loop-drop-engine": "*",
     "midi-looper-launchpad": "*",
     "web-midi": "*",
-    "browserify": "*",
+    "browserify": "~3.19.1",
     "micro-css": "*",
     "wave-recorder": "~0.0.0",
     "notevil": "~0.8.0",
@@ -26,7 +26,8 @@
     "concat-stream": "~1.4.1",
     "dom-behavior": "~1.1.1",
     "create-element": "~0.2.3",
-    "module-deps": "~1.2.2"
+    "module-deps": "~1.2.2",
+    "become": "~1.1.0"
   },
   "window": {
     "bounds": {
@@ -35,7 +36,13 @@
     }
   },
   "permissions": [
-    {"fileSystem": ["write", "retainEntries", "directory"]},
+    {
+      "fileSystem": [
+        "write",
+        "retainEntries",
+        "directory"
+      ]
+    },
     "storage"
   ],
   "devDependencies": {
