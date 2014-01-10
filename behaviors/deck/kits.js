@@ -113,9 +113,10 @@ module.exports = function(container){
         span.onblur = null
         span.onkeydown = null
         editor.parentNode.removeChild(editor)
+        refresh()
       }
     }
-
+    insertPoint.style.display = 'none'
     editor.dataset.preserve = true
     insertPoint.parentNode.insertBefore(editor, insertPoint)
     span.onblur = endAdd
@@ -144,6 +145,7 @@ module.exports = function(container){
     if (parent.parentNode){
       if (event.keyCode === 27 || event.target.classList.contains('.cancel')){
         parent.parentNode.removeChild(parent)
+        refresh()
       } else {
         var newName = element.textContent.trim()
         parent.parentNode.removeChild(parent)
