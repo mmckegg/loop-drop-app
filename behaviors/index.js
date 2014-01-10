@@ -13,7 +13,8 @@ var behaviors = {
     selected: require('./deck/selected'),
     kits: require('./deck/kits')
   },
-  'project': require('./project')
+  'project': require('./project'),
+  'engine': require('./engine')
 }
 
 module.exports = function(target){

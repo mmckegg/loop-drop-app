@@ -1,18 +1,6 @@
 module.exports = function(){
-  // load data
 
-  window.context.decks.left.changeStream.write({
-    id: "0",
-    offset: 0,
-    sources: [
-      {
-        type: 'oscillator',
-        shape: 1,
-        note: {$: '34+offset'},
-        amp: { value: 0.4, type: 'adsr', decay: 0.1, sustain: 0.5, release: 1}
-      }
-    ]
-  })
+  window.context.audio.loadSample = loadSample
 
   window.events.on('loadKit', loadKit)
   window.events.on('saveKit', saveKit)
@@ -20,6 +8,35 @@ module.exports = function(){
   window.events.on('deleteKit', deleteKit)
 
   loadDefaultProject()
+}
+
+function loadSample(src, cb){
+  var sampleCache = window.context.audio.sampleCache
+  var project = window.context.currentProject
+  var current = sampleCache[src]
+  var audioContext = window.context.audio
+
+  if (!current){
+    current = sampleCache[src] = []
+    project.samples.getFile(src, {create: false}, function(entry){
+      readFileAsBuffer(entry, function(file){
+        audioContext.decodeAudioData(file, function(buffer){
+          sampleCache[src] = buffer
+          current.forEach(function(callback){
+            callback(buffer)
+          })
+        }, handleError)
+      })
+    })
+  }
+
+  if (cb){
+    if (Array.isArray(current)){
+      current.push(cb)
+    } else {
+      cb(current)
+    }
+  }
 }
 
 function sortKits(){
@@ -54,9 +71,9 @@ function renameKit(fromId, toId){
 function loadKit(deckId, kitName){
   getKit(kitName, function(kit){
     if (kit){
-      var changeStream = window.context.decks[deckId].changeStream
+      var deck = window.context.decks[deckId]
       kit.slots.forEach(function(descriptor){
-        changeStream.write(descriptor)
+        deck.update(descriptor)
       })
     }
   })
@@ -65,15 +82,13 @@ function loadKit(deckId, kitName){
 function saveKit(deckId, kitName){
   var names = 'ABCDEFGH'.split('')
   var kitStorage = {slots: []}
-  var slots = window.context.decks[deckId].slots
+  var deck = window.context.decks[deckId]
   for (var i=0;i<64;i++){
-    var descriptor = slots[i] || {id: String(i)}
-    kitStorage.slots.push(descriptor)
+    kitStorage.slots.push(deck.getDescriptor(i))
   }
   for (var i=0;i<8;i++){
     var id = names[i]
-    var descriptor = slots[id] || {id: id}
-    kitStorage.slots.push(descriptor)
+    kitStorage.slots.push(deck.getDescriptor(id))
   }
   writeKit(kitName, kitStorage)
 }
@@ -107,11 +122,14 @@ function chooseProject(){
 }
 
 function handleError(err){
+  console.log(err)
   throw err
 }
 
 function loadProject(entry){
   window.context.currentProject = entry
+  window.context.audio.sampleCache = {}
+
   chrome.storage.local.set({'projectDirectory': chrome.fileSystem.retainEntry(entry)})
   chrome.fileSystem.getDisplayPath(entry, function(path){
     console.log('Loaded project', path)
@@ -220,6 +238,17 @@ function readFile(entry, cb){
     }
     reader.onerror = handleError
     reader.readAsText(file)
+  }, handleError)
+}
+
+function readFileAsBuffer(entry, cb){
+  entry.file(function(file){
+    var reader = new FileReader()
+    reader.onload = function(){
+      cb(reader.result)
+    }
+    reader.onerror = handleError
+    reader.readAsArrayBuffer(file)
   }, handleError)
 }
 

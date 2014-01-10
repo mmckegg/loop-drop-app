@@ -7,7 +7,7 @@ module.exports = function(element){
 
   var currentId = null
   var currentDeckId = null
-  var currentStream = null
+  var currentDeck = null
 
   var editorElement = element.parentNode
 
@@ -21,13 +21,13 @@ module.exports = function(element){
     currentDeckId = deckId
     currentId = String(slotId)
 
-    var changeStream = window.context.decks[deckId].changeStream
-    if (changeStream != currentStream){
-      if (currentStream){
-        changeStream.removeListener('data', handleData)
+    var deck = window.context.decks[deckId]
+    if (deck != currentDeck){
+      if (currentDeck){
+        deck.removeListener('change', handleData)
       }
-      currentStream = changeStream
-      currentStream.on('data', handleData)
+      currentDeck = deck
+      currentDeck.on('change', handleData)
     }
 
     update()
@@ -49,7 +49,7 @@ module.exports = function(element){
       updating = true
       window.requestAnimationFrame(function(cb){
         if (currentDeckId && currentId){
-          var descriptor = window.context.decks[currentDeckId].slots[currentId] || {id: currentId}
+          var descriptor = window.context.decks[currentDeckId].getDescriptor(currentId)
           textEditor.setValue(JSMN.stringify(descriptor),-1)
         } else {
           textEditor.setValue('',-1)
@@ -62,12 +62,12 @@ module.exports = function(element){
 
   function save(){
     var value = textEditor.getValue()
-    if (!updating && value != lastValue && currentStream){
+    if (!updating && value != lastValue && currentDeck){
       lastValue = value
       try {
         var object = JSMN.parse(value)
         object.id = currentId
-        currentStream.write(object)
+        currentDeck.update(object)
         window.events.emit('kitChange', currentDeckId)
       } catch (ex) {}
     }

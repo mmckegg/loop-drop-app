@@ -33,21 +33,21 @@ function onDrop(event){
 
   var destinationDeckId = getDeckElement(event.target).getAttribute('data-id')
   var destinationId = getSlotElement(event.target).getAttribute('data-id')
-  var destinationStream = window.context.decks[destinationDeckId].changeStream
+  var destinationDeck = window.context.decks[destinationDeckId]
 
   if (window.currentDrag){
 
     var fromDeckId = getDeckElement(window.currentDrag).getAttribute('data-id')
     var fromId = getSlotElement(window.currentDrag).getAttribute('data-id')
-    var fromStream = window.context.decks[fromDeckId].changeStream
+    var fromDeck = window.context.decks[fromDeckId]
 
-    var descriptor = window.context.decks[fromDeckId].slots[fromId]
+    var descriptor = fromDeck.getDescriptor(fromId)
 
     if (event.shiftKey){
 
       if (destinationDeckId == fromDeckId){
         descriptor.output = destinationId
-        fromStream.write(descriptor)
+        fromDeck.update(descriptor)
         window.events.emit('kitChange', fromDeckId)
       }
 
@@ -56,10 +56,10 @@ function onDrop(event){
       var newDescriptor = obtain(descriptor)
       descriptor.id = destinationId
 
-      destinationStream.write(descriptor)
+      destinationDeck.update(descriptor)
 
       if (!event.altKey){ // remove old
-        fromStream.write({id: fromId})
+        fromDeck.update({id: fromId})
         if (fromDeckId !== destinationDeckId){
           window.events.emit('kitChange', fromDeckId)
         }

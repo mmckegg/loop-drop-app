@@ -39,12 +39,12 @@ function onMouseUp(event){
   if (currentKit){
     currentKit.removeEventListener('mouseover', onMouseEnter, true)
 
-    var template = window.context.decks[deckId].slots[startId]
-    var changeStream = window.context.decks[deckId].changeStream
+    var deck = window.context.decks[deckId]
+    var template = deck.getDescriptor(startId)
 
     fillSelection.forEach(function(id, i){
       var descriptor = fillFrom(template, id, i)
-      changeStream.write(descriptor)
+      deck.update(descriptor)
     })
 
     window.events.emit('kitChange', deckId)

@@ -13,7 +13,7 @@ module.exports = function(container){
     slot.activeCount = 0
   }
 
-  window.context.decks[thisDeckId].noteStream.on('data', function(event){
+  window.context.decks[thisDeckId].on('data', function(event){
     var element = elementLookup[event.data[1]]
     if (element){
       if (event.data[2]){
@@ -38,7 +38,7 @@ module.exports = function(container){
     }
   })
 
-  window.context.decks[thisDeckId].changeStream.on('data', function(descriptor){
+  window.context.decks[thisDeckId].on('change', function(descriptor){
     var element = elementLookup[descriptor.id]
     if (element){
 
