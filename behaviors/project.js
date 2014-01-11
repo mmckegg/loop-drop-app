@@ -75,6 +75,12 @@ function loadKit(deckId, kitName){
       kit.slots.forEach(function(descriptor){
         deck.update(descriptor)
       })
+      if (deckId === 'left'){
+        chrome.storage.local.set({'lastLeftKit': kitName})
+      }
+      if (deckId === 'right'){
+        chrome.storage.local.set({'lastRightKit': kitName})
+      }
     }
   })
 }
@@ -126,6 +132,17 @@ function handleError(err){
   throw err
 }
 
+function loadLastKits(){
+  chrome.storage.local.get(['lastLeftKit', 'lastRightKit'], function(items) {
+    if (items.lastLeftKit){
+      window.events.emit('loadKit', 'left', items.lastLeftKit)
+    }
+    if (items.lastRightKit){
+      window.events.emit('loadKit', 'right', items.lastRightKit)
+    }
+  })
+}
+
 function loadProject(entry){
   window.context.currentProject = entry
   window.context.audio.sampleCache = {}
@@ -137,7 +154,7 @@ function loadProject(entry){
 
   entry.getDirectory('kits', {create: true, exclusive: false}, function(directory){
     window.context.currentProject.kits = directory
-    refreshKits()
+    refreshKits(loadLastKits)
   }, handleError)
 
   entry.getDirectory('samples', {create: true, exclusive: false}, function(directory){
@@ -149,12 +166,13 @@ function loadProject(entry){
   }, handleError)
 }
 
-function refreshKits(){
+function refreshKits(cb){
   var project = window.context.currentProject
   if (project && project.kits){
     getFiles(project.kits, function(kits){
       window.context.kits = kits
       window.events.emit('refreshKits')
+      cb&&cb()
     })
   }
 }
