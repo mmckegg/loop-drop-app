@@ -12,7 +12,7 @@
     "web-midi": "*",
     "browserify": "~3.19.1",
     "micro-css": "*",
-    "wave-recorder": "~0.0.0",
+    "wave-recorder": "~1.0.0",
     "notevil": "~0.8.0",
     "wave-view": "~0.0.0",
     "window-stream": "*",
@@ -27,7 +27,8 @@
     "dom-behavior": "~1.1.1",
     "create-element": "~0.2.3",
     "module-deps": "~1.2.2",
-    "become": "~1.1.0"
+    "become": "~1.1.0",
+    "web-fs": "~0.2.0"
   },
   "window": {
     "bounds": {
@@ -36,13 +37,8 @@
     }
   },
   "permissions": [
-    {
-      "fileSystem": [
-        "write",
-        "retainEntries",
-        "directory"
-      ]
-    },
+    { "fileSystem": [ "write", "retainEntries", "directory" ] },
+    "audioCapture",
     "storage"
   ],
   "devDependencies": {

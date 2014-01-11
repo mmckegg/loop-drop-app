@@ -6,7 +6,7 @@ Kit {
   flex-wrap: wrap;
   display: flex;
 
-  -recording {
+  -sampling {
     div {
       background: #966;
     }

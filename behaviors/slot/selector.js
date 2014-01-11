@@ -6,6 +6,28 @@ module.exports = function(container){
   var deckElement = getIdElement(container)
   var thisDeckId = deckElement && deckElement.getAttribute('data-id')
 
+  window.events.on('startSampling', function(deckId){
+    if (thisDeckId === deckId){
+      container.classList.add('-sampling')
+    }
+  })
+
+  window.events.on('stopSampling', function(deckId){
+    if (thisDeckId === deckId){
+      container.classList.remove('-sampling')
+    }
+  })
+
+  window.events.on('beginRecordSlot', function(deckId, slotId){
+    if (thisDeckId === deckId){
+      var element = elementLookup[slotId]
+      element.classList.add('-recording')
+    }
+  }).on('endRecordSlot', function(deckId, slotId){
+    var element = elementLookup[slotId]
+    element.classList.remove('-recording')
+  })
+
   // set up lookup
   for (var i=0;i<container.children.length;i++){
     var slot = container.children[i]
