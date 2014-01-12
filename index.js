@@ -9,5 +9,4 @@ window.context = {
 }
 
 // apply behaviors
-var notifyDom = behave()
-window.events.on('domChange', notifyDom)
+window.behave = behave()

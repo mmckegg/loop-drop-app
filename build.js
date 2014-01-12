@@ -14,7 +14,10 @@ if (!fs.existsSync('build')){
 
 var viewPath = __dirname + '/views'
 
-watchViews({window: viewPath + '/window.html'}, function(views, changedFiles){
+watchViews({
+  window: viewPath + '/window.html',
+  nodeEditor: viewPath + '/node_editor.html'
+}, function(views, changedFiles){
   fs.writeFileSync(viewPath + '/index.js', getViewsModule(views, viewPath))
   changedFiles.forEach(function(f){
     if (/.js$/.exec(f) && require.cache[f]){

@@ -1,0 +1,23 @@
+<strong>Sources</strong>
+<div class='Node' t:repeat='sources' t:by='.type' t:bind:data-path=':path'>
+  <t:placeholder t:when='sample'>
+    <span t:bind='.url' />
+    <div 
+      class='SampleTrimmer' 
+      t:bind:data-in='.offset[0]' 
+      t:bind:data-out='.offset[1]' 
+      t:bind:data-gain='.amp'
+      t:bind:data-url='.url' 
+      data-behavior='editor.sampleTrimmer' 
+    />
+  </t:placeholder>
+
+  <t:placeholder t:when='oscillator'>
+    Oscillator
+  </t:placeholder>
+</div>
+
+<strong>Processors</strong>
+<div class='Node' t:repeat='processors' t:by='.type' t:bind:data-path=':path'>
+  <span t:bind='.type' />
+</div>

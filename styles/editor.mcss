@@ -48,12 +48,12 @@ RawEditor {
   }
 }
 
-SampleEditor {
+SampleTrimmer {
 
-  flex: 1
+  height: 100px
   background: #333
   border: 1px solid #444
-  margin: 10px
+  margin: 10px 0
 
   position: relative;
 
@@ -144,7 +144,7 @@ $slider {
   outline: none
   position: absolute;
 
-  height:40px;
+  height:20px;
   width: 100%
 
   margin: 0
@@ -157,7 +157,7 @@ $slider {
     top: 0px;
     z-index: 1;
     width: 0px;
-    height: 40px;
+    height: 20px;
   }
 
   ::-webkit-slider-thumb {
@@ -166,7 +166,7 @@ $slider {
       box-shadow: 0 0 20px #222;
       display:block;
       position: absolute;
-      padding:10px
+      padding:5px 10px
       margin: 3px 0
       color: #EEE
     }

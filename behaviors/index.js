@@ -7,7 +7,9 @@ var behaviors = {
     fill: require('./slot/fill')
   },
   'editor': {
-    raw: require('./editor/raw')
+    raw: require('./editor/raw'),
+    nodes: require('./editor/nodes'),
+    sampleTrimmer: require('./editor/sample_trimmer')
   },
   'deck': {
     selected: require('./deck/selected'),

@@ -1,0 +1,4 @@
+NodeEditor {
+  margin: 12px
+  color: silver
+}
