@@ -7,6 +7,14 @@ module.exports = function(){
   window.events.on('renameKit', renameKit)
   window.events.on('deleteKit', deleteKit)
 
+  window.events.on('setEditorView', function(view){
+    chrome.storage.local.set({'editorView': view})
+  })
+
+  chrome.storage.local.get('editorView', function(items) {
+    window.events.emit('setEditorView', items.editorView || 'visual')
+  })
+
   loadDefaultProject()
 }
 

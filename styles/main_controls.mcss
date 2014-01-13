@@ -1,0 +1,12 @@
+MainControls {
+  position: relative
+  display: flex
+  margin: 6px
+  margin-bottom: 0
+
+  min-height: 50px
+
+  div.transport {
+    flex: 1
+  }
+}

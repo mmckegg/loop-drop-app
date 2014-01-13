@@ -7,11 +7,40 @@ Editor {
   margin: 6px
   overflow: hidden
 
+  padding-top: 14px;
   opacity: 0.5
   border-radius: 10px
 
-  div {
-    height: inherit
+  div.viewChooser {
+    display: flex;
+    padding: 5px 7px;
+    padding-bottom: 0;
+    position: absolute;
+    top: 0;
+    right: 20px;
+    z-index: 1;
+
+    a {
+      border-top-left-radius: 4px
+      border-top-right-radius: 4px
+      margin-top: 1px
+      margin: 0 5px
+      padding: 3px 5px
+      display: inline-block
+      color: white
+      text-decoration: none
+      border: 1px solid #333
+      border-bottom-color: #444
+      color: silver
+
+      -selected{
+        color: white
+        margin-top: 0
+        background: #2E2D2D
+        border-color: #444
+        border-bottom: none
+      }
+    }
   }
 
   -left {
@@ -32,10 +61,11 @@ Editor {
 
 RawEditor {
 
-  margin: 10px
+  margin: 12px
   padding: 10px;
   position: relative;
   flex: 1;
+
   background: #2E2D2D;
   border: 1px solid #444;
   border-radius: 4px

@@ -1,4 +1,11 @@
 Holder {
   display: flex
   height: 100%;
+
+
+  div.main {
+    flex: 1
+    display: flex
+    flex-direction: column
+  }
 }

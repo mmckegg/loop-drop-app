@@ -24,7 +24,8 @@ Deck {
     opacity: 1
     overflow: hidden
     background: #222;
-    border-radius: 0
+    border-bottom-right-radius: 0
+    border-bottom-left-radius: 0
 
     div {
       border-color: #222

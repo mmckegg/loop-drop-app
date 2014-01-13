@@ -8,8 +8,20 @@ module.exports = function(element){
   var currentId = null
   var currentDeckId = null
   var currentDeck = null
+  var enabled = false
 
   var editorElement = element.parentNode
+  
+  window.events.on('setEditorView', function(view){
+    if (view === 'raw'){
+      editorElement.hidden = false
+      enabled = true
+      update()
+    } else {
+      editorElement.hidden = true
+      enabled = false
+    }
+  })
 
   window.events.on('selectSlot', function(deckId, slotId){
 
@@ -74,7 +86,7 @@ module.exports = function(element){
   }
 
   function handleData(data){
-    if (data.id == currentId){
+    if (enabled && data.id == currentId){
       if (!textEditor.isFocused()){
         update()
       }

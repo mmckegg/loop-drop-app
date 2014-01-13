@@ -34,6 +34,10 @@ module.exports = function(container){
     deckId: null
   }
 
+  window.events.on('setEditorView', function(view){
+    container.hidden = (view !== 'visual')
+  })
+
   window.events.on('selectSlot', function(deckId, slotId){
 
     current.deckId = deckId

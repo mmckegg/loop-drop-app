@@ -9,7 +9,8 @@ var behaviors = {
   'editor': {
     raw: require('./editor/raw'),
     nodes: require('./editor/nodes'),
-    sampleTrimmer: require('./editor/sample_trimmer')
+    sampleTrimmer: require('./editor/sample_trimmer'),
+    modeSelector: require('./editor/mode_selector')
   },
   'deck': {
     selected: require('./deck/selected'),
