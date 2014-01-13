@@ -1,7 +1,9 @@
-<strong>Sources</strong>
-<div class='Node' t:repeat='sources' t:by='.type' t:bind:data-path=':path'>
+<div class='Node -source' t:repeat='sources' t:by='.type' t:bind:data-path=':path'>
+  <div class='.controls'>
+    <a href='#' class='.delete' data-behavior='editor.nodes.deleteButton'>X</a>
+  </div>
   <t:placeholder t:when='sample'>
-    <span t:bind='.url' />
+    <div class='.title' t:bind='.url|:text(empty sample)' />
     <div 
       class='SampleTrimmer' 
       t:bind:data-in='.offset[0]' 
@@ -13,11 +15,74 @@
   </t:placeholder>
 
   <t:placeholder t:when='oscillator'>
-    Oscillator
+    <div class='.title'>Oscillator</div>
+    <div>
+      <table>
+        <td>Shape</td>
+        <td>
+          <select 
+            data-behavior='editor.nodes.select' 
+            t:bind:data-value='.shape|:text(sine)' 
+            t:bind:data-path=':path(shape)'
+          >
+            <option value='sine'>Sine</option>
+            <option value='square'>Square</option>
+            <option value='sawtooth'>Sawtooth</option>
+            <option value='triangle'>Triangle</option>
+          </select>
+        </td>
+      </table>
+    </div>
   </t:placeholder>
 </div>
+  
+<div 
+  t:unless='sources:isLinked' 
+  data-behavior='editor.nodes.spawner' 
+  data-path='sources' 
+  class='.spawner -source'>
 
-<strong>Processors</strong>
-<div class='Node' t:repeat='processors' t:by='.type' t:bind:data-path=':path'>
-  <span t:bind='.type' />
+  <a href='#' data-type='sample'>sample</a>
+  <a href='#' data-type='oscillator'>oscillator</a>
+</div>
+
+<div class='Node -processor' t:repeat='processors' t:by='.type' t:bind:data-path=':path'>
+  <div class='.controls'>
+    <a href='#' class='.delete' data-behavior='editor.nodes.deleteButton'>X</a>
+  </div>
+  <t:placeholder t:when='filter'>
+    <div class='.title'>Filter</div>
+    <div>
+      <table>
+        <td>Kind</td>
+        <td>
+          <select data-behavior='editor.nodes.select' t:bind:data-value='.kind|:text(lowpass)' t:bind:data-path=':path(kind)'>
+            <option value='lowpass'>Lowpass</option>
+            <option value='highpass'>Highpass</option>
+          </select>
+        </td>
+      </table>
+    </div>
+  </t:placeholder>
+
+  <t:placeholder t:when='overdrive'>
+    <div class='.title'>Overdrive</div>
+  </t:placeholder>
+
+  <t:placeholder t:when='delay'>
+    <div class='.title'>Delay</div>
+  </t:placeholder>
+
+</div>
+
+<div 
+  t:unless='sources:isLinked' 
+  data-behavior='editor.nodes.spawner' 
+  data-path='processors' class='.spawner -processor'>
+
+  <a href='#' data-type='filter'>filter</a>
+  <a href='#' data-type='overdrive'>overdrive</a>
+  <a href='#' data-type='overdrive'>delay</a>
+
+
 </div>

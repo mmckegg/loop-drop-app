@@ -33,142 +33,16 @@ Editor {
 RawEditor {
 
   margin: 10px
-  display: flex
+  padding: 10px;
   position: relative;
-  flex: 3
+  flex: 1;
+  background: #2E2D2D;
+  border: 1px solid #444;
+  border-radius: 4px
+  box-shadow: 0 0 10px #222;
 
-  textarea {
-    background: transparent
-    color: #CCC
-    font-size: 15px
-    border: none
-    padding: 20px
-    display: block
-    width: 100%
-  }
-}
-
-SampleTrimmer {
-
-  height: 100px
-  background: #333
-  border: 1px solid #444
-  margin: 10px 0
-
-  position: relative;
-
-  svg {
-    display:block
+  div {
     position: absolute
-    top:0; left:0; right:0
-    height: 100%
-  }
-
-  div.transpose {
-    position: absolute  !important;
-    opacity: 0.3;
-    bottom: 50px;
-    left: 10px;
-
-    :hover {
-      opacity: 0.8;
-    }
-
-    -active {
-      opacity: 0.8;
-    }
-
-  }
-
-  div.gain {
-    position: absolute  !important;
-    opacity: 0.3;
-    bottom: 50px;
-    right: 10px;
-
-    :hover {
-      opacity: 0.8;
-    }
-
-    -active {
-      opacity: 0.8;
-    }
-
-  }
-
-
-  input.start { 
-    $slider
-    
-    cursor: e-resize;
-
-    top:0; left:0; right:0
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,1)), color-stop(100%,rgba(34,34,34,0)))
-    
-    ::-webkit-slider-thumb {
-      :after {
-        top: -3px
-        content: 'start'
-        background: #454
-        border-bottom-right-radius: 40px
-      }
-    }
-
-  }
-
-  input.end { 
-    $slider
-
-    cursor: w-resize;
-
-    bottom:0; left:0; right:0
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0)), color-stop(100%,rgba(34,34,34,1)))
-    
-    ::-webkit-slider-thumb {
-
-      :after {
-        bottom: -3px
-        background: #544
-        content: 'end'
-        margin-left:-40px;
-        border-top-left-radius: 40px
-      }
-
-    }
-
-  }
-
-}
-
-$slider {
-  outline: none
-  position: absolute;
-
-  height:20px;
-  width: 100%
-
-  margin: 0
-
-  -webkit-appearance: none;
-
-  ::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    position: relative;
-    top: 0px;
-    z-index: 1;
-    width: 0px;
-    height: 20px;
-  }
-
-  ::-webkit-slider-thumb {
-    :after {
-      pointer-events: none
-      box-shadow: 0 0 20px #222;
-      display:block;
-      position: absolute;
-      padding:5px 10px
-      margin: 3px 0
-      color: #EEE
-    }
+    top:10px;right:0px;bottom:10px;left:10px
   }
 }

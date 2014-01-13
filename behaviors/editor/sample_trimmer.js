@@ -24,13 +24,10 @@ module.exports = function(element){
 
     path = nodeElement.dataset['path']
     offset = [
-      parseFloat(element.dataset['in']),
-      parseFloat(element.dataset['out'])
+      floatOrDefault(element.dataset['in'], 0),
+      floatOrDefault(element.dataset['out'], 1)
     ]
-    gain = parseFloat(element.dataset['gain'])
-    if (isNaN(gain)){
-      gain = 1
-    }
+    gain = floatOrDefault(element.dataset['gain'], 1)
 
     if (gain !== lastGain){
       waveView.setGain(gain)
@@ -93,4 +90,13 @@ function getNodeElement(node){
     }
   }
   return node
+}
+
+function floatOrDefault(text, defaultValue){
+  var value = parseFloat(text)
+  if (isNaN(value)){
+    return defaultValue
+  } else {
+    return value
+  }
 }

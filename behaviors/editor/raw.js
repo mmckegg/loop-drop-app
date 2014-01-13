@@ -14,8 +14,8 @@ module.exports = function(element){
   window.events.on('selectSlot', function(deckId, slotId){
 
     if (deckId != currentDeckId){
-      editorElement.classList.add('-' + deckId)
-      editorElement.classList.remove('-' + currentDeckId)
+      editorElement.parentNode.classList.add('-' + deckId)
+      editorElement.parentNode.classList.remove('-' + currentDeckId)
     }
 
     currentDeckId = deckId

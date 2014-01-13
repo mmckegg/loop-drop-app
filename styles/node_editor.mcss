@@ -1,4 +1,231 @@
 NodeEditor {
+  flex: 2
   margin: 12px
   color: silver
+
+  overflow: auto
+
+  div.spawner {
+    opacity: 0.7
+    margin: 5px 0;
+    padding: 2px;
+    border-radius: 4px;
+
+    :hover {
+      opacity: 1
+    }
+
+    a {
+      :before {
+        content: '+ '
+        font-weight: bold
+      }
+      display: inline-block
+      text-decoration: none
+      background: #555;
+      border: 1px solid #555;
+
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #EEE;
+    }
+
+    -source {
+      background: #373D3D;
+      a {
+        background: #5C6869;
+        border-color: #51696B;
+        :hover {
+          background: #619BA0;
+        }
+      }
+    }
+
+    -processor {
+      background: #3A2F42
+      a {
+        border-color: #705A81;
+        background: #705A81;
+        :hover {
+          background: #A889C0;
+        }
+      }
+    }
+  }
+
+}
+
+Node {
+  position: relative
+  margin-top: 6px
+  background: #464545;
+  border: 1px #444 solid;
+  color: #EEE;
+  border-radius: 4px;
+
+  div.controls {
+    position: absolute
+    top: 1px
+    right: 3px
+
+    a {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(29, 29, 29, 0.3);
+      border-radius: 4px;
+      text-decoration: none;
+      color: #C0C0C0;
+
+      :hover {
+        color: #FFF
+        background: rgba(29, 29, 29, 0.8);
+      }
+    }
+  }
+
+  -source {
+    border-color: #373D3D
+
+    div.title {
+      background: #373D3D
+    }
+  }
+
+  -processor {
+    border-color: #3A2F42
+
+    div.title {
+      background: #3A2F42
+    }
+  }
+
+  div.title {
+    background: #444
+    padding: 3px;
+  }
+}
+
+SampleTrimmer {
+
+  border: 1px solid #3A4138
+  height: 100px
+  background: #333
+
+  position: relative;
+
+  svg {
+    display:block
+    position: absolute
+    top:0; left:0; right:0
+    height: 100%
+  }
+
+  div.transpose {
+    position: absolute  !important;
+    opacity: 0.3;
+    bottom: 50px;
+    left: 10px;
+
+    :hover {
+      opacity: 0.8;
+    }
+
+    -active {
+      opacity: 0.8;
+    }
+
+  }
+
+  div.gain {
+    position: absolute  !important;
+    opacity: 0.3;
+    bottom: 50px;
+    right: 10px;
+
+    :hover {
+      opacity: 0.8;
+    }
+
+    -active {
+      opacity: 0.8;
+    }
+
+  }
+
+
+  input.start { 
+    $slider
+    
+    cursor: e-resize;
+
+    top:0; left:0; right:0
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0.7)), color-stop(100%,rgba(34,34,34,0)))
+    
+    ::-webkit-slider-thumb {
+      :after {
+        top: -3px
+        content: 'start'
+        background: rgba(142, 255, 126, 0.3)
+        border-bottom-right-radius: 40px
+        padding: 3px 15px 7px 5px
+      }
+    }
+
+  }
+
+  input.end { 
+    $slider
+
+    cursor: w-resize;
+
+    bottom:0; left:0; right:0
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0)), color-stop(100%,rgba(34,34,34,0.7)))
+    
+    ::-webkit-slider-thumb {
+
+      :after {
+        bottom: -3px
+        background: rgba(142, 255, 126, 0.4)
+        content: 'end'
+        margin-left:-40px;
+        border-top-left-radius: 40px
+        padding: 7px 5px 3px 15px 
+      }
+
+    }
+
+  }
+
+}
+
+$slider {
+  outline: none
+  position: absolute;
+
+  height:20px;
+  width: 100%
+
+  margin: 0
+
+  -webkit-appearance: none;
+
+  ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    position: relative;
+    top: 0px;
+    z-index: 1;
+    width: 0px;
+    height: 20px;
+  }
+
+  ::-webkit-slider-thumb {
+    :after {
+      pointer-events: none
+      display:block;
+      position: absolute;
+      padding: 5px 10px
+      margin: 3px 0
+      color: #EEE
+    }
+  }
 }
