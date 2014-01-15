@@ -199,7 +199,9 @@ module.exports = function(container){
         //TODO: this should be confirmed!
         beginRename(event.target)
       } else {
-        window.events.emit('loadKit', thisDeckId, kitId)
+        if (kitId != currentKitId){
+          window.events.emit('loadKit', thisDeckId, kitId)
+        }
       }
     }
   })
