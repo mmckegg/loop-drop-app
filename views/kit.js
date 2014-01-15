@@ -27,7 +27,7 @@ module.exports = function(){
     var element = h('div', {
       'class': '-bus',
       'data-id': busNames[i], 
-      'draggable': true,
+      'draggable': 'true',
       'data-behavior': 'slot.drag'
     }, h('span', busNames[i]))
 
