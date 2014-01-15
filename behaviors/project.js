@@ -230,7 +230,10 @@ function writeKit(name, descriptor, cb){
 
 function writeFile(entry, data, cb){
   entry.createWriter(function(writer){
-    writer.onwriteend = cb
+    writer.onwriteend = function(){
+      writer.onwriteend = cb
+      writer.truncate(writer.position)
+    }
     writer.onerror = handleError
     var blob = new Blob([data], {type: 'text/plain'});
     writer.write(blob)
