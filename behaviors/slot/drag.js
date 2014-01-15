@@ -54,9 +54,9 @@ function onDrop(event){
     } else if (!(fromDeckId == destinationDeckId && fromId == destinationId)){
 
       var newDescriptor = obtain(descriptor)
-      descriptor.id = destinationId
+      newDescriptor.id = destinationId
 
-      destinationDeck.update(descriptor)
+      destinationDeck.update(newDescriptor)
 
       if (!event.altKey){ // remove old
         fromDeck.update({id: fromId})
