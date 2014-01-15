@@ -59,14 +59,7 @@ function onMouseUp(event){
 }
 
 function fillFrom(template, id, offset){
-  var descriptor = JSON.parse(JSON.stringify(template))
-  descriptor.id = String(id)
-  if (template.sources) descriptor.sources = {$: 'get(' + template.id + ').sources'}
-  if (template.processors) descriptor.processors = {$: 'get(' + template.id + ').processors'}
-  if (template.gain) descriptor.gain = {$: 'get(' + template.id + ').gain'}
-  if (template.output) descriptor.output = {$: 'get(' + template.id + ').output'}
-  if (template.params) descriptor.params = {$: 'get(' + template.id + ').params'}
-
+  var descriptor = {id: String(id), type: 'inherit', from: template.id}
   if (typeof template.offset === 'number'){
     descriptor.offset = template.offset + 1 + offset
   } else {

@@ -1,7 +1,10 @@
 module.exports = function(container){
   var outputLookup = {}
+  var inheritedLookup = {}
+
   var selectedElement = null
   var elementLookup = {}
+  var descriptors = {}
 
   var deckElement = getIdElement(container)
   var thisDeckId = deckElement && deckElement.getAttribute('data-id')
@@ -70,7 +73,7 @@ module.exports = function(container){
         element.classList.remove('-present')
       } 
 
-      if (descriptor.sources && descriptor.sources.$){
+      if (descriptor.type === 'inherit'){
         element.classList.add('-linked')
       } else {
         element.classList.remove('-linked')
@@ -82,8 +85,8 @@ module.exports = function(container){
         element.classList.remove('-action')
       }
     }
-
-    outputLookup[descriptor.id] = elementLookup[descriptor.output] || null
+    updateDescriptor(descriptor)
+    refreshOutput(descriptor.id)
   })
 
   window.events.on('selectSlot', function(deckId, slotId){
@@ -106,6 +109,54 @@ module.exports = function(container){
       window.events.emit('selectSlot', thisDeckId, slot.getAttribute('data-id'))
     }
   })
+
+  function getOutput(id){
+    var descriptor = descriptors[id]
+    if (descriptor){
+      if ('output' in descriptor){
+        return descriptor.output
+      } else if (descriptor.type === 'inherit' && descriptor.from != id) {
+        return getOutput(descriptor.from)
+      }
+    }
+    return null
+  }
+
+  function refreshOutput(id){
+    var output = getOutput(id)
+    var element = elementLookup[output] || null
+    outputLookup[id] = element
+  }
+
+  function updateDescriptor(descriptor){
+
+    var id = String(descriptor.id)
+    var oldDescriptor = descriptors[id] || { id: id }
+
+    if (descriptor.type === 'inherit' && descriptor.from != oldDescriptor.from){
+      inheritedLookup[descriptor.from] = inheritedLookup[descriptor.from] || []
+      if (!~inheritedLookup[descriptor.from].indexOf(id)){
+        inheritedLookup[descriptor.from].push(id)
+      }
+      var oldLookup = inheritedLookup[oldDescriptor.from]
+      if (oldLookup){
+        var index = oldLookup.indexOf(id)
+        if (~index){
+          oldLookup.splice(index, 1)
+        }
+      }
+    }
+
+    descriptors[descriptor.id] = descriptor
+
+    process.nextTick(function(){
+      var inherited = inheritedLookup[id]
+      if (inherited){
+       inherited.forEach(refreshOutput)
+      } 
+   })
+  }
+
 }
 
 
