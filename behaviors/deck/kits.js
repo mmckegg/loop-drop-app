@@ -27,7 +27,9 @@ module.exports = function(container){
   window.events.on('kitChange', function(deckId){
     if (deckId === thisDeckId){
       var element = getKit(currentKitId)
-      element.classList.add('-changed')
+      if (element){
+        element.classList.add('-changed')
+      }
       changed = true
     }
   })
@@ -36,7 +38,9 @@ module.exports = function(container){
     if (deckId === thisDeckId){
       deselect()
       var element = getKit(kitId)
-      element.classList.add('-selected')
+      if (element){
+        element.classList.add('-selected')
+      }
       currentKitId = kitId
     }
   })
