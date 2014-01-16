@@ -245,12 +245,15 @@ function getFiles(directory, cb){
   var entries = []
 
   var readEntries = function() {
-     reader.readEntries(function(results) {
+    reader.readEntries(function(results) {
       if (!results.length) {
-        cb(entries.sort())
+        cb(entries)
       } else {
-        results.forEach(function(){})
-        entries = entries.concat(results);
+        results.forEach(function(entry){
+          if (entry.isFile && /\.json$/.exec(entry.name)){
+            entries.push(entry)
+          }
+        })
         readEntries()
       }
     }, handleError)
