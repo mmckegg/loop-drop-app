@@ -59,11 +59,13 @@ function sortKits(){
 function deleteKit(id){
   var entry = getKitFile(id)
   if (entry){
-    entry.remove(function(){
-      var index = window.context.kits.indexOf(entry)
-      window.context.kits.splice(index, 1)
-      window.events.emit('refreshKits')
-    }, handleError)
+    backup(entry, window.context.currentProject.kitBackup, function(){
+      entry.remove(function(){
+        var index = window.context.kits.indexOf(entry)
+        window.context.kits.splice(index, 1)
+        window.events.emit('refreshKits')
+      }, handleError)
+    })
   }
 }
 
@@ -166,6 +168,9 @@ function loadProject(entry){
   })
 
   entry.getDirectory('kits', {create: true, exclusive: false}, function(directory){
+    directory.getDirectory('backup', {create: true, exclusive: false}, function(directory){
+      window.context.currentProject.kitBackup = directory
+    }, handleError)
     window.context.currentProject.kits = directory
     refreshKits(loadLastKits)
   }, handleError)
@@ -188,6 +193,15 @@ function refreshKits(cb){
       cb&&cb()
     })
   }
+}
+
+function backup(entry, backup, cb){
+  entry.getMetadata(function(meta){
+    var modified = meta.modificationTime.getTime() / 1000
+    var name = entry.name.replace(/\.json$/, '')
+    var fileName = name + '.' + modified + ".json"
+    entry.copyTo(backup, fileName, cb, handleError)
+  }, cb)
 }
 
 function getKitFile(name){
@@ -219,7 +233,9 @@ function writeKit(name, descriptor, cb){
   for (var i=0;i<window.context.kits.length;i++){
     var entry = window.context.kits[i]
     if (entry.name === fileName){
-      writeFile(entry, content, cb)
+      backup(entry, project.kitBackup, function(){
+        writeFile(entry, content, cb)
+      })
       return
     }
   }
