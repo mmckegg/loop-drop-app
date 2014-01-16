@@ -35,6 +35,11 @@ function loadSample(src, cb){
           })
         }, handleError)
       })
+    }, function(){
+      sampleCache[src] = null
+      current.forEach(function(callback){
+        callback(null)
+      })
     })
   }
 
