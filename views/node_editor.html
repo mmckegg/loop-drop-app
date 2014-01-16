@@ -1,3 +1,5 @@
+<? require './piano.js' as piano ?>
+
 <div class='Node -source' t:repeat='sources' t:by='.type' t:bind:data-path=':path'>
   <div class='.controls'>
     <a href='#' class='.delete' data-behavior='editor.nodes.deleteButton'>X</a>
@@ -16,23 +18,61 @@
 
   <t:placeholder t:when='oscillator'>
     <div class='.title'>Oscillator</div>
-    <div>
-      <table>
-        <td>Shape</td>
-        <td>
-          <select 
-            data-behavior='editor.nodes.select' 
-            t:bind:data-value='.shape|:text(sine)' 
-            t:bind:data-path=':path(shape)'
-          >
-            <option value='sine'>Sine</option>
-            <option value='square'>Square</option>
-            <option value='sawtooth'>Sawtooth</option>
-            <option value='triangle'>Triangle</option>
-          </select>
-        </td>
-      </table>
+    <div class='.body'>
+
+      <div>
+        <div class='.title'>Shape</div>
+        <select 
+          data-behavior='editor.nodes.select' 
+          t:bind:data-value='.shape|:text(sine)' 
+          t:bind:data-path=':path(shape)'>
+
+          <option value='sine'>Sine</option>
+          <option value='square'>Square</option>
+          <option value='sawtooth'>Sawtooth</option>
+          <option value='triangle'>Triangle</option>
+        </select>
+      </div>
+
+      <div>
+        <div class='.title'>Frequency</div>
+        <span t:bind='.frequency|:text(440)' />hz
+      </div>
+
+      <div>
+        <div class='.title'>Scale</div>
+        <select 
+          data-behavior='editor.nodes.scaleSelector' 
+          t:bind:data-value='.note:scale' 
+          t:bind:data-path=':path(note)'>
+
+          <option value=''>None</option>
+          <option value='major'>Major</option>
+          <option value='minor'>Minor</option>
+          <option value='dorian'>Dorian</option>
+          <option value='phrygian'>Phrygian</option>
+          <option value='lydian'>Lydian</option>
+          <option value='mixolydian'>Mixolydian</option>
+          <option value='locrian'>Locrian</option>
+          <option value='majorpentatonic'>Major Pentatonic</option>
+          <option value='chromatic'>Chromatic</option>
+
+        </select>
+      </div>
+
+      <div>
+        <div class='.title'>Amp</div>
+        <span t:bind='.amp:dB(unit)' />
+      </div>
     </div>
+
+    <div class='Piano' 
+      t:bind='.note'
+      t:bind:data-path=':path(note, root)'
+      data-behavior='editor.noteChooser'
+      t:view='piano'
+    />
+
   </t:placeholder>
 </div>
   
@@ -83,6 +123,21 @@
   <a href='#' data-type='filter'>filter</a>
   <a href='#' data-type='overdrive'>overdrive</a>
   <a href='#' data-type='delay'>delay</a>
+  <a href='#' data-type='gain'>gain</a>
 
+</div>
 
+<div class='Node -output' t:by='.type'>
+  <div class='.title'>Output</div>
+  <select data-behavior='editor.nodes.select' t:bind:data-value='.output' t:bind:data-path=':path(output)'>
+    <option value=''>Master</option>
+    <option value='A'>Bus A</option>
+    <option value='B'>Bus B</option>
+    <option value='C'>Bus C</option>
+    <option value='D'>Bus D</option>
+    <option value='E'>Bus E</option>
+    <option value='F'>Bus F</option>
+    <option value='G'>Bus G</option>
+    <option value='H'>Bus H</option>
+  </select>
 </div>

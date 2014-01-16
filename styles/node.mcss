@@ -1,0 +1,64 @@
+Node {
+  position: relative
+  margin-top: 6px
+  background: #464545;
+  border: 1px #444 solid;
+  color: #EEE;
+  border-radius: 4px;
+  box-shadow: 0 0 10px #222
+
+  div.controls {
+    position: absolute
+    top: 1px
+    right: 3px
+
+    a {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(29, 29, 29, 0.3);
+      border-radius: 4px;
+      text-decoration: none;
+      color: #C0C0C0;
+
+      :hover {
+        color: #FFF
+        background: rgba(29, 29, 29, 0.8);
+      }
+    }
+  }
+
+  -source {
+    border-color: #4B5F5F
+
+    div.title {
+      background: #4B5F5F
+    }
+  }
+
+  -processor {
+    border-color: #644B77
+    div.title {
+      background: #644B77
+    }
+  }
+
+  div.title {
+    background: #444
+    padding: 3px;
+  }
+
+  div.body {
+    padding: 5px
+    display: flex
+    flex-wrap: wrap
+    div {
+      div.title {
+        font-size: 80%
+        font-weight: bold
+      }
+      flex: 1
+      min-width: 100px
+    }
+  }
+}
+

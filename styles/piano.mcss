@@ -1,0 +1,37 @@
+Piano {
+  height: 40px;
+  display: flex;
+  position: relative;
+
+  div {
+    flex: 1
+    border: 1px solid black
+    background: white
+
+    box-shadow: 1px 1px 1px #000;
+
+    -black {
+      position: absolute;
+      width: 1.4%;
+      height: 50%;
+      background: #000;
+      margin-left: -0.7%;
+      -scale {
+        background: #2E6A2E
+      }
+      -selected {
+        background: #41DC41
+      }
+    }
+
+    -scale {
+      background: #CFC
+    }
+
+    -selected {
+      background: lime
+    }
+
+
+  }
+}
