@@ -53,6 +53,9 @@ module.exports = function(container){
         outputElement.activeCount += 1
       } else {
         outputElement.activeCount -= 1
+        if (outputElement.activeCount < 0){
+          outputElement.activeCount = 0
+        }
       }
 
       if (outputElement.activeCount > 0){
