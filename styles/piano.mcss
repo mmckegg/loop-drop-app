@@ -9,7 +9,9 @@ Piano {
     background: white
 
     box-shadow: 1px 1px 1px #000;
-
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    
     -black {
       position: absolute;
       width: 1.4%;
