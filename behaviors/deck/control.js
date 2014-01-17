@@ -1,5 +1,17 @@
 module.exports = function(container){
   var thisDeckId = getDeckElement(container).dataset.id
+  var quantizeValue = false
+
+  window.events.on('changeAutoQuantize', function(deckId, value){
+    if (thisDeckId === deckId){
+      quantizeValue = value
+      if (value){
+        container.classList.add('-quantizeActive')
+      } else {
+        container.classList.remove('-quantizeActive')
+      }
+    }
+  })
 
   window.events.on('startSampling', function(deckId){
     if (thisDeckId === deckId){
@@ -20,6 +32,8 @@ module.exports = function(container){
         window.events.emit('startSampling', thisDeckId)
       } else if (element.classList.contains('.stopSampling')){
         window.events.emit('stopSampling', thisDeckId)
+      } else if (element.classList.contains('.quantize')){
+        window.events.emit('changeAutoQuantize', thisDeckId, !quantizeValue)
       }
     }
   })
