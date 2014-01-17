@@ -86,7 +86,7 @@ function renameKit(fromId, toId){
 function loadKit(deckId, kitName){
   getKit(kitName, function(kit){
     if (kit){
-      var deck = window.context.decks[deckId]
+      var deck = window.context.instances[deckId]
       kit.slots.forEach(function(descriptor){
         deck.update(descriptor)
       })
@@ -103,7 +103,7 @@ function loadKit(deckId, kitName){
 function saveKit(deckId, kitName){
   var names = 'ABCDEFGH'.split('')
   var kitStorage = {slots: []}
-  var deck = window.context.decks[deckId]
+  var deck = window.context.instances[deckId]
   for (var i=0;i<64;i++){
     kitStorage.slots.push(deck.getDescriptor(i))
   }

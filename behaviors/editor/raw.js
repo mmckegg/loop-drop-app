@@ -33,7 +33,7 @@ module.exports = function(element){
     currentDeckId = deckId
     currentId = String(slotId)
 
-    var deck = window.context.decks[deckId]
+    var deck = window.context.instances[deckId]
     if (deck != currentDeck){
       if (currentDeck){
         deck.removeListener('change', handleData)
@@ -61,7 +61,7 @@ module.exports = function(element){
       updating = true
       window.requestAnimationFrame(function(cb){
         if (currentDeckId && currentId){
-          var descriptor = window.context.decks[currentDeckId].getDescriptor(currentId)
+          var descriptor = window.context.instances[currentDeckId].getDescriptor(currentId)
           textEditor.setValue(JSMN.stringify(descriptor),-1)
         } else {
           textEditor.setValue('',-1)

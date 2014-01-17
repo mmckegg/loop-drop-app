@@ -1,17 +1,43 @@
-var Engine = require('loop-drop-engine')
-var Launchpad = require('midi-looper-launchpad')
+var Bopper = require('bopper')
+var Ditty = require('ditty')
+
+var MidiLooper = require('midi-looper')
+var Soundbank = require('soundbank')
+
 var MidiStream = require('web-midi')
+var Launchpad = require('midi-looper-launchpad')
 
 var SoundRecorder = require('../lib/sound_recorder')
-
-var WindowStream = require('window-stream')
 
 ////////////////////////////
 
 var audioContext = new webkitAudioContext()
 
-var engine = Engine(audioContext)
-var clock = engine.getClock()
+var clock = Bopper(audioContext)
+
+var instances = {
+  'left': createInstance(MidiStream('Launchpad', 0)),
+  'right': createInstance(MidiStream('Launchpad', 1))
+}
+
+function createInstance(midiStream){
+  var instance = Soundbank(audioContext)
+  var ditty = Ditty(clock)
+  var exclude = {}
+
+  instance.on('change', function(data){
+    exclude['144/' + data.id] = data.exclude
+  })
+
+  instance.looper = MidiLooper(clock.getCurrentPosition, {exclude: exclude})
+
+  // feedback loop
+  ditty.pipe(instance).pipe(instance.looper).pipe(ditty)
+
+  // connect to output
+  instance.connect(audioContext.destination)
+  return instance
+}
 
 // instance A
 var instanceA = engine.createInstance('left')

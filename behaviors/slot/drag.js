@@ -33,13 +33,13 @@ function onDrop(event){
 
   var destinationDeckId = getDeckElement(event.target).getAttribute('data-id')
   var destinationId = getSlotElement(event.target).getAttribute('data-id')
-  var destinationDeck = window.context.decks[destinationDeckId]
+  var destinationDeck = window.context.instances[destinationDeckId]
 
   if (window.currentDrag){
 
     var fromDeckId = getDeckElement(window.currentDrag).getAttribute('data-id')
     var fromId = getSlotElement(window.currentDrag).getAttribute('data-id')
-    var fromDeck = window.context.decks[fromDeckId]
+    var fromDeck = window.context.instances[fromDeckId]
 
     var descriptor = fromDeck.getDescriptor(fromId)
 

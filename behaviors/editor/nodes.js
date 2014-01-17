@@ -45,7 +45,7 @@ var dataFilters = {
     if (input == null){
       input = 1
     }
-    
+
     if (params.args[0]){
       return getDecibels(input) + 'dB'
     } else {
@@ -126,7 +126,7 @@ module.exports = function(container){
     current.deckId = deckId
     current.id = String(slotId)
 
-    var deck = window.context.decks[deckId]
+    var deck = window.context.instances[deckId]
     if (deck != currentDeck){
       if (currentDeck){
         deck.removeListener('change', handleData)

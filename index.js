@@ -1,5 +1,4 @@
 var EventEmitter = require('events').EventEmitter
-var Plex = require('plexy')
 var behave = require('./behaviors')
 //////
 

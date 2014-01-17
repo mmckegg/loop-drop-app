@@ -39,7 +39,7 @@ function onMouseUp(event){
   if (currentKit){
     currentKit.removeEventListener('mouseover', onMouseEnter, true)
 
-    var deck = window.context.decks[deckId]
+    var deck = window.context.instances[deckId]
     var template = deck.getDescriptor(startId)
 
     fillSelection.forEach(function(id, i){
