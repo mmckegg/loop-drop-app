@@ -12,11 +12,11 @@ module.exports = function(element){
   waveView.dataset.preserve = true
 
   var startSlider = createSlider({
-    className: '.start'
+    className: '.start -noRefresh'
   })
 
   var endSlider = createSlider({
-    className: '.end'
+    className: '.end -noRefresh'
   })
 
 
