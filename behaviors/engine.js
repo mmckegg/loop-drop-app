@@ -4,6 +4,8 @@ var Ditty = require('ditty')
 var MidiLooper = require('midi-looper')
 var Soundbank = require('soundbank')
 
+var Quantizer = require('../lib/quantizer')
+
 var Launchpad = require('midi-looper-launchpad')
 var MidiStream = require('web-midi')
 var SoundRecorder = require('../lib/sound_recorder')
@@ -38,6 +40,16 @@ module.exports = function(body){
     instances[deckId].sampler.start()
   }).on('stopSampling', function(deckId){
     instances[deckId].sampler.stop()
+  })
+
+  window.events.on('changeAutoQuantize', function(deckId, value){
+    if (value === true){
+      instances[deckId].quantizer.grid = 1/4
+    } else if (typeof value === 'number') {
+      instances[deckId].quantizer.grid = value
+    } else {
+      instances[deckId].quantizer.grid = null
+    }
   })
 
   console.log('init engine')

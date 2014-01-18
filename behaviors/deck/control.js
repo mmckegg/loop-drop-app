@@ -25,7 +25,7 @@ module.exports = function(container){
     }
   })
 
-  container.addEventListener('click', function(e){
+  container.addEventListener('mousedown', function(e){
     var element = getLink(e.target)
     if (element){
       if (element.classList.contains('.sample')){
