@@ -1,3 +1,5 @@
+var TapeLoop = require('../lib/tape-loop')
+
 module.exports = function(){
 
   window.context.audio.loadSample = loadSample
@@ -181,7 +183,69 @@ function loadProject(entry){
 
   entry.getDirectory('recordings', {create: true, exclusive: false}, function(directory){
     window.context.currentProject.recordings = directory
+    setupTapeLoops(60*60) // seconds
   }, handleError)
+}
+
+var activeTapeloops = {}
+
+function setupTapeLoops(loopLength){
+
+  if (window.context.tapeLoop){
+    window.context.recorder.unpipe(window.context.tapeLoop)
+    window.context.tapeLoop.removeAllListeners()
+    window.context.tapeLoop = null
+    console.log('cancelling existing tapeloop')
+  }
+
+  var audioContext = window.context.audio
+  var recordings = window.context.currentProject.recordings
+  var instanceNames = Object.keys(window.context.instances)
+  var files = []
+
+  var offsetFile = null
+  var offset = 0
+
+  setupOffset()
+
+  function setupOffset(){
+    recordings.getFile('tapeloop.offset', {create: true, exclusive: false}, function(file){
+      offsetFile = file
+      readFile(file, function(data){
+        offset = parseInt(data, 10) || 0
+        getFiles()
+      })
+    }, handleError)
+  }
+
+  function getFiles(){
+    forEach(instanceNames, function(name, next){
+      var instance = window.context.instances[name]
+      recordings.getFile(name + '-deck-tapeloop.wav', {create: true, exclusive: false}, function(file){
+        files.push(file)
+        next()
+      }, handleError)
+    }, setupWriters)
+  }
+
+  function setupWriters(){
+    var writer = TapeLoop(files, {
+      length: (audioContext.sampleRate * 4) * (loopLength || 10), 
+      sampleRate: audioContext.sampleRate,
+      offset: offset
+    })
+
+    writer.on('offset', function(offset){
+      writeFile(offsetFile, JSON.stringify(offset))
+    })
+
+    console.log('tapeloop initialized (' + loopLength + ' seconds)')
+
+    window.context.recorder.pipe(writer)
+    window.context.tapeLoop = writer
+  }
+
+
 }
 
 function refreshKits(cb){
@@ -256,8 +320,14 @@ function writeFile(entry, data, cb){
       writer.truncate(writer.position)
     }
     writer.onerror = handleError
-    var blob = new Blob([data], {type: 'text/plain'});
-    writer.write(blob)
+    if (Buffer.isBuffer(data)){
+      var blob = new Blob([data]);
+      writer.write(blob)
+    } else {
+      var blob = new Blob([data], {type: 'text/plain'});
+      writer.write(blob)
+    }
+
   }, handleError)
 }
 
@@ -307,4 +377,18 @@ function readFileAsBuffer(entry, cb){
 
 function compareEntry(a, b){
   return a.name.localeCompare(b.name)
+}
+
+function forEach(array, fn, cb){
+  var i = -1
+  function next(err){
+    if (err) return cb&&cb(err)
+    i += 1
+    if (i<array.length){
+      fn(array[i], next, i)
+    } else {
+      cb&&cb(null)
+    }
+  }
+  next()
 }

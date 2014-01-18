@@ -2,25 +2,21 @@
   "name": "loop-drop",
   "version": "0.0.0",
   "author": "Matt McKegg",
-
   "scripts": {
     "watch": "node build -w -d",
     "build": "node build"
   },
-
   "dependencies": {
     "bopper": "~0.2.0",
     "ditty": "~1.0.2",
     "midi-looper": "~0.0.0",
     "soundbank": "~0.0.0",
     "midi-looper-launchpad": "*",
-
     "web-midi": "*",
     "wave-view": "~0.0.0",
     "wave-recorder": "~1.0.0",
     "tap-tempo": "~0.0.0",
     "json-query": "~0.3.1",
-
     "rincewind": "~1.3.0",
     "dom-behavior": "~1.1.1",
     "micro-css": "*",
@@ -29,21 +25,19 @@
     "become": "~1.1.1",
     "brace": "~0.1.3",
     "create-element": "~0.2.3",
-
     "browserify": "~3.19.1",
     "watchify": "~0.5.0",
     "catw": "~0.2.0",
     "concat-stream": "~1.4.1",
-    "module-deps": "~1.2.2"
+    "module-deps": "~1.2.2",
+    "wav": "~0.1.2"
   },
-
   "window": {
     "bounds": {
       "width": 1200,
       "height": 700
     }
   },
-
   "permissions": [
     {
       "fileSystem": [
@@ -55,7 +49,6 @@
     "audioCapture",
     "storage"
   ],
-
   "devDependencies": {
     "tape": "*"
   }

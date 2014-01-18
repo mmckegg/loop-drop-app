@@ -10,6 +10,8 @@ var Launchpad = require('midi-looper-launchpad')
 var MidiStream = require('web-midi')
 var SoundRecorder = require('../lib/sound_recorder')
 
+var MultiRecorder = require('../lib/multi-recorder')
+
 module.exports = function(body){
   var audioContext = window.context.audio
   var clock = Bopper(audioContext)
@@ -23,6 +25,12 @@ module.exports = function(body){
   clock.setTempo(120)
   clock.start()
 
+  // self recorder
+  var instanceNames = Object.keys(instances)
+  window.context.recorder = new MultiRecorder(audioContext, instanceNames.length, {silenceDuration: 3})
+  instanceNames.forEach(function(name, i){
+    instances[name].connect(window.context.recorder.inputs[i])
+  })
 
   window.context.instances = instances
   window.context.clock = clock
@@ -74,7 +82,9 @@ function createInstance(audioContext, clock, midiStream){
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
-  clock.pipe(instance.controller).pipe(instance)
+  instance.quantizer = Quantizer(clock.getCurrentPosition)
+
+  clock.pipe(instance.controller).pipe(instance.quantizer).pipe(instance)
 
   instance.sampler = SoundRecorder(instance.controller, instance)
 
