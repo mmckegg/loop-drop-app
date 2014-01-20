@@ -51,14 +51,39 @@ Node {
     padding: 5px
     display: flex
     flex-wrap: wrap
+
     div {
       div.title {
         font-size: 80%
         font-weight: bold
+        position: absolute
+        padding: 4px 0 0 2px
+        z-index: 1
+        opacity: 0.6
+        pointer-events: none
       }
-      flex: 1
-      min-width: 100px
+      margin: 4px;
+
+      -flex {
+        flex: 1
+        min-width: 160px
+      }
+
+      select {
+        cursor: pointer
+        font-size: 80%;
+        display: inline-block;
+        padding: 2px 4px;
+        height: 18px;
+        border: 1px solid #A9A9A9;
+        margin-left: -1px;
+        background: #666;
+        -webkit-appearance: none;
+        color: #FFF;
+        text-align: center;
+      }
     }
+
   }
 }
 

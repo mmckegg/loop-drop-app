@@ -8,7 +8,6 @@ Piano {
     border: 1px solid black
     background: white
 
-    box-shadow: 1px 1px 1px #000;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     

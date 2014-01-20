@@ -47,9 +47,47 @@ var dataFilters = {
     }
 
     if (params.args[0]){
-      return getDecibels(input) + 'dB'
+      return getDecibels(input) + ' dB'
     } else {
       return getDecibels(input)
+    }
+  },
+  hz: function(input, params){
+    if (input instanceof Object){
+      input = input.value
+    }
+
+    if (input == null){
+      input = 0
+    }
+
+    if (params.args[0]){
+      if (input > 1000){
+        return round(input/1000) + ' kHz'
+      } else {
+        return input + ' hz'
+      }
+    } else {
+      return input
+    }
+  },
+  ms: function(input, params){
+    if (input instanceof Object){
+      input = input.value
+    }
+
+    if (input == null){
+      input = 0
+    }
+
+    if (params.args[0]){
+      if (input > 1000){
+        return round(input/1000) + ' s'
+      } else {
+        return input + ' ms'
+      }
+    } else {
+      return input
     }
   },
   root: function(input){
@@ -74,6 +112,11 @@ var dataFilters = {
       return input.join(',')
     }
   }
+}
+
+function round(value, dp){
+  var pow = Math.pow(10, dp || 0)
+  return Math.round(value * pow) / pow
 }
 
 function getGain(value) {
@@ -243,7 +286,7 @@ module.exports.deleteButton = function(element){
 module.exports.spawner = function(container){
   container.addEventListener('click', function(e){
     var element = getLink(e.target)
-    if (element){
+    if (element && element.dataset.type){
       window.events.emit('appendToActiveSlot', container.dataset.path, {type: element.dataset.type})
     }
   })

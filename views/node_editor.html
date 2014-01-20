@@ -1,4 +1,5 @@
 <? require './piano.js' as piano ?>
+<? require './param.html' as param ?>
 
 <div class='Node -source' t:repeat='sources' t:by='.type' t:bind:data-path=':path'>
   <div class='.controls'>
@@ -21,7 +22,6 @@
     <div class='.body'>
 
       <div>
-        <div class='.title'>Shape</div>
         <select 
           data-behavior='editor.nodes.select' 
           t:bind:data-value='.shape|:text(sine)' 
@@ -34,19 +34,21 @@
         </select>
       </div>
 
-      <div>
-        <div class='.title'>Frequency</div>
-        <span t:bind='.frequency|:text(440)' />hz
+      <div class='-flex'>
+        <div class='Param' t:view='param' t:bind='.frequency:hz(unit)' />
+      </div>
+
+      <div class='-flex'>
+        <div class='Param' t:view='param' t:bind='.amp:dB(unit)' />
       </div>
 
       <div>
-        <div class='.title'>Scale</div>
         <select 
           data-behavior='editor.nodes.scaleSelector' 
           t:bind:data-value='.note:scale' 
           t:bind:data-path=':path(note)'>
 
-          <option value=''>None</option>
+          <option value=''>No Scale</option>
           <option value='major'>Major</option>
           <option value='minor'>Minor</option>
           <option value='dorian'>Dorian</option>
@@ -60,10 +62,6 @@
         </select>
       </div>
 
-      <div>
-        <div class='.title'>Amp</div>
-        <span t:bind='.amp:dB(unit)' />
-      </div>
     </div>
 
     <div class='Piano' 
@@ -92,29 +90,77 @@
   </div>
   <t:placeholder t:when='filter'>
     <div class='.title'>Filter</div>
-    <div>
-      <table>
-        <td>Kind</td>
-        <td>
-          <select data-behavior='editor.nodes.select' t:bind:data-value='.kind|:text(lowpass)' t:bind:data-path=':path(kind)'>
-            <option value='lowpass'>Lowpass</option>
-            <option value='highpass'>Highpass</option>
-          </select>
-        </td>
-      </table>
+    <div class='.body'>
+      <div>
+        <select 
+          data-behavior='editor.nodes.select' 
+          t:bind:data-value='.kind|:text(lowpass)' 
+          t:bind:data-path=':path(kind)'>
+
+          <option value='lowpass'>Lowpass</option>
+          <option value='highpass'>Highpass</option>
+        </select>
+      </div>
+      <div class='-flex'>
+        <div class='Param' t:view='param' t:bind='.frequency:hz(unit)' />
+      </div>
     </div>
   </t:placeholder>
-
   <t:placeholder t:when='overdrive'>
     <div class='.title'>Overdrive</div>
+    <div class='.body'>
+      <div class='-flex'>
+        <div class='.title'>band</div>
+        <div class='Param' t:view='param' t:bind='.band:hz(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>color</div>
+        <div class='Param' t:view='param' t:bind='.color:hz(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>drive</div>
+        <div class='Param' t:view='param' t:bind='.amp:dB(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>cut</div>
+        <div class='Param' t:view='param' t:bind='.cut:hz(unit)' />
+      </div>
+    </div>
   </t:placeholder>
 
   <t:placeholder t:when='delay'>
     <div class='.title'>Delay</div>
+    <div class='.body'>
+      <div class='-flex'>
+        <div class='.title'>Time</div>
+        <div class='Param' t:view='param' t:bind='time:ms(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>Feedback</div>
+        <div class='Param' t:view='param' t:bind='.feedback:dB(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>Cutoff</div>
+        <div class='Param' t:view='param' t:bind='.cutoff:hz(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>Wet</div>
+        <div class='Param' t:view='param' t:bind='.wet:dB(unit)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>Dry</div>
+        <div class='Param' t:view='param' t:bind='.dry:dB(unit)' />
+      </div>
+    </div>
   </t:placeholder>
 
   <t:placeholder t:when='gain'>
     <div class='.title'>Gain</div>
+    <div class='.body'>
+      <div class='-flex'>
+        <div class='Param' t:view='param' t:bind='.amp:dB(unit)' />
+      </div>
+    </div>
   </t:placeholder>
 
 </div>
