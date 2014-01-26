@@ -1,19 +1,49 @@
 <? require './piano.js' as piano ?>
 <? require './param.html' as param ?>
+<? require './sample_trimmer.html' as sampleTrimmer ?>
 
-<div class='Node -source' t:repeat='sources' t:by='.type' t:bind:data-path=':path'>
+<div class='Node -source' t:repeat='slot.sources' t:by='.type' t:bind:data-path=':path'>
   <div class='.controls'>
     <a href='#' class='.delete' data-behavior='editor.nodes.deleteButton'>X</a>
   </div>
   <t:placeholder t:when='sample'>
     <div class='.title' t:bind='.url|:text(empty sample)' />
-    <div 
-      class='SampleTrimmer' 
-      t:bind:data-in='.offset[0]' 
-      t:bind:data-out='.offset[1]' 
-      t:bind:data-gain='.amp'
-      t:bind:data-url='.url' 
+    <div class='.body'>
+      <div>
+        <select 
+          data-behavior='editor.nodes.select' 
+          t:bind:data-value='.mode|:text(hold)' 
+          t:bind:data-path=':path(mode)'>
+
+          <option value='oneshot'>Oneshot</option>
+          <option value='hold'>Hold</option>
+          <option value='loop'>Loop</option>
+
+        </select>
+      </div>
+      <div class='-flex'>
+        <div class='.title'>amp</div>
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' 
+          data-f='dB' 
+          t:bind='.amp' 
+          t:bind:data-path=':path(amp)' />
+      </div>
+      <div class='-flex'>
+        <div class='.title'>transpose</div>
+        <div class='Param' 
+          t:view='param' 
+          data-behavior='editor.param' 
+          data-f='semitone' 
+          data-default='0' 
+          t:bind='.transpose' 
+          t:bind:data-path=':path(transpose)' 
+        />
+      </div>
+    </div>
+    <div class='SampleTrimmer' t:view='sampleTrimmer'
       data-behavior='editor.sampleTrimmer' 
+      t:bind:data-path=':path' 
     />
   </t:placeholder>
 
@@ -35,11 +65,26 @@
       </div>
 
       <div class='-flex'>
-        <div class='Param' t:view='param' t:bind='.frequency:hz(unit)' />
+        <div class='.title'>amp</div>
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' 
+          data-f='dB' 
+          data-default='0.6'
+          t:bind='.amp' 
+          t:bind:data-path=':path(amp)' 
+        />
       </div>
 
       <div class='-flex'>
-        <div class='Param' t:view='param' t:bind='.amp:dB(unit)' />
+        <div class='.title'>freq</div>
+        <div class='Param' 
+          t:view='param' 
+          data-behavior='editor.param' 
+          data-f='arfo' 
+          data-default='440'
+          t:bind='.frequency' 
+          t:bind:data-path=':path(frequency)' 
+        />
       </div>
 
       <div>
@@ -75,16 +120,16 @@
 </div>
   
 <div 
-  t:unless='sources:isLinked' 
+  t:unless='slot.sources:isLinked' 
   data-behavior='editor.nodes.spawner' 
-  data-path='sources' 
+  data-path='slot.sources' 
   class='.spawner -source'>
 
   <a href='#' data-type='sample'>sample</a>
   <a href='#' data-type='oscillator'>oscillator</a>
 </div>
 
-<div class='Node -processor' t:repeat='processors' t:by='.type' t:bind:data-path=':path'>
+<div class='Node -processor' t:repeat='slot.processors' t:by='.type' t:bind:data-path=':path'>
   <div class='.controls'>
     <a href='#' class='.delete' data-behavior='editor.nodes.deleteButton'>X</a>
   </div>
@@ -102,7 +147,14 @@
         </select>
       </div>
       <div class='-flex'>
-        <div class='Param' t:view='param' t:bind='.frequency:hz(unit)' />
+        <div class='Param' 
+          t:view='param' 
+          data-behavior='editor.param' 
+          data-f='arfo' 
+          data-default='350'
+          t:bind='.frequency'
+          t:bind:data-path=':path(frequency)' 
+        />
       </div>
     </div>
   </t:placeholder>
@@ -110,20 +162,40 @@
     <div class='.title'>Overdrive</div>
     <div class='.body'>
       <div class='-flex'>
-        <div class='.title'>band</div>
-        <div class='Param' t:view='param' t:bind='.band:hz(unit)' />
+        <div class='.title'>pre band</div>
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' data-f='ratio'
+          data-default='0.5'
+          t:bind='.band' 
+          t:bind:data-path=':path(band)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>color</div>
-        <div class='Param' t:view='param' t:bind='.color:hz(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' data-f='arfo'
+          data-default='800'
+          t:bind='.color' 
+          t:bind:data-path=':path(color)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>drive</div>
-        <div class='Param' t:view='param' t:bind='.amp:dB(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' data-f='ratio' 
+          data-default='0.5'
+          t:bind='.drive' 
+          t:bind:data-path=':path(drive)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>cut</div>
-        <div class='Param' t:view='param' t:bind='.cut:hz(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' data-f='arfo' 
+          data-default='3000'
+          t:bind='.cut' 
+          t:bind:data-path=':path(cut)' 
+        />
       </div>
     </div>
   </t:placeholder>
@@ -133,23 +205,51 @@
     <div class='.body'>
       <div class='-flex'>
         <div class='.title'>Time</div>
-        <div class='Param' t:view='param' t:bind='time:ms(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' 
+          data-default='1'
+          data-f='ms' 
+          t:bind='.time'
+          t:bind:data-path=':path(time)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>Feedback</div>
-        <div class='Param' t:view='param' t:bind='.feedback:dB(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' data-f='dB' 
+          data-default='0.45'
+          t:bind='.frequency'
+          t:bind:data-path=':path(feedback)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>Cutoff</div>
-        <div class='Param' t:view='param' t:bind='.cutoff:hz(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' data-f='arfo'
+          data-default='20000'
+          t:bind='.cutoff'
+          t:bind:data-path=':path(cutoff)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>Wet</div>
-        <div class='Param' t:view='param' t:bind='.wet:dB(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' 
+          data-f='dB' 
+          data-default='0.5'
+          t:bind='.wet'
+          t:bind:data-path=':path(wet)' 
+        />
       </div>
       <div class='-flex'>
         <div class='.title'>Dry</div>
-        <div class='Param' t:view='param' t:bind='.dry:dB(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' 
+          data-f='dB' 
+          data-default='1'
+          t:bind='.dry'
+          t:bind:data-path=':path(dry)' 
+        />
       </div>
     </div>
   </t:placeholder>
@@ -158,7 +258,13 @@
     <div class='.title'>Gain</div>
     <div class='.body'>
       <div class='-flex'>
-        <div class='Param' t:view='param' t:bind='.amp:dB(unit)' />
+        <div class='Param' t:view='param' 
+          data-behavior='editor.param' 
+          data-f='dB' 
+          data-default='1'
+          t:bind='.amp'
+          t:bind:data-path=':path(amp)' 
+        />
       </div>
     </div>
   </t:placeholder>
@@ -166,9 +272,9 @@
 </div>
 
 <div 
-  t:unless='sources:isLinked' 
+  t:unless='slot.sources:isLinked' 
   data-behavior='editor.nodes.spawner' 
-  data-path='processors' class='.spawner -processor'>
+  data-path='slot.processors' class='.spawner -processor'>
 
   <a href='#' data-type='filter'>filter</a>
   <a href='#' data-type='overdrive'>overdrive</a>
@@ -179,15 +285,29 @@
 
 <div class='Node -output' t:by='.type'>
   <div class='.title'>Output</div>
-  <select data-behavior='editor.nodes.select' t:bind:data-value='.output' t:bind:data-path=':path(output)'>
-    <option value=''>Master</option>
-    <option value='A'>Bus A</option>
-    <option value='B'>Bus B</option>
-    <option value='C'>Bus C</option>
-    <option value='D'>Bus D</option>
-    <option value='E'>Bus E</option>
-    <option value='F'>Bus F</option>
-    <option value='G'>Bus G</option>
-    <option value='H'>Bus H</option>
-  </select>
+  <div class='.body'>
+    <div class='-flex'>
+      <div class='Param' t:view='param' 
+        data-behavior='editor.param' 
+        data-f='dB'
+        data-default='1'
+        t:bind='slot.volume'
+        data-path='slot.volume' 
+      />
+    </div>
+    <div>  
+      <select data-behavior='editor.nodes.select' t:bind:data-value='.output' t:bind:data-path=':path(output)'>
+        <option value=''>Master</option>
+        <option value='A'>Bus A</option>
+        <option value='B'>Bus B</option>
+        <option value='C'>Bus C</option>
+        <option value='D'>Bus D</option>
+        <option value='E'>Bus E</option>
+        <option value='F'>Bus F</option>
+        <option value='G'>Bus G</option>
+        <option value='H'>Bus H</option>
+      </select>
+    </div>
+  </div>
+
 </div>

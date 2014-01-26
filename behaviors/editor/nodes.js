@@ -63,9 +63,9 @@ var dataFilters = {
 
     if (params.args[0]){
       if (input > 1000){
-        return round(input/1000) + ' kHz'
+        return round(input/1000, 2) + ' kHz'
       } else {
-        return input + ' hz'
+        return round(input) + ' hz'
       }
     } else {
       return input
@@ -81,10 +81,10 @@ var dataFilters = {
     }
 
     if (params.args[0]){
-      if (input > 1000){
-        return round(input/1000) + ' s'
+      if (input >= 1){
+        return round(input,1) + ' s'
       } else {
-        return input + ' ms'
+        return round(input*1000) + ' ms'
       }
     } else {
       return input
@@ -128,7 +128,7 @@ function getGain(value) {
 
 function getDecibels(value) {
   if (value == null) return 0
-  return Math.round(Math.round(20 * (0.43429 * Math.log(value)) * 100) / 100)
+  return Math.round(Math.round(20 * (0.43429 * Math.log(value)) * 1000) / 1000)
 }
 
 function getMidiNote(note){
@@ -182,19 +182,36 @@ module.exports = function(container){
     update()
   })
 
-  function get(query){
-    return jsonQuery(query, this).value
+  function get(query, source){
+    if (source != null){
+      var context = Object.create(this)
+      context.parentContext = this
+      context.source = source
+      return jsonQuery(query, context).value
+    } else {
+      return jsonQuery(query, this).value
+    }
   }
+
+  window.context.editor = {get: get, rootContext: current, filters: dataFilters}
 
   window.events.on('updateActiveSlot', function(path, value){
     var newObject = obtain(current.slot)
-    var res = jsonQuery(path, {rootContext: newObject})
+    var res = jsonQuery(path, {rootContext: {slot: newObject}})
     if (res.key != null){
       var obj = jsonQuery.lastParent(res)
       if (obj){
 
         if (value instanceof Object && '$node' in value){
-          if (value.$node){
+          if (value.$node == 'match'){
+
+            if (obj[res.key] && !Array.isArray(obj[res.key]) && obj[res.key] instanceof Object){
+              obj[res.key].value = value.value
+            } else {
+              obj[res.key] = value.value
+            }
+
+          } else if (value.$node){
 
             var target = obj[res.key]
 
@@ -202,7 +219,13 @@ module.exports = function(container){
             if (!(target instanceof Object) || res.value.type !== value.type){
               obj[res.key] = target = { type: value.type }
               if (value.$valueTo){
-                target[value.$valueTo] = res.value
+
+                if (!Array.isArray(res.value) && typeof res.value == 'object'){
+                  target[value.$valueTo] = res.value.value
+                } else {
+                  target[value.$valueTo] = res.value
+                }
+
               }
             }
 
@@ -228,7 +251,7 @@ module.exports = function(container){
 
   window.events.on('appendToActiveSlot', function(path, value){
     var newObject = obtain(current.slot)
-    var res = jsonQuery(path, {rootContext: newObject, force: []})
+    var res = jsonQuery(path, {rootContext: {slot: newObject}, force: []})
     if (res.key != null){
 
       var obj = res.value
@@ -242,7 +265,7 @@ module.exports = function(container){
 
   window.events.on('deleteFromActiveSlot', function(path){
     var newObject = obtain(current.slot)
-    var res = jsonQuery(path, {rootContext: newObject})
+    var res = jsonQuery(path, {rootContext: {slot: newObject}})
     if (res.key != null){
       var obj = jsonQuery.lastParent(res)
       if (obj){
@@ -258,8 +281,10 @@ module.exports = function(container){
   })
 
   function update(){
-    var newContent = render({get: get, rootContext: current.slot, filters: dataFilters})
-    become(container, newContent, {inner: true, onChange: window.behave})
+    if (window.noRefresh) return false
+
+    var newContent = render(window.context.editor)
+    become(container, newContent, {inner: true, onChange: window.behave, tolerance: 0})
   }
 
   function handleData(data){
@@ -297,12 +322,9 @@ module.exports.select = function(element){
     window.events.emit('updateActiveSlot', element.dataset.path, element.value)
   }
 
-  function refresh(){
+  return function(){
     element.value = element.dataset.value
   }
-
-  refresh()
-  return refresh
 }
 
 module.exports.scaleSelector = function(element){
@@ -327,6 +349,7 @@ module.exports.scaleSelector = function(element){
   }
 
   refresh()
+
   return refresh
 }
 

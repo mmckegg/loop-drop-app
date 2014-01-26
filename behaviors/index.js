@@ -11,7 +11,8 @@ var behaviors = {
     nodes: require('./editor/nodes'),
     sampleTrimmer: require('./editor/sample_trimmer'),
     modeSelector: require('./editor/mode_selector'),
-    noteChooser: require('./editor/note_chooser')
+    noteChooser: require('./editor/note_chooser'),
+    param: require('./editor/param')
   },
   'deck': {
     selected: require('./deck/selected'),

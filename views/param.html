@@ -1,5 +1,95 @@
-<div tabIndex='0'>
-  <div></div> 
-  <span t:bind='.' />
+<div>
+  <div class='.slider' tabIndex='0'>
+    <div data-preserve-attribute='style'></div> 
+    <span class='.label'/>
+  </div>
+  <a href='#' class='.lfo'  data-type='lfo' data-preserve-attribute='class'>LFO</a> 
+  <a href='#' class='.adsr' data-type='adsr' data-preserve-attribute='class'>ENV</a>
+  <a href='#' class='.clear' data-type='value' data-preserve-attribute='class'>X</a> 
+ 
 </div>
-<a class='.lfo' tabIndex='0'>LFO</a> <a tabIndex='0' class='.envelope'>ENV</a> <a tabIndex='0' class='.param'>LINK</a>
+<t:placeholder t:by='.type'>
+  <div class='.sub' t:when='adsr'>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(attack)' 
+      data-behavior='editor.param'
+      data-default='0'
+      data-f='ms'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>a</span>
+      <span class='.label'/>
+    </div>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(decay)' 
+      data-behavior='editor.param'
+      data-default='0'
+      data-f='ms'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>d</span>
+      <span class='.label'/>
+    </div>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(sustain)' 
+      data-behavior='editor.param'
+      data-default='1'
+      data-f='dB'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>s</span>
+      <span class='.label'/>
+    </div>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(release)' 
+      data-behavior='editor.param'
+      data-default='0'
+      data-f='ms'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>r</span>
+      <span class='.label'/>
+    </div>
+
+  </div>
+  <div class='.sub' t:when='lfo'>
+
+    <select 
+      data-behavior='editor.nodes.select' 
+      t:bind:data-value='.shape|:text(sine)' 
+      t:bind:data-path=':path(shape)'>
+
+      <option value='sine'>Sine</option>
+      <option value='square'>Square</option>
+      <option value='sawtooth'>Sawtooth</option>
+      <option value='triangle'>Triangle</option>
+    </select>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(amp)' 
+      data-behavior='editor.param'
+      data-default='0'
+      data-f='bigRatio'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>range</span>
+      <span class='.label'/>
+    </div>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(rate)'
+      data-behavior='editor.param'
+      data-default='1'
+      data-f='lfo'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>rate</span>
+      <span class='.label'/>
+    </div>
+
+  </div>
+</t:placeholder>

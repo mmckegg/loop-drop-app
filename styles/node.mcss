@@ -5,7 +5,6 @@ Node {
   border: 1px #444 solid;
   color: #EEE;
   border-radius: 4px;
-  box-shadow: 0 0 10px #222
 
   div.controls {
     position: absolute

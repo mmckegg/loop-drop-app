@@ -1,7 +1,7 @@
 SampleTrimmer {
 
   border: 1px solid #3A4138
-  height: 100px
+  height: 80px
   background: #333
 
   position: relative;
