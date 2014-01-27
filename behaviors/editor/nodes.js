@@ -31,6 +31,19 @@ var dataFilters = {
     }
     return result
   },
+  format: function(input, params){
+    if (this.query === '.amp'){
+      return 'dB'
+    } else if (this.query === '.rate'){
+      return 'lfo'
+    } else if (this.query === '.frequency'){
+      return 'arfo'
+    } else if (this.query === '.transpose'){
+      return 'semitone'
+    } else {
+      return 'ratio'
+    }
+  },
   text: function(input, params){
     return params.args[0]
   },
@@ -47,7 +60,7 @@ var dataFilters = {
     }
 
     if (params.args[0]){
-      return getDecibels(input) + ' dB'
+      return String(getDecibels(input)).replace(/Infinity/, "\u221e") + ' dB'
     } else {
       return getDecibels(input)
     }

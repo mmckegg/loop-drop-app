@@ -169,17 +169,17 @@ function getValueFromScreen(offset, start, min, max, curve, mag){
   mag = mag || 1
 
   if (curve === 'log'){
-    min = Math.log(min)/Math.log(10)
-    max = Math.log(max)/Math.log(10)
-    start = Math.log(start)/Math.log(10)
+    min = Math.log(min*mag)/Math.log(10)
+    max = Math.log(max*mag)/Math.log(10)
+    start = Math.log(start*mag)/Math.log(10)
   } else if (curve === 'log+'){
     min = Math.log(min*mag+1)/Math.log(10)
     max = Math.log(max*mag+1)/Math.log(10)
     start = Math.log(start*mag+1)/Math.log(10)
   } else if (curve === 'db'){
-    min = getDecibels(min)
+    min = Math.max(-40, getDecibels(min))
     max = getDecibels(max)
-    start = getDecibels(start)
+    start = Math.max(-40, getDecibels(start))
   }
 
   start = start - min
@@ -188,7 +188,7 @@ function getValueFromScreen(offset, start, min, max, curve, mag){
   var value = start + (range * offset)
 
   if (curve === 'log'){
-    value = Math.pow(10, value + min)
+    value = Math.pow(10, value + min) / mag
   } else if (curve === 'log+'){
     value = (Math.pow(10, value + min) - 1) / mag
   } else if (curve === 'db'){
@@ -306,7 +306,7 @@ var formatters = {
       return getRatio(value, 0, 1, 'log+', 100)
     },
     value: function(offset, start){
-      return Math.max(0, getValueFromScreen(offset, start, 0, 1, 'log+'), 100)
+      return Math.max(0, getValueFromScreen(offset, start, 0, 1, 'log+', 100))
     },
     display: function(value){
       return window.context.editor.get(':ms(unit)', value)

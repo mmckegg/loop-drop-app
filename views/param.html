@@ -12,6 +12,17 @@
   <div class='.sub' t:when='adsr'>
 
     <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(start)' 
+      data-behavior='editor.param'
+      data-default='0'
+      t:bind:data-f=':format'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>&gt;</span>
+      <span class='.label'/>
+    </div>
+
+    <div tabIndex='0' class='.slider' 
       t:bind:data-path=':path(attack)' 
       data-behavior='editor.param'
       data-default='0'
@@ -37,7 +48,7 @@
       t:bind:data-path=':path(sustain)' 
       data-behavior='editor.param'
       data-default='1'
-      data-f='dB'>
+      t:bind:data-f=':format'>
 
       <div data-preserve-attribute='style'></div> 
       <span class='.title'>s</span>
@@ -52,6 +63,17 @@
 
       <div data-preserve-attribute='style'></div> 
       <span class='.title'>r</span>
+      <span class='.label'/>
+    </div>
+
+    <div tabIndex='0' class='.slider' 
+      t:bind:data-path=':path(end)' 
+      data-behavior='editor.param'
+      data-default='0'
+      t:bind:data-f=':format'>
+
+      <div data-preserve-attribute='style'></div> 
+      <span class='.title'>&lt;</span>
       <span class='.label'/>
     </div>
 

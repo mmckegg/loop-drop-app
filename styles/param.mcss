@@ -33,6 +33,7 @@ Param {
         font-size: 90%
         text-align: center
         pointer-events:none;
+        overflow: hidden
       }
       span.title {
         font-weight: bold
