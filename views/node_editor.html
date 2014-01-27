@@ -117,6 +117,7 @@
     />
 
   </t:placeholder>
+
 </div>
   
 <div 
@@ -269,6 +270,33 @@
     </div>
   </t:placeholder>
 
+  <t:placeholder t:when='dipper'>
+    <div class='.title'>Dipper</div>
+    <div class='.body'>
+      <div>
+        <select 
+          data-behavior='editor.nodes.select' 
+          t:bind:data-value='.mode|:text(apply)' 
+          t:bind:data-path=':path(mode)'>
+
+          <option value='apply'>Apply</option>
+          <option value='trigger'>Trigger</option>
+        </select>
+      </div>
+
+      <div class='-flex'>
+        <div class='.title'>ratio</div>
+        <div class='Param -value' t:view='param' 
+          data-behavior='editor.param' data-f='ratio'
+          data-default='1'
+          t:bind='.ratio' 
+          t:bind:data-path=':path(ratio)'
+        />
+      </div>
+
+    </div>
+  </t:placeholder>
+
 </div>
 
 <div 
@@ -280,7 +308,7 @@
   <a href='#' data-type='overdrive'>overdrive</a>
   <a href='#' data-type='delay'>delay</a>
   <a href='#' data-type='gain'>gain</a>
-
+  <a href='#' data-type='dipper'>dipper</a>
 </div>
 
 <div class='Node -output' t:by='.type'>
