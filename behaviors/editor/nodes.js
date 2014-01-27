@@ -92,7 +92,7 @@ var dataFilters = {
   },
   root: function(input){
     if (input instanceof Object){
-      return getMidiNote(input.root || 'C4')
+      return getMidiNote(input.root || 'C5')
     } else {
       return getMidiNote(input)
     }
@@ -312,7 +312,13 @@ module.exports.spawner = function(container){
   container.addEventListener('click', function(e){
     var element = getLink(e.target)
     if (element && element.dataset.type){
-      window.events.emit('appendToActiveSlot', container.dataset.path, {type: element.dataset.type})
+      var object = {type: element.dataset.type}
+      if (object.type === 'oscillator'){
+        object.amp = 0.6
+        object.note = 72
+        object.frequency = 440
+      }
+      window.events.emit('appendToActiveSlot', container.dataset.path, object)
     }
   })
 }
