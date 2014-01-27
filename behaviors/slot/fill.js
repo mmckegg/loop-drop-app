@@ -1,7 +1,7 @@
 var getNotesInside = require('midi-looper-launchpad/lib/get_notes_inside')
 
 module.exports = function(element){
-  element.addEventListener('mousedown', onMouseDown, true)
+  element.addEventListener('mousedown', onMouseDown)
 }
 
 var startId = null
@@ -14,7 +14,8 @@ function onMouseDown(event){
   event.preventDefault()
   event.stopPropagation()
 
-  document.addEventListener('mouseup', onMouseUp, true)
+  document.removeEventListener('mouseup', onMouseUp)
+  document.addEventListener('mouseup', onMouseUp)
 
   var slot = getSlotElement(event.target)
   startId = slot.getAttribute('data-id')
@@ -22,7 +23,7 @@ function onMouseDown(event){
   fillSelection = []
 
   currentKit = getKitElement(slot)
-  currentKit.addEventListener('mouseover', onMouseEnter, true)
+  currentKit.addEventListener('mouseover', onMouseEnter)
 
   var deck = getDeckElement(currentKit)
   deckId = deck.getAttribute('data-id')
@@ -37,7 +38,7 @@ function onMouseUp(event){
   document.removeEventListener('mouseup', onMouseUp)
 
   if (currentKit){
-    currentKit.removeEventListener('mouseover', onMouseEnter, true)
+    currentKit.removeEventListener('mouseover', onMouseEnter)
 
     var deck = window.context.instances[deckId]
     var template = deck.getDescriptor(startId)
