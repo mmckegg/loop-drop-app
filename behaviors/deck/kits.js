@@ -45,6 +45,12 @@ module.exports = function(container){
     }
   })
 
+  window.events.on('newKit', function(deckId, kitId){
+    if (deckId === thisDeckId){
+      deselect()
+      currentKitId = null
+    }
+  })
 
   window.events.on('saveKit', function(deckId, kitId){
     if (deckId === thisDeckId){
@@ -71,7 +77,7 @@ module.exports = function(container){
       return h('div', {'data-id': name}, h('span', escapeHTML(name)) + controls)
     }).join('\n')
 
-    newHtml += '\n<div class=".new">Save As...</div>'
+    newHtml += '\n<div class=".saveAs">Save As...</div>\n<div class=".new">New Kit</div>'
 
     become(container, newHtml, {inner: true, ignoreAttributes: ['contenteditable']})
 
@@ -187,8 +193,13 @@ module.exports = function(container){
 
   container.addEventListener('click', function(event){
 
-    if (event.target.classList.contains('.new')){
+    if (event.target.classList.contains('.saveAs')){
       beginAdd(event.target)
+      return false
+    }
+
+    if (event.target.classList.contains('.new')){
+      window.events.emit('newKit', thisDeckId)
       return false
     }
 

@@ -4,6 +4,7 @@ module.exports = function(){
 
   window.context.audio.loadSample = loadSample
 
+  window.events.on('newKit', newKit)
   window.events.on('loadKit', loadKit)
   window.events.on('saveKit', saveKit)
   window.events.on('renameKit', renameKit)
@@ -82,6 +83,17 @@ function renameKit(fromId, toId){
       sortKits()
       window.events.emit('refreshKits')
     }, handleError)
+  }
+}
+
+function newKit(deckId){
+  var names = 'ABCDEFGH'.split('')
+  var deck = window.context.instances[deckId]
+  for (var i=0;i<64;i++){
+    deck.update({id: String(i)})
+  }
+  for (var i=0;i<8;i++){
+    deck.update({id: names[i]})
   }
 }
 
