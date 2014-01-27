@@ -102,7 +102,7 @@ Loader {
 
     }
 
-    div.new {
+    div.new, div.saveAs {
       opacity: 0.5
 
       :hover {
