@@ -13,7 +13,15 @@
     <div class='Deck -left' data-id='left' t:view='deck' data-behavior='deck.selected' />
     <div class='.main'>
       <div class='MainControls'>
-        <div class='.transport'>
+
+        <div class='.tempo' tabIndex='0' data-behavior='engine.tempo'>
+          <div data-preserve-attribute='style'></div> 
+          <span class='.title'>tempo</span>
+          <span class='.label'/>
+        </div>
+        <div class='.vu' data-behavior='engine.vu'>
+          <meter min='-20' class='.left' high='0' value='-20' max='6' />
+          <meter min='-20' class='.right' high='0' value='-20' max='6' />
         </div>
       </div>
       <div class='Editor' t:view='editor' />

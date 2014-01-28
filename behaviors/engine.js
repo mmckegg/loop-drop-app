@@ -11,14 +11,21 @@ var MidiStream = require('web-midi')
 var SoundRecorder = require('../lib/sound_recorder')
 
 var MultiRecorder = require('../lib/multi-recorder')
+var AudioRMS = require('../lib/audio-rms')
 
 module.exports = function(body){
   var audioContext = window.context.audio
   var clock = Bopper(audioContext)
 
+  var output = audioContext.createGain()
+  output.connect(audioContext.destination)
+
+  var rms = window.context.audio.rms = AudioRMS(audioContext)
+  output.connect(rms.input)
+
   var instances = {
-    left: createInstance(audioContext, clock, MidiStream('Launchpad', 0)),
-    right: createInstance(audioContext, clock, MidiStream('Launchpad', 1))
+    left: createInstance(audioContext, output, clock, MidiStream('Launchpad', 0)),
+    right: createInstance(audioContext, output, clock, MidiStream('Launchpad', 1))
   }
 
   // start clock
@@ -64,8 +71,79 @@ module.exports = function(body){
 }
 
 
+function getDecibels(value) {
+  if (value == null) return 0
+  return Math.round(Math.round(20 * (0.43429 * Math.log(value)) * 100) / 100 * 100) / 100
+}
 
-function createInstance(audioContext, clock, midiStream){
+module.exports.vu = function(container){
+  var rms = window.context.audio.rms
+  var vuL = container.querySelector('meter.\\.left')
+  var vuR = container.querySelector('meter.\\.right')
+  rms.on('data', function(data){
+    vuL.value = Math.max(-40, getDecibels(data[0]))
+    vuR.value = Math.max(-40, getDecibels(data[1]))
+  })
+
+}
+
+var paramFormatters = require('../lib/param_formatters')
+
+module.exports.tempo = function(container){
+
+  var formatter = paramFormatters['bpm']
+
+  var slider = container.querySelector('div')
+  var label = container.querySelector('span.\\.label')
+
+  window.context.clock.on('tempo', refresh)
+
+
+  function refresh(){
+    var value = window.context.clock.getTempo()
+    slider.style.width = Math.min(1, formatter.size(value)) * 100 + '%'
+    label.innerText = formatter.display(value)
+  }
+
+  container.addEventListener('mousedown', handleDown)
+
+  function handleDown(e){
+    range = container.getBoundingClientRect().width
+    startValue = window.context.clock.getTempo()
+    lastValue = startValue
+    startCoords = [e.screenX, e.screenY]
+
+    document.removeEventListener('mousemove', handleMove)
+    document.removeEventListener('mouseup', handleUp)
+    document.addEventListener('mousemove', handleMove)
+    document.addEventListener('mouseup', handleUp)
+  }
+
+  function handleUp(e){
+    document.removeEventListener('mousemove', handleMove)
+    document.removeEventListener('mouseup', handleUp)
+  }
+
+  function handleMove(e){
+    var offsetY = Math.abs(e.screenY - startCoords[1])
+    var offsetX = (e.screenX - startCoords[0]) / (range + offsetY)
+    var value = formatter.value(offsetX, startValue)
+    if (value != lastValue && !isNaN(value)){
+      setValue(value)
+      lastValue = value
+    }
+  }
+
+  function setValue(value){
+    window.context.clock.setTempo(value)
+  }
+
+  refresh()
+}
+
+
+
+function createInstance(audioContext, output, clock, midiStream){
   var instance = Soundbank(audioContext)
   var ditty = Ditty(clock)
 
@@ -92,6 +170,6 @@ function createInstance(audioContext, clock, midiStream){
   ditty.pipe(instance).pipe(instance.looper).pipe(ditty)
 
   // connect to output
-  instance.connect(audioContext.destination)
+  instance.connect(output)
   return instance
 }
