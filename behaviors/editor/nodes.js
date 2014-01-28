@@ -331,6 +331,10 @@ module.exports.spawner = function(container){
         object.note = 72
         object.frequency = 440
       }
+
+      if (object.type === 'filter'){
+        object.frequency = 350
+      }
       window.events.emit('appendToActiveSlot', container.dataset.path, object)
     }
   })
