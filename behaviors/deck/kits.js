@@ -36,9 +36,14 @@ module.exports = function(container){
 
   window.events.on('loadKit', function(deckId, kitId){
     if (deckId === thisDeckId){
+      var oldElement = getKit(currentKitId)
+      if (oldElement){
+        oldElement.classList.remove('-changed')
+      }
       deselect()
       var element = getKit(kitId)
       if (element){
+        element.classList.remove('-changed')
         element.classList.add('-selected')
       }
       currentKitId = kitId
