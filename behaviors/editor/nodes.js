@@ -341,9 +341,12 @@ module.exports.select = function(element){
     window.events.emit('updateActiveSlot', element.dataset.path, element.value)
   }
 
-  return function(){
+  function refresh(){
     element.value = element.dataset.value
   }
+
+  refresh()
+  return refresh
 }
 
 module.exports.scaleSelector = function(element){
