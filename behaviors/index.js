@@ -20,7 +20,12 @@ var behaviors = {
     control: require('./deck/control')
   },
   'project': require('./project'),
-  'engine': require('./engine')
+  'engine': require('./engine'),
+  'window': {
+    tempo: require('./window/tempo'),
+    vu: require('./window/vu'),
+    projectButtons: require('./window/project_buttons'),
+  }
 }
 
 module.exports = function(target){
