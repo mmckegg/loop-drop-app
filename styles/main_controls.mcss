@@ -7,7 +7,6 @@ MainControls {
   min-height: 20px
 
   div.tempo {
-    border-radius: 3px;
     position: relative;
     flex: 1;
     height: 40px;
@@ -44,7 +43,6 @@ MainControls {
     display: flex
     flex-direction: column
     border: 3px solid #333
-    border-radius: 3px
 
     meter {
       width: 100%;
