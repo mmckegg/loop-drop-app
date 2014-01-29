@@ -124,13 +124,15 @@ module.exports = function(container){
       label.innerText = formatter.display(value)
       width.style.width = getWidth(formatter.size(value))
     }
-
-
   }
 
-  refresh()
+  function scheduleRefresh(){
+    window.requestAnimationFrame(refresh)
+  }
 
-  return refresh
+  scheduleRefresh()
+
+  return scheduleRefresh
 }
 
 function getWidth(size){

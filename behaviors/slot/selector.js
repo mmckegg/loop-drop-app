@@ -9,26 +9,126 @@ module.exports = function(container){
   var deckElement = getIdElement(container)
   var thisDeckId = deckElement && deckElement.getAttribute('data-id')
 
+  var pendingIds = []
+  var pendingDeckUpdate = false
+  var refreshing = false
+  var slotState = {
+    active: {},
+    present: {},
+    recording: {},
+    inputActive: {},
+    linked: {},
+    action: {},
+    selected: null
+  }
+
+  var deckState = {
+    sampling: false
+  }
+
+  function refresh(){
+
+    if (pendingDeckUpdate){
+      if (deckState.sampling){
+        container.classList.add('-sampling')
+      } else {
+        container.classList.remove('-sampling')
+      }
+
+    }
+
+    for (var i=0;i<pendingIds.length;i++){
+      var id = pendingIds[i]
+      var element = elementLookup[id]
+
+      if (element){
+        if (slotState.selected === id){
+          element.classList.add('-selected')
+        } else {
+          element.classList.remove('-selected')
+        }
+
+        if (slotState.recording[id]){
+          element.classList.add('-recording')
+        } else {
+          element.classList.remove('-recording')
+        }
+
+        if (slotState.present[id]){
+          element.classList.add('-present')
+        } else {
+          element.classList.remove('-present')
+        }
+
+        if (slotState.active[id]){
+          element.classList.add('-active')
+        } else {
+          element.classList.remove('-active')
+        }
+
+        if (slotState.inputActive[id]){
+          element.classList.add('-inputActive')
+        } else {
+          element.classList.remove('-inputActive')
+        }
+
+        if (slotState.linked[id]){
+          element.classList.add('-linked')
+        } else {
+          element.classList.remove('-linked')
+        }
+
+        if (slotState.action[id]){
+          element.classList.add('-action')
+        } else {
+          element.classList.remove('-action')
+        }
+      }
+
+    }
+
+    pendingDeckUpdate = false
+    pendingIds = []
+    refreshing = false
+  }
+
+  function requestRefresh(id){
+    if (id){
+      pendingIds.push(id)
+    } else {
+      pendingDeckUpdate = true
+    }
+
+    if (!refreshing){
+      refreshing = true
+      window.requestAnimationFrame(refresh)
+    }
+  }
+
   window.events.on('startSampling', function(deckId){
     if (thisDeckId === deckId){
-      container.classList.add('-sampling')
+      deckState.sampling = true
+      requestRefresh()
     }
   })
 
   window.events.on('stopSampling', function(deckId){
     if (thisDeckId === deckId){
-      container.classList.remove('-sampling')
+      deckState.sampling = false
+      requestRefresh()
     }
   })
 
   window.events.on('beginRecordSlot', function(deckId, slotId){
     if (thisDeckId === deckId){
-      var element = elementLookup[slotId]
-      element.classList.add('-recording')
+      slotState.recording[slotId] = true
+      requestRefresh(slotId)
     }
   }).on('endRecordSlot', function(deckId, slotId){
-    var element = elementLookup[slotId]
-    element.classList.remove('-recording')
+    if (thisDeckId === deckId){
+      slotState.recording[slotId] = false
+      requestRefresh(slotId)
+    }
   })
 
   // set up lookup
@@ -39,70 +139,33 @@ module.exports = function(container){
   }
 
   window.context.instances[thisDeckId].on('data', function(event){
-    var element = elementLookup[event.data[1]]
-    if (element){
-      if (event.data[2]){
-        element.classList.add('-active')
-      } else {
-        element.classList.remove('-active')
-      }
-    }
-    var outputElement = outputLookup[event.data[1]]
-    if (outputElement){
-      if (event.data[2]){
-        outputElement.activeCount += 1
-      } else {
-        outputElement.activeCount -= 1
-        if (outputElement.activeCount < 0){
-          outputElement.activeCount = 0
-        }
-      }
+    var id = String(event.data[1])
+    var outputId = getOutput(id)
+    var increment = event.data[2] ? 1 : -1
 
-      if (outputElement.activeCount > 0){
-        outputElement.classList.add('-inputActive')
-      } else {
-        outputElement.classList.remove('-inputActive')
-      }
-    }
+    slotState.active[id] = !!event.data[2]
+    slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
+    requestRefresh(id)
   })
 
   window.context.instances[thisDeckId].on('change', function(descriptor){
-    var element = elementLookup[descriptor.id]
-    if (element){
+    var id = descriptor.id
 
-      if (descriptor.sources && descriptor.sources.length){
-        element.classList.add('-present')
-      } else {
-        element.classList.remove('-present')
-      } 
+    slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
+    slotState.linked[id] = descriptor.type === 'inherit'
+    slotState.action[id] = !!(descriptor.downAction || descriptor.upAction)
 
-      if (descriptor.type === 'inherit'){
-        element.classList.add('-linked')
-      } else {
-        element.classList.remove('-linked')
-      }
-
-      if (descriptor.downAction || descriptor.upAction){
-        element.classList.add('-action')
-      } else {
-        element.classList.remove('-action')
-      }
-    }
     updateDescriptor(descriptor)
-    refreshOutput(descriptor.id)
+    requestRefresh(id)
   })
 
   window.events.on('selectSlot', function(deckId, slotId){
-    if (selectedElement){
-      selectedElement.classList.remove('-selected')
-      selectedElement = null
-    }
-
     if (deckId == thisDeckId){
-      selectedElement = elementLookup[slotId]
-      if (selectedElement){
-        selectedElement.classList.add('-selected')
-      }
+      var lastSelected = slotState.selected
+      slotState.selected = slotId
+
+      lastSelected && requestRefresh(lastSelected)
+      requestRefresh(slotId)
     }
   })
 
@@ -125,14 +188,7 @@ module.exports = function(container){
     return null
   }
 
-  function refreshOutput(id){
-    var output = getOutput(id)
-    var element = elementLookup[output] || null
-    outputLookup[id] = element
-  }
-
   function updateDescriptor(descriptor){
-
     var id = String(descriptor.id)
     var oldDescriptor = descriptors[id] || { id: id }
 
@@ -151,13 +207,6 @@ module.exports = function(container){
     }
 
     descriptors[descriptor.id] = descriptor
-
-    process.nextTick(function(){
-      var inherited = inheritedLookup[id]
-      if (inherited){
-       inherited.forEach(refreshOutput)
-      } 
-   })
   }
 
 }

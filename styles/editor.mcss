@@ -1,4 +1,5 @@
 Editor {
+  -webkit-transform: translate3d(0,0,0)
   background: #222
   flex: 1;
   position: relative
