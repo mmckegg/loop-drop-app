@@ -17,7 +17,8 @@ var behaviors = {
   'deck': {
     selected: require('./deck/selected'),
     kits: require('./deck/kits'),
-    control: require('./deck/control')
+    control: require('./deck/control'),
+    loopPosition: require('./deck/loop_position')
   },
   'project': require('./project'),
   'engine': require('./engine'),
