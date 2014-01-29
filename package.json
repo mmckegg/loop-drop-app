@@ -11,9 +11,9 @@
     "ditty": "~1.0.2",
     "midi-looper": "~0.0.0",
     "soundbank": "~0.0.0",
-    "midi-looper-launchpad": "*",
-    "web-midi": "*",
-    "wave-view": "~0.0.0",
+    "midi-looper-launchpad": "~0.0.0",
+    "web-qwerty-keys": "~0.0.0",
+    "web-midi": "~0.2.1",
     "wave-recorder": "~1.0.0",
     "tap-tempo": "~0.0.0",
     "json-query": "~0.3.1",
@@ -30,7 +30,8 @@
     "catw": "~0.2.0",
     "concat-stream": "~1.4.1",
     "module-deps": "~1.2.2",
-    "wav": "~0.1.2"
+    "wav": "~0.1.2",
+    "keycode": "~0.3.0"
   },
   "window": {
     "bounds": {
