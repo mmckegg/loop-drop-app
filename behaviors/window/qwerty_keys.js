@@ -1,4 +1,3 @@
-var KeyStream = require('../../lib/key_stream')
 var QwertyKeys = require('midi-qwerty-keys')
 var handleKey = require('../../lib/handle-key')
 
@@ -11,7 +10,6 @@ module.exports = function(element){
   var downNotes = []
 
   var qwertyInput = QwertyKeys({mode: 'grid'})
-  KeyStream(element).pipe(qwertyInput)
 
   window.events.on('selectSlot', function(deckId){
     currentDeckId = deckId

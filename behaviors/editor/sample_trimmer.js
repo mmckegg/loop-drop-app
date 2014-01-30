@@ -1,4 +1,3 @@
-var WaveView = require('wave-view')
 var query = require('micro-css').query
 
 var width = 500
