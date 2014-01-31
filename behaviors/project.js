@@ -10,13 +10,35 @@ module.exports = function(){
   window.events.on('renameKit', renameKit)
   window.events.on('deleteKit', deleteKit)
 
-  window.events.on('setEditorView', function(view){
-    chrome.storage.local.set({'editorView': view})
+  // state persistance
+  chrome.storage.local.get(['editorView', 'tempo', 'autoQuantize'], function(items) {
+
+    // editor view
+    window.events.emit('setEditorView', items.editorView || 'visual')
+    window.events.on('setEditorView', function(view){
+      chrome.storage.local.set({'editorView': view})
+    })
+
+    // tempo
+    window.context.clock.setTempo(items.tempo || 120)
+    window.context.clock.on('tempo', function(value){
+      console.log('saving tempo')
+      chrome.storage.local.set({'tempo': value})
+    })
+
+    // quantize
+    var autoQuantize = items.autoQuantize || {}
+    Object.keys(autoQuantize).forEach(function(key){
+      window.events.emit('changeAutoQuantize', key, autoQuantize[key])
+    })
+    window.events.on('changeAutoQuantize', function(deckId, value){
+      autoQuantize[deckId] = value
+      chrome.storage.local.set({'autoQuantize': autoQuantize})
+    })
+
+    console.log('state restored', items)
   })
 
-  chrome.storage.local.get('editorView', function(items) {
-    window.events.emit('setEditorView', items.editorView || 'visual')
-  })
 
   loadDefaultProject()
 }

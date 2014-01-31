@@ -32,14 +32,6 @@ module.exports = function(body){
   clock.setTempo(120)
   clock.start()
 
-  chrome.storage.local.get('tempo', function(items) {
-    clock.setTempo(items.tempo || 120)
-    clock.on('tempo', function(value){
-      console.log('saving tempo')
-      chrome.storage.local.set({'tempo': value})
-    })
-  })
-
   // self recorder
   var instanceNames = Object.keys(instances)
   window.context.recorder = new MultiRecorder(audioContext, instanceNames.length, {silenceDuration: 3})
@@ -96,9 +88,9 @@ function createInstance(audioContext, output, clock, midiStream){
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
   instance.quantizer = Quantizer(clock.getCurrentPosition)
-
   clock.pipe(instance.controller).pipe(instance.quantizer).pipe(instance)
 
+  // sampler
   instance.sampler = SoundRecorder(instance.controller, instance)
 
   // feedback loop
