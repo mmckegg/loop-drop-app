@@ -10,7 +10,7 @@
     "bopper": "~0.2.0",
     "ditty": "~1.0.2",
     "midi-looper": "~0.1.0",
-    "soundbank": "~0.1.0",
+    "soundbank": "mmckegg/soundbank",
     "midi-looper-launchpad": "~0.1.0",
     "midi-qwerty-keys": "~0.0.1",
     "teoria": "~0.4.0",
