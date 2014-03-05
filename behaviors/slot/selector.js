@@ -146,6 +146,7 @@ module.exports = function(container){
     slotState.active[id] = !!event.data[2]
     slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
     requestRefresh(id)
+    outputId && requestRefresh(outputId)
   })
 
   window.context.instances[thisDeckId].on('change', function(descriptor){
