@@ -4,6 +4,7 @@ var Ditty = require('ditty')
 var MidiLooper = require('midi-looper')
 var Soundbank = require('soundbank')
 
+var Playback = require('../lib/playback')
 var Quantizer = require('../lib/quantizer')
 
 var Launchpad = require('midi-looper-launchpad')
@@ -15,7 +16,9 @@ var AudioRMS = require('../lib/audio-rms')
 
 module.exports = function(body){
   var audioContext = window.context.audio
+
   var clock = Bopper(audioContext)
+  audioContext.scheduler = clock
 
   var output = audioContext.createGain()
   output.connect(audioContext.destination)
@@ -24,8 +27,8 @@ module.exports = function(body){
   output.connect(rms.input)
 
   var instances = {
-    left: createInstance(audioContext, output, clock, MidiStream('Launchpad', 0)),
-    right: createInstance(audioContext, output, clock, MidiStream('Launchpad', 1))
+    left: createInstance(audioContext, output, MidiStream('Launchpad', 0)),
+    right: createInstance(audioContext, output, MidiStream('Launchpad', 1))
   }
 
   // start clock
@@ -70,9 +73,14 @@ module.exports = function(body){
   console.log('init engine')
 }
 
-function createInstance(audioContext, output, clock, midiStream){
+function createInstance(audioContext, output, midiStream){
+
   var instance = Soundbank(audioContext)
-  var ditty = Ditty(clock)
+
+  instance.playback = Playback(instance)
+  
+  var scheduler = audioContext.scheduler
+  var ditty = Ditty(scheduler)
 
   midiStream.on('error', function(err){
     console.log(err)
@@ -83,18 +91,18 @@ function createInstance(audioContext, output, clock, midiStream){
     exclude['144/' + data.id] = data.exclude
   })
 
-  instance.looper = MidiLooper(clock.getCurrentPosition, {exclude: exclude})
+  instance.looper = MidiLooper(scheduler.getCurrentPosition, {exclude: exclude})
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
-  instance.quantizer = Quantizer(clock.getCurrentPosition)
-  clock.pipe(instance.controller).pipe(instance.quantizer).pipe(instance)
+  instance.quantizer = Quantizer(scheduler.getCurrentPosition)
+  scheduler.pipe(instance.controller).pipe(instance.quantizer).pipe(instance.playback)
 
   // sampler
   instance.sampler = SoundRecorder(instance.controller, instance)
 
   // feedback loop
-  ditty.pipe(instance).pipe(instance.looper).pipe(ditty)
+  ditty.pipe(instance.playback).pipe(instance.looper).pipe(ditty)
 
   // connect to output
   instance.connect(output)

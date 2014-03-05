@@ -111,12 +111,12 @@ var dataFilters = {
     }
   },
   scale: function(input){
-    if (input instanceof Object && input.type === 'scale'){
+    if (input instanceof Object && input.node === 'scale'){
       return input.scale || 'major'
     }
   },
   scaleNotes: function(input){
-    if (input instanceof Object && input.type === 'scale'){
+    if (input instanceof Object && input.node === 'scale'){
       return getScale(input.root || 'C4', input.scale || 'major')
     }
   },
@@ -229,8 +229,8 @@ module.exports = function(container){
             var target = obj[res.key]
 
             // ensure is specified node type
-            if (!(target instanceof Object) || res.value.type !== value.type){
-              obj[res.key] = target = { type: value.type }
+            if (!(target instanceof Object) || res.value.node !== value.node){
+              obj[res.key] = target = { node: value.node }
               if (value.$valueTo){
 
                 if (!Array.isArray(res.value) && typeof res.value == 'object'){
@@ -324,15 +324,15 @@ module.exports.deleteButton = function(element){
 module.exports.spawner = function(container){
   container.addEventListener('click', function(e){
     var element = getLink(e.target)
-    if (element && element.dataset.type){
-      var object = {type: element.dataset.type}
-      if (object.type === 'oscillator'){
+    if (element && element.dataset.node){
+      var object = {node: element.dataset.node}
+      if (object.node === 'oscillator'){
         object.amp = 0.6
         object.note = 72
         object.frequency = 440
       }
 
-      if (object.type === 'filter'){
+      if (object.node === 'filter'){
         object.frequency = 350
       }
       window.events.emit('appendToActiveSlot', container.dataset.path, object)
@@ -359,7 +359,7 @@ module.exports.scaleSelector = function(element){
       window.events.emit('updateActiveSlot', element.dataset.path, {
         $node: true, 
         $valueTo: 'root',
-        type: 'scale', 
+        node: 'scale', 
         scale: element.value
       })
     } else {

@@ -21,11 +21,11 @@ module.exports = function(container){
   })
 
   function handleTab(e){
-    if (this.dataset.type && this.dataset.type != 'value'){
+    if (this.dataset.node && this.dataset.node != 'value'){
       window.events.emit('updateActiveSlot', path, {
         $node: true,
         $valueTo: 'value',
-        type: this.dataset.type
+        node: this.dataset.node
       })
     } else {
       window.events.emit('updateActiveSlot', path, {
@@ -106,7 +106,7 @@ module.exports = function(container){
         value = parseFloat(container.dataset['default'])
       }
 
-      var modifier = object && object.type
+      var modifier = object && object.node
 
       if (lastModifier != modifier){
         Object.keys(tabs).forEach(function(key){

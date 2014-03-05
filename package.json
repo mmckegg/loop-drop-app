@@ -10,7 +10,21 @@
     "bopper": "~0.2.0",
     "ditty": "~1.0.2",
     "midi-looper": "~0.1.0",
-    "soundbank": "mmckegg/soundbank",
+    
+    "soundbank": "~0.1.0",
+    "soundbank-slice": "~0.0.1",
+    "soundbank-delay": "~0.0.1",
+    "soundbank-overdrive": "~0.0.1",
+    "soundbank-oscillator": "~0.0.1",
+    "soundbank-sample": "~0.0.1",
+    "soundbank-inherit": "~0.0.1",
+    "soundbank-scale": "~0.0.1",
+    "soundbank-multi": "~0.0.1",
+    "soundbank-dipper": "~0.0.1",
+    "adsr": "~0.0.1",
+    "lfo": "~0.1.0",
+
+
     "midi-looper-launchpad": "~0.1.0",
     "midi-qwerty-keys": "~0.0.1",
     "teoria": "~0.4.0",

@@ -60,7 +60,7 @@ function onMouseUp(event){
 }
 
 function fillFrom(template, id, offset){
-  var descriptor = {id: String(id), type: 'inherit', from: template.id}
+  var descriptor = {id: String(id), node: 'inherit', from: template.id}
   if (typeof template.offset === 'number'){
     descriptor.offset = template.offset + 1 + offset
   } else {

@@ -3,16 +3,16 @@
     <div data-preserve-attribute='style'></div> 
     <span class='.label'/>
   </div>
-  <a href='#' class='.lfo'  data-type='lfo' data-preserve-attribute='class'>LFO</a> 
-  <a href='#' class='.adsr' data-type='adsr' data-preserve-attribute='class'>ENV</a>
-  <a href='#' class='.clear' data-type='value' data-preserve-attribute='class'>X</a> 
+  <a href='#' class='.lfo'  data-node='lfo' data-preserve-attribute='class'>LFO</a> 
+  <a href='#' class='.adsr' data-node='adsr' data-preserve-attribute='class'>ENV</a>
+  <a href='#' class='.clear' data-node='value' data-preserve-attribute='class'>X</a> 
  
 </div>
-<t:placeholder t:by='.type'>
+<t:placeholder t:by='.node'>
   <div class='.sub' t:when='adsr'>
 
     <div tabIndex='0' class='.slider' 
-      t:bind:data-path=':path(start)' 
+      t:bind:data-path=':path(startValue)' 
       data-behavior='editor.param'
       data-default='0'
       t:bind:data-f=':format'>
@@ -67,7 +67,7 @@
     </div>
 
     <div tabIndex='0' class='.slider' 
-      t:bind:data-path=':path(end)' 
+      t:bind:data-path=':path(endValue)' 
       data-behavior='editor.param'
       data-default='0'
       t:bind:data-f=':format'>

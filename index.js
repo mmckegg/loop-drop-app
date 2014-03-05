@@ -4,7 +4,7 @@ var behave = require('./behaviors')
 
 window.events = new EventEmitter()
 window.context = {
-  audio: new webkitAudioContext()
+  audio: require('./audio-context')
 }
 
 // apply behaviors

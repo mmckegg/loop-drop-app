@@ -138,7 +138,7 @@ module.exports = function(container){
     slot.activeCount = 0
   }
 
-  window.context.instances[thisDeckId].on('data', function(event){
+  window.context.instances[thisDeckId].playback.on('data', function(event){
     var id = String(event.data[1])
     var outputId = getOutput(id)
     var increment = event.data[2] ? 1 : -1
@@ -152,7 +152,7 @@ module.exports = function(container){
     var id = descriptor.id
 
     slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
-    slotState.linked[id] = descriptor.type === 'inherit'
+    slotState.linked[id] = descriptor.node === 'inherit'
     slotState.action[id] = !!(descriptor.downAction || descriptor.upAction)
 
     updateDescriptor(descriptor)
@@ -181,7 +181,7 @@ module.exports = function(container){
     if (descriptor){
       if ('output' in descriptor){
         return descriptor.output
-      } else if (descriptor.type === 'inherit' && descriptor.from != id) {
+      } else if (descriptor.node === 'inherit' && descriptor.from != id) {
         return getOutput(descriptor.from)
       }
     }
@@ -192,7 +192,7 @@ module.exports = function(container){
     var id = String(descriptor.id)
     var oldDescriptor = descriptors[id] || { id: id }
 
-    if (descriptor.type === 'inherit' && descriptor.from != oldDescriptor.from){
+    if (descriptor.node === 'inherit' && descriptor.from != oldDescriptor.from){
       inheritedLookup[descriptor.from] = inheritedLookup[descriptor.from] || []
       if (!~inheritedLookup[descriptor.from].indexOf(id)){
         inheritedLookup[descriptor.from].push(id)

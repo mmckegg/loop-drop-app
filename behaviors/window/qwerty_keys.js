@@ -76,7 +76,7 @@ module.exports = function(element){
         refreshRepeat()
       } else {
         var deckInstance = window.context.instances[currentDeckId]
-        deckInstance.write(data)
+        deckInstance.playback.write(data)
       }
 
     } else { 
@@ -90,7 +90,7 @@ module.exports = function(element){
       } else {
         // make sure up note goes to correct instance
         var deckInstance = window.context.instances[downNoteInstances[key]]
-        deckInstance.write(data)
+        deckInstance.playback.write(data)
       }
 
     }
