@@ -324,7 +324,7 @@
       />
     </div>
     <div>  
-      <select data-behavior='editor.nodes.select' t:bind:data-value='.output' t:bind:data-path=':path(output)'>
+      <select data-behavior='editor.nodes.select' t:bind:data-value='slot.output' data-path='slot.output'>
         <option value=''>Master</option>
         <option value='A'>Bus A</option>
         <option value='B'>Bus B</option>
