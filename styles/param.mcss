@@ -3,17 +3,19 @@ Param {
     display: flex
 
     select {
+      border-radius: 0
       cursor: pointer
       font-size: 80%;
       display: inline-block;
       padding: 2px 4px;
       height: 18px;
       border: 1px solid #A9A9A9;
-      background: #666;
       -webkit-appearance: none;
       color: #FFF;
       text-align: center;
+      background: #666 svg(dropArrow) no-repeat right
     }
+
 
     div.slider {
       position: relative;
@@ -66,4 +68,14 @@ Param {
   }
 
 
+}
+
+@svg dropArrow {
+  width: 12px
+  height: 6px
+  content: "<path d='M2,0 L10,0 L6,6 Z' />"
+
+  path {
+    fill: #888
+  }
 }

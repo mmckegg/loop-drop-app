@@ -76,7 +76,7 @@ Node {
         height: 18px;
         border: 1px solid #A9A9A9;
         margin-left: -1px;
-        background: #666;
+        background: #666 svg(dropArrow) no-repeat right
         -webkit-appearance: none;
         color: #FFF;
         text-align: center;
