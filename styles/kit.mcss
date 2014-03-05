@@ -14,7 +14,6 @@ Kit {
 
   div {
     position: relative
-    font-size: 1.3vw
     color: #333
     text-align: center
     width:12.5%;
