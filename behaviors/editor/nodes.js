@@ -124,6 +124,11 @@ var dataFilters = {
     if (Array.isArray(input)){
       return input.join(',')
     }
+  },
+  selectedClass: function(input){
+    if (input){
+      return '-selected'
+    }
   }
 }
 
@@ -207,6 +212,24 @@ module.exports = function(container){
   }
 
   window.context.editor = {get: get, rootContext: current, filters: dataFilters}
+
+  window.events.on('toggleActiveSlot', function(path){
+    var newObject = obtain(current.slot)
+    var res = jsonQuery(path, {rootContext: {slot: newObject}})
+    if (res.key != null){
+      var obj = jsonQuery.lastParent(res)
+      if (obj){
+        if (obj[res.key]){
+          obj[res.key] = false
+        } else {
+          obj[res.key] = true
+        }
+
+        currentDeck.update(newObject)
+        window.events.emit('kitChange', current.deckId)
+      }
+    }
+  })
 
   window.events.on('updateActiveSlot', function(path, value){
     var newObject = obtain(current.slot)
@@ -338,6 +361,12 @@ module.exports.spawner = function(container){
       window.events.emit('appendToActiveSlot', container.dataset.path, object)
     }
   })
+}
+
+module.exports.toggle = function(element){
+  element.onclick = function(){
+    window.events.emit('toggleActiveSlot', element.dataset.path)
+  }
 }
 
 module.exports.select = function(element){
