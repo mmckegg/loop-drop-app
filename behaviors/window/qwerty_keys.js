@@ -18,7 +18,7 @@ module.exports = function(element){
 
   function refreshRepeat(){
     releaseRepeat&&releaseRepeat()
-    if (repeating){
+    if (repeating && downNotes.length){
       var deckInstance = window.context.instances[currentDeckId]
       releaseRepeat = deckInstance.looper.transform('repeat', downNotes, repeatLength)
     }
