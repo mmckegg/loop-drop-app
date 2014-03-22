@@ -17,7 +17,7 @@
     "soundbank-overdrive": "~0.0.1",
     "soundbank-oscillator": "~0.0.1",
     "soundbank-sample": "~0.0.1",
-    "soundbank-inherit": "~0.0.1",
+    "soundbank-inherit": "~0.1.0",
     "soundbank-scale": "~0.0.1",
     "soundbank-multi": "~0.0.1",
     "soundbank-dipper": "~0.0.1",
