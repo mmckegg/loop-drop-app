@@ -375,7 +375,7 @@ module.exports.select = function(element){
   }
 
   function refresh(){
-    element.value = element.dataset.value
+    element.value = element.dataset.value || ''
   }
 
   refresh()
