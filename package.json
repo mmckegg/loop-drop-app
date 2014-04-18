@@ -22,7 +22,7 @@
     "soundbank-multi": "~0.0.1",
     "soundbank-dipper": "~0.0.1",
     "adsr": "~0.0.1",
-    "lfo": "~0.1.0",
+    "lfo": "~0.2.0",
 
 
     "midi-looper-launchpad": "~0.3.0",
@@ -32,7 +32,7 @@
     "wave-recorder": "~1.0.0",
     "tap-tempo": "~0.0.0",
     "json-query": "~0.3.1",
-    "rincewind": "~1.3.0",
+    "rincewind": "~1.4.0",
     "rincewind-watch": "~0.0.2",
     "dom-behavior": "~1.2.0",
     "micro-css": "~0.2.2",
