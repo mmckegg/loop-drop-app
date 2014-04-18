@@ -1,0 +1,45 @@
+NodeSpawner {
+  margin: 5px 0;
+  padding: 2px;
+  border-radius: 4px;
+
+  :hover {
+  }
+
+  a {
+    :before {
+      content: '+ '
+      font-weight: bold
+    }
+    display: inline-block
+    text-decoration: none
+    background: #555;
+    border: 1px solid #555;
+
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: #EEE;
+  }
+
+  -source {
+    background: #373D3D;
+    a {
+      background: #5C6869;
+      border-color: #51696B;
+      :hover {
+        background: #619BA0;
+      }
+    }
+  }
+
+  -processor {
+    background: #3A2F42
+    a {
+      border-color: #705A81;
+      background: #705A81;
+      :hover {
+        background: #A889C0;
+      }
+    }
+  }
+}
