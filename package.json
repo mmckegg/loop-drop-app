@@ -13,7 +13,7 @@
     
     "soundbank": "~0.2.0",
     "soundbank-slice": "~0.0.1",
-    "soundbank-delay": "~0.0.1",
+    "soundbank-delay": "~0.1.0",
     "soundbank-overdrive": "~0.0.1",
     "soundbank-oscillator": "~0.0.1",
     "soundbank-sample": "~0.0.1",
@@ -47,7 +47,8 @@
     "concat-stream": "~1.4.1",
     "module-deps": "~1.2.2",
     "wav": "~0.1.2",
-    "keycode": "~0.3.0"
+    "keycode": "~0.3.0",
+    "frac": "^0.3.1"
   },
   "window": {
     "bounds": {

@@ -1,0 +1,35 @@
+ToggleButton {
+
+  text-decoration: none;
+  font-size: 90%;
+  padding: 2px 5px;
+  border-radius: 4px;
+  display: inline-block;
+  border: #6B806B 1px solid;
+  background: #6F6F6F;
+  color: #D0D0D0;
+
+  -active {
+    background: #325736;
+    :after {
+      background: #82D182;
+    }
+  }
+
+  :hover {
+    border-color: #84BD89;
+    color: #D6FFC9;
+  }
+
+  :after {
+    display: inline-block;
+    border-radius: 3px;
+    width: 6px;
+    height: 6px;
+    background: #AAA4A4;
+    content: '';
+    margin-left: 1px;
+    vertical-align: middle;
+  }
+  
+}

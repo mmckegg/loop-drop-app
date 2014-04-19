@@ -2,6 +2,7 @@ var become = require('become')
 var render = require('../../views').nodeEditor
 var jsonQuery = require('json-query')
 var teoria = require('teoria')
+var frac = require('frac')
 
 var relativeQuery = /^[\.\[:]/
 
@@ -30,6 +31,13 @@ var dataFilters = {
 
     }
     return result
+  },
+  activeClass: function(input, params){
+    if (input){
+      return params.args.join(' ') + ' -active'
+    } else {
+      return params.args.join(' ')
+    }
   },
   format: function(input, params){
     if (this.query === '.amp'){
@@ -98,6 +106,26 @@ var dataFilters = {
         return round(input,1) + ' s'
       } else {
         return round(input*1000) + ' ms'
+      }
+    } else {
+      return input
+    }
+  },
+  beat: function(input, params){
+    if (input instanceof Object){
+      input = input.value
+    }
+
+    if (input == null){
+      input = 1
+    }
+
+    if (params.args[0]){
+      if (input >= 1){
+        return round(input,1)
+      } else {
+        var f = frac(input, 32)
+        return f[1] + '/' + f[2]
       }
     } else {
       return input

@@ -247,12 +247,26 @@
     <t:placeholder t:when='delay'>
       <div class='.title'>Delay</div>
       <div class='.body'>
+        <div>
+          <a t:bind:class='.sync:activeClass(ToggleButton)'
+            t:bind:data-path=':path(sync)'
+            data-behavior='editor.nodes.toggle' href='#'>
+              BPM Sync
+          </a>
+        </div>
         <div class='-flex'>
           <div class='.title'>Time</div>
-          <div class='Param' t:view='param' 
+          <div t:unless='.sync' class='Param' t:view='param' 
             data-behavior='editor.param' 
-            data-default='0.1'
+            data-default='0.25'
             data-f='ms' 
+            t:bind='.time'
+            t:bind:data-path=':path(time)' 
+          />
+          <div t:if='.sync' class='Param' t:view='param' 
+            data-behavior='editor.param' 
+            data-default='0.25'
+            data-f='beat' 
             t:bind='.time'
             t:bind:data-path=':path(time)' 
           />
