@@ -17,6 +17,7 @@ module.exports = function(container){
     present: {},
     recording: {},
     inputActive: {},
+    meddler: {},
     linked: {},
     action: {},
     selected: null
@@ -77,6 +78,13 @@ module.exports = function(container){
         } else {
           element.classList.remove('-linked')
         }
+
+        if (slotState.meddler[id]){
+          element.classList.add('-meddler')
+        } else {
+          element.classList.remove('-meddler')
+        }
+
 
         if (slotState.action[id]){
           element.classList.add('-action')
@@ -154,6 +162,8 @@ module.exports = function(container){
 
     slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
     slotState.linked[id] = descriptor.node === 'inherit'
+    slotState.meddler[id] = descriptor.inputMode === 'meddler'
+
     slotState.action[id] = !!(descriptor.downAction || descriptor.upAction)
 
     updateDescriptor(descriptor)
