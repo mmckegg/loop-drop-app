@@ -1,0 +1,38 @@
+height: 40px;
+display: flex;
+position: relative;
+
+div {
+  flex: 1
+  border: 1px solid black
+  background: white
+
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+
+  cursor: pointer
+  
+  -black {
+    position: absolute;
+    width: 1.4%;
+    height: 50%;
+    background: #000;
+    margin-left: -0.7%;
+    -scale {
+      background: #2E6A2E
+    }
+    -selected {
+      background: #41DC41
+    }
+  }
+
+  -scale {
+    background: #CFC
+  }
+
+  -selected {
+    background: lime
+  }
+
+
+}

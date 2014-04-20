@@ -7,6 +7,15 @@ var frac = require('frac')
 var relativeQuery = /^[\.\[:]/
 
 var dataFilters = {
+  mcss: function(input, params){
+    var classes = params.args.join(' ').split(' ')
+    var resource = this.locals && this.locals[classes[0]]
+    if (resource && resource.key){
+      return resource.key + ' ' + classes.slice(1).join(' ')
+    } else {
+      return classes.join(' ')
+    }
+  },
   path: function(input, params){
     var result = ''
     if (input){
