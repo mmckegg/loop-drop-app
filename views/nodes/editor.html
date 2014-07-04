@@ -264,6 +264,30 @@
       </div>
     </t:placeholder>
 
+    <t:placeholder t:when='bitcrusher'>
+      <div class='.title'>Bitcrusher</div>
+      <div class='.body'>
+        <div class='-flex'>
+          <div class='.title'>bit depth</div>
+          <div t:bind:class=':mcss(Param)' t:view='param' 
+            data-behavior='editor.param' data-f='bit'
+            data-default='8'
+            t:bind='.bitDepth' 
+            t:bind:data-path=':path(bitDepth)' 
+          />
+        </div>
+        <div class='-flex'>
+          <div class='.title'>freq</div>
+          <div t:bind:class=':mcss(Param)' t:view='param' 
+            data-behavior='editor.param' data-f='sampleRatio'
+            data-default='1'
+            t:bind='.frequency' 
+            t:bind:data-path=':path(frequency)' 
+          />
+        </div>
+      </div>
+    </t:placeholder>
+
     <t:placeholder t:when='delay'>
       <div class='.title'>Delay</div>
       <div class='.body'>
@@ -385,6 +409,7 @@
     <a href='#' data-node='overdrive'>overdrive</a>
     <a href='#' data-node='delay'>delay</a>
     <a href='#' data-node='gain'>gain</a>
+    <a href='#' data-node='bitcrusher'>bitcrusher</a>
     <a href='#' data-node='dipper'>dipper</a>
   </div>
 

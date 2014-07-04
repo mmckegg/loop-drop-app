@@ -23,7 +23,8 @@ audioContext.processors = {
   filter: audioContext.createBiquadFilter.bind(audioContext),
   delay: require('soundbank-delay'),
   dipper: require('soundbank-dipper'),
-  overdrive: require('soundbank-overdrive')
+  overdrive: require('soundbank-overdrive'),
+  bitcrusher: require('bitcrusher').bind(this, audioContext, {bufferSize: 256}),
 }
 
 audioContext.sampleCache = {}
