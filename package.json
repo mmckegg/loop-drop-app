@@ -21,6 +21,7 @@
     "soundbank-scale": "~0.0.1",
     "soundbank-multi": "~0.0.1",
     "soundbank-dipper": "~0.1.0",
+    "soundbank-pitch-shift": "~1.0.0",
     "bitcrusher": "~0.2.0",
     "adsr": "~0.0.1",
     "lfo": "~0.2.0",

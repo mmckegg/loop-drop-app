@@ -25,6 +25,7 @@ audioContext.processors = {
   dipper: require('soundbank-dipper'),
   overdrive: require('soundbank-overdrive'),
   bitcrusher: require('bitcrusher').bind(this, audioContext, {bufferSize: 256}),
+  pitchshift: require('soundbank-pitch-shift')
 }
 
 audioContext.sampleCache = {}
