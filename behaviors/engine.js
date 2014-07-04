@@ -23,6 +23,17 @@ module.exports = function(body){
   var output = audioContext.createGain()
   output.connect(audioContext.destination)
 
+  // debug write out levels to console
+  var monitorId = 0
+  window.monitorLevel = function(name, node){
+    var id = monitorId++
+    var monitor = AudioRMS(audioContext)
+    node.connect(monitor.input)
+    monitor.on('data', function(data){
+      console.log(id, name, data[0])
+    })
+  }
+
   var rms = window.context.audio.rms = AudioRMS(audioContext)
   output.connect(rms.input)
 
