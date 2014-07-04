@@ -27,9 +27,22 @@
       <select t:if='slot.node:is(inherit)' 
         data-behavior='editor.nodes.select' 
         t:bind:data-value='slot.from' 
-        data-path='slot.from' 
-        t:view='slotOptions' 
-      />
+        data-path='slot.from'>
+
+        <optgroup label='Slots' t:view='slotOptions'/>
+
+        <optgroup label='Busses'>
+          <option value='A'>Bus A</option>
+          <option value='B'>Bus B</option>
+          <option value='C'>Bus C</option>
+          <option value='D'>Bus D</option>
+          <option value='E'>Bus E</option>
+          <option value='F'>Bus F</option>
+          <option value='G'>Bus G</option>
+          <option value='H'>Bus H</option>
+        </optgroup>
+
+      </select>
 
     </div>
     <div t:unless='slot.node:is(inherit)' >  
@@ -391,15 +404,18 @@
         <select data-behavior='editor.nodes.select' t:bind:data-value='slot.output' data-path='slot.output'>
           <option value=''>Master</option>
           <option value='meddler'>Meddler</option>
+          <optgroup label='Busses'>
+            <option value='A'>Bus A</option>
+            <option value='B'>Bus B</option>
+            <option value='C'>Bus C</option>
+            <option value='D'>Bus D</option>
+            <option value='E'>Bus E</option>
+            <option value='F'>Bus F</option>
+            <option value='G'>Bus G</option>
+            <option value='H'>Bus H</option>
+          </optgroup>
 
-          <option value='A'>Bus A</option>
-          <option value='B'>Bus B</option>
-          <option value='C'>Bus C</option>
-          <option value='D'>Bus D</option>
-          <option value='E'>Bus E</option>
-          <option value='F'>Bus F</option>
-          <option value='G'>Bus G</option>
-          <option value='H'>Bus H</option>
+          <optgroup label='Slots' t:view='slotOptions'/>
         </select>
       </div>
     </div>
