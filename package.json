@@ -9,7 +9,8 @@
   "dependencies": {
     "bopper": "~0.2.0",
     "ditty": "~1.0.2",
-    "midi-looper": "~0.2.0",
+    "midi-looper": "~0.3.0",
+    "midi-looper-launchpad": "~0.4.0",
     "soundbank": "~0.2.1",
     "soundbank-slice": "~0.0.1",
     "soundbank-delay": "~0.1.0",
@@ -22,7 +23,6 @@
     "soundbank-dipper": "~0.1.0",
     "adsr": "~0.0.1",
     "lfo": "~0.2.0",
-    "midi-looper-launchpad": "~0.3.0",
     "midi-qwerty-keys": "~0.0.1",
     "teoria": "~0.4.0",
     "web-midi": "~0.2.1",

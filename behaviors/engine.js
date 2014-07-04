@@ -87,11 +87,13 @@ function createInstance(audioContext, output, midiStream){
   })
 
   var exclude = {}
+  var noRepeat = {}
   instance.on('change', function(data){
     exclude['144/' + data.id] = data.exclude
+    noRepeat['144/' + data.id] = data.noRepeat
   })
 
-  instance.looper = MidiLooper(scheduler.getCurrentPosition, {exclude: exclude})
+  instance.looper = MidiLooper(scheduler.getCurrentPosition, {exclude: exclude, noRepeat: noRepeat})
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
