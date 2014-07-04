@@ -180,7 +180,7 @@
     <a href='#' data-node='oscillator'>oscillator</a>
   </div>
 
-  <div t:bind:class=':mcss(Node -processor)' t:repeat='slot.processors' t:by='.node' t:bind:data-path=':path'>
+  <div t:bind:class=':mcss(Node -processor $node)' t:repeat='slot.processors' t:by='.node' t:bind:data-path=':path'>
     <div class='.controls'>
       <a href='#' class='.delete' data-behavior='editor.nodes.deleteButton'>X</a>
     </div>

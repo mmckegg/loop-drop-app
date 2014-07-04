@@ -456,7 +456,7 @@ function getNodeEditorElement(node){
 }
 
 function getNodeElement(node){
-  while (node && !node.classList.contains('Node')){
+  while (node && !node.classList.contains('$node')){
     node = node.parentNode
     if (node === document) { 
       node = null 
