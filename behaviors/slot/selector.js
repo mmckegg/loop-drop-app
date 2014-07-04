@@ -164,7 +164,7 @@ module.exports = function(container){
     slotState.linked[id] = descriptor.node === 'inherit'
     slotState.meddler[id] = descriptor.inputMode === 'meddler'
 
-    slotState.action[id] = !!(descriptor.downAction || descriptor.upAction)
+    slotState.action[id] = !!(descriptor.downAction || descriptor.upAction || descriptor.inputMode)
 
     updateDescriptor(descriptor)
     requestRefresh(id)
