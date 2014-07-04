@@ -70,7 +70,7 @@ function onDrop(event){
     }
 
   } else if (event.dataTransfer.files.length == 1) {
-    //destinationKit.parentNode.events.emit('fileDrop', event.dataTransfer.files[0], destinationId)
+    window.events.emit('dropFileOnSlot', event.dataTransfer.files[0], destinationDeckId, destinationId)
   }
 }
 

@@ -1,4 +1,5 @@
 var TapeLoop = require('../lib/tape-loop')
+var getSoundOffset = require('../lib/get_sound_offset')
 
 module.exports = function(){
 
@@ -9,6 +10,8 @@ module.exports = function(){
   window.events.on('saveKit', saveKit)
   window.events.on('renameKit', renameKit)
   window.events.on('deleteKit', deleteKit)
+
+  window.events.on('dropFileOnSlot', dropFileOnSlot)
 
   // state persistance
   chrome.storage.local.get(['editorView', 'tempo', 'autoQuantize'], function(items) {
@@ -41,6 +44,29 @@ module.exports = function(){
 
 
   loadDefaultProject()
+}
+
+function dropFileOnSlot(file, deckId, slotId){
+  var fileName = Date.now() + slotId + '.wav'
+  var soundbank = window.context.instances[deckId]
+  var project = window.context.currentProject
+
+  project.samples.getFile(fileName, {create: true, exclusive: false}, function(entry){
+    writeFile(entry, file, function(e){
+      loadSample(fileName, function(buffer){
+        soundbank.update({
+          id: slotId,
+          sources: [{
+            node: 'sample',
+            mode: 'hold',
+            url: entry.name,
+            offset: getSoundOffset(buffer) || [0,1]
+          }],
+          gain: 1
+        })
+      })
+    })
+  })
 }
 
 function loadSample(src, cb){
