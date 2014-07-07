@@ -220,6 +220,17 @@
             t:bind:data-path=':path(frequency)' 
           />
         </div>
+        <div class='-flex'>
+          <div class='.title'>resonance</div>
+          <div t:bind:class=':mcss(Param)' 
+            t:view='param' 
+            data-behavior='editor.param' 
+            data-f='ratio100' 
+            data-default='1'
+            t:bind='.Q'
+            t:bind:data-path=':path(Q)' 
+          />
+        </div>
       </div>
     </t:placeholder>
     <t:placeholder t:when='overdrive'>
