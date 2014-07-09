@@ -24,13 +24,13 @@ module.exports = function(element){
   var lastOffset = null
   var lastAmp = null
 
-  startSlider.onchange = function(){
+  startSlider.oninput = function(){
     lastOffset = [parseFloat(this.value), lastOffset[1]]
     updateOffset()
     window.events.emit('updateActiveSlot', path + '.offset', lastOffset)
   }
 
-  endSlider.onchange = function(){
+  endSlider.oninput = function(){
     lastOffset = [lastOffset[0], parseFloat(this.value)]
     updateOffset()
     window.events.emit('updateActiveSlot', path + '.offset', lastOffset)
