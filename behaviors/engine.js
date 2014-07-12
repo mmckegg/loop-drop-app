@@ -99,12 +99,20 @@ function createInstance(audioContext, output, midiStream){
 
   var exclude = {}
   var noRepeat = {}
+  var loopTransforms = {}
+
   instance.on('change', function(data){
+    var overrideTransform = !!data.loopTransform
     exclude['144/' + data.id] = data.exclude
-    noRepeat['144/' + data.id] = data.noRepeat
+    noRepeat['144/' + data.id] = data.noRepeat || overrideTransform
+    loopTransforms['144/' + data.id] = data.loopTransform
   })
 
-  instance.looper = MidiLooper(scheduler.getCurrentPosition, {exclude: exclude, noRepeat: noRepeat})
+  instance.looper = MidiLooper(scheduler.getCurrentPosition, {
+    exclude: exclude, 
+    noRepeat: noRepeat, 
+    loopTransforms: loopTransforms
+  })
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)

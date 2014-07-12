@@ -48,6 +48,10 @@ Kit {
       background-color: #576F85
     }
 
+    -transformer {
+      background: #CE6D4F;
+    }
+
     -selected {
       opacity: 1 !important
       background: lime !important;
