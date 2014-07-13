@@ -10,7 +10,8 @@ audioContext.providers = {
   inherit: require('soundbank-inherit'),
   scale: require('soundbank-scale'),
   slice: require('soundbank-slice'),
-  multi: require('soundbank-multi')
+  multi: require('soundbank-multi'),
+  range: require('./lib/range')
 }
 
 audioContext.modulators = {
