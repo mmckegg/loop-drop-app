@@ -16,7 +16,8 @@ audioContext.providers = {
 
 audioContext.modulators = {
   lfo: require('lfo'),
-  adsr: require('adsr')
+  adsr: require('adsr'),
+  slide: require('soundbank-slide')
 }
 
 audioContext.processors = {
