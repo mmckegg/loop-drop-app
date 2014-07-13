@@ -101,7 +101,7 @@ function createInstance(audioContext, output, midiStream){
   var noRepeat = {}
   var loopTransforms = {}
 
-  instance.on('change', function(data){
+  instance.on('refresh', function(data){
     var overrideTransform = !!data.loopTransform
     exclude['144/' + data.id] = data.exclude
     noRepeat['144/' + data.id] = data.noRepeat || overrideTransform
