@@ -12,10 +12,24 @@ if (!fs.existsSync('build')){
   fs.mkdirSync('build')
 }
 
-
+var pendingSteps = 0
+function pendingStep(){
+  pendingSteps += 1
+}
+function popStep(){
+  pendingSteps -= 1
+  if (!pendingSteps){
+    if (~process.argv.indexOf('-w') || ~process.argv.indexOf('--watch')){
+      console.log('Build complete. Watching for changes...')
+    } else {
+      process.exit()
+    }
+  }
+}
 
 var viewPath = __dirname + '/views'
 
+pendingStep()
 watchViews({
   window: viewPath + '/window.html',
   nodeEditor: viewPath + '/nodes/editor.html'
@@ -26,7 +40,7 @@ watchViews({
       ;delete require.cache[f]
     }
   })
-  fs.writeFile('build/index.html', views.window())
+  fs.writeFile('build/index.html', views.window(), popStep)
 })
 
 function getViewsModule(views, relativeTo){
@@ -38,6 +52,8 @@ function getViewsModule(views, relativeTo){
     'module.exports = {\n  ' + results.join(',\n  ') + '\n}'
 }
 
+pendingStep()
+pendingStep()
 catw('package.json', function(stream){
   stream.pipe(Concat(function(data){
     var pkg = JSON.parse(data)
@@ -57,18 +73,19 @@ catw('package.json', function(stream){
       //  16: "icon-16.png", 
       //  128: "icon-128.png"
       //}
-    }, null, 2))
+    }, null, 2), popStep)
 
     fs.writeFile(
       'build/background.js', 
       "chrome.app.runtime.onLaunched.addListener(function() { \n" +
       "  chrome.app.window.create('index.html', " + JSON.stringify(pkg.window || null) + ")\n" +
-      "})"
+      "})", popStep
     )
 
   }))
 })
 
+pendingStep()
 gaze('**/*.mcss', function(err, watcher){
 
   var styles = {}
@@ -92,7 +109,7 @@ gaze('**/*.mcss', function(err, watcher){
     Object.keys(styles).forEach(function(k){
       content += styles[k]
     })
-    fs.writeFile('build/resource.css', content)
+    fs.writeFile('build/resource.css', content, popStep)
   }
 
   this.watched(function(err, watched) {
@@ -113,22 +130,25 @@ gaze('**/*.mcss', function(err, watcher){
   })
 })
 
+pendingStep()
 catw('styles/*.mcss', function(stream){
   stream.pipe(Concat(function(data){
-    fs.writeFile('build/bundle.css', mcss(String(data)))
+    fs.writeFile('build/bundle.css', mcss(String(data)), popStep)
   }))
 })
 
+pendingStep()
 catw('styles/*.css', function(stream){
-  stream.pipe(fs.createWriteStream('build/extra.css'))
+  stream.pipe(fs.createWriteStream('build/extra.css')).on('finish', popStep)
 })
 
+pendingStep()
 var w = watchify('./index.js')
 //w.require('through')
 w.on('update', bundle)
 bundle()
 function bundle(){
-  w.bundle({debug: true}).pipe(fs.createWriteStream('build/bundle.js'))
+  w.bundle({debug: true}).pipe(fs.createWriteStream('build/bundle.js')).on('finish', popStep)
 }
 
 function getHtml(options){
