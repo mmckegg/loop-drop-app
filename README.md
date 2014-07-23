@@ -5,12 +5,6 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 
 ## Install
 
-[Download and install the built Chrome App](https://docs.google.com/uc?export=download&id=0B02k4ZLTMC5DTEU1Nk1oRlNRejA)
-
-(to install: Extract Zip. Open Chrome, then Window > Extensions. Drag "Loop Drop.crx" into the extension list. Go to chrome://flags/#enable-web-midi and enable Web Midi. Then open the installed Chrome App and navigate to "sample project".)
-
-Or clone this repo and build your own.
-
 ```bash
 $ git clone https://github.com/mmckegg/loop-drop-app
 $ npm install
