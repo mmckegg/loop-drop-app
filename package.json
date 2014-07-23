@@ -69,6 +69,8 @@
     "storage"
   ],
   "devDependencies": {
-    "tape": "*"
+    "tape": "*",
+    "cli-color": "^0.3.2",
+    "growl": "^1.8.1"
   }
 }

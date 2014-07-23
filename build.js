@@ -1,3 +1,4 @@
+var colors = require('cli-color')
 var watchify = require('watchify')
 var catw = require('catw')
 var mcss = require('micro-css')
@@ -5,6 +6,7 @@ var Concat = require('concat-stream')
 var watchViews = require('rincewind-watch')
 var gaze = require('gaze')
 var getResourceKey = require('unique-resource')
+var notify = require('growl')
 
 var fs = require('fs')
 process.cwd(__dirname)
@@ -29,6 +31,7 @@ function popStep(){
 
 var viewPath = __dirname + '/views'
 
+// index.html
 pendingStep()
 watchViews({
   window: viewPath + '/window.html',
@@ -52,6 +55,7 @@ function getViewsModule(views, relativeTo){
     'module.exports = {\n  ' + results.join(',\n  ') + '\n}'
 }
 
+// manifest.json / background.js
 pendingStep()
 pendingStep()
 catw('package.json', function(stream){
@@ -85,6 +89,7 @@ catw('package.json', function(stream){
   }))
 })
 
+// resource.css
 pendingStep()
 gaze('**/*.mcss', function(err, watcher){
 
@@ -130,6 +135,7 @@ gaze('**/*.mcss', function(err, watcher){
   })
 })
 
+// bundle.css
 pendingStep()
 catw('styles/*.mcss', function(stream){
   stream.pipe(Concat(function(data){
@@ -137,42 +143,38 @@ catw('styles/*.mcss', function(stream){
   }))
 })
 
+// extra.css
 pendingStep()
 catw('styles/*.css', function(stream){
   stream.pipe(fs.createWriteStream('build/extra.css')).on('finish', popStep)
 })
 
+// bundle.js
 pendingStep()
 var w = watchify('./index.js')
-//w.require('through')
+var pendingBundleError = false
 w.on('update', bundle)
 bundle()
 function bundle(){
-  w.bundle({debug: true}).pipe(fs.createWriteStream('build/bundle.js')).on('finish', popStep)
+  w.bundle({debug: true}).on('error', handleError).pipe(fs.createWriteStream('build/bundle.js')).on('finish', function(){
+    popStep()
+    handleSucess()
+  })
 }
 
-function getHtml(options){
-  var result = ''
-  result += "<!doctype html>\n"
-  if (options.title){
-    result += "<title>" + options.title + "</title>\n"
+function handleSucess(){
+  if (pendingBundleError){
+    pendingBundleError = false
+    console.log('** ' + colors.green('Rebuild successful!') + ' **')
+    notify('Rebuild Succeeded', {title: 'Loop Drop'})
   }
+}
 
-  if (options.styles){
-    options.styles.forEach(function(style){
-      result += '<link rel="stylesheet" href="' + style + '"></script>'
-    })
-  }
-
-  result += '<body>\n'
-
-  if (options.scripts){
-    options.scripts.forEach(function(script){
-      result += '<script src="' + script + '"></script>'
-    })
-  }
-
-  result += '</body>\n'
-
-  return result
+function handleError(err){
+  console.log('** ' + colors.red('REBUILD ERROR') + ' **')
+  var message = (err&&err.message||err||'Error').replace(/([\/][^\/ ]+)+(([\/][^\/ ]+){2}( |$))/g, ".$2")
+    .replace(/: Line ([0-9]+)/, ":$1")
+  console.error(message)
+  notify(message, {title: 'Loop Drop', image: 'js'})
+  pendingBundleError = true
 }
