@@ -13,17 +13,47 @@ Or clone this repo and build your own.
 
 ```bash
 $ git clone https://github.com/mmckegg/loop-drop-app
-$ npm install # currently some of the deps aren't on npm, so this will fail :(
-$ npm run build -w # build the chrome app and watch for changes
+$ npm install
+$ npm run build # or npm run watch (to automatically rebuild) 
 ```
 
-Then open chrome and go the the extensions tab. Tick the enable developer mode then 'Load Unpacked Extension' and navigate to 'loop-drop-app/build'.
+Then open chrome and go the the extensions tab. Tick the enable developer mode then **'Load Unpacked Extension'** and navigate to 'loop-drop-app/build' (the entire directory).
 
-**Okay you can't really install this quite yet, but I will get the packages on npm and upload a packaged chrome app soon!**
+If you want to use it with Launchpad (WHICH YOU SHOULD!), you need to go to chrome://flags/#enable-web-midi and enable Web Midi. Then restart Chrome.
+
+**When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.** Or [clone the sample project](https://github.com/mmckegg/loop-drop-sample-project) and point at that.
 
 ## What/How/Why is this thing?
 
 Some people find writing and performing electronic music far too much like programming a computer and not enough like playing an instrument. So instead we **write software** that makes making music fun again! If we ever get around to finishing it that is...
+
+### Use it with [Novation Launchpad](http://us.novationmusic.com/midi-controllers-digital-dj/launchpad)
+
+For (somewhat) detailed Launchpad controller info see [the usage notes on the midi-looper-launchpad module](https://github.com/mmckegg/midi-looper-launchpad#usage).
+
+If you are using it with a Launchpad Mini, you will have to modify the code that initializes the Launchpad connection [behaviors/engine.js:41](https://github.com/mmckegg/loop-drop-app/blob/master/behaviors/engine.js#L41) to look for `"Launchpad Mini"` instead.
+
+### Using without a Launchpad
+
+Very simplistic 'computer keyboard' controls have been implemented. 
+
+You get the first 3 lines of the soundbank grid. You can move the target up and down using `-` and `=` keys
+
+```
+Q W E R T Y U O
+A S D F G H J K
+Z X C V B N M ,
+```
+
+`Enter` loops the events currently in buffer, and `Backspace` undoes the last loop.
+
+`SHIFT+SPACE` switches to the other soundbank deck.
+
+By default, it is in repeat mode which means you have to hold down the key to hear a sound. By default it triggers on each beat. You can change the repeat length by using 1-8 number keys across the top of keyboard. Press `~` to disable repeat and free-play.
+
+### Implement your own controller
+
+YES DO IT!
 
 ## Modules
 
