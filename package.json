@@ -7,6 +7,7 @@
     "build": "node build"
   },
   "dependencies": {
+    "inheritable-audio-context": "^1.0.2",
     "bopper": "^1.0.0",
     "ditty": "^1.0.2",
     "midi-looper": "~0.4.0",
@@ -51,8 +52,7 @@
     "module-deps": "^1.2.2",
     "gaze": "^0.6.3",
     "unique-resource": "^0.1.0",
-    "through": "^2.3.4",
-    "inheritable-audio-context": "^1.0.1"
+    "through": "^2.3.4"
   },
   "window": {
     "bounds": {
