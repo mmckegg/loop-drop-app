@@ -1,4 +1,6 @@
-var audioContext = new webkitAudioContext()
+var IAC = require('inheritable-audio-context')
+
+var audioContext = IAC(new AudioContext())
 module.exports = audioContext
 
 audioContext.sources = {

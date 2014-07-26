@@ -11,7 +11,7 @@
     "ditty": "^1.0.2",
     "midi-looper": "~0.4.0",
     "midi-looper-launchpad": "~0.5.0",
-    "soundbank": "~0.3.1",
+    "soundbank": "~0.4.0",
     "soundbank-slice": "~0.0.1",
     "soundbank-delay": "~0.1.0",
     "soundbank-overdrive": "~0.0.1",
@@ -51,7 +51,8 @@
     "module-deps": "^1.2.2",
     "gaze": "^0.6.3",
     "unique-resource": "^0.1.0",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "inheritable-audio-context": "^1.0.1"
   },
   "window": {
     "bounds": {
