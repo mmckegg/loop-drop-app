@@ -34,8 +34,7 @@ var viewPath = __dirname + '/views'
 // index.html
 pendingStep()
 watchViews({
-  window: viewPath + '/window.html',
-  nodeEditor: viewPath + '/nodes/editor.html'
+  window: viewPath + '/window.html'
 }, function(views, changedFiles){
   fs.writeFileSync(viewPath + '/index.js', getViewsModule(views, viewPath))
   changedFiles.forEach(function(f){
