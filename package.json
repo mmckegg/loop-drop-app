@@ -52,7 +52,8 @@
     "module-deps": "^1.2.2",
     "gaze": "^0.6.3",
     "unique-resource": "^0.1.0",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "audio-rms": "^1.0.0"
   },
   "window": {
     "bounds": {

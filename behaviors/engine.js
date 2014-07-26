@@ -12,7 +12,7 @@ var MidiStream = require('web-midi')
 var SoundRecorder = require('../lib/sound_recorder')
 
 var MultiRecorder = require('../lib/multi-recorder')
-var AudioRMS = require('../lib/audio-rms')
+var AudioRMS = require('audio-rms')
 
 module.exports = function(body){
   var audioContext = window.context.audio
