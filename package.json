@@ -34,7 +34,7 @@
     "wav": "~0.1.2",
     "keycode": "~0.3.0",
     "frac": "^0.3.1",
-    "json-query": "~0.5.0",
+    "json-query": "^1.0.0",
     "rincewind": "^1.7.0",
     "rincewind-watch": "~0.1.0",
     "dom-behavior": "^1.2.0",
