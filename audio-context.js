@@ -1,7 +1,13 @@
 var IAC = require('inheritable-audio-context')
+var Bopper = require('bopper')
 
 var audioContext = IAC(new AudioContext())
 module.exports = audioContext
+
+// set up default clock
+var clock = audioContext.scheduler = Bopper(audioContext)
+clock.setTempo(120)
+clock.start()
 
 audioContext.sources = {
   sample: require('soundbank-sample'),

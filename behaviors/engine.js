@@ -1,4 +1,3 @@
-var Bopper = require('bopper')
 var Ditty = require('ditty')
 
 var MidiLooper = require('midi-looper')
@@ -17,8 +16,7 @@ var AudioRMS = require('audio-rms')
 module.exports = function(body){
   var audioContext = window.context.audio
 
-  var clock = Bopper(audioContext)
-  audioContext.scheduler = clock
+  var clock = audioContext.scheduler
 
   var output = audioContext.createGain()
   output.connect(audioContext.destination)
@@ -41,10 +39,6 @@ module.exports = function(body){
     left: createInstance(audioContext, output, MidiStream('Launchpad S', 0)),
     right: createInstance(audioContext, output, MidiStream('Launchpad S', 1))
   }
-
-  // start clock
-  clock.setTempo(120)
-  clock.start()
 
   // self recorder
   var instanceNames = Object.keys(instances)
