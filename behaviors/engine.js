@@ -102,15 +102,7 @@ function createInstance(audioContext, output, midiStream){
     loopTransforms['144/' + data.id] = data.loopTransform
   })
 
-  function getPositionWithOffset(){
-    return scheduler.getCurrentPosition() + ditty.getOffset()
-  }
-
-  ditty.on('offset', function(offset){
-    instance.controller.setOffset(offset)
-  })
-
-  instance.looper = MidiLooper(getPositionWithOffset, {
+  instance.looper = MidiLooper(scheduler.getCurrentPosition, {
     exclude: exclude, 
     noRepeat: noRepeat, 
     loopTransforms: loopTransforms
@@ -118,8 +110,20 @@ function createInstance(audioContext, output, midiStream){
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
-  instance.quantizer = Quantizer(getPositionWithOffset)
+  instance.quantizer = Quantizer(scheduler.getCurrentPosition)
   scheduler.pipe(instance.controller).pipe(instance.quantizer).pipe(instance.playback)
+
+  // set offsets for remote sync
+  instance.setOffset = function(value){
+    ditty.setOffset(value)
+    instance.controller.setOffset(value)
+    instance.looper.setOffset(value)
+    instance.quantizer.setOffset(value)
+  }
+  
+  instance.getOffset = function(){
+    return ditty.getOffset()
+  }
 
   // sampler
   instance.sampler = SoundRecorder(instance.controller, instance)

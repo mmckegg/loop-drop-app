@@ -10,7 +10,7 @@
     "inheritable-audio-context": "^1.0.2",
     "bopper": "^1.0.0",
     "ditty": "^1.2.0",
-    "midi-looper": "~0.4.0",
+    "midi-looper": "~0.5.0",
     "midi-looper-launchpad": "~0.6.0",
     "soundbank-slot-editor": "^1.0.1",
     "soundbank": "~0.4.1",
