@@ -49,6 +49,10 @@ By default, it is in repeat mode which means you have to hold down the key to he
 
 YES DO IT!
 
+## Connect Instances
+
+Use [loop-drop-server](https://github.com/mmckegg/loop-drop-server) to connect and sync multiple instances of Loop Drop together over a local network or via internet.
+
 ## Modules
 
 ### Clock and Scheduling
