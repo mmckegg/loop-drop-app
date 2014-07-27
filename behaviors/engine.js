@@ -108,7 +108,15 @@ function createInstance(audioContext, output, midiStream){
     loopTransforms['144/' + data.id] = data.loopTransform
   })
 
-  instance.looper = MidiLooper(scheduler.getCurrentPosition, {
+  function getPositionWithOffset(){
+    return scheduler.getCurrentPosition() + ditty.getOffset()
+  }
+
+  ditty.on('offset', function(offset){
+    instance.controller.setOffset(offset)
+  })
+
+  instance.looper = MidiLooper(getPositionWithOffset, {
     exclude: exclude, 
     noRepeat: noRepeat, 
     loopTransforms: loopTransforms
@@ -116,7 +124,7 @@ function createInstance(audioContext, output, midiStream){
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
-  instance.quantizer = Quantizer(scheduler.getCurrentPosition)
+  instance.quantizer = Quantizer(getPositionWithOffset)
   scheduler.pipe(instance.controller).pipe(instance.quantizer).pipe(instance.playback)
 
   // sampler
@@ -124,6 +132,7 @@ function createInstance(audioContext, output, midiStream){
 
   // feedback loop
   ditty.pipe(instance.playback).pipe(instance.looper).pipe(ditty)
+  instance.loop = ditty
 
   // connect to output
   instance.connect(output)
