@@ -20,36 +20,33 @@ var behaviors = {
   },
   'remote': function(element){
     var remote = null
-    window.events.on('connect', function(server){
+    window.events.on('showRemote', function(server){
       if (!remote){
         remote = Remote(window.context.audio, element)
+        remote.setLocalInstance(window.context.instances.left)
         remote.output.connect(window.context.audio.destination)
       }
-      remote.connect(server, window.context.instances.left, 'Loop Drop')
-      window.events.emit('connected', server)
     })
-
-    window.events.on('disconnect', function(){
+    window.events.on('hideRemote', function(){
       if (remote){
         remote.disconnect()
-        window.events.emit('disconnected')
       }
     })
   },
-  'showWhenConnected': function(element){
+  'showWhenRemote': function(element){
     element.hidden = true
-    window.events.on('connected', function(){
+    window.events.on('showRemote', function(){
       element.hidden = false
     })
-    window.events.on('disconnected', function(){
+    window.events.on('hideRemote', function(){
       element.hidden = true
     })
   },
-  'hideWhenConnected': function(element){
-    window.events.on('connected', function(){
+  'hideWhenRemote': function(element){
+    window.events.on('showRemote', function(){
       element.hidden = true
     })
-    window.events.on('disconnected', function(){
+    window.events.on('hideRemote', function(){
       element.hidden = false
     })
   },

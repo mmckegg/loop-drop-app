@@ -1,21 +1,21 @@
 module.exports = function(element){
-  var connected = false
+  var active = false
   
   element.onclick = function(){
-    if (!connected){
-      window.events.emit('connect', 'ws://localhost:7777')
+    if (!active){
+      window.events.emit('showRemote')
     } else {
-      window.events.emit('disconnect')
+      window.events.emit('hideRemote')
     }
   }
 
-  window.events.on('connected', function(server){
+  window.events.on('showRemote', function(server){
     element.classList.add('-active')
-    connected = true
+    active = true
   })
 
-  window.events.on('disconnected', function(){
+  window.events.on('hideRemote', function(){
     element.classList.remove('-active')
-    connected = false
+    active = false
   })
 }
