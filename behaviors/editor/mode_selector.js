@@ -13,7 +13,7 @@ module.exports = function(container){
 
   container.addEventListener('click', function(e){
     var element = getLink(e.target)
-    if (element){
+    if (element && element.dataset.value){
       window.events.emit('setEditorView', element.dataset.value)
     }
   })
