@@ -7,30 +7,15 @@
     "build": "node build"
   },
   "dependencies": {
-    "inheritable-audio-context": "^1.0.2",
-    "bopper": "^1.0.0",
+    "loop-drop-audio-context": "^1.0.0",
+    "soundbank": "~0.4.1",
     "ditty": "^1.2.0",
     "midi-looper": "~0.5.0",
     "midi-looper-launchpad": "~0.6.0",
     "soundbank-slot-editor": "^1.0.1",
     "loop-drop-remote": "~0.2.0",
-    "soundbank": "~0.4.1",
-    "soundbank-slice": "~0.0.1",
-    "soundbank-delay": "~0.1.0",
-    "soundbank-overdrive": "~0.0.1",
-    "soundbank-oscillator": "~0.0.1",
-    "soundbank-sample": "~0.2.0",
-    "soundbank-inherit": "~0.1.0",
-    "soundbank-scale": "~0.0.1",
-    "soundbank-multi": "~0.0.1",
-    "soundbank-dipper": "~0.1.0",
-    "soundbank-pitch-shift": "~1.0.1",
-    "bitcrusher": "~0.2.0",
-    "adsr": "^0.1.0",
-    "lfo": "^1.0.1",
-    "soundbank-slide": "~0.0.1",
-    "midi-qwerty-keys": "~0.0.1",
     "teoria": "~0.4.0",
+    "midi-qwerty-keys": "~0.0.1",
     "web-midi": "~0.2.1",
     "wave-recorder": "~1.0.0",
     "tap-tempo": "~0.0.0",
@@ -55,7 +40,7 @@
     "gaze": "^0.6.3",
     "unique-resource": "^0.1.0",
     "through": "^2.3.4",
-    "audio-rms": "^1.0.0"
+    "audio-rms": "^1.0.0"    
   },
   "window": {
     "bounds": {
