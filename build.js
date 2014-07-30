@@ -4,8 +4,6 @@ var catw = require('catw')
 var mcss = require('micro-css')
 var Concat = require('concat-stream')
 var watchViews = require('rincewind-watch')
-var gaze = require('gaze')
-var getResourceKey = require('unique-resource')
 var notify = require('growl')
 
 var fs = require('fs')
@@ -86,52 +84,6 @@ catw('package.json', function(stream){
     )
 
   }))
-})
-
-// resource.css
-pendingStep()
-gaze('**/*.mcss', function(err, watcher){
-
-  var styles = {}
-  var cache = {}
-
-  function update(filepath){
-    var key = getResourceKey(filepath, {cache: false})
-    var content = fs.readFileSync(filepath)
-    content = mcss(key + ' { ' + content + ' }')
-
-    if (content){
-      styles[filepath] = content
-    } else {
-      delete styles[filepath]
-    }
-
-  }
-
-  function dumpFile(){
-    var content = ''
-    Object.keys(styles).forEach(function(k){
-      content += styles[k]
-    })
-    fs.writeFile('build/resource.css', content, popStep)
-  }
-
-  this.watched(function(err, watched) {
-    for (var dir in watched){
-      for (var i=0;i<watched[dir].length;i++){
-        var file = watched[dir][i]
-        if (file.slice(-5) === '.mcss'){
-          update(file)
-        }
-      }
-    }
-    dumpFile()
-  })
-
-  this.on('changed', function(filepath){
-    update(filepath)
-    dumpFile()
-  })
 })
 
 // bundle.css

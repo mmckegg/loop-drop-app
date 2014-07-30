@@ -4,7 +4,7 @@
   "author": "Matt McKegg",
   "scripts": {
     "watch": "node build -w -d",
-    "build": "node build"
+    "build": "browserify index.js -d -o build/bundle.js"
   },
   "dependencies": {
     "loop-drop-audio-context": "^1.0.0",
@@ -36,8 +36,6 @@
     "watchify": "^0.7.2",
     "catw": "~0.2.0",
     "concat-stream": "~1.4.1",
-    "module-deps": "^1.2.2",
-    "gaze": "^0.6.3",
     "unique-resource": "^0.1.0",
     "through": "^2.3.4",
     "audio-rms": "^1.0.0"    
