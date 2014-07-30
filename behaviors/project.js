@@ -4,6 +4,7 @@ var getSoundOffset = require('../lib/get_sound_offset')
 module.exports = function(){
 
   window.context.audio.loadSample = loadSample
+  window.context.audio.getSampleBlob = getSampleBlob
 
   window.events.on('newKit', newKit)
   window.events.on('loadKit', loadKit)
@@ -69,28 +70,41 @@ function dropFileOnSlot(file, deckId, slotId){
   })
 }
 
+function getSampleBlob(src, cb){
+  var project = window.context.currentProject
+  project.samples.getFile(src, {create: false}, function(entry){
+    entry.file(function(blob){
+      console.log(blob)
+      cb(null, blob)
+    })
+  }, function(err){
+    cb&&cb(err)
+  })
+}
+
 function loadSample(src, cb){
   var sampleCache = window.context.audio.sampleCache
-  var project = window.context.currentProject
   var current = sampleCache[src]
   var audioContext = window.context.audio
 
   if (!current){
     current = sampleCache[src] = []
-    project.samples.getFile(src, {create: false}, function(entry){
-      readFileAsBuffer(entry, function(file){
-        audioContext.decodeAudioData(file, function(buffer){
-          sampleCache[src] = buffer
-          current.forEach(function(callback){
-            callback(buffer)
-          })
-        }, handleError)
-      })
-    }, function(){
-      sampleCache[src] = null
-      current.forEach(function(callback){
-        callback(null)
-      })
+    getSampleBlob(src, function(err, blob){
+      if (!err){
+        readFileAsBuffer(blob, function(buffer){
+          audioContext.decodeAudioData(buffer, function(audio){
+            sampleCache[src] = audio
+            current.forEach(function(callback){
+              callback(audio)
+            })
+          }, handleError)
+        })
+      } else {
+        sampleCache[src] = null
+        current.forEach(function(callback){
+          callback(null)
+        })
+      }
     })
   }
 
@@ -424,15 +438,13 @@ function readFile(entry, cb){
   }, handleError)
 }
 
-function readFileAsBuffer(entry, cb){
-  entry.file(function(file){
-    var reader = new FileReader()
-    reader.onload = function(){
-      cb(reader.result)
-    }
-    reader.onerror = handleError
-    reader.readAsArrayBuffer(file)
-  }, handleError)
+function readFileAsBuffer(blob, cb){
+  var reader = new FileReader()
+  reader.onload = function(){
+    cb(reader.result)
+  }
+  reader.onerror = handleError
+  reader.readAsArrayBuffer(blob)
 }
 
 function compareEntry(a, b){
