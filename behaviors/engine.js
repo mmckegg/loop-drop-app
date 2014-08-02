@@ -13,6 +13,8 @@ var SoundRecorder = require('../lib/sound_recorder')
 var MultiRecorder = require('../lib/multi-recorder')
 var AudioRMS = require('audio-rms')
 
+var UpdateLoop = require('../lib/update-loop')
+
 module.exports = function(body){
   var audioContext = window.context.audio
 
@@ -84,12 +86,17 @@ function createInstance(audioContext, output, midiStream){
 
   instance.playback = Playback(instance)
   
+  var ditty = Ditty()
+
   var scheduler = audioContext.scheduler
-  var ditty = Ditty(scheduler)
 
   midiStream.on('error', function(err){
     console.log(err)
   })
+
+  function getCurrentPosition(){
+    return audioContext.scheduler.getCurrentPosition()
+  }
 
   var exclude = {}
   var noRepeat = {}
@@ -102,7 +109,7 @@ function createInstance(audioContext, output, midiStream){
     loopTransforms['144/' + data.id] = data.loopTransform
   })
 
-  instance.looper = MidiLooper(scheduler.getCurrentPosition, {
+  instance.looper = MidiLooper(getCurrentPosition, {
     exclude: exclude, 
     noRepeat: noRepeat, 
     loopTransforms: loopTransforms
@@ -110,26 +117,23 @@ function createInstance(audioContext, output, midiStream){
 
   // controller
   instance.controller = Launchpad(midiStream, instance.looper)
-  instance.quantizer = Quantizer(scheduler.getCurrentPosition)
-  scheduler.pipe(instance.controller).pipe(instance.quantizer).pipe(instance.playback)
+  instance.quantizer = Quantizer(getCurrentPosition)
 
-  // set offsets for remote sync
-  instance.setOffset = function(value){
-    ditty.setOffset(value)
-    instance.controller.setOffset(value)
-    instance.looper.setOffset(value)
-    instance.quantizer.setOffset(value)
-  }
-  
-  instance.getOffset = function(){
-    return ditty.getOffset()
-  }
+  scheduler
+    .pipe(instance.controller)
+    .pipe(instance.quantizer)
+    .pipe(instance.playback)
 
   // sampler
   instance.sampler = SoundRecorder(instance.controller, instance)
 
-  // feedback loop
-  ditty.pipe(instance.playback).pipe(instance.looper).pipe(ditty)
+  // playback / looper
+  scheduler
+    .pipe(ditty)
+    .pipe(instance.playback)
+    .pipe(instance.looper)
+    .pipe(UpdateLoop(ditty))
+
   instance.loop = ditty
 
   // connect to output

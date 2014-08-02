@@ -153,12 +153,19 @@ module.exports = function(container){
     slot.activeCount = 0
   }
 
-  window.context.instances[thisDeckId].playback.on('data', function(event){
-    var id = String(event.data[1])
+  window.context.instances[thisDeckId].playback.on('data', function(data){
+    var id = data.id
     var outputId = getOutput(id)
-    var increment = event.data[2] ? 1 : -1
+    var increment = 0 
 
-    slotState.active[id] = !!event.data[2]
+    if (data.event === 'start'){
+      increment = 1
+      slotState.active[id] = true
+    } else if (data.event === 'stop'){
+      increment = -1
+      slotState.active[id] = false
+    }
+
     slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
     requestRefresh(id)
     outputId && requestRefresh(outputId)
