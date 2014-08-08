@@ -39,8 +39,8 @@ module.exports = function(body){
   output.connect(rms.input)
 
   var instances = {
-    left: createInstance(audioContext, output, MidiStream('Launchpad S', 0)),
-    right: createInstance(audioContext, output, MidiStream('Launchpad S', 1))
+    left: createInstance(audioContext, output, MidiStream('Launchpad Mini', 0)),
+    right: createInstance(audioContext, output, MidiStream('Launchpad Mini 2', 0))
   }
 
   // self recorder
