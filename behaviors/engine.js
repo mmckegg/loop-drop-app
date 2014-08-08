@@ -14,6 +14,7 @@ var MultiRecorder = require('../lib/multi-recorder')
 var AudioRMS = require('audio-rms')
 
 var UpdateLoop = require('../lib/update-loop')
+var DittyToMidi = require('../lib/ditty-to-midi')
 
 module.exports = function(body){
   var audioContext = window.context.audio
@@ -131,6 +132,7 @@ function createInstance(audioContext, output, midiStream){
   scheduler
     .pipe(ditty)
     .pipe(instance.playback)
+    .pipe(DittyToMidi()) // backward compat
     .pipe(instance.looper)
     .pipe(UpdateLoop(ditty))
 

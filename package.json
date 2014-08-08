@@ -11,7 +11,7 @@
     "loop-drop-audio-context": "^1.0.0",
     "soundbank": "~0.4.1",
     "ditty": "^2.1.0",
-    "midi-looper": "~0.6.0",
+    "midi-looper": "^1.0.0",
     "midi-looper-launchpad": "~0.6.0",
     "soundbank-slot-editor": "^1.0.1",
     "loop-drop-remote": "~0.4.0",
