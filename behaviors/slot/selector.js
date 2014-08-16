@@ -153,36 +153,42 @@ module.exports = function(container){
     slot.activeCount = 0
   }
 
-  window.context.instances[thisDeckId].playback.on('data', function(data){
-    var id = data.id
-    var outputId = getOutput(id)
-    var increment = 0 
+  window.context.triggerOutput.on('data', function(data){
+    var parts = data.id.split('#')
+    if (parts[0] === thisDeckId){
+      var id = parts[1]
+      var outputId = getOutput(data.id)
+      var increment = 0 
 
-    if (data.event === 'start'){
-      increment = 1
-      slotState.active[id] = true
-    } else if (data.event === 'stop'){
-      increment = -1
-      slotState.active[id] = false
+      if (data.event === 'start'){
+        increment = 1
+        slotState.active[id] = true
+      } else if (data.event === 'stop'){
+        increment = -1
+        slotState.active[id] = false
+      }
+
+      slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
+      requestRefresh(id)
+      outputId && requestRefresh(outputId)
     }
-
-    slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
-    requestRefresh(id)
-    outputId && requestRefresh(outputId)
   })
 
-  window.context.instances[thisDeckId].on('change', function(descriptor){
-    var id = descriptor.id
+  window.context.soundbank.on('change', function(descriptor){
+    var parts = descriptor.id.split('#')
+    if (parts[0] === thisDeckId){
+      var id = parts[1]
 
-    slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
-    slotState.linked[id] = descriptor.node === 'inherit'
-    slotState.meddler[id] = descriptor.inputMode === 'meddler'
-    slotState.transformer[id] = !!descriptor.loopTransform
+      slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
+      slotState.linked[id] = descriptor.node === 'inherit'
+      slotState.meddler[id] = descriptor.inputMode === 'meddler'
+      slotState.transformer[id] = !!descriptor.loopTransform
 
-    slotState.action[id] = !!(descriptor.downAction || descriptor.upAction || descriptor.inputMode)
+      slotState.action[id] = !!(descriptor.downAction || descriptor.upAction || descriptor.inputMode)
 
-    updateDescriptor(descriptor)
-    requestRefresh(id)
+      updateDescriptor(descriptor)
+      requestRefresh(id)
+    }
   })
 
   window.events.on('selectSlot', function(deckId, slotId){

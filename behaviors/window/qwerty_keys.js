@@ -3,11 +3,11 @@ var handleKey = require('../../lib/handle-key')
 
 module.exports = function(element){
   var currentDeckId = 'left'
-  var downNoteInstances = {}
-  var repeating = true
+  var upEvents = {}
+  var repeating = false
   var repeatLength = 1
   var releaseRepeat = null
-  var downNotes = []
+  var active = []
 
   var qwertyInput = QwertyKeys({mode: 'grid'})
 
@@ -18,9 +18,9 @@ module.exports = function(element){
 
   function refreshRepeat(){
     releaseRepeat&&releaseRepeat()
-    if (repeating && downNotes.length){
+    if (repeating && active.length){
       var deckInstance = window.context.instances[currentDeckId]
-      releaseRepeat = deckInstance.looper.transform('repeat', downNotes, repeatLength)
+      releaseRepeat = deckInstance.transform(repeat, active, repeatLength)
     }
   }
 
@@ -31,14 +31,14 @@ module.exports = function(element){
 
   handleKey("'", function(){
     var deckInstance = window.context.instances[currentDeckId]
-    var length = deckInstance.looper.getLength() * 2
-    deckInstance.looper.setLength(length)
+    var length = deckInstance.loopLength() * 2
+    deckInstance.loopLength.set(length)
   })
 
   handleKey(';', function(){
     var deckInstance = window.context.instances[currentDeckId]
-    var length = deckInstance.looper.getLength() / 2
-    deckInstance.looper.setLength(length)
+    var length = deckInstance.loopLength() / 2
+    deckInstance.loopLength.set(length)
   })
 
   handleKey('space', function(e){
@@ -50,12 +50,13 @@ module.exports = function(element){
 
   handleKey('enter', function(){
     var deckInstance = window.context.instances[currentDeckId]
-    deckInstance.looper.store()
+    var start = window.context.clock.getCurrentPosition() - deckInstance.loopLength()
+    deckInstance.loopRange(start, deckInstance.loopLength())
   })
 
   handleKey('backspace', function(){
     var deckInstance = window.context.instances[currentDeckId]
-    deckInstance.looper.undo()
+    deckInstance.undo()
   })
 
   var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8]
@@ -66,34 +67,104 @@ module.exports = function(element){
     refreshRepeat()
   })
 
+  var releaseHold = null
+  handleKey('0', function(){
+    if (!releaseHold){
+      var deckInstance = window.context.instances[currentDeckId]
+      var start = window.context.clock.getCurrentPosition()
+      releaseHold = deckInstance.transform(hold, start, repeatLength)
+    }
+  }, function(){
+    releaseHold()
+    releaseHold = null
+  })
+
   qwertyInput.on('data', function(data){
     var key = data[0] + '/' + data[1]
+    var deckInstance = window.context.instances[currentDeckId]
+    var id = deckInstance.grid().data[data[1]]
+
     if (data[2]){
-      downNotes.push(data)
-      downNoteInstances[key] = currentDeckId
+      active.push(data[1])
+      upEvents[key] = {
+        event: 'stop',
+        id: id
+      }
 
       if (repeating){
         refreshRepeat()
       } else {
-        var deckInstance = window.context.instances[currentDeckId]
-        deckInstance.playback.write(data)
+        var obj = {
+          event: 'start',
+          id: id,
+          position: window.context.clock.getCurrentPosition()
+        }
+        console.log(obj)
+        window.context.triggerOutput.write(obj)
       }
 
     } else { 
 
-      downNotes = downNotes.filter(function(note){
-        return !(note[0] == data[0] && note[1] == data[1])
+      active = active.filter(function(note){
+        return note !== data[1]
       })
 
       if (repeating){
         refreshRepeat()
       } else {
-        // make sure up note goes to correct instance
-        var deckInstance = window.context.instances[downNoteInstances[key]]
-        deckInstance.playback.write(data)
+        var up = upEvents[key]
+        if (up){
+          up.position = window.context.clock.getCurrentPosition()
+          window.context.triggerOutput.write(up)
+          console.log(up)
+        }
       }
 
     }
   })
 
+}
+
+function repeat(input, active, length){
+  active.forEach(function(index){
+    input.data[index] = {
+      events: [[0, length/2]],
+      length: length
+    }
+  })
+  return input
+}
+
+function hold(input, start, length, indexes){
+  var end = start + length
+  input.data.forEach(function(loop, i){
+    if (loop && (!indexes || !indexes.length || ~indexes.indexOf(i))){
+      var from = start % loop.length
+      var to = end % loop.length
+      var events = []
+
+      loop.events.forEach(function(event){
+        if (inRange(from, to, event[0])){
+          event = event.concat()
+          event[0] = event[0] % length
+          event[1] = Math.min(event[1], length)
+          events.push(event)
+        }
+      })
+
+      input.data[i] = {
+        events: events,
+        length: length
+      }
+    }
+  })
+  return input
+}
+
+function inRange(from, to, value){
+  if (to > from){
+    return value >= from && value < to
+  } else {
+    return value >= from || value < to
+  }
 }

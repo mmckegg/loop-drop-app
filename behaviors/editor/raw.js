@@ -5,10 +5,10 @@ require('brace/theme/ambiance');
 
 module.exports = function(element){
 
-  var currentId = null
-  var currentDeckId = null
-  var currentDeck = null
   var enabled = false
+  var slot = null
+  var slotRelease = null
+  var currentDeckId = null
 
   var editorElement = element.parentNode
   
@@ -30,17 +30,16 @@ module.exports = function(element){
       editorElement.parentNode.classList.remove('-' + currentDeckId)
     }
 
-    currentDeckId = deckId
-    currentId = String(slotId)
+    if (slotRelease){
+      slotRelease()
+      slotRelease = null
+    }
 
     var deck = window.context.instances[deckId]
-    if (deck != currentDeck){
-      if (currentDeck){
-        deck.removeListener('change', handleData)
-      }
-      currentDeck = deck
-      currentDeck.on('change', handleData)
-    }
+    currentDeckId = deckId
+    slot = getSlotObserv(deck.mainChunk.slots, slotId)
+
+    var slotRelease = slot(handleData)
 
     update()
   })
@@ -60,9 +59,9 @@ module.exports = function(element){
     if (!updating){
       updating = true
       window.requestAnimationFrame(function(cb){
-        if (currentDeckId && currentId){
-          var descriptor = window.context.instances[currentDeckId].getDescriptor(currentId)
-          textEditor.setValue(JSMN.stringify(descriptor),-1)
+        var data = slot()
+        if (data){
+          textEditor.setValue(JSMN.stringify(data),-1)
         } else {
           textEditor.setValue('',-1)
         }
@@ -74,25 +73,36 @@ module.exports = function(element){
 
   function save(){
     var value = textEditor.getValue()
-    if (!updating && value != lastValue && currentDeck){
+    if (!updating && value != lastValue && slot){
       lastValue = value
       try {
         var object = JSMN.parse(value)
-        object.id = currentId
-        currentDeck.update(object)
+        object.id = slot().id
+        slot.set(object)
         window.events.emit('kitChange', currentDeckId)
       } catch (ex) {}
     }
   }
 
   function handleData(data){
-    if (enabled && data.id == currentId){
+    if (enabled){
       if (!textEditor.isFocused()){
-        update()
+        update(data)
       }
     }
   }
 
   textEditor.on('blur', update)
   textEditor.on('change', save)
+}
+
+function getSlotObserv(slots, id){
+  var result = null
+  slots.some(function(slot){
+    if (typeof slot === 'function' && slot().id == id){
+      result = slot
+      return true
+    }
+  })
+  return result
 }

@@ -49,7 +49,7 @@ module.exports = function(){
 
 function dropFileOnSlot(file, deckId, slotId){
   var fileName = Date.now() + slotId + '.wav'
-  var soundbank = window.context.instances[deckId]
+  var soundbank = window.context.soundbank
   var project = window.context.currentProject
 
   project.samples.getFile(fileName, {create: true, exclusive: false}, function(entry){
@@ -74,7 +74,6 @@ function getSampleBlob(src, cb){
   var project = window.context.currentProject
   project.samples.getFile(src, {create: false}, function(entry){
     entry.file(function(blob){
-      console.log(blob)
       cb(null, blob)
     })
   }, function(err){
@@ -164,7 +163,7 @@ function loadKit(deckId, kitName){
     if (kit){
       var deck = window.context.instances[deckId]
       kit.slots.forEach(function(descriptor){
-        deck.update(descriptor)
+        deck.mainChunk.update(descriptor)
       })
       if (deckId === 'left'){
         chrome.storage.local.set({'lastLeftKit': kitName})
@@ -178,15 +177,8 @@ function loadKit(deckId, kitName){
 
 function saveKit(deckId, kitName){
   var names = 'ABCDEFGH'.split('')
-  var kitStorage = {slots: []}
   var deck = window.context.instances[deckId]
-  for (var i=0;i<64;i++){
-    kitStorage.slots.push(deck.getDescriptor(i))
-  }
-  for (var i=0;i<8;i++){
-    var id = names[i]
-    kitStorage.slots.push(deck.getDescriptor(id))
-  }
+  var kitStorage = {slots: deck.mainChunk.getDescriptor().slots}
   writeKit(kitName, kitStorage)
 }
 
@@ -257,7 +249,7 @@ function loadProject(entry){
 
   entry.getDirectory('recordings', {create: true, exclusive: false}, function(directory){
     window.context.currentProject.recordings = directory
-    setupTapeLoops(60*60) // seconds
+    //setupTapeLoops(60*60) // seconds
   }, handleError)
 }
 

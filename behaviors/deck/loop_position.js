@@ -1,9 +1,8 @@
 module.exports = function(container){
   var deckElement = getDeckElement(container)
   var thisDeckId = deckElement.dataset.id
-  var looper = window.context.instances[thisDeckId].looper
-  var clock = window.context.clock
-  var position = 0
+  var loopGrid = window.context.instances[thisDeckId]
+  var lastBeat = -1
 
   var bar = container.querySelector('div')
 
@@ -15,16 +14,11 @@ module.exports = function(container){
     bar.style.webkitTransformOrigin = (progress*100) + '%'
   }
 
-  clock.on('data', function(schedule){
-    position = schedule.from
-
-    var length = looper.getLength()
-
+  loopGrid.loopPosition(function(value){
     var step = 1
-    var currentBeat = Math.floor(schedule.to / step) * step
-
-    if (currentBeat > schedule.from && currentBeat <= schedule.to){
-      progress = (currentBeat % length) / (length - 1)
+    var beat = Math.floor(value / step) * step
+    if (lastBeat != beat){
+      progress = beat / (loopGrid.loopLength() - 1)
       stepWidth = (step/length)
       window.requestAnimationFrame(refresh)
     }
