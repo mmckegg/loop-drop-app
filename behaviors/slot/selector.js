@@ -154,10 +154,9 @@ module.exports = function(container){
   }
 
   window.context.triggerOutput.on('data', function(data){
-    var parts = data.id.split('#')
-    if (parts[0] === thisDeckId){
-      var id = parts[1]
-      var outputId = getOutput(data.id)
+    var id = getLocalId(data.id, thisDeckId)
+    if (id){
+      var outputId = getOutput(id)
       var increment = 0 
 
       if (data.event === 'start'){
@@ -209,12 +208,13 @@ module.exports = function(container){
   })
 
   function getOutput(id){
-    var descriptor = descriptors[id]
+    var descriptor = descriptors[thisDeckId + '#' + id]
     if (descriptor){
+      var from = getLocalId(descriptor.from, thisDeckId)
       if ('output' in descriptor){
-        return descriptor.output
-      } else if (descriptor.node === 'inherit' && descriptor.from != id) {
-        return getOutput(descriptor.from)
+        return getLocalId(descriptor.output, thisDeckId)
+      } else if (descriptor.node === 'inherit' && from != id) {
+        return getOutput(from)
       }
     }
     return null
@@ -249,4 +249,13 @@ function getIdElement(node){
     node = node.parentNode
   }
   return node
+}
+
+function getLocalId(id, namespace){
+  if (typeof id === 'string'){
+    var parts = id.split('#')
+    if (parts[0] === namespace){
+      return parts[1]
+    }
+  }
 }
