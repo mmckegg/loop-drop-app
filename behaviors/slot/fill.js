@@ -1,5 +1,3 @@
-var getNotesInside = require('midi-looper-launchpad/lib/get_notes_inside')
-
 module.exports = function(element){
   element.addEventListener('mousedown', onMouseDown)
 }
@@ -40,8 +38,9 @@ function onMouseUp(event){
   if (currentKit){
     currentKit.removeEventListener('mouseover', onMouseEnter)
 
-    var deck = window.context.instances[deckId]
-    var template = deck.getDescriptor(startId)
+    var grid = window.context.instances[deckId].grid()
+    var deck = window.context.instances[deckId].mainChunk
+    var template = getDescriptor(deck, startId)
 
     fillSelection.forEach(function(id, i){
       var descriptor = fillFrom(template, id, i)
@@ -51,7 +50,7 @@ function onMouseUp(event){
     window.events.emit('kitChange', deckId)
 
     targetId = null
-    refreshHighlight()
+    refreshHighlight(grid)
   }
 
   startId = null
@@ -70,16 +69,16 @@ function fillFrom(template, id, offset){
 }
 
 function onMouseEnter(event){
+  var grid = window.context.instances[deckId].grid()
   var slot = getSlotElement(event.target)
   if (slot){
     targetId = slot.getAttribute('data-id')
-    refreshHighlight()
+    refreshHighlight(grid)
   }
 }
 
-function refreshHighlight(){
-  var ids = getNotesInside('144/' + startId, '144/' + (targetId||startId)).map(getSecondAsString)
-  ids.push(targetId)
+function refreshHighlight(grid){
+  var ids = getRange(grid, startId, targetId||startId)
 
   for (var i=0;i<currentKit.children.length;i++){
     var slot = currentKit.children[i]
@@ -94,8 +93,39 @@ function refreshHighlight(){
   fillSelection = ids
 }
 
-function getSecondAsString(ary){
-  return String(ary[1])
+function getRange(grid, startId, endId){
+  var result = []
+
+  var start = grid.coordsAt(parseInt(startId))
+  var end = grid.coordsAt(parseInt(endId))
+
+  var rowStart = Math.min(start[0], end[0])
+  var rowEnd = Math.max(start[0], end[0])
+  var colStart = Math.min(start[1], end[1])
+  var colEnd = Math.max(start[1], end[1])
+
+  for (var row=rowStart;row<=rowEnd;row++){
+
+    var rr = row
+    if (start[0] > end[0]){
+      rr = rowStart - (row - rowEnd)
+    }
+
+    for (var col=colStart;col<=colEnd;col++){
+
+      var cc = col
+      if (start[1] > end[1]){
+        cc = colStart - (col - colEnd)
+      }
+
+      var id = String(grid.index(rr, cc))
+      if (id != startId){
+        result.push(id)
+      }
+    }
+  }
+
+  return result
 }
 
 function getKitElement(node){
@@ -120,4 +150,15 @@ function getSlotElement(node){
     node = node.parentNode
   }
   return node
+}
+
+function getDescriptor(chunk, id){
+  var result = { id: id }
+  chunk.slots().some(function(slot){
+    if (slot.id === id){
+      result = slot
+      return true
+    }
+  })
+  return result
 }
