@@ -28,9 +28,9 @@ var behaviors = {
       }
     })
     window.events.on('hideRemote', function(){
-      if (remote){
-        remote.disconnect()
-      }
+      //if (remote){
+      //  remote.disconnect()
+      //}
     })
   },
   'showWhenRemote': function(element){
