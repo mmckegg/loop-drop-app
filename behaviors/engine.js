@@ -64,15 +64,6 @@ module.exports = function(body){
     })
   }
 
-  window.events.on('changeAutoQuantize', function(deckId, value){
-    if (value === true){
-      instances[deckId].quantizer.grid = 1/4
-    } else if (typeof value === 'number') {
-      instances[deckId].quantizer.grid = value
-    } else {
-      instances[deckId].quantizer.grid = null
-    }
-  })
 
   console.log('init engine')
 }
