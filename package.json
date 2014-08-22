@@ -40,7 +40,7 @@
     "unique-resource": "^0.1.0",
     "watchify": "^0.7.2",
     "wav": "~0.1.2",
-    "wave-recorder": "~1.0.0",
+    "wave-recorder": "~1.0.1",
     "web-fs": "~0.2.0",
     "web-midi": "~0.2.1"
   },
