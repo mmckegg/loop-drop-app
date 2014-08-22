@@ -59,7 +59,7 @@ module.exports = function(element){
     if (!updating){
       updating = true
       window.requestAnimationFrame(function(cb){
-        var data = slot()
+        var data = slot && slot()
         if (data){
           textEditor.setValue(JSMN.stringify(data),-1)
         } else {
