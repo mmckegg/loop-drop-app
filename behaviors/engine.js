@@ -23,6 +23,9 @@ module.exports = function(body){
   var triggerOutput = window.context.triggerOutput = Trigger(soundbank)
   var player = window.context.player = Ditty()
 
+  // for loop-drop-remote compat
+  soundbank.loop = player
+
   var recorder = Recorder()
 
   clock

@@ -23,7 +23,7 @@ var behaviors = {
     window.events.on('showRemote', function(server){
       if (!remote){
         remote = Remote(window.context.audio, element)
-        remote.setLocalInstance(window.context.instances.left)
+        remote.setLocalInstance(window.context.soundbank)
         remote.output.connect(window.context.audio.destination)
       }
     })
