@@ -99,7 +99,6 @@ module.exports = function(element){
           id: id,
           position: window.context.clock.getCurrentPosition()
         }
-        console.log(obj)
         window.context.triggerOutput.write(obj)
       }
 
@@ -116,7 +115,6 @@ module.exports = function(element){
         if (up){
           up.position = window.context.clock.getCurrentPosition()
           window.context.triggerOutput.write(up)
-          console.log(up)
         }
       }
 
