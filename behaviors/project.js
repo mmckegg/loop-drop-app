@@ -150,11 +150,12 @@ function renameKit(fromId, toId){
 function newKit(deckId){
   var names = 'ABCDEFGH'.split('')
   var deck = window.context.instances[deckId]
+  var kitChunk = deck.mainChunk
   for (var i=0;i<64;i++){
-    deck.update({id: String(i)})
+    kitChunk.update({id: String(i)})
   }
   for (var i=0;i<8;i++){
-    deck.update({id: names[i]})
+    kitChunk.update({id: names[i]})
   }
 }
 
