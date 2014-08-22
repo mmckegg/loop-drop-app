@@ -8,6 +8,7 @@ var Trigger = require('soundbank-trigger')
 var LaunchpadLooper = require('loop-launchpad')
 var Chunk = require('soundbank-chunk')
 var Recorder = require('loop-recorder')
+var Sampler = require('../lib/sampler')
 
 module.exports = function(body){
   var audioContext = window.context.audio
@@ -64,6 +65,20 @@ module.exports = function(body){
     })
   }
 
+  Object.keys(instances).forEach(function(deckId){
+     instances[deckId].sampler.on('beginRecord', function(slotId){
+       window.events.emit('beginRecordSlot', deckId, slotId)
+     }).on('endRecord', function(slotId){
+       window.events.emit('endRecordSlot', deckId, slotId)
+       window.events.emit('kitChange', deckId)
+     })
+   })
+
+   window.events.on('startSampling', function(deckId){
+     instances[deckId].sampler.start()
+   }).on('stopSampling', function(deckId){
+     instances[deckId].sampler.stop()
+   })
 
   console.log('init engine')
 }
@@ -79,6 +94,7 @@ function createInstance(opt){
     stride: [8, 1]
   })
 
+  instance.sampler = Sampler(instance)
   instance.mainChunk = chunk
   instance.add(chunk, 0, 0)
 
