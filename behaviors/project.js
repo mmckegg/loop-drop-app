@@ -51,11 +51,12 @@ function dropFileOnSlot(file, deckId, slotId){
   var fileName = Date.now() + slotId + '.wav'
   var soundbank = window.context.soundbank
   var project = window.context.currentProject
+  var kitChunk = window.context.instances[deckId].mainChunk
 
   project.samples.getFile(fileName, {create: true, exclusive: false}, function(entry){
     writeFile(entry, file, function(e){
       loadSample(fileName, function(buffer){
-        soundbank.update({
+        kitChunk.update({
           id: slotId,
           sources: [{
             node: 'sample',
