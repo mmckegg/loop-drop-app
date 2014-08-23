@@ -14,17 +14,14 @@ module.exports = function(element){
 
   window.events.on('selectSlot', function(deckId, slotId){
 
-    if (slotRelease){
-      slotRelease()
-      slotRelease = null
-    }
+    //if (slotRelease){
+    //  slotRelease()
+    //  slotRelease = null
+    //}
 
     var deck = window.context.instances[deckId]
     slot = getSlotObserv(deck.mainChunk.slots, slotId)
     currentDeckId = deckId
-
-    slotRelease = slot(display)
-
     display(slot())
   })
 
