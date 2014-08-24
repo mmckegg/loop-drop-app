@@ -60,7 +60,7 @@ function dropFileOnSlot(file, deckId, slotId){
           id: slotId,
           sources: [{
             node: 'sample',
-            mode: 'hold',
+            mode: 'oneshot',
             url: entry.name,
             offset: getSoundOffset(buffer) || [0,1]
           }],
