@@ -57,6 +57,7 @@ var behaviors = {
     vu: require('./window/vu'),
     projectButtons: require('./window/project_buttons'),
     qwertyKeys: require('./window/qwerty_keys.js'),
+    keyboardTransport: require('./window/keyboard-transport'),
     connect: require('./window/connect.js')
   }
 }

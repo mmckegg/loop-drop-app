@@ -34,7 +34,7 @@
     "soundbank-chunk": "^1.2.0",
     "soundbank-slot-editor": "^1.1.0",
     "soundbank-trigger": "^1.0.0",
-    "tap-tempo": "~0.0.0",
+    "tap-tempo": "0.0.0",
     "teoria": "~0.4.0",
     "through": "^2.3.4",
     "unique-resource": "^0.1.0",
