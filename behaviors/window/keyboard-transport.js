@@ -40,8 +40,8 @@ module.exports = function(){
   function checkReset(){
     if (leftHeld && rightHeld){
       var current = clock.getCurrentPosition()
-      var offset = current % 16
-      clock.setPosition(current.offset)
+      var offset = (16 - current) % 16
+      clock.setPosition(current + offset)
     }
   }
 
