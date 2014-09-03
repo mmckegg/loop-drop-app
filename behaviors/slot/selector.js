@@ -18,7 +18,7 @@ module.exports = function(container){
     recording: {},
     inputActive: {},
     meddler: {},
-    transformer: {},
+    modulator: {},
     linked: {},
     action: {},
     selected: null
@@ -68,10 +68,10 @@ module.exports = function(container){
           element.classList.remove('-active')
         }
 
-        if (slotState.transformer[id]){
-          element.classList.add('-transformer')
+        if (slotState.modulator[id]){
+          element.classList.add('-modulator')
         } else {
-          element.classList.remove('-transformer')
+          element.classList.remove('-modulator')
         }
 
         if (slotState.inputActive[id]){
@@ -181,7 +181,7 @@ module.exports = function(container){
       slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
       slotState.linked[id] = descriptor.node === 'inherit'
       slotState.meddler[id] = descriptor.inputMode === 'meddler'
-      slotState.transformer[id] = !!descriptor.loopTransform
+      slotState.modulator[id] = descriptor.node === 'modulator'
 
       slotState.action[id] = !!(descriptor.downAction || descriptor.upAction || descriptor.inputMode)
 

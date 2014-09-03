@@ -48,7 +48,7 @@ Kit {
       background-color: #576F85
     }
 
-    -transformer {
+    -modulator {
       background: #CE6D4F;
     }
 
