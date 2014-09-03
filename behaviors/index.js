@@ -23,14 +23,14 @@ var behaviors = {
     window.events.on('showRemote', function(server){
       if (!remote){
         remote = Remote(window.context.audio, element)
-        remote.setLocalInstance(window.context.instances.left)
+        remote.setLocalInstance(window.context.soundbank)
         remote.output.connect(window.context.audio.destination)
       }
     })
     window.events.on('hideRemote', function(){
-      if (remote){
-        remote.disconnect()
-      }
+      //if (remote){
+      //  remote.disconnect()
+      //}
     })
   },
   'showWhenRemote': function(element){
@@ -57,6 +57,7 @@ var behaviors = {
     vu: require('./window/vu'),
     projectButtons: require('./window/project_buttons'),
     qwertyKeys: require('./window/qwerty_keys.js'),
+    keyboardTransport: require('./window/keyboard-transport'),
     connect: require('./window/connect.js')
   }
 }

@@ -2,8 +2,9 @@ var SlotEditor = require('soundbank-slot-editor')
 
 module.exports = function(element){
 
-  var current = null
-  var currentSlotId = null
+  var slotRelease = null
+  var slot = null
+  var currentDeckId = null
 
   var editor = SlotEditor(window.context.audio, element)
 
@@ -13,30 +14,35 @@ module.exports = function(element){
 
   window.events.on('selectSlot', function(deckId, slotId){
 
-    var soundbank = window.context.instances[deckId]
-    var descriptor = soundbank.getDescriptor(slotId)
+    //if (slotRelease){
+    //  slotRelease()
+    //  slotRelease = null
+    //}
 
-    if (soundbank != current){
-      if (current){
-        soundbank.removeListener('change', display)
-      }
-      current = soundbank
-      current.on('change', display)
-    }
-
-    currentSlotId = slotId
-
-    display(soundbank.getDescriptor(slotId))
+    var deck = window.context.instances[deckId]
+    slot = getSlotObserv(deck.mainChunk.slots, slotId)
+    currentDeckId = deckId
+    display(slot())
   })
 
   editor.on('change', function(descriptor){
-    current.update(descriptor)
+    slot.set(descriptor)
+    window.events.emit('kitChange', currentDeckId)
   })
 
   function display(descriptor){
-    if (descriptor.id == currentSlotId){
-      editor.set(descriptor)
-    }
+    editor.set(descriptor)
   }
 
+}
+
+function getSlotObserv(slots, id){
+  var result = null
+  slots.some(function(slot){
+    if (typeof slot === 'function' && slot().id == id){
+      result = slot
+      return true
+    }
+  })
+  return result
 }

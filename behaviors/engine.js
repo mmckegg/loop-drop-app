@@ -1,28 +1,37 @@
 var Ditty = require('ditty')
-
-var MidiLooper = require('midi-looper')
 var Soundbank = require('soundbank')
-
-var Playback = require('../lib/playback')
-var Quantizer = require('../lib/quantizer')
-
-var Launchpad = require('midi-looper-launchpad')
 var MidiStream = require('web-midi')
-var SoundRecorder = require('../lib/sound_recorder')
-
 var MultiRecorder = require('../lib/multi-recorder')
 var AudioRMS = require('audio-rms')
 
-var UpdateLoop = require('../lib/update-loop')
-var DittyToMidi = require('../lib/ditty-to-midi')
+var Trigger = require('soundbank-trigger')
+var LaunchpadLooper = require('loop-launchpad')
+var Chunk = require('soundbank-chunk')
+var Recorder = require('loop-recorder')
+var Sampler = require('../lib/sampler')
 
 module.exports = function(body){
   var audioContext = window.context.audio
 
-  var clock = audioContext.scheduler
-
+  var clock = window.context.clock = audioContext.scheduler
   var output = audioContext.createGain()
   output.connect(audioContext.destination)
+
+  var soundbank = window.context.soundbank = Soundbank(audioContext)
+  soundbank.connect(output)
+
+  var triggerOutput = window.context.triggerOutput = Trigger(soundbank)
+  var player = window.context.player = Ditty()
+
+  // for loop-drop-remote compat
+  soundbank.loop = player
+
+  var recorder = Recorder()
+
+  clock
+    .pipe(player)
+    .pipe(triggerOutput)
+    .pipe(recorder)
 
   // debug write out levels to console
   var monitorId = 0
@@ -38,107 +47,71 @@ module.exports = function(body){
   var rms = window.context.audio.rms = AudioRMS(audioContext)
   output.connect(rms.input)
 
-  var instances = {
-    left: createInstance(audioContext, output, MidiStream('Launchpad Mini', 0)),
-    right: createInstance(audioContext, output, MidiStream('Launchpad Mini 2', 0))
+  var instances = window.context.instances = {
+    left: createInstance({
+      id: 'left',
+      soundbank: soundbank, 
+      midi: MidiStream('Launchpad Mini', 0),
+      player: player,
+      recorder: recorder,
+      triggerOutput: triggerOutput,
+      scheduler: clock
+    }),
+    right: createInstance({
+      id: 'right',
+      soundbank: soundbank, 
+      midi: MidiStream('Launchpad Mini 2', 0),
+      player: player,
+      recorder: recorder,
+      triggerOutput: triggerOutput,
+      scheduler: clock
+    })
   }
 
-  // self recorder
-  var instanceNames = Object.keys(instances)
-  window.context.recorder = new MultiRecorder(audioContext, instanceNames.length, {silenceDuration: 3})
-  instanceNames.forEach(function(name, i){
-    instances[name].connect(window.context.recorder.inputs[i])
-  })
-
-  window.context.instances = instances
-  window.context.clock = clock
-
   Object.keys(instances).forEach(function(deckId){
-    instances[deckId].sampler.on('beginRecord', function(slotId){
-      window.events.emit('beginRecordSlot', deckId, slotId)
-    }).on('endRecord', function(slotId){
-      window.events.emit('endRecordSlot', deckId, slotId)
-      window.events.emit('kitChange', deckId)
-    })
-  })
+     instances[deckId].sampler.on('beginRecord', function(slotId){
+       window.events.emit('beginRecordSlot', deckId, slotId)
+     }).on('endRecord', function(slotId){
+       window.events.emit('endRecordSlot', deckId, slotId)
+       window.events.emit('kitChange', deckId)
+     })
+   })
 
-  window.events.on('startSampling', function(deckId){
-    instances[deckId].sampler.start()
-  }).on('stopSampling', function(deckId){
-    instances[deckId].sampler.stop()
-  })
-
-  window.events.on('changeAutoQuantize', function(deckId, value){
-    if (value === true){
-      instances[deckId].quantizer.grid = 1/4
-    } else if (typeof value === 'number') {
-      instances[deckId].quantizer.grid = value
-    } else {
-      instances[deckId].quantizer.grid = null
-    }
-  })
+   window.events.on('startSampling', function(deckId){
+     instances[deckId].sampler.start()
+   }).on('stopSampling', function(deckId){
+     instances[deckId].sampler.stop()
+   })
 
   console.log('init engine')
 }
 
-function createInstance(audioContext, output, midiStream){
+function createInstance(opt){
 
-  var instance = Soundbank(audioContext)
-
-  instance.playback = Playback(instance)
-  
-  var ditty = Ditty()
-
-  var scheduler = audioContext.scheduler
-
-  midiStream.on('error', function(err){
-    console.log(err)
+  // use the new modules in the old UI
+  var instance = LaunchpadLooper(opt)
+  var chunk = Chunk(opt.soundbank, {
+    id: opt.id,
+    sounds: sixtyfour(),
+    shape: [8,8],
+    stride: [8, 1]
   })
 
-  function getCurrentPosition(){
-    return audioContext.scheduler.getCurrentPosition()
-  }
+  instance.sampler = Sampler(instance)
+  instance.mainChunk = chunk
+  instance.add(chunk, 0, 0)
 
-  var exclude = {}
-  var noRepeat = {}
-  var loopTransforms = {}
-
-  instance.on('refresh', function(data){
-    var overrideTransform = !!data.loopTransform
-    exclude['144/' + data.id] = data.exclude
-    noRepeat['144/' + data.id] = data.noRepeat || overrideTransform
-    loopTransforms['144/' + data.id] = data.loopTransform
+  opt.midi.on('error', function(err){
+    console.error(err)
   })
 
-  instance.looper = MidiLooper(getCurrentPosition, {
-    exclude: exclude, 
-    noRepeat: noRepeat, 
-    loopTransforms: loopTransforms
-  })
-
-  // controller
-  instance.controller = Launchpad(midiStream, instance.looper)
-  instance.quantizer = Quantizer(getCurrentPosition)
-
-  scheduler
-    .pipe(instance.controller)
-    .pipe(instance.quantizer)
-    .pipe(instance.playback)
-
-  // sampler
-  instance.sampler = SoundRecorder(instance.controller, instance)
-
-  // playback / looper
-  scheduler
-    .pipe(ditty)
-    .pipe(instance.playback)
-    .pipe(DittyToMidi()) // backward compat
-    .pipe(instance.looper)
-    .pipe(UpdateLoop(ditty))
-
-  instance.loop = ditty
-
-  // connect to output
-  instance.connect(output)
   return instance
+}
+
+function sixtyfour(){
+  var result = []
+  for (var i=0;i<64;i++){
+    result.push(String(i))
+  }
+  return result
 }

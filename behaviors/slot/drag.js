@@ -33,15 +33,15 @@ function onDrop(event){
 
   var destinationDeckId = getDeckElement(event.target).getAttribute('data-id')
   var destinationId = getSlotElement(event.target).getAttribute('data-id')
-  var destinationDeck = window.context.instances[destinationDeckId]
+  var destinationDeck = window.context.instances[destinationDeckId].mainChunk
 
   if (window.currentDrag){
 
     var fromDeckId = getDeckElement(window.currentDrag).getAttribute('data-id')
     var fromId = getSlotElement(window.currentDrag).getAttribute('data-id')
-    var fromDeck = window.context.instances[fromDeckId]
+    var fromDeck = window.context.instances[fromDeckId].mainChunk
 
-    var descriptor = fromDeck.getDescriptor(fromId)
+    var descriptor = getDescriptor(fromDeck, fromId)
 
     if (event.shiftKey){
 
@@ -102,4 +102,15 @@ function getSlotElement(node){
     node = node.parentNode
   }
   return node
+}
+
+function getDescriptor(chunk, id){
+  var result = { id: id }
+  chunk.slots().some(function(slot){
+    if (slot.id === id){
+      result = slot
+      return true
+    }
+  })
+  return result
 }

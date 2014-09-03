@@ -18,7 +18,7 @@ module.exports = function(container){
     recording: {},
     inputActive: {},
     meddler: {},
-    transformer: {},
+    modulator: {},
     linked: {},
     action: {},
     selected: null
@@ -68,10 +68,10 @@ module.exports = function(container){
           element.classList.remove('-active')
         }
 
-        if (slotState.transformer[id]){
-          element.classList.add('-transformer')
+        if (slotState.modulator[id]){
+          element.classList.add('-modulator')
         } else {
-          element.classList.remove('-transformer')
+          element.classList.remove('-modulator')
         }
 
         if (slotState.inputActive[id]){
@@ -153,36 +153,41 @@ module.exports = function(container){
     slot.activeCount = 0
   }
 
-  window.context.instances[thisDeckId].playback.on('data', function(data){
-    var id = data.id
-    var outputId = getOutput(id)
-    var increment = 0 
+  window.context.triggerOutput.on('data', function(data){
+    var id = getLocalId(data.id, thisDeckId)
+    if (id){
+      var outputId = getOutput(id)
+      var increment = 0 
 
-    if (data.event === 'start'){
-      increment = 1
-      slotState.active[id] = true
-    } else if (data.event === 'stop'){
-      increment = -1
-      slotState.active[id] = false
+      if (data.event === 'start'){
+        increment = 1
+        slotState.active[id] = true
+      } else if (data.event === 'stop'){
+        increment = -1
+        slotState.active[id] = false
+      }
+
+      slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
+      requestRefresh(id)
+      outputId && requestRefresh(outputId)
     }
-
-    slotState.inputActive[outputId] = Math.max(0, (slotState.inputActive[outputId] || 0) + increment)
-    requestRefresh(id)
-    outputId && requestRefresh(outputId)
   })
 
-  window.context.instances[thisDeckId].on('change', function(descriptor){
-    var id = descriptor.id
+  window.context.soundbank.on('change', function(descriptor){
+    var parts = descriptor.id.split('#')
+    if (parts[0] === thisDeckId){
+      var id = parts[1]
 
-    slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
-    slotState.linked[id] = descriptor.node === 'inherit'
-    slotState.meddler[id] = descriptor.inputMode === 'meddler'
-    slotState.transformer[id] = !!descriptor.loopTransform
+      slotState.present[id] = !!(descriptor.sources && descriptor.sources.length)
+      slotState.linked[id] = descriptor.node === 'inherit'
+      slotState.meddler[id] = descriptor.inputMode === 'meddler'
+      slotState.modulator[id] = descriptor.node === 'modulator'
 
-    slotState.action[id] = !!(descriptor.downAction || descriptor.upAction || descriptor.inputMode)
+      slotState.action[id] = !!(descriptor.downAction || descriptor.upAction || descriptor.inputMode)
 
-    updateDescriptor(descriptor)
-    requestRefresh(id)
+      updateDescriptor(descriptor)
+      requestRefresh(id)
+    }
   })
 
   window.events.on('selectSlot', function(deckId, slotId){
@@ -203,12 +208,13 @@ module.exports = function(container){
   })
 
   function getOutput(id){
-    var descriptor = descriptors[id]
+    var descriptor = descriptors[thisDeckId + '#' + id]
     if (descriptor){
+      var from = getLocalId(descriptor.from, thisDeckId)
       if ('output' in descriptor){
-        return descriptor.output
-      } else if (descriptor.node === 'inherit' && descriptor.from != id) {
-        return getOutput(descriptor.from)
+        return getLocalId(descriptor.output, thisDeckId)
+      } else if (descriptor.node === 'inherit' && from != id) {
+        return getOutput(from)
       }
     }
     return null
@@ -243,4 +249,13 @@ function getIdElement(node){
     node = node.parentNode
   }
   return node
+}
+
+function getLocalId(id, namespace){
+  if (typeof id === 'string'){
+    var parts = id.split('#')
+    if (parts[0] === namespace){
+      return parts[1]
+    }
+  }
 }
