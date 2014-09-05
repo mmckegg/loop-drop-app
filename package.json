@@ -5,7 +5,7 @@
   "author": "Matt McKegg",
   "scripts": {
     "watch": "node build -w -d",
-    "build": "browserify index.js -d -o build/bundle.js"
+    "build": "node build -d"
   },
   "dependencies": {
     "audio-rms": "^1.0.0",
