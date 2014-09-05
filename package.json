@@ -5,7 +5,7 @@
   "author": "Matt McKegg",
   "scripts": {
     "watch": "node build -w -d",
-    "build": "browserify index.js -d -o build/bundle.js"
+    "build": "node build -d"
   },
   "dependencies": {
     "audio-rms": "^1.0.0",
@@ -22,8 +22,10 @@
     "keycode": "~0.3.0",
     "loop-drop-audio-context": "^2.0.0",
     "loop-drop-remote": "^1.0.0",
+    "loop-drop-setup": "^1.0.0",
     "loop-launchpad": "^1.0.0",
     "loop-recorder": "^1.0.0",
+    "map-async": "^0.1.1",
     "micro-css": "~0.4.0",
     "midi-qwerty-keys": "~0.0.1",
     "notevil": "~0.8.0",
@@ -41,7 +43,7 @@
     "watchify": "^0.7.2",
     "wav": "~0.1.2",
     "wave-recorder": "~1.0.1",
-    "web-fs": "~0.2.0",
+    "web-fs": "~1.0.1",
     "web-midi": "~0.2.1"
   },
   "window": {
