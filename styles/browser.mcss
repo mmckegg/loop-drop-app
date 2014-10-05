@@ -15,6 +15,7 @@ $browser {
 BrowserFile {
   padding: 4px 6px
   cursor: pointer
+  color: #AAA
 
   :hover {
     background: #565
