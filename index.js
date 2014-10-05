@@ -53,6 +53,7 @@ var mercury = require('mercury')
 var EventEmitter = require('events').EventEmitter
 var Soundbank = require('soundbank')
 var Ditty = require('ditty')
+var SoundbankTrigger = require('soundbank-trigger')
 
 var Project = require('loop-drop-project')
 var Setup = require('loop-drop-setup')
@@ -77,6 +78,12 @@ var project = Project()
 var selectedSetup = Observ()
 var selectedChunk = Observ()
 
+var soundbank = Soundbank(audioContext)
+var triggerOutput = SoundbankTrigger(soundbank)
+var player = Ditty()
+
+player.pipe(triggerOutput)
+
 var context = {
   nodes: {
     launchpad: require('loop-launchpad'),
@@ -84,8 +91,10 @@ var context = {
     external: require('loop-drop-setup/external')
   },
   audio: audioContext,
-  soundbank: Soundbank(audioContext),
-  player: Ditty(),
+  soundbank: soundbank,
+  scheduler: audioContext.scheduler,
+  triggerOutput: triggerOutput,
+  player: player,
   project: project
 }
 
