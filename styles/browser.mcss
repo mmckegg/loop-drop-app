@@ -1,0 +1,33 @@
+SetupBrowser {
+  $browser
+}
+
+ChunkBrowser {
+  $browser
+}
+
+$browser {
+  padding: 10px
+  color: #CCC
+  overflow: auto
+}
+
+BrowserFile {
+  padding: 4px 6px
+  cursor: pointer
+
+  :hover {
+    background: #565
+    border-radius: 4px
+  }
+
+  -selected {
+    background: #6A6
+    color: white
+    border-radius: 4px
+
+    :hover {
+      background: #6B6
+    }
+  }
+}

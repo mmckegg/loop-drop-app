@@ -1,0 +1,32 @@
+TabbedEditor {
+  display: flex
+  flex-direction: column
+  
+  header {
+    display: flex
+    border-bottom: 1px solid #AAA
+    min-height: 1em
+
+    div.tab {
+      margin: 2px 2px 0 2px
+      padding: 5px 10px
+      color: #AAA
+
+      -selected{
+        border: 1px solid #AAA;
+        margin-bottom: -1px;
+        background: #333;
+        color: #FFF;
+        border-bottom: none;
+      }
+    }
+  }
+
+  div {
+    display: flex
+    flex: 1
+    background: #333;
+    border: 1px solid #AAA
+    border-top: none
+  }
+}
