@@ -3,11 +3,39 @@ Holder {
   height: 100%;
 
   div.browser {
+
     display: flex
     flex-direction: column
-    width: 300px
+    width: 250px
 
     div {
+
+      header {
+        font-size: 130%;
+        color: #FFF;
+        margin-bottom: 5px;
+        display: flex
+
+        span {
+          flex: 1
+        }
+
+        button {
+          margin-top: -2px
+          border: 1px solid #494949;
+          background: #6F6F6F;
+          color: #D8D8D8;
+          cursor: pointer
+
+          :hover {
+            border: 1px solid #5A5;
+            background: #393;
+            color: #FFF;
+            box-shadow: 0px 0px 5px #3A3;
+          }
+        }
+      }
+
       flex: 1
       margin: 4px
       background: #555
@@ -18,7 +46,7 @@ Holder {
   div.main {
     flex: 1
     display: flex
-    flex-direction: column
+    flex-direction: row
 
     div {
       flex: 1

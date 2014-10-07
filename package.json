@@ -27,7 +27,7 @@
     "loop-launchpad": "^1.0.0",
     "loop-recorder": "^1.0.0",
     "map-async": "^0.1.1",
-    "mercury": "^6.1.1",
+    "mercury": "^8.0.0",
     "micro-css": "~0.4.0",
     "midi-qwerty-keys": "~0.0.1",
     "next-tick": "^0.2.2",
@@ -46,11 +46,12 @@
     "teoria": "~0.4.0",
     "through": "^2.3.4",
     "unique-resource": "^0.1.0",
+    "vdom": "0.0.21",
     "watchify": "^0.7.2",
     "wav": "~0.1.2",
     "wave-recorder": "~1.0.1",
     "web-fs": "^1.4.0",
-    "web-midi": "~0.2.1"
+    "web-midi": "~0.3.0"
   },
   "window": {
     "bounds": {

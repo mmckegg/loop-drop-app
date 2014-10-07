@@ -1,18 +1,19 @@
 var mercury = require("mercury")
 var h = mercury.h
+var getBaseName = require('path').basename
 
 var RawEditor = require('loop-drop-editor/raw')
 
 module.exports = TabbedEditor
 
-function TabbedEditor(state){
+function TabbedEditor(state, actions){
 
   return function(){
     var data = state()
     var file = getFile(state)
     return h('div.TabbedEditor', [
       h('header', data.items.map(renderTab)),
-      new RawEditor(file)
+      getEditor(file)
     ])
   }
 
@@ -29,9 +30,20 @@ function TabbedEditor(state){
     return h('div', { 
       'ev-mousedown': mercury.event(state.selected.set, item._path),
       'className': selected ? '.tab -selected' : '.tab'
-    }, item._path)
+    }, [
+      h('span', getBaseName(item._path, '.json')), 
+      h('button', {'ev-click': mercury.event(actions.closeFile, item._path), className: '.close'})
+    ])
   }
 
+}
+
+function getEditor(file){
+  if (file){
+    return new RawEditor(file)
+  } else {
+    return h('div')
+  }
 }
 
 function getFile(state){

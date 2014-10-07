@@ -1,25 +1,66 @@
-SetupBrowser {
-  $browser
-}
-
-ChunkBrowser {
-  $browser
-}
-
-$browser {
-  padding: 10px
-  color: #CCC
-  overflow: auto
-}
-
 BrowserFile {
   padding: 4px 6px
   cursor: pointer
   color: #AAA
 
+  display: flex
+
+  span {
+    flex: 1
+  }
+
+  button.save {
+    display: none
+  }
+
+  button.cancel {
+    display: none
+  }
+
+  button.newWindow {
+    display: none
+  }
+
+  button.delete {
+    display: none
+    margin: -1px -1px -1px 2px;
+    opacity: 0.4;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    height: 16px;
+    font-size: 12px;
+    background: #3A3A3A;
+    color: #FFF;
+    font-size: 10px;
+    padding: 0 4px;
+    :hover {
+      opacity: 1
+      background: #A00
+    }
+  }
+
   :hover {
     background: #565
     border-radius: 4px
+
+    button.newWindow {
+      display: block;
+      margin: -1px -1px -1px 2px;
+      opacity: 0.4;
+      cursor: pointer;
+      padding: 0;
+      background: #73C967;
+      border: none;
+      border-radius: 5px;
+      color: #19440F;
+      width: 16px;
+      height: 16px;
+      font-size: 12px;
+      :hover {
+        opacity: 1
+      }
+    }
   }
 
   -selected {
@@ -28,7 +69,62 @@ BrowserFile {
     border-radius: 4px
 
     :hover {
+      button.delete {
+        display: block
+      }
+    }
+
+    :hover {
       background: #6B6
+    }
+  }
+
+  -renaming {
+    background-color: #232 !important
+
+    button.save {
+      display: block
+      margin: -1px -1px -1px 4px;
+      opacity: 0.7;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      height: 16px;
+      font-size: 12px;
+      background: #3A3A3A;
+      color: #FFF;
+      font-size: 10px;
+      padding: 0 4px;
+      :hover {
+        opacity: 1
+        background: #3A3
+      }
+    }
+
+    button.cancel {
+      display: block
+      margin: -1px -1px -1px 4px;
+      opacity: 0.7;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      height: 16px;
+      font-size: 12px;
+      background: #6A3A3A;
+      color: #FFF;
+      font-size: 10px;
+      padding: 0 4px;
+      :hover {
+        opacity: 1
+        background: #A33
+      }
+    }
+
+    button.delete {
+      display: none !important
+    }
+    button.newWindow {
+      display: none !important
     }
   }
 }

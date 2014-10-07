@@ -5,18 +5,55 @@ TabbedEditor {
   header {
     display: flex
     border-bottom: 1px solid #AAA
-    min-height: 1em
+    height: 26px
 
     div.tab {
+      height: 24px
+      display: flex
       margin: 2px 2px 0 2px
       padding: 5px 10px
+      padding-bottom: 3px
       color: #AAA
+      cursor: pointer
+      border-top-left-radius: 3px
+      border-top-right-radius: 3px
+
+      span {
+        flex: 1
+      }
+
+      button.close {
+        border: none;
+        border-radius: 6px;
+        width: 12px
+        height: 12px
+        background: svg(close) no-repeat center;
+        margin-left: 4px;
+        margin-right: -2px;
+        margin-top: 1px
+        cursor: pointer
+
+        :hover {
+          background-color: #C77
+        }
+      }
 
       -selected{
+        padding: 4px 9px
         border: 1px solid #AAA;
+        border-color: #AAA !important!
         margin-bottom: -1px;
-        background: #333;
+        background: #333 !important;
         color: #FFF;
+        border-bottom: none;
+        cursor: default
+      }
+
+      :hover {
+        background: #333
+        padding: 4px 9px
+        padding-bottom: 3px
+        border: 1px solid #555;
         border-bottom: none;
       }
     }
@@ -28,5 +65,18 @@ TabbedEditor {
     background: #333;
     border: 1px solid #AAA
     border-top: none
+    border-bottom-left-radius: 3px
+    border-bottom-right-radius: 3px
+  }
+
+  @svg close {
+    content: "<path d='M0,0 8,8 M0,8 8,0 '/>"
+    width: 8px
+    height: 8px
+
+    path {
+      stroke: white
+      stroke-width: 1px
+    }
   }
 }
