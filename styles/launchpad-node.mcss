@@ -1,0 +1,61 @@
+LaunchpadNode {
+
+  position: relative
+  margin-top: 6px
+  background: #464545;
+  border: 1px #444 solid;
+  color: #EEE;
+  border-radius: 4px;
+
+  header {
+    padding: 3px
+  }
+  
+  div.grid {
+    position: relative
+    background: #444
+    display: flex
+    flex-wrap: wrap
+    height: 240px
+    width: 240px
+
+    div.button {
+      transition: box-shadow 0.5s
+      background: #565656
+      width: 12.5%
+      height: 12.5%
+      border: 3px solid #444
+      box-shadow: inset 0px 0px 1px #AAA;
+
+      -present {
+        background: #565656
+      }
+
+      -recording {
+        box-shadow: inset 0px 0px 10px red;
+      }
+
+      -active {
+        box-shadow: inset 0px 0px 3px #21E22B;
+      }
+
+      -playing {
+        background: gold
+        box-shadow: inset 0px 0px 3px white;
+
+      }
+
+      -selected {
+        border: 3px solid #4F4
+      }
+
+    }
+
+    div.chunk {
+      border: 1px solid #378
+      border-radius: 3px
+      display: table-cell;
+      position: absolute;
+    }
+  }
+}

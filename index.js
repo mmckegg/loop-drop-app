@@ -265,14 +265,16 @@ var state = ObservStruct({
     selected: selectedSetup,
     renaming: Observ(false),
     entries: project.getDirectory('setups'),
-    items: setups
+    items: setups,
+    rawMode: Observ(false)
   }),
 
   chunks: ObservStruct({
     selected: selectedChunk,
     renaming: Observ(false),
     entries: project.getDirectory('chunks'),
-    items: chunks
+    items: chunks,
+    rawMode: Observ(true)
   })
 
 })
@@ -289,6 +291,7 @@ var actions = {
     },
     newFile: function(){
       project.getFile('setups/New Setup.json', function(err, file){
+        file.set('{"node":"setup"}')
         var setup = addSetup(file.src)
         selectedSetup.set(file.path)
         state.setups.renaming.set(true)
@@ -324,6 +327,7 @@ var actions = {
     },
     newFile: function(){
       project.getFile('chunks/New Chunk.json', function(err, file){
+        file.set('{"node":"chunk"}')
         var chunk = addChunk(file.src)
         state.chunks.selected.set(file.path)
         state.chunks.renaming.set(true)

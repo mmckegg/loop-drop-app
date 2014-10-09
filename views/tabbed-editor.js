@@ -2,18 +2,23 @@ var mercury = require("mercury")
 var h = mercury.h
 var getBaseName = require('path').basename
 
-var RawEditor = require('loop-drop-editor/raw')
-
+var renderEditor = require('./editor')
+var rawEditor = require('loop-drop-editor/raw')
 module.exports = TabbedEditor
 
 function TabbedEditor(state, actions){
 
   return function(){
     var data = state()
-    var file = getFile(state)
+    var fileObject = getItem(state)
+
+    var editor = (data.rawMode && fileObject) ?
+      rawEditor(fileObject.file) :
+      renderEditor(fileObject)
+
     return h('div.TabbedEditor', [
       h('header', data.items.map(renderTab)),
-      getEditor(file)
+      editor
     ])
   }
 
@@ -38,20 +43,14 @@ function TabbedEditor(state, actions){
 
 }
 
-function getEditor(file){
-  if (file){
-    return new RawEditor(file)
-  } else {
-    return h('div')
-  }
-}
 
-function getFile(state){
+
+function getItem(state){
   var result = null
   var path = state.selected()
   state.items.some(function(item){
     if (item.path === path){
-      result = item.file
+      result = item
       return true
     }
   })
