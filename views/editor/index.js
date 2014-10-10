@@ -26,7 +26,7 @@ Editor.prototype.init = function(){
   console.log('WHAT')
   mercury.app(element, this.state, function(data){
     if (element.fileObject){
-      return renderNode(element.fileObject, element.fileObject.file)
+      return renderNode(element.fileObject, element.fileObject)
     } else {
       return mercury.h('div')
     }

@@ -259,6 +259,8 @@ function findItemByPath(items, path){
   return result
 }
 
+var dragPath = Observ()
+
 var state = ObservStruct({
 
   setups: ObservStruct({

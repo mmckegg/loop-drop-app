@@ -1,6 +1,8 @@
 var h = require('mercury').h
+var MPE = require('./mouse-position-event')
+var getBaseName = require('path').basename
 module.exports = renderGrid
-function renderGrid(data, actions){
+function renderGrid(data, controller, fileObject){
   if (data){
     var grid = data.grid
     var chunks = data.chunks
@@ -20,21 +22,27 @@ function renderGrid(data, actions){
             if (buttonState.noRepeat) classes += ' -noRepeat'
           }
 
-          buttons.push(h('div', {className: classes}))
+          buttons.push(h('div', {
+            className: classes
+          }))
         }
       }
 
-      return h('div', {className: '.grid'}, [
+      return h('div', {
+        className: '.grid',
+        'ev-dragover': MPE(dragOver, {controller: controller, setup: fileObject}),
+        'ev-drop': MPE(drop, {controller: controller, setup: fileObject})
+      }, [
         buttons,
         chunks.map(function(chunk){
-          return renderChunkBlock(chunk, grid.shape, grid.stride)
+          return renderChunkBlock(chunk, grid.shape, grid.stride, controller)
         })
       ])
     }
   }
 }
 
-function renderChunkBlock(chunk, shape, stride){
+function renderChunkBlock(chunk, shape, stride, controller){
   var box = {
     top: chunk.origin[0] / shape[0],
     bottom: (chunk.origin[0] + chunk.shape[0]) / shape[0],
@@ -57,10 +65,104 @@ function renderChunkBlock(chunk, shape, stride){
 
   return h('div', { 
     className: classes, 
-    style: AttributeHook(style) 
+    style: AttributeHook(style),
+    draggable: 'draggable',
+    'ev-dragstart': MPE(startDrag, {chunk: chunk, controller: controller}),
+    'ev-dragend': MPE(endDrag, {chunk: chunk, controller: controller})
   },[
-    h('span', {className: '.label'}, chunk.id)
+    h('span', {className: '.label'}, chunk.id),
+    h('div', {className: '.handle -top'}),
+    h('div', {className: '.handle -bottom'}),
+    h('div', {className: '.handle -left'}),
+    h('div', {className: '.handle -right'}),
+    h('div', {className: '.handle -move'})
   ])
+}
+
+var currentDrag = null
+function startDrag(ev){
+  currentDrag = ev
+  ev.value = ev.data.chunk.origin.slice()
+  ev.controller = ev.data.controller
+  console.log('start', ev)
+}
+function endDrag(ev){
+  currentDrag = null
+}
+
+function dragOver(ev){
+  if (currentDrag){
+
+    var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
+    var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
+
+    if (currentDrag.controller !== ev.data.controller){
+      currentDrag.controller = ev.data.controller
+      currentDrag.controller.chunkPositions.delete(currentDrag.data.chunk.id)
+    }
+
+    if (ev.offsetX < 0 || ev.offsetY < 0  
+    ||  ev.offsetX > ev.offsetWidth  
+    ||  ev.offsetY > ev.offsetHeight) {
+
+      ev.data.controller.chunkPositions.delete(currentDrag.data.chunk.id)
+
+    } else {
+      var x = ev.offsetX - currentDrag.offsetX
+      var y = ev.offsetY - currentDrag.offsetY
+
+      var r = Math.round(y/width)
+      var c = Math.round(x/width)
+
+      if (currentDrag.value[0] !== r || currentDrag.value[1] !== c){
+        currentDrag.value = [r,c]
+        ev.data.controller.chunkPositions.put(currentDrag.data.chunk.id, currentDrag.value)
+      }
+    }
+  }
+
+  if (~ev.dataTransfer.types.indexOf('filesrc')){
+    ev.dataTransfer.dropEffect = 'link'
+    ev.event.preventDefault()
+  }
+}
+
+function drop(ev){
+  var path = ev.dataTransfer.getData('filesrc')
+  if (ev.data.setup && ev.data.setup.chunks){
+
+    var lookup = ev.data.setup.chunks.controllerContextLookup()
+    var base = getBaseName(path, '.json')
+    var incr = 0
+    var id = base
+
+    while (lookup[id]){
+      incr += 1
+      id = base + ' ' + (incr + 1)
+    }
+
+    ev.data.setup.chunks.push({
+      'node': 'external',
+      'id': id,
+      'src': path
+    })
+    
+    var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
+    var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
+    var r = Math.floor(ev.offsetX/width)
+    var c = Math.floor(ev.offsetX/width)
+    ev.data.controller.chunkPositions.put(id, [r,c])
+  }
+
+}
+
+function getElementMouseOffset(offsetX, offsetY, clientX, clientY){
+  return [clientX - offsetX, clientY - offsetY]
+}
+
+function getOffset(start, end, size){
+  var difference = (end - start) / size
+  return Math.round(difference)
 }
 
 function percent(decimal){

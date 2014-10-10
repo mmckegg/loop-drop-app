@@ -3,6 +3,7 @@ var e = mercury.event
 var h = mercury.h
 var getBaseName = require('path').basename
 var renameWidget = require('../lib/rename-widget')
+var DataTransfer = require('../lib/data-transfer')
 
 module.exports = Browser
 
@@ -24,6 +25,10 @@ function Browser(state, actions){
 
   function cancelRename(){
     state.renaming.set(false)
+  }
+
+  function dragStart(ev){
+    ev.dataTransfer.setData('filesrc', window.context.project.relative(ev.data.path))
   }
 
   return function(header){
@@ -87,7 +92,10 @@ function Browser(state, actions){
       currentRename : h('span', getBaseName(entry.fileName, '.json'))
 
     return h('div.BrowserFile', { 
-      'ev-mousedown': click,
+      'data-entry': entry,
+      'draggable': true,
+      'ev-dragstart': DataTransfer(dragStart, entry),
+      'ev-click': click,
       'className': classList.join(' ')
     }, [ nameElement, buttons ])
   }

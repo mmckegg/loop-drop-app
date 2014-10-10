@@ -21,12 +21,13 @@ Launchpad.prototype.init = function(){
   this.releases = []
 
   var controller = this.controller
+  var fileObject = this.fileObject
   var actions = {}
 
   var loop = mercury.main(this.state(), function(data){
     return mercury.h('div.LaunchpadNode', [
       mercury.h('header', 'Launchpad (' + controller().port + ')'),
-      renderGrid(data, actions)
+      renderGrid(data, controller, fileObject)
     ])
   })
 

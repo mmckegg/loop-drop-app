@@ -6,8 +6,8 @@ module.exports = renderSetup
 function renderSetup(setup){
   if (setup){
     return mercury.h('div.Setup', [
-      mercury.h('div.NodeCollection.-wrap', renderCollection(setup.controllers, setup.file, 'controllers')),
-      mercury.h('div.NodeCollection.-wrap', renderCollection(setup.chunks, setup.file, 'chunks')),
+      mercury.h('div.NodeCollection.-wrap', renderCollection(setup.controllers, setup, 'controllers')),
+      mercury.h('div.NodeCollection.-wrap', renderCollection(setup.chunks, setup, 'chunks')),
     ])
   }
 }
