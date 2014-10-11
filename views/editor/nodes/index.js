@@ -1,8 +1,10 @@
 var mercury = require('mercury')
+var h = require('micro-css/h')(mercury.h)
 
 var nodeEditors = {
   launchpad: require('./launchpad'),
-  setup: require('./setup.js')
+  setup: require('./setup.js'),
+  external: require('./external')
 }
 
 module.exports = function(node, fileObject, query){
@@ -13,5 +15,5 @@ module.exports = function(node, fileObject, query){
       return editor(node, fileObject, query)
     }
   }
-  return mercury.h('div.UnknownNode')
+  return h('UnknownNode')
 }

@@ -1,6 +1,9 @@
 var mercury = require("mercury")
-var h = mercury.h
+var h = require('micro-css/h')(mercury.h)
 var getBaseName = require('path').basename
+
+var change = require('./editor/params/value-event.js')
+
 
 var renderEditor = require('./editor')
 var rawEditor = require('loop-drop-editor/raw')
@@ -16,8 +19,16 @@ function TabbedEditor(state, actions){
       rawEditor(fileObject.file) :
       renderEditor(fileObject)
 
-    return h('div.TabbedEditor', [
-      h('header', data.items.map(renderTab)),
+    var rawCheckbox = h('span.raw', [
+      'raw', h('input.raw', {
+        'type': 'checkbox', 
+        'checked': state.rawMode(),
+        'ev-change': change(state.rawMode.set, 'checked')
+      })
+    ]) 
+
+    return h('TabbedEditor', [
+      h('header', [data.items.map(renderTab), rawCheckbox]),
       editor
     ])
   }
@@ -32,12 +43,12 @@ function TabbedEditor(state, actions){
     //} else {
 
     var selected = state.selected() == item._path
-    return h('div', { 
-      'ev-mousedown': mercury.event(state.selected.set, item._path),
-      'className': selected ? '.tab -selected' : '.tab'
+    return h('div.tab', { 
+      'ev-click': mercury.event(state.selected.set, item._path),
+      'className': selected ? '-selected' : null
     }, [
       h('span', getBaseName(item._path, '.json')), 
-      h('button', {'ev-click': mercury.event(actions.closeFile, item._path), className: '.close'})
+      h('button.close', {'ev-click': mercury.event(actions.closeFile, item._path)})
     ])
   }
 

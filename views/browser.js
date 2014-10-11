@@ -1,6 +1,7 @@
 var mercury = require('mercury')
+var h = require('micro-css/h')(mercury.h)
 var e = mercury.event
-var h = mercury.h
+
 var getBaseName = require('path').basename
 var renameWidget = require('../lib/rename-widget')
 var DataTransfer = require('../lib/data-transfer')
@@ -35,7 +36,7 @@ function Browser(state, actions){
     var data = state()
     return h('div', [
       h('header', [
-        h('span', header), h('button', {'ev-mousedown': e(actions.newFile),'className': '.new'}, 'New')
+        h('span', header), h('button.new', {'ev-click': e(actions.newFile)}, 'New')
       ]),
       forceArray(data.entries).filter(check).map(renderEntry)
     ])
@@ -65,25 +66,22 @@ function Browser(state, actions){
     }
 
     var buttons = [
-      h('button', {
-        'className': '.delete',
-        'ev-mousedown': e(actions.deleteFile, entry.path),
+      h('button.delete', {
+        'ev-click': e(actions.deleteFile, entry.path),
       }, 'delete'),
-      h('button', {
-        'className': '.newWindow',
-        'ev-mousedown': e(actions.openNewWindow, entry.path)
+      h('button.newWindow', {
+        'title': 'Open in new tab',
+        'ev-click': e(actions.openNewWindow, entry.path)
       }, '+')
     ]
 
     if (renaming){
       buttons.push(
-        h('button', {
-          'className': '.save',
-          'ev-mousedown': e(saveRename)
+        h('button.save', {
+          'ev-click': e(saveRename)
         }, 'save'),
-        h('button', {
-          'className': '.cancel',
-          'ev-mousedown': e(cancelRename)
+        h('button.cancel', {
+          'ev-click': e(cancelRename)
         }, 'cancel')
       )
     }
@@ -91,7 +89,7 @@ function Browser(state, actions){
     var nameElement = renaming ? 
       currentRename : h('span', getBaseName(entry.fileName, '.json'))
 
-    return h('div.BrowserFile', { 
+    return h('BrowserFile', { 
       'data-entry': entry,
       'draggable': true,
       'ev-dragstart': DataTransfer(dragStart, entry),

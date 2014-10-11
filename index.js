@@ -189,6 +189,24 @@ function addSetup(src){
       project.backup(setup.file)
     }
   })
+  
+  setup.selectedChunkId(function(id){
+    var src = null
+    if (selectedSetup() === setup.path){
+      var chunks = setup.chunks() || []
+      chunks.some(function(chunk){
+        if (chunk.id === id && chunk.src){
+          src = chunk.src
+          return true
+        }
+      })
+      if (src){
+        var path = project.resolve(src)
+        state.chunks.selected.set(path)
+      }
+    }
+  })
+
   setup.onClose(function(){
     var index = setups.indexOf(setup)
     if (~index){
@@ -244,6 +262,26 @@ selectedChunk(function(path){
     }
 
     lastSelectedChunk = chunk
+
+    // chunk selection link
+    if (lastSelectedSetup){
+      var currentPath = null
+      var id = lastSelectedSetup.selectedChunkId()
+      lastSelectedSetup.chunks().some(function(chunk){
+        if (chunk.id === id && chunk.src){
+          currentPath = project.resolve(chunk.src)
+          return true
+        }
+      })
+      if (path != currentPath){
+        lastSelectedSetup.chunks().some(function(chunk){
+          if (project.resolve(chunk.src) === path){
+            lastSelectedSetup.selectedChunkId.set(chunk.id)
+            return true
+          }
+        })
+      }
+    }
   }
 })
 
@@ -358,8 +396,10 @@ var actions = {
 
 window.state = state
 
+var forceUpdate = null
+
 setTimeout(function(){
-  renderLoop(document.body, state, actions)
+  forceUpdate = renderLoop(document.body, state, actions)
 }, 100)
 
 function getFileItem(element){

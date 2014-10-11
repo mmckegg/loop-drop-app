@@ -3,9 +3,18 @@ TabbedEditor {
   flex-direction: column
   
   header {
+    position: relative
     display: flex
     border-bottom: 1px solid #AAA
     height: 26px
+
+    span.raw {
+      position: absolute
+      right: 3px
+      bottom: 3px
+      font-size: 80%
+      color: white
+    }
 
     div.tab {
       height: 24px

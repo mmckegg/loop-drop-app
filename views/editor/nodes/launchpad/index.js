@@ -1,72 +1,115 @@
 var Observ = require('observ')
 var ObservStruct = require('observ-struct')
 var watch = require('observ/watch')
+
 var mercury = require('mercury')
+var h = require('micro-css/h')(mercury.h)
+
 var renderGrid = require('./grid.js')
 var nextTick = require('next-tick')
 
+var renderParams = require('./params.js')
+
 module.exports = Launchpad
 
-function Launchpad(controller, fileObject, query){
-  if (!(this instanceof Launchpad)) return new Launchpad(controller, fileObject, query)
+function Launchpad(controller, setup){
+  if (!(this instanceof Launchpad)) return new Launchpad(controller, setup)
   this.controller = controller
-  this.fileObject = fileObject
-  this.query = query
+  this.setup = setup
 }
 
 Launchpad.prototype.init = function(){
 
-  this.state = Observ()
+  var state = this.state = {
+    setupReleases: [],
+    controllerReleases: [],
+    controller: this.controller,
+    setup: this.setup,
+    update: update
+  }
 
-  this.releases = []
+  var pendingUpdate = false
 
-  var controller = this.controller
-  var fileObject = this.fileObject
-  var actions = {}
+  function update(){
+    if (!pendingUpdate){
+      pendingUpdate = true
+      nextTick(doUpdate)
+    }
+  }
 
-  var loop = mercury.main(this.state(), function(data){
-    return mercury.h('div.LaunchpadNode', [
-      mercury.h('header', 'Launchpad (' + controller().port + ')'),
-      renderGrid(data, controller, fileObject)
-    ])
+  function doUpdate(){
+    pendingUpdate = false
+    loop.update()
+  }
+
+  var loop = mercury.main(null, function(){
+    if (state.controller && state.setup){
+      return h('div LaunchpadNode', [
+        h('header', 'Launchpad (' + state.controller().port + ')'),
+        h('section', [
+          renderGrid(state.controller, state.setup),
+          h('div.controls', renderParams(state.controller, state.setup))
+        ])
+      ])
+    } else {
+      return h('div')
+    }
   })
 
-  this.state(loop.update)
+  bindToController(this, update)
+  bindToSetup(this, update)
 
-  var element = this.element = loop.target
-  bindToController(this)
-  return element
+  return loop.target
 }
 
 Launchpad.prototype.update = function(prev, elem){
-  this.element = prev.element
-  this.state = prev.state
-  this.releases = prev.releases
+  var state = this.state = prev.state
+  state.controller = this.controller
+  state.setup = this.setup
   if (this.controller !== prev.controller){
-    bindToController(this, this.controller)
+    bindToController(this, state.update)
+    state.update()
   }
+  if (this.setup !== prev.setup){
+    bindToSetup(this, state.update)
+    state.update()
+  }
+}
+
+Launchpad.prototype.destroy = function(elem){
+  var state = this.state
+  state.controllerReleases.forEach(invoke)
+  state.controllerReleases.length = 0
+  state.setupReleases.forEach(invoke)
+  state.setupReleases.length = 0
+}
+
+function bindToController(self, handler){
+  var state = self.state
+  var controller = self.controller
+
+  state.controllerReleases.forEach(invoke)
+  state.controllerReleases.length = 0
+
+  state.controllerReleases.push(
+    controller.gridState(handler)
+  )
+}
+
+function bindToSetup(self, handler){
+  var state = self.state
+  var setup = self.setup
+
+  state.setupReleases.forEach(invoke)
+  state.setupReleases.length = 0
+
+  state.setupReleases.push(
+    setup.selectedChunkId(handler)
+  )
 }
 
 Launchpad.prototype.type = 'Widget'
 
-function bindToController(self){
-  var state = self.state
-  var controller = self.controller
-
-
-  while (self.releases.length){
-    self.releases.pop()()
-  }
-
-  self.releases.push(
-    nextTick(function(){
-      self.releases.push(
-        watch(controller.gridState, state.set)
-      )
-    })
-  )
-
-}
 
 function invoke(func){
   return func()

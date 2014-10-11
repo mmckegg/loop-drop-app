@@ -1,10 +1,12 @@
 NodeCollection {
+  padding: 4px
+
   -wrap {
     display: flex
     flex-wrap: wrap
-    padding: 4px
     div {
       margin: 4px
     }
   }
+
 }

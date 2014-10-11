@@ -1,0 +1,17 @@
+ExternalNode {
+
+  position: relative
+  margin-top: 6px
+  background: #464545;
+  border: 1px #444 solid;
+  color: #EEE;
+  border-radius: 4px;
+
+  header {
+    padding: 3px
+  }
+
+  section {
+
+  }
+}

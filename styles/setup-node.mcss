@@ -1,0 +1,7 @@
+SetupNode {
+  display: flex
+  flex: 1
+  div.chunks {
+    flex: 1
+  }
+}

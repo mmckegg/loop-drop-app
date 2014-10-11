@@ -1,11 +1,16 @@
-var h = require('mercury').h
+var mercury = require('mercury')
+var h = require('micro-css/h')(mercury.h)
+
 var MPE = require('./mouse-position-event')
 var getBaseName = require('path').basename
 module.exports = renderGrid
-function renderGrid(data, controller, fileObject){
+function renderGrid(controller, setup){
+  var data = controller && controller.gridState()
+  
   if (data){
     var grid = data.grid
     var chunks = data.chunks
+    var selectedChunkId = setup.selectedChunkId()
 
     if (grid && chunks){
       var buttons = []
@@ -28,31 +33,26 @@ function renderGrid(data, controller, fileObject){
         }
       }
 
-      return h('div', {
-        className: '.grid',
-        'ev-dragover': MPE(dragOver, {controller: controller, setup: fileObject}),
-        'ev-drop': MPE(drop, {controller: controller, setup: fileObject})
+      return h('div.grid', {
+        'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
+        'ev-drop': MPE(drop, {controller: controller, setup: setup})
       }, [
         buttons,
         chunks.map(function(chunk){
-          return renderChunkBlock(chunk, grid.shape, grid.stride, controller)
+          return renderChunkBlock(chunk, grid.shape, grid.stride, controller, setup)
         })
       ])
     }
   }
 }
 
-function renderChunkBlock(chunk, shape, stride, controller){
+function renderChunkBlock(chunk, shape, stride, controller, setup){
+  var selectedChunkId = setup.selectedChunkId()
   var box = {
     top: chunk.origin[0] / shape[0],
     bottom: (chunk.origin[0] + chunk.shape[0]) / shape[0],
     left: chunk.origin[1] / shape[0],
     right: (chunk.origin[1] + chunk.shape[1]) / shape[1]
-  }
-  var classes = '.chunk'
-
-  if (chunk.isSelected){
-    classes += ' -selected'
   }
 
   var style = 'top:'+percent(box.top)+
@@ -63,19 +63,20 @@ function renderChunkBlock(chunk, shape, stride, controller){
               ';background-color:'+color(chunk.color, 0.1)+
               ';color:'+color(mixColor(chunk.color, [255,255,255]),1)
 
-  return h('div', { 
-    className: classes, 
+  return h('div.chunk', { 
+    className: selectedChunkId == chunk.id ? '-selected' : null, 
     style: AttributeHook(style),
-    draggable: 'draggable',
+    draggable: true,
+    'ev-click': mercury.event(setup.selectedChunkId.set, chunk.id),
     'ev-dragstart': MPE(startDrag, {chunk: chunk, controller: controller}),
     'ev-dragend': MPE(endDrag, {chunk: chunk, controller: controller})
   },[
-    h('span', {className: '.label'}, chunk.id),
-    h('div', {className: '.handle -top'}),
-    h('div', {className: '.handle -bottom'}),
-    h('div', {className: '.handle -left'}),
-    h('div', {className: '.handle -right'}),
-    h('div', {className: '.handle -move'})
+    h('span.label', chunk.id),
+    h('div.handle -top'),
+    h('div.handle -bottom'),
+    h('div.handle -left'),
+    h('div.handle -right'),
+    h('div.handle -move')
   ])
 }
 
