@@ -267,14 +267,16 @@ selectedChunk(function(path){
     if (lastSelectedSetup){
       var currentPath = null
       var id = lastSelectedSetup.selectedChunkId()
-      lastSelectedSetup.chunks().some(function(chunk){
+      var chunks = lastSelectedSetup.chunks() || []
+      chunks.some(function(chunk){
         if (chunk.id === id && chunk.src){
           currentPath = project.resolve(chunk.src)
           return true
         }
       })
       if (path != currentPath){
-        lastSelectedSetup.chunks().some(function(chunk){
+        var chunks = lastSelectedSetup.chunks() || []
+        chunks.some(function(chunk){
           if (project.resolve(chunk.src) === path){
             lastSelectedSetup.selectedChunkId.set(chunk.id)
             return true
@@ -285,15 +287,16 @@ selectedChunk(function(path){
   }
 })
 
-
 function findItemByPath(items, path){
   var result = null
-  items.some(function(setup){
-    if (setup.path === path){
-      result = setup
-      return true
-    }
-  })
+  if (items){
+    items.some(function(setup){
+      if (setup.path === path){
+        result = setup
+        return true
+      }
+    })
+  }
   return result
 }
 

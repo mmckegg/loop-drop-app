@@ -1,11 +1,12 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var change = require('./value-event.js')
+var read = require('./read.js')
 
 module.exports = select
 
 function select(param, opt){
-  var value = param()
+  var value = read(param)
   var options = typeof opt.options == 'function' ? opt.options() : opt.options
   options = Array.isArray(options) ? options : []
 

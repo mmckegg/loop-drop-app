@@ -9,7 +9,22 @@ LaunchpadNode {
   border-radius: 4px;
 
   header {
+    display: flex
     padding: 3px
+
+    span {
+      flex: 1
+    }
+
+    button.remove {
+      opacity: 0.2
+    }
+
+    :hover {
+      button.remove {
+        opacity: 1
+      }
+    }
   }
 
   section {

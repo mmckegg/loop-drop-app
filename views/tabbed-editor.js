@@ -16,7 +16,7 @@ function TabbedEditor(state, actions){
     var fileObject = getItem(state)
 
     var editor = (data.rawMode && fileObject) ?
-      rawEditor(fileObject.file) :
+      rawEditor(fileObject) :
       renderEditor(fileObject)
 
     var rawCheckbox = h('span.raw', [
@@ -28,7 +28,7 @@ function TabbedEditor(state, actions){
     ]) 
 
     return h('TabbedEditor', [
-      h('header', [data.items.map(renderTab), rawCheckbox]),
+      h('header', [state.items._list.map(renderTab), rawCheckbox]),
       editor
     ])
   }
@@ -42,13 +42,13 @@ function TabbedEditor(state, actions){
     //  ])
     //} else {
 
-    var selected = state.selected() == item._path
+    var selected = state.selected() == item.path
     return h('div.tab', { 
-      'ev-click': mercury.event(state.selected.set, item._path),
+      'ev-click': mercury.event(state.selected.set, item.path),
       'className': selected ? '-selected' : null
     }, [
-      h('span', getBaseName(item._path, '.json')), 
-      h('button.close', {'ev-click': mercury.event(actions.closeFile, item._path)})
+      h('span', getBaseName(item.path, '.json')), 
+      h('button.close', {'ev-click': mercury.event(actions.closeFile, item.path)})
     ])
   }
 

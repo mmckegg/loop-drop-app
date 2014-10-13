@@ -1,7 +1,8 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
+var MPE = require('../../../../lib/mouse-position-event.js')
 
-module.exports = function(node, setup){
+module.exports = function(node, setup, collection){
   var data = node()
   var innerData = node.resolved() || {}
 
@@ -10,10 +11,21 @@ module.exports = function(node, setup){
     var selected = setup.selectedChunkId() == data.id
     var style = 'background-color:'+color(innerData.color, selected ? 0.5 : 0.1) +
                 ';border: 2px solid '+color(innerData.color, selected ? 1 : 0)
-    return h('div ExternalNode', [
+    return h('div ExternalNode', {
+      draggable: true,
+      'ev-dragstart': MPE(dragStart, {chunk: node, collection: collection}),
+      'ev-dragend': MPE(dragEnd, {chunk: node, collection: collection, setup: setup}),
+      'ev-dragover': MPE(dragOver, {chunk: node, collection: collection, setup: setup}),
+      'ev-click': mercury.event(setup.selectedChunkId.set, data.id)
+    }, [
       h('header', {
         style: AttributeHook(style)
-      }, innerData.id + ' (' + innerData.node + ')')
+      }, [
+        h('span', innerData.id + ' (' + innerData.node + ')'),
+        h('button.remove Button -warn', {
+          'ev-click': mercury.event(collection.remove, node),
+        }, 'X')
+      ])
     ])
   }
   return h('UnknownNode')
@@ -38,4 +50,22 @@ AttributeHook.prototype.hook = function (node, prop, prev) {
     return;
   }
   node.setAttributeNS(null, prop, this.value)
+}
+
+function dragOver(ev){
+  var currentDrag = window.currentDrag
+  if (currentDrag && currentDrag.data.chunk){
+    var index = ev.data.collection.indexOf(ev.data.chunk)
+    if (~index){
+      ev.data.collection.move(currentDrag.data.chunk, index)
+    }
+  }
+}
+
+function dragStart(ev){
+  window.currentDrag = ev
+}
+
+function dragEnd(ev){
+  window.currentDrag = null
 }

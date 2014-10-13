@@ -6,16 +6,21 @@ var externalEditors = {
   rangeChunk: require('./chunk.js')
 }
 
-module.exports = function(node, setup){
+module.exports = function(node, setup, collection){
   var data = node()
   var innerData = node.resolved() || {}
   if (innerData.node && innerData.node !== 'external'){
     var editor = externalEditors[innerData.node]
     if (editor){
-      return editor(node, setup)
+      return editor(node, setup, collection)
     }
   }
   return h('div ExternalNode', [
-    h('header', data.id + ' (external)')
+    h('header',[
+      h('span', data.id + ' (external)'),
+      h('button.remove Button -warn', {
+        'ev-click': mercury.event(collection.remove, node),
+      }, 'X')
+    ])
   ])
 }

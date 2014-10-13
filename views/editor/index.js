@@ -46,6 +46,11 @@ Editor.prototype.update = function(prev, elem){
   }
 }
 
+Editor.prototype.destroy = function(elem){
+  this.releases.forEach(invoke)
+  this.releases.length = 0
+}
+
 function bindToObject(self){
   var state = self.state
   var fileObject = self.fileObject

@@ -1,4 +1,6 @@
 SetupNode {
+  padding: 4px
+  overflow: auto
   display: flex
   flex: 1
   div.chunks {

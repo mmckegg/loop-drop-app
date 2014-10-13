@@ -1,12 +1,13 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-
-var MPE = require('./mouse-position-event')
+var MPE = require('../../../../lib/mouse-position-event.js')
 var getBaseName = require('path').basename
+var nextTick = require('next-tick')
+
 module.exports = renderGrid
 function renderGrid(controller, setup){
   var data = controller && controller.gridState()
-  
+
   if (data){
     var grid = data.grid
     var chunks = data.chunks
@@ -35,7 +36,9 @@ function renderGrid(controller, setup){
 
       return h('div.grid', {
         'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
-        'ev-drop': MPE(drop, {controller: controller, setup: setup})
+        'ev-drop': MPE(drop, {controller: controller, setup: setup}),
+        'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
+        'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup})
       }, [
         buttons,
         chunks.map(function(chunk){
@@ -80,46 +83,78 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
   ])
 }
 
-var currentDrag = null
 function startDrag(ev){
-  currentDrag = ev
+  window.currentDrag = ev
   ev.value = ev.data.chunk.origin.slice()
   ev.controller = ev.data.controller
   console.log('start', ev)
 }
+
 function endDrag(ev){
-  currentDrag = null
+  window.currentDrag = null
+}
+
+var entering = null
+function dragLeave(ev){
+  if (window.currentDrag && (!entering || entering !== ev.data.controller)){
+    console.log('LEAVE')
+    var chunkId = getId(currentDrag.data.chunk)
+    if (chunkId){
+      ev.data.controller.chunkPositions.delete(chunkId)
+    }
+  }
+}
+function dragEnter(ev){
+  entering = ev.data.controller
+  nextTick(function(){
+    entering = null
+  })
+}
+
+function getId(chunk){
+  if (typeof currentDrag.data.chunk == 'function'){
+    chunk = currentDrag.data.chunk()
+  }
+
+  if (chunk){
+    return chunk.id
+  }
 }
 
 function dragOver(ev){
+  var currentDrag = window.currentDrag
+
   if (currentDrag){
 
-    var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
-    var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
+    var chunkId = getId(currentDrag.data.chunk)
+    if (chunkId){
+      var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
+      var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
 
-    if (currentDrag.controller !== ev.data.controller){
-      currentDrag.controller = ev.data.controller
-      currentDrag.controller.chunkPositions.delete(currentDrag.data.chunk.id)
-    }
+      if (!currentDrag.controller){
+        currentDrag.controller = ev.data.controller
+      }
 
-    if (ev.offsetX < 0 || ev.offsetY < 0  
-    ||  ev.offsetX > ev.offsetWidth  
-    ||  ev.offsetY > ev.offsetHeight) {
+      if (currentDrag.controller !== ev.data.controller){
+        currentDrag.controller.chunkPositions.delete(chunkId)
+        currentDrag.controller = ev.data.controller
+      }
 
-      ev.data.controller.chunkPositions.delete(currentDrag.data.chunk.id)
-
-    } else {
       var x = ev.offsetX - currentDrag.offsetX
       var y = ev.offsetY - currentDrag.offsetY
 
       var r = Math.round(y/width)
       var c = Math.round(x/width)
 
-      if (currentDrag.value[0] !== r || currentDrag.value[1] !== c){
+      if (!currentDrag.value || currentDrag.value[0] !== r || currentDrag.value[1] !== c){
         currentDrag.value = [r,c]
-        ev.data.controller.chunkPositions.put(currentDrag.data.chunk.id, currentDrag.value)
+        ev.data.controller.chunkPositions.put(chunkId, currentDrag.value)
       }
     }
+
+    ev.dataTransfer.dropEffect = 'move'
+    ev.event.preventDefault()
+    
   }
 
   if (~ev.dataTransfer.types.indexOf('filesrc')){
@@ -129,11 +164,11 @@ function dragOver(ev){
 }
 
 function drop(ev){
-  var path = ev.dataTransfer.getData('filesrc')
-  if (ev.data.setup && ev.data.setup.chunks){
+  var src = ev.dataTransfer.getData('filesrc')
+  if (src && ev.data.setup && ev.data.setup.chunks){
 
     var lookup = ev.data.setup.chunks.controllerContextLookup()
-    var base = getBaseName(path, '.json')
+    var base = getBaseName(src, '.json')
     var incr = 0
     var id = base
 
@@ -145,12 +180,12 @@ function drop(ev){
     ev.data.setup.chunks.push({
       'node': 'external',
       'id': id,
-      'src': path
+      'src': src
     })
     
     var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
     var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
-    var r = Math.floor(ev.offsetX/width)
+    var r = Math.floor(ev.offsetY/height)
     var c = Math.floor(ev.offsetX/width)
     ev.data.controller.chunkPositions.put(id, [r,c])
   }
