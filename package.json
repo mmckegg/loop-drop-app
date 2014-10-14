@@ -15,6 +15,7 @@
     "catw": "~0.2.0",
     "concat-stream": "~1.4.1",
     "create-element": "~0.2.3",
+    "deep-equal": "^0.2.1",
     "ditty": "^2.1.0",
     "dom-behavior": "^1.2.0",
     "frac": "^0.3.1",

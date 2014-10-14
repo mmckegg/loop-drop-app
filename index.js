@@ -317,7 +317,7 @@ var state = ObservStruct({
     renaming: Observ(false),
     entries: project.getDirectory('chunks'),
     items: chunks,
-    rawMode: Observ(true)
+    rawMode: Observ(false)
   })
 
 })

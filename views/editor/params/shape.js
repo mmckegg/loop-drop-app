@@ -8,8 +8,6 @@ module.exports = function(param){
   var heightSlider = h('div.slider')
   var value = read(param) || [1,1]
 
-  console.log(value)
-
   return h('div Param -range', [
     h('input', {
       min: 1, max: 8,

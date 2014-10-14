@@ -26,7 +26,6 @@ Editor.prototype.init = function(){
     resolved: Observ()
   })
   bindToObject(this)
-  console.log('WHAT')
   mercury.app(element, this.state, function(data){
     if (element.fileObject){
       return renderNode(element.fileObject, element.fileObject)

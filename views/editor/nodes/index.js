@@ -4,6 +4,7 @@ var h = require('micro-css/h')(mercury.h)
 var nodeEditors = {
   launchpad: require('./launchpad'),
   chunk: require('./chunk'),
+  rangeChunk: require('./chunk'),
   setup: require('./setup.js'),
   external: require('./external')
 }
