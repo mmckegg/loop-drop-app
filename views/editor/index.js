@@ -18,67 +18,73 @@ function Editor(fileObject){
 Editor.prototype.type = 'Widget'
 
 Editor.prototype.init = function(){
-  var element = document.createElement('div')
-  this.element = element
-  this.releases = []
-  this.state = ObservStruct({
-    object: Observ(),
-    resolved: Observ()
-  })
-  bindToObject(this)
-  mercury.app(element, this.state, function(data){
-    if (element.fileObject){
-      return renderNode(element.fileObject, element.fileObject)
+
+  var state = this.state = {
+    releases: [],
+    fileObject: this.fileObject,
+    update: update
+  }
+
+  var pendingUpdate = false
+
+  function update(){
+    if (!pendingUpdate){
+      pendingUpdate = true
+      nextTick(doUpdate)
+    }
+  }
+
+  function doUpdate(){
+    pendingUpdate = false
+    loop.update()
+  }
+
+  var loop = mercury.main(null, function(){
+    if (state.fileObject){
+      return renderNode(state.fileObject, state.fileObject)
     } else {
       return h('div')
     }
   })
-  return element
+
+  bindToObject(this, update)
+
+  return loop.target
 }
 
 Editor.prototype.update = function(prev, elem){
-  this.element = elem
-  this.state = prev.state
-  this.releases = prev.releases
+  var state = this.state = prev.state
+  state.fileObject = this.fileObject
+
   if (this.fileObject !== prev.fileObject){
-    bindToObject(this)
+    bindToObject(this, state.update)
+    state.update()
   }
 }
 
 Editor.prototype.destroy = function(elem){
-  this.releases.forEach(invoke)
-  this.releases.length = 0
+  var state = this.state
+  state.releases.forEach(invoke)
+  state.releases.length = 0
 }
 
-function bindToObject(self){
+function bindToObject(self, update){
   var state = self.state
   var fileObject = self.fileObject
-  var element = self.element
 
-  // for renderer
-  element.fileObject = fileObject
-
-  while (self.releases.length){
-    self.releases.pop()()
-  }
+  state.releases.forEach(invoke)
+  state.releases.length = 0
 
   if (fileObject){
-    nextTick(function(){
-      self.releases.push(
-        watch(fileObject, state.object.set)
-      )
-    })
-
+    state.releases.push(
+      fileObject(update)
+    )
     if (fileObject.resolved){
-      self.releases.push(
-        watch(fileObject.resolved, state.resolved.set)
+      state.releases.push(
+        fileObject.resolved(update)
       )
     }
-  } else {
-    state.object.set(null)
-    state.resolved.set(null)
   }
-
 }
 
 function invoke(func){

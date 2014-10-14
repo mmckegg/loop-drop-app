@@ -7,21 +7,18 @@ module.exports = select
 
 function select(param, opt){
   var value = read(param)
+
   var options = typeof opt.options == 'function' ? opt.options() : opt.options
   options = Array.isArray(options) ? options : []
-
   var optionElements = options.map(optionElement)
 
   if (value){
-    var index = options.indexOf(value)
-    if (!~index){
+    if (!markSelectedOption(optionElements, value)){
       var display = value
       if (opt.missingPrefix){
         display += opt.missingPrefix
       }
       optionElements.unshift(h('option', {value: value, selected: true}, display))
-    } else {
-      optionElements[index].properties.selected = true
     }
   }
 
@@ -30,19 +27,40 @@ function select(param, opt){
     optionElements.unshift(h('option', {value: ''}, display))
   }
 
-  return h('div', {className: opt.flex ? '-flex' : null}, h('select', {
-    'name': 'value', 'ev-change': change(param.set)
+  return h('div', {className: opt.flex ? '-flex' : ''}, h('select', {
+    'name': 'value', 'ev-change': change(handleChange, 'value', param)
   }, optionElements))
 }
 
-function change(ev){
-  ev.param.set(ev.value)
+function handleChange(value){
+  this.data.set(value)
 }
 
 function optionElement(option){
   if (Array.isArray(option)){
+    if (Array.isArray(option[1])){
+      return h('optgroup', {
+        label: option[0]
+      }, option[1].map(optionElement))
+    }
     return h('option', {value: option[1]}, option[0])
   } else {
     return h('option', {value: option}, option)
+  }
+}
+
+function markSelectedOption(options, selectedValue){
+  for (var i=0;i<options.length;i++){
+    var option = options[i]
+    if (option.properties && option.properties.value == selectedValue){
+      option.properties.selected = true
+      return true
+    }
+    if (option.children && option.children.length){
+      var res = markSelectedOption(option.children, selectedValue)
+      if (res){
+        return true
+      }
+    }
   }
 }

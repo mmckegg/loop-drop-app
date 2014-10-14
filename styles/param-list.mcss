@@ -3,6 +3,28 @@ ParamList {
   display: flex
   flex-wrap: wrap
 
+  table {
+    (td.title){
+      width: 90%
+    }
+  }
+
+  (select) {
+    flex: 1
+    cursor: pointer
+    font-size: 80%;
+    display: inline-block;
+    padding: 2px 4px;
+    height: 18px;
+    border: 1px solid #A9A9A9;
+    margin-left: -1px;
+    background: #666 svg(dropArrow) no-repeat right
+    -webkit-appearance: none;
+    color: #FFF;
+    padding-right: 12px;
+    text-align: center;
+  }
+
   div {
     div.title {
       font-size: 80%
@@ -20,20 +42,6 @@ ParamList {
       flex: 1 200px
     }
 
-    select {
-      flex: 1
-      cursor: pointer
-      font-size: 80%;
-      display: inline-block;
-      padding: 2px 4px;
-      height: 18px;
-      border: 1px solid #A9A9A9;
-      margin-left: -1px;
-      background: #666 svg(dropArrow) no-repeat right
-      -webkit-appearance: none;
-      color: #FFF;
-      text-align: center;
-    }
   }
 
   @svg dropArrow {

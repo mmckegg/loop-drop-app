@@ -72,7 +72,7 @@ LaunchpadNode {
         }
 
         -selected {
-          border: 3px solid #4F4
+          background: #63C763
         }
 
       }

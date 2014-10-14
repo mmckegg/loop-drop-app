@@ -69,6 +69,8 @@ var ObservStruct = require('observ-struct')
 var EditorState = require('./lib/editor-state.js')
 var renderLoop = require('./views')
 
+var randomColor = require('./lib/random-color')
+
 var audioContext = require('loop-drop-audio-context')
 
 var loadDefaultProject = require('./lib/load-default-project')
@@ -267,16 +269,16 @@ selectedChunk(function(path){
     if (lastSelectedSetup){
       var currentPath = null
       var id = lastSelectedSetup.selectedChunkId()
-      var chunks = lastSelectedSetup.chunks() || []
-      chunks.some(function(chunk){
+      var res = lastSelectedSetup.chunks() || []
+      res.some(function(chunk){
         if (chunk.id === id && chunk.src){
           currentPath = project.resolve(chunk.src)
           return true
         }
       })
       if (path != currentPath){
-        var chunks = lastSelectedSetup.chunks() || []
-        chunks.some(function(chunk){
+        var res = lastSelectedSetup.chunks() || []
+        res.some(function(chunk){
           if (project.resolve(chunk.src) === path){
             lastSelectedSetup.selectedChunkId.set(chunk.id)
             return true
@@ -290,9 +292,9 @@ selectedChunk(function(path){
 function findItemByPath(items, path){
   var result = null
   if (items){
-    items.some(function(setup){
-      if (setup.path === path){
-        result = setup
+    items.some(function(item){
+      if (item.path === path){
+        result = item
         return true
       }
     })
@@ -334,7 +336,7 @@ var actions = {
     },
     newFile: function(){
       project.getFile('setups/New Setup.json', function(err, file){
-        file.set('{"node":"setup"}')
+        file.set(JSON.stringify({node: 'setup', controllers: [], chunks: []}))
         var setup = addSetup(file.src)
         selectedSetup.set(file.path)
         state.setups.renaming.set(true)
@@ -370,7 +372,13 @@ var actions = {
     },
     newFile: function(){
       project.getFile('chunks/New Chunk.json', function(err, file){
-        file.set('{"node":"chunk"}')
+        file.set(JSON.stringify({
+          node: 'chunk', 
+          color: randomColor([255,255,255]),
+          slots: [{id: 'output'}], 
+          shape: [4,4],
+          outputs: ['output'],
+        }))
         var chunk = addChunk(file.src)
         state.chunks.selected.set(file.path)
         state.chunks.renaming.set(true)

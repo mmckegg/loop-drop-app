@@ -14,7 +14,6 @@ module.exports = renderOptions
 function renderOptions(fileObject){
   var param = fileObject.getParam
   return h('section.options', [
-    h('header', h('span', 'Chunk Options')),
     h('ParamList', [
       select(param('node'), {options: chunkNodeOptions}),
       shapeChooser(param('shape'))

@@ -1,6 +1,7 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var MPE = require('../../../../lib/mouse-position-event.js')
+var renderRouting = require('./routing.js')
 
 module.exports = function(node, setup, collection){
   var data = node()
@@ -9,22 +10,27 @@ module.exports = function(node, setup, collection){
   if (data){
 
     var selected = setup.selectedChunkId() == data.id
-    var style = 'background-color:'+color(innerData.color, selected ? 0.5 : 0.1) +
-                ';border: 2px solid '+color(innerData.color, selected ? 1 : 0)
+    var headerStyle = 'background-color:'+color(innerData.color, selected ? 0.5 : 0.1)
+    var mainStyle = 'border: 2px solid '+color(innerData.color, selected ? 1 : 0)
+
     return h('div ExternalNode', {
       draggable: true,
       'ev-dragstart': MPE(dragStart, {chunk: node, collection: collection}),
       'ev-dragend': MPE(dragEnd, {chunk: node, collection: collection, setup: setup}),
       'ev-dragover': MPE(dragOver, {chunk: node, collection: collection, setup: setup}),
-      'ev-click': mercury.event(setup.selectedChunkId.set, data.id)
+      'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
+      'style': AttributeHook(mainStyle)
     }, [
       h('header', {
-        style: AttributeHook(style)
+        style: AttributeHook(headerStyle)
       }, [
-        h('span', innerData.id + ' (' + innerData.node + ')'),
+        h('span', innerData.id),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
+      ]),
+      h('section', [
+        renderRouting(node, setup, collection)
       ])
     ])
   }

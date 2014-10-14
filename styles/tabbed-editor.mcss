@@ -69,7 +69,6 @@ TabbedEditor {
   }
 
   div {
-    display: flex
     flex: 1
     background: #333;
     border: 1px solid #AAA

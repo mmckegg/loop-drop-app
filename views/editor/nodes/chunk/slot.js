@@ -15,6 +15,7 @@ SlotEditor.prototype.type = 'Widget'
 
 SlotEditor.prototype.init = function(){
   var element = document.createElement('div')
+  element.className = '.slotEditor'
   var state = this.state = {
     param: this.param,
     editor: Editor(window.context.audio, element),

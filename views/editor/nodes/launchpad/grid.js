@@ -12,6 +12,7 @@ function renderGrid(controller, setup){
     var grid = data.grid
     var chunks = data.chunks
     var selectedChunkId = setup.selectedChunkId()
+    var selectedTriggerId = setup.selectedTriggerId()
 
     if (grid && chunks){
       var buttons = []
@@ -26,6 +27,7 @@ function renderGrid(controller, setup){
             if (buttonState.isRecording) classes += ' -recording'
             if (buttonState.isActive) classes += ' -active'
             if (buttonState.noRepeat) classes += ' -noRepeat'
+            if (selectedTriggerId === buttonState.id) classes += ' -selected'
           }
 
           buttons.push(h('div', {
@@ -75,10 +77,10 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
     'ev-dragend': MPE(endDrag, {chunk: chunk, controller: controller})
   },[
     h('span.label', chunk.id),
-    h('div.handle -top'),
-    h('div.handle -bottom'),
-    h('div.handle -left'),
-    h('div.handle -right'),
+    //h('div.handle -top'),
+    //h('div.handle -bottom'),
+    //h('div.handle -left'),
+    //h('div.handle -right'),
     h('div.handle -move')
   ])
 }
