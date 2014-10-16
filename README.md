@@ -3,6 +3,8 @@ Loop Drop
 
 MIDI looper, modular synth and sampler app built around Novation Launchpad controller.
 
+**Preview the new version here:** https://github.com/mmckegg/loop-drop-app/tree/global-setups
+
 ## Install
 
 ```bash
