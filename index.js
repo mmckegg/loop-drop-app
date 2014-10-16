@@ -187,7 +187,8 @@ function addSetup(src){
   setup.load(src)
   setups.push(setup)
   setup.onLoad(function(){
-    if (setup.file){
+    // don't backup a corrupted file!
+    if (Object.keys(setup() || {}).length){
       project.backup(setup.file)
     }
   })
