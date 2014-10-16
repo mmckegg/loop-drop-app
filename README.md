@@ -18,7 +18,8 @@ Needs the following features completed before merging to master:
 ## Install
 
 ```bash
-$ git clone https://github.com/mmckegg/loop-drop-app
+$ git clone -b global-setups https://github.com/mmckegg/loop-drop-app
+$ cd loop-drop-app
 $ npm install
 $ npm run build # or npm run watch (to automatically rebuild) 
 ```
