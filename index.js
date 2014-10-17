@@ -28,7 +28,6 @@ var loadDefaultProject = require('./lib/load-default-project')
 
 
 
-
 var project = Project()
 
 var recorder = Recorder()
@@ -45,7 +44,6 @@ soundbank.connect(audioContext.destination)
 
 // needed for soundbank sample loading
 audioContext.loadSample = SampleLoader(audioContext, project, 'samples')
-
 
 
 
@@ -202,7 +200,7 @@ function highlightChunkOnCurrentSetup(chunk){
 }
 
 
-var state = ObservStruct({
+var state = window.state = ObservStruct({
 
   setups: ObservStruct({
     selected: selectedSetup,
@@ -303,12 +301,10 @@ var actions = {
   }
 }
 
-window.state = state
-
 var forceUpdate = null
-
 setTimeout(function(){
   forceUpdate = renderLoop(document.body, state, actions)
 }, 100)
+
 
 loadDefaultProject()
