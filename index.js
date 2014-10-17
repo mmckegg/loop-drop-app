@@ -1,147 +1,60 @@
-/*
-
-Project browser needs seperate tabs/zones for the 3 main categories
-  - setups
-  - chunks
-  - samples
-
-Update loop-drop-project to support getEntry(src) instead of using the generic project.entries.
-The returned entry should update whenever the tree below the entry changes. 
-It should also update on project change.
-
-Figure out how to trigger setup load. Clicking on it should allow edit, but should it load?
-Maybe need a seperate load button that shows on hover? Need a place to show currently loaded setup.
-Perhaps an editor tab?
-
-Raw could be a checkbox that appears on every visual editor.
-
-Need to figure out how nested visual editors will work.
-
-
-----
-
-Split pane interface
-
-----------------------------------------------------------------------|
-| setups        |   LOADED 1  x   |   LOADED 2  x  |                  |
-|               |--vvvvvvvvvvvvvv-------------------------------------|
-|               |  Tempo  | 120 bpm |          Output |  -5 dB  |
-|               |  
-|               |
-|               |
-|               |
-|               |  + Add Launchpad 
-|---------------------------------------------------------------------|
-| chunks | samp |   editing 1  x  |   editing 2  x  |  ediing 3   x   |
-|               |---vvvvvvvvvvvv--------------------------------------|
-|               |  1  | 2  | 3  | 4  | 5 |  6 |  7 |  8 |
-|               |-vvvv-------------------------------------------------
-|               |   Oscilliator        |  Filter
-|               |   -----------------  |  --------------
-|               |                      |
-|               |                      |
-|               |                      > 
-|               |                      |
-|               |                      |
-|               |                      |
-----------------------------------------------------------------------|
-
-*/
-
-var mercury = require('mercury')
-
-var EventEmitter = require('events').EventEmitter
 var Soundbank = require('soundbank')
 var Ditty = require('ditty')
 var SoundbankTrigger = require('soundbank-trigger')
 var Recorder = require('loop-recorder')
 
+// preloaded with all of the shared audio sources/processors/modulators/providers
+var audioContext = require('loop-drop-audio-context')
+
+// persistence
+var WebFS = require('web-fs')
 var Project = require('loop-drop-project')
 var Setup = require('loop-drop-setup')
 var FileObject = require('./lib/object')
+var SampleLoader = require('./lib/sample-loader.js')
+var randomColor = require('./lib/random-color.js')
+var findItemByPath = require('./lib/find-item-by-path.js')
 
-var extendBrowser = require('./views/browser')
-var extendTabbedEditor = require('./views/tabbed-editor')
-
+// state and rendering
 var Observ = require('observ')
 var ObservArray = require('observ-array')
 var ObservStruct = require('observ-struct')
-var EditorState = require('./lib/editor-state.js')
+var watch = require('observ/watch')
 var renderLoop = require('./views')
 
-var randomColor = require('./lib/random-color')
-
-var audioContext = require('loop-drop-audio-context')
 
 var loadDefaultProject = require('./lib/load-default-project')
-var WebFS = require('web-fs')
 //////
 
+
+
+
 var project = Project()
-var selectedSetup = Observ()
-var selectedChunk = Observ()
 
 var recorder = Recorder()
 var soundbank = Soundbank(audioContext)
 var triggerOutput = SoundbankTrigger(soundbank)
 var player = Ditty()
-var clock = audioContext.scheduler
 
-clock
+audioContext.scheduler
   .pipe(player)
   .pipe(triggerOutput)
   .pipe(recorder)
 
 soundbank.connect(audioContext.destination)
 
-var join = require('path').join
-audioContext.loadSample = function(url, cb){
-  var audioContext = this
-  var sampleCache = audioContext.sampleCache
-  
-  var src = join('samples', url)
-  var path = project.resolve(src)
-
-  var current = sampleCache[url]
-
-  if (!current){
-    current = sampleCache[url] = []
-    requestSample(src, function(err, buffer){
-      sampleCache[url] = buffer
-      current.forEach(function(callback){
-        callback(buffer)
-      })
-    })
-  }
-
-  if (cb){
-    if (Array.isArray(current)){
-      current.push(cb)
-    } else {
-      cb(current)
-    }
-  }
-}
-
-function requestSample(src, cb){
-  project.checkExists(src, function(err, exists){
-    if (exists){
-      project.getFile(src, 'arraybuffer', function(err, file){
-        if (err) return cb&&cb(err)
-        audioContext.decodeAudioData(file(), function(buffer) {
-          console.log('loaded sample', src)
-          cb&&cb(null, buffer)
-        }, function(err){
-          cb&&cb(err)
-        })
-      })
-    }
-  })
-}
+// needed for soundbank sample loading
+audioContext.loadSample = SampleLoader(audioContext, project, 'samples')
 
 
 
-var context = {
+
+var selectedSetup = Observ()
+var selectedChunk = Observ()
+var setups = ObservArray([])
+var chunks = ObservArray([])
+
+var context = window.context = {
   nodes: {
     launchpad: require('loop-launchpad'),
     chunk: require('soundbank-chunk'),
@@ -157,14 +70,9 @@ var context = {
   project: project
 }
 
-var setups = ObservArray([])
-var chunks = ObservArray([])
-
-window.context = context
-
-// load selected setup
+// load selected setup on change
 var lastSelectedSetup = null
-selectedSetup(function(path){
+watch(selectedSetup, function(path){
   if (path){
     var src = project.relative(path)
     var setup = findItemByPath(setups, path)
@@ -181,6 +89,31 @@ selectedSetup(function(path){
     lastSelectedSetup = setup
   }
 })
+
+// load selected file on change
+var lastSelectedChunk = null
+watch(selectedChunk, function(path){
+  if (path){
+    var src = project.relative(path)
+    var chunk = findItemByPath(chunks, path)
+
+    if (!chunk){
+      if (lastSelectedChunk){
+        chunk = lastSelectedChunk
+        chunk.load(src, function(){
+          project.backup(chunk.file)
+        })
+
+      } else {
+        chunk = addChunk(src)
+      }
+    }
+
+    highlightChunkOnCurrentSetup(chunk)
+    lastSelectedChunk = chunk 
+  }
+})
+
 
 function addSetup(src){
   var setup = Setup(context)
@@ -245,65 +178,29 @@ function addChunk(src){
   return chunk
 }
 
-// load selected file
-var lastSelectedChunk = null
-selectedChunk(function(path){
-  if (path){
-    var src = project.relative(path)
-    var chunk = findItemByPath(chunks, path)
-
-    if (!chunk){
-      if (lastSelectedChunk){
-        chunk = lastSelectedChunk
-        chunk.load(src, function(){
-          project.backup(chunk.file)
-        })
-
-      } else {
-        chunk = addChunk(src)
-      }
-    }
-
-    lastSelectedChunk = chunk
-
-    // chunk selection link
-    if (lastSelectedSetup){
-      var currentPath = null
-      var id = lastSelectedSetup.selectedChunkId()
-      var res = lastSelectedSetup.chunks() || []
-      res.some(function(chunk){
-        if (chunk.id === id && chunk.src){
-          currentPath = project.resolve(chunk.src)
-          return true
-        }
-      })
-      if (path != currentPath){
-        var res = lastSelectedSetup.chunks() || []
-        res.some(function(chunk){
-          if (project.resolve(chunk.src) === path){
-            lastSelectedSetup.selectedChunkId.set(chunk.id)
-            return true
-          }
-        })
-      }
-    }
-  }
-})
-
-function findItemByPath(items, path){
-  var result = null
-  if (items){
-    items.some(function(item){
-      if (item.path === path){
-        result = item
+function highlightChunkOnCurrentSetup(chunk){
+  if (lastSelectedSetup && chunk){
+    var currentPath = null
+    var id = lastSelectedSetup.selectedChunkId()
+    var res = lastSelectedSetup.chunks() || []
+    res.some(function(chunk){
+      if (chunk.id === id && chunk.src){
+        currentPath = project.resolve(chunk.src)
         return true
       }
     })
+    if (chunk.path != currentPath){
+      var res = lastSelectedSetup.chunks() || []
+      res.some(function(chunk){
+        if (project.resolve(chunk.src) === chunk.path){
+          lastSelectedSetup.selectedChunkId.set(chunk.id)
+          return true
+        }
+      })
+    }
   }
-  return result
 }
 
-var dragPath = Observ()
 
 var state = ObservStruct({
 
@@ -413,12 +310,5 @@ var forceUpdate = null
 setTimeout(function(){
   forceUpdate = renderLoop(document.body, state, actions)
 }, 100)
-
-function getFileItem(element){
-  while (element && element.classList.contains('BrowserFile')){
-    element = element.parentNode
-  }
-  return element
-}
 
 loadDefaultProject()
