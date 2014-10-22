@@ -56,7 +56,7 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
   var box = {
     top: chunk.origin[0] / shape[0],
     bottom: (chunk.origin[0] + chunk.shape[0]) / shape[0],
-    left: chunk.origin[1] / shape[0],
+    left: chunk.origin[1] / shape[1],
     right: (chunk.origin[1] + chunk.shape[1]) / shape[1]
   }
 
