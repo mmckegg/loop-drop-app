@@ -14,7 +14,7 @@ function select(param, opt){
 
   if (value){
     if (!markSelectedOption(optionElements, value)){
-      var display = value
+      var display = String(value)
       if (opt.missingPrefix){
         display += opt.missingPrefix
       }

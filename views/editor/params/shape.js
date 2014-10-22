@@ -13,8 +13,8 @@ module.exports = function(param){
   var value = read(param) || [1,1]
 
   return h('div', [
-    select(IndexParam(param, 0), {options: rowOptions}),
-    select(IndexParam(param, 1), {options: colOptions}),
+    select(IndexParam(param, 0), {options: rowOptions, missingPrefix: ' rows'}),
+    select(IndexParam(param, 1), {options: colOptions, missingPrefix: ' cols'})
   ])
 }
 
