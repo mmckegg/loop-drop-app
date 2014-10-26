@@ -3,7 +3,7 @@ var h = require('micro-css/h')(mercury.h)
 var range = require('../../params/range.js')
 var select = require('../../params/select.js')
 
-var controllerOptions = require('../../../../midi-controllers.js')._options
+var controllerOptions = require('../../../../midi-controllers.js')._choices
 
 module.exports = renderParams
 
