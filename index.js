@@ -22,7 +22,6 @@ var ObservStruct = require('observ-struct')
 var watch = require('observ/watch')
 var renderLoop = require('./views')
 
-// expose controllers
 var loadDefaultProject = require('./lib/load-default-project')
 //////
 
