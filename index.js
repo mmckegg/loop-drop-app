@@ -55,7 +55,6 @@ var context = window.context = {
   nodes: {
     controller: require('./midi-controllers.js'),
     chunk: require('./chunk-types.js'),
-    rangeChunk: require('soundbank-chunk/range'),
     external: require('loop-drop-setup/external')
   },
   audio: audioContext,
