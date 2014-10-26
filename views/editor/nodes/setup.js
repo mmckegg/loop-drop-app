@@ -13,7 +13,7 @@ function renderSetup(setup){
       ]),
       h('NodeCollection .chunks', [
         renderCollection(setup.chunks, setup)
-      ]),
+      ])
     ])
   }
 }
@@ -27,10 +27,7 @@ function spawnController(opts){
 function spawner(setup){
   return h('div.spawner -controller', [
     h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnController, {node: 'launchpad', setup: setup })
-    }, '+ launchpad'),
-    h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnController, {node: 'qwertyKeys', setup: setup })
-    }, '+ qwerty keys')
+      'ev-click': mercury.event(spawnController, {node: 'controller/launchpad', setup: setup })
+    }, '+ controller')
   ])
 }

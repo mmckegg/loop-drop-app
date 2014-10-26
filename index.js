@@ -22,7 +22,7 @@ var ObservStruct = require('observ-struct')
 var watch = require('observ/watch')
 var renderLoop = require('./views')
 
-
+// expose controllers
 var loadDefaultProject = require('./lib/load-default-project')
 //////
 
@@ -54,8 +54,8 @@ var chunks = ObservArray([])
 
 var context = window.context = {
   nodes: {
-    launchpad: require('loop-launchpad'),
-    chunk: require('soundbank-chunk'),
+    controller: require('./midi-controllers.js'),
+    chunk: require('./chunk-types.js'),
     rangeChunk: require('soundbank-chunk/range'),
     external: require('loop-drop-setup/external')
   },

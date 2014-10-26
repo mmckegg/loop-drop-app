@@ -11,7 +11,7 @@ function renderOptions(fileObject){
 
     if (data.node === 'chunk'){
       slots = gridSlots(fileObject)
-    } else if (data.node === 'rangeChunk'){
+    } else if (data.node === 'chunk/range'){
       slots = rangeSlots(fileObject)
     }
 

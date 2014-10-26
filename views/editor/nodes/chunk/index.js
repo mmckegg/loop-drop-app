@@ -27,7 +27,7 @@ function getSelectedSlotParam(fileObject){
   var data = fileObject()
   var selectedSlotId = data.selectedSlotId
   if (selectedSlotId == null){
-    selectedSlotId = data.node === 'rangeChunk' ? 'trigger' : '0'
+    selectedSlotId = data.node === 'chunk/range' ? 'trigger' : '0'
   }
 
   if (selectedSlotId.match(matchTriggers)){

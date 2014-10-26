@@ -6,7 +6,7 @@ var shapeChooser = require('../../params/shape.js')
 
 var chunkNodeOptions = [
   ['Chunk', 'chunk'],
-  ['Inherit Range', 'rangeChunk']
+  ['Inherit Range', 'chunk/range']
 ]
 
 module.exports = renderOptions

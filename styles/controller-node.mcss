@@ -1,4 +1,4 @@
-LaunchpadNode {
+ControllerNode {
 
   transform: translate3d(0,0,0)
   position: relative
@@ -7,6 +7,7 @@ LaunchpadNode {
   border: 1px #444 solid;
   color: #EEE;
   border-radius: 4px;
+  width: 260px;
 
   header {
     display: flex
@@ -40,41 +41,54 @@ LaunchpadNode {
       overflow: hidden
       position: relative
       background: #444
-      display: flex
       flex-wrap: wrap
-      height: 250px
-      width: 250px
       margin: 5px
 
-      div.button {
-        background: #565656
-        width: 12.5%
-        height: 12.5%
-        border: 4px solid #444
-        box-shadow: inset 0px 0px 1px #0D0D0D;
-
-        -present {
-          background: #2D2C2C
+      -min {
+        div.row {
+          div.button {
+            border: none
+          }
         }
-
-        -recording {
-          box-shadow: inset 0px 0px 3px red;
+        div.chunk {
+          span {
+            display: none
+          }
         }
+      }
 
-        -active {
-          box-shadow: inset 0px 0px 10px #21E22B;
+      div.row {
+        display: flex
+        height: 30px
+        div.button {
+          background: #565656
+          flex: 1
+          border: 3px solid #444
+          box-shadow: inset 0px 0px 1px #0D0D0D;
+
+          -present {
+            background: #2D2C2C
+          }
+
+          -recording {
+            box-shadow: inset 0px 0px 3px red;
+          }
+
+          -active {
+            box-shadow: inset 0px 0px 10px #21E22B;
+          }
+
+          -playing {
+            background: gold
+            box-shadow: inset 0px 0px 6px white;
+
+          }
+
+          -selected {
+            background: #63C763
+          }
+
         }
-
-        -playing {
-          background: gold
-          box-shadow: inset 0px 0px 6px white;
-
-        }
-
-        -selected {
-          background: #63C763
-        }
-
       }
 
       div.chunk {

@@ -15,9 +15,10 @@ function renderGrid(controller, setup){
     var selectedTriggerId = setup.selectedTriggerId()
 
     if (grid && chunks){
-      var buttons = []
+      var rows = []
       var length = grid.shape[0] * grid.shape[1]
       for (var r=0;r<grid.shape[0];r++){
+        var buttons = []
         for (var c=0;c<grid.shape[1];c++){
           var classes = '.button'
           var buttonState = grid.get(r,c)
@@ -34,15 +35,17 @@ function renderGrid(controller, setup){
             className: classes
           }))
         }
+        rows.push(h('div.row', buttons))
       }
 
       return h('div.grid', {
+        className: grid.shape[1] > 16 ? '-min' : '',
         'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
         'ev-drop': MPE(drop, {controller: controller, setup: setup}),
         'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
-        'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup})
+        'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
       }, [
-        buttons,
+        rows,
         chunks.map(function(chunk){
           return renderChunkBlock(chunk, grid.shape, grid.stride, controller, setup)
         })

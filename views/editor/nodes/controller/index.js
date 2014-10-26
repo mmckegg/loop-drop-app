@@ -10,7 +10,7 @@ var ControllerWidget = require('../controller-widget.js')
 module.exports = function(node, setup, collection){
   if (node && setup && collection){
     var state = {node: node, setup: setup, collection: collection}
-    return h('div LaunchpadNode', {
+    return h('div ControllerNode', {
       draggable: true,
       'ev-dragstart': MPE(dragStart, state),
       'ev-dragend': MPE(dragEnd, state),

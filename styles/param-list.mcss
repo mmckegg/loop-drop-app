@@ -42,6 +42,10 @@ ParamList {
       flex: 1 200px
     }
 
+    -flexSmall {
+      flex: 1 100px
+    }
+
   }
 
   @svg dropArrow {
