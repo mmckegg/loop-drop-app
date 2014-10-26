@@ -10,6 +10,7 @@ var ControllerWidget = require('../controller-widget.js')
 module.exports = function(node, setup, collection){
   if (node && setup && collection){
     var state = {node: node, setup: setup, collection: collection}
+    var nameSuffix = node().port ? ' (' + node().port + ')' : ''
     return h('div ControllerNode', {
       draggable: true,
       'ev-dragstart': MPE(dragStart, state),
@@ -17,7 +18,7 @@ module.exports = function(node, setup, collection){
       'ev-dragover': MPE(dragOver, state)
     }, [
       h('header', [
-        h('span', 'Launchpad (' + node().port + ')'),
+        h('span', 'Controller' + nameSuffix),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
