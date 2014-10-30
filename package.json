@@ -19,6 +19,7 @@
     "geval": "^2.1.1",
     "json-query": "^1.4.0",
     "keycode": "~0.3.0",
+    "loop-apcmini": "~0.2.0",
     "loop-drop-audio-context": "^2.0.0",
     "loop-drop-editor": "^0.1.0",
     "loop-drop-project": "^2.2.0",
