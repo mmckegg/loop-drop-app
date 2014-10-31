@@ -8,17 +8,24 @@ var controllerOptions = require('../../../../midi-controllers.js')._choices
 module.exports = renderParams
 
 function renderParams(controller, setup){
-  return h('ParamList', [
+  var params = [
     select(controller.node, {
       options: controllerOptions,
       flex: true,
       missingPrefix: ' (unknown)'
-    }),
-    select(controller.port, {
-      options: controller.portChoices,
-      flex: true,
-      missingPrefix: ' (disconnected)',
-      includeBlank: "No Midi Device"
     })
-  ])
+  ]
+
+  if (controller.port && controller.portChoices){
+    params.push(
+      select(controller.port, {
+        options: controller.portChoices,
+        flex: true,
+        missingPrefix: ' (disconnected)',
+        includeBlank: "No Midi Device"
+      })
+    )
+  }
+
+  return h('ParamList', params)
 }
