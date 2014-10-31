@@ -12,7 +12,6 @@ Needs the following features completed before merging to master:
   - Choose Project
   - Tempo Control
   - Display master volume output levels
-  - Get qwerty keys working
   - and DOCUMENTATION (at least a helpful readme)
 
 ## Install
@@ -29,3 +28,12 @@ Then open chrome and go the the extensions tab. Tick the enable developer mode t
 If you want to use it with Launchpad (WHICH YOU SHOULD!), you need to go to chrome://flags/#enable-web-midi and enable Web Midi. Then restart Chrome.
 
 **When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
+
+## Supported Controllers
+
+- [Qwerty Keyboard](https://github.com/mmckegg/loop-qwerty)
+- [Novation Launchpad](https://github.com/mmckegg/loop-launchpad)
+- [Akai MPK Mini](https://github.com/mmckegg/loop-mpkmini)
+- [Akai APC Mini](https://github.com/fourseven/loop-apcmini)
+
+If your controller isn't supported, copy one of the above controller bindings and modify to suit, then send a pull request!
