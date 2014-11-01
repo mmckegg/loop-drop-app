@@ -38,18 +38,29 @@ function renderGrid(controller, setup){
         rows.push(h('div.row', buttons))
       }
 
-      return h('div.grid', {
-        className: grid.shape[1] > 16 ? '-min' : '',
-        'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
-        'ev-drop': MPE(drop, {controller: controller, setup: setup}),
-        'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
-        'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
-      }, [
-        rows,
-        chunks.map(function(chunk){
-          return renderChunkBlock(chunk, grid.shape, grid.stride, controller, setup)
-        })
-      ])
+      var positionElements = []
+      if (data.loopLength){
+        for (var i=0;i<data.loopLength;i++){
+          var active = Math.floor(data.loopPosition) == i
+          positionElements.push(h('div', {className: active ? '-active' : ''}))
+        }
+      }
+
+      return h('div', [
+        h('LoopGrid', {
+          className: grid.shape[1] > 16 ? '-min' : '',
+          'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
+          'ev-drop': MPE(drop, {controller: controller, setup: setup}),
+          'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
+          'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
+        }, [
+          rows,
+          chunks.map(function(chunk){
+            return renderChunkBlock(chunk, grid.shape, grid.stride, controller, setup)
+          })
+        ]),
+        h('LoopPosition', positionElements)
+      ]) 
     }
   }
 }

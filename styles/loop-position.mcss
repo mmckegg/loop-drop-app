@@ -1,0 +1,27 @@
+LoopPosition {
+  display: flex
+  height: 8px;
+  margin: 0 10px;
+  div {
+    flex: 1
+    background: #323232
+
+    -active {
+      background: #63C763
+    }
+
+    :nth-child(4n) {
+      margin-right: 4px
+    }
+
+    :last-child {
+      margin-right: 0
+    }
+  }
+
+  div + div {
+    margin-right: 1px
+  }
+
+
+}

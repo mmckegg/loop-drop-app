@@ -1,0 +1,113 @@
+LoopGrid {
+  overflow: hidden
+  position: relative
+  background: #444
+  flex-wrap: wrap
+  margin: 5px
+
+  -min {
+    div.row {
+      div.button {
+        border: none
+      }
+    }
+    div.chunk {
+      span {
+        display: none
+      }
+    }
+  }
+
+  div.row {
+    display: flex
+    height: 30px
+    div.button {
+      background: #565656
+      flex: 1
+      border: 3px solid #444
+      box-shadow: inset 0px 0px 1px #0D0D0D;
+
+      -present {
+        background: #2D2C2C
+      }
+
+      -recording {
+        box-shadow: inset 0px 0px 3px red;
+      }
+
+      -active {
+        box-shadow: inset 0px 0px 10px #21E22B;
+      }
+
+      -playing {
+        background: gold
+        box-shadow: inset 0px 0px 6px white;
+
+      }
+
+      -selected {
+        background: #63C763
+      }
+
+    }
+  }
+
+  div.chunk {
+    border: 1px solid #378
+    border-radius: 3px
+    display: table-cell;
+    position: absolute;
+    padding: 3px
+    opacity: 0.4
+    cursor: pointer
+
+    -selected {
+      opacity: 1 !important
+      border-width: 2px
+      cursor: default
+    }
+
+    :hover {
+      opacity: 0.7
+    }
+
+    div.handle {
+      position: absolute
+      -move {
+        left: 10px
+        right: 10px
+        top: 10px
+        bottom: 10px
+        cursor: handle
+      }
+      -top {
+        left:0
+        right:0
+        top:0
+        height: 10px
+        cursor: row-resize
+      }
+      -bottom {
+        left:0
+        right:0
+        bottom:0
+        height: 10px
+        cursor: row-resize
+      }
+      -left {
+        left:0
+        top:0
+        bottom:0
+        width: 10px
+        cursor: col-resize
+      }
+      -right {
+        right:0
+        top:0
+        bottom:0
+        width: 10px
+        cursor: col-resize
+      }
+    }
+  }
+}
