@@ -28,6 +28,7 @@
     "loop-grid": "^3.2.0",
     "loop-launchpad": "^2.4.0",
     "loop-mpkmini": "~0.1.0",
+    "loop-qwerty": "^1.0.0",
     "loop-recorder": "^1.0.0",
     "map-async": "^0.1.1",
     "mercury": "^8.0.0",
