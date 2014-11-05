@@ -1,7 +1,7 @@
 LoopPosition {
   display: flex
   height: 8px;
-  margin: 0 10px;
+  margin: 0 8px;
   div {
     flex: 1
     background: #323232
@@ -20,7 +20,7 @@ LoopPosition {
   }
 
   div + div {
-    margin-right: 1px
+    margin-left: 1px
   }
 
 
