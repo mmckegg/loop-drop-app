@@ -8,7 +8,7 @@
     "build": "node build -d"
   },
   "dependencies": {
-    "audio-rms": "^1.0.0",
+    "audio-rms": "^1.1.0",
     "browserify": "3.37.2",
     "catw": "~0.2.0",
     "concat-stream": "~1.4.1",

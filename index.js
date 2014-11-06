@@ -2,6 +2,7 @@ var Soundbank = require('soundbank')
 var Ditty = require('ditty')
 var SoundbankTrigger = require('soundbank-trigger')
 var Recorder = require('loop-recorder')
+var AudioRMS = require('audio-rms')
 
 // preloaded with all of the shared audio sources/processors/modulators/providers
 var audioContext = require('loop-drop-audio-context')
@@ -20,6 +21,7 @@ var Observ = require('observ')
 var ObservArray = require('observ-array')
 var ObservStruct = require('observ-struct')
 var watch = require('observ/watch')
+var StreamObserv = require('./lib/stream-observ')
 var renderLoop = require('./views')
 
 var loadDefaultProject = require('./lib/load-default-project')
@@ -33,23 +35,31 @@ var recorder = Recorder()
 var soundbank = Soundbank(audioContext)
 var triggerOutput = SoundbankTrigger(soundbank)
 var player = Ditty()
+var output = audioContext.createGain()
+var outputRms = AudioRMS(audioContext)
+outputRms.observ = StreamObserv(outputRms)
+output.connect(outputRms.input)
 
 audioContext.scheduler
   .pipe(player)
   .pipe(triggerOutput)
   .pipe(recorder)
 
-soundbank.connect(audioContext.destination)
+soundbank.connect(output)
+output.connect(audioContext.destination)
 
 // needed for soundbank sample loading
 audioContext.loadSample = SampleLoader(audioContext, project, 'samples')
 
 
+var tempo = Observ(120)
+tempo(audioContext.scheduler.setTempo.bind(audioContext.scheduler))
 
 var selectedSetup = Observ()
 var selectedChunk = Observ()
 var setups = ObservArray([])
 var chunks = ObservArray([])
+
 
 var context = window.context = {
   nodes: {
@@ -62,6 +72,7 @@ var context = window.context = {
   soundbank: soundbank,
   scheduler: audioContext.scheduler,
   triggerOutput: triggerOutput,
+  outputRms: outputRms,
   player: player,
   project: project
 }
@@ -200,6 +211,10 @@ function highlightChunkOnCurrentSetup(chunk){
 
 var state = window.state = ObservStruct({
 
+  main: ObservStruct({
+    tempo: tempo
+  }),
+
   setups: ObservStruct({
     selected: selectedSetup,
     renaming: Observ(false),
@@ -219,6 +234,11 @@ var state = window.state = ObservStruct({
 })
 
 var actions = {
+  main: {
+    changeProject: function(){
+      loadDefaultProject.choose()
+    }
+  },
   setups: {
     openNewWindow: function(path){
       var src = project.relative(path)
@@ -301,7 +321,7 @@ var actions = {
 
 var forceUpdate = null
 setTimeout(function(){
-  forceUpdate = renderLoop(document.body, state, actions)
+  forceUpdate = renderLoop(document.body, state, actions, context)
 }, 100)
 
 

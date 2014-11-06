@@ -1,0 +1,36 @@
+AudioMeter {
+  margin: 3px;
+  
+  div {
+    display: flex;
+    margin: 1px;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #222
+
+    div {
+      flex: 1
+      border-radius: 1px
+      background: #040
+
+      -amber {
+        background: #440
+        -active {
+          background: #FF0
+        }
+      }
+
+      -red {
+        background: #400
+        -active {
+          background: #F00
+        }
+      }
+
+      -active {
+        background: #0F0
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+MainParams {
+  display: flex
+
+  button {
+    border: 1px solid #494949;
+    background: #6F6F6F;
+    color: #D8D8D8;
+    cursor: pointer;
+
+    :hover {
+      border: 1px solid #AA5;
+      background: #993;
+      color: #FFF;
+      box-shadow: 0px 0px 5px #AA3;
+    }
+
+    :active {
+      background: #553;
+    }
+  }
+
+  button + div {
+    margin-left: 5px
+  }
+
+  div {
+    flex: 1
+  }
+}
