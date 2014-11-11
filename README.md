@@ -7,12 +7,10 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 
 This branch is a complete rewrite of the user interface. It nearly ready for relase. See [master](https://github.com/mmckegg/loop-drop-app) for latest stable.
 
-Needs the following features completed before merging to master:
+Still Needs the following features completed before merging to master:
 
-  - Choose Project
-  - Tempo Control
-  - Display master volume output levels
-  - and DOCUMENTATION (at least a helpful readme)
+  - sample recording / import (browse and drag and drop)
+  - readme / intro document
 
 ## Install
 
