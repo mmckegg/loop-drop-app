@@ -1,4 +1,4 @@
-loop-drop-app
+Loop Drop
 ===
 
 MIDI looper, modular synth and sampler app built around Novation Launchpad controller.
