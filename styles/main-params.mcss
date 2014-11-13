@@ -2,6 +2,7 @@ MainParams {
   display: flex
 
   button {
+    margin: -1px
     border: 1px solid #494949;
     background: #6F6F6F;
     color: #D8D8D8;
