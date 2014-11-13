@@ -6,7 +6,7 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 ## Build and Install from source
 
 ```bash
-$ git clone -b global-setups https://github.com/mmckegg/loop-drop-app
+$ git clone https://github.com/mmckegg/loop-drop-app
 $ cd loop-drop-app
 $ npm install
 $ npm run build # or npm run watch (to automatically rebuild) 
