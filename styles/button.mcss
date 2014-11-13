@@ -1,0 +1,35 @@
+Button {
+  margin: -1px -1px -1px 2px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  height: 16px;
+  font-size: 12px;
+  font-size: 10px;
+  padding: 0 4px;
+
+  background: #3A3A3A;
+  color: #C3C3C3;
+
+  :hover {
+    background: #202020;
+    color: #FFF;
+  }
+
+  -main {
+    padding: 5px
+    height: auto
+  }
+
+  -spawn {
+    :hover {
+      background: #467545
+    }
+  }
+
+  -warn {
+    :hover {
+      background: #A00
+    }
+  }
+}

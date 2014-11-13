@@ -1,0 +1,43 @@
+ControllerNode {
+
+  transform: translate3d(0,0,0)
+  position: relative
+  margin-top: 6px
+  background: #464545;
+  border: 1px #444 solid;
+  color: #EEE;
+  border-radius: 4px;
+  width: 260px;
+
+  header {
+    display: flex
+    padding: 3px
+
+    span {
+      flex: 1
+    }
+
+    button.remove {
+      opacity: 0.2
+    }
+
+    :hover {
+      button.remove {
+        opacity: 1
+      }
+    }
+  }
+
+  section {
+
+    display: flex
+    flex-direction: column
+
+    div.controls {
+      flex: 1
+    }
+    
+  }
+
+  
+}

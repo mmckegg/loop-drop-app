@@ -1,8 +1,8 @@
 html, body {
   background: #444;
   margin: 0;
-  font-family: 'Optima';
-  overflow:hidden;
+  font-family: Helvetica, Arial;
+  overflow: hidden;
   height: 100%
 }
 

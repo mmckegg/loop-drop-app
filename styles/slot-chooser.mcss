@@ -1,0 +1,39 @@
+SlotChooser {
+  
+  margin-top: 5px;
+  display: flex
+  background: #222;
+  padding: 5px;
+  margin: 0 -5px;
+  border-top: 1px solid #111;
+
+  div.spacer {
+    flex: 1
+  }
+  div.slot {
+    padding: 4px;
+    background: #3C493C;
+    color: #888;
+    margin: 0 1px;
+    border-radius: 3px;
+    border: 1px solid #2A2A2A;
+    cursor: pointer
+
+    :hover {
+      border-color: #666
+    }
+
+    -selected {
+      background: #53AB53;
+      color: #FFF;
+      border-color: #336C20;
+    }
+
+    -output {
+      background: #355
+      -selected {
+        background: #3AA
+      }
+    }
+  }
+}
