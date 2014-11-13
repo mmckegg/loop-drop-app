@@ -13,6 +13,7 @@ var Project = require('loop-drop-project')
 var Setup = require('loop-drop-setup')
 var FileObject = require('./lib/object')
 var SampleLoader = require('./lib/sample-loader.js')
+var SampleImporter = require('./lib/sample-importer.js')
 var randomColor = require('./lib/random-color.js')
 var findItemByPath = require('./lib/find-item-by-path.js')
 
@@ -50,6 +51,7 @@ output.connect(audioContext.destination)
 
 // needed for soundbank sample loading
 audioContext.loadSample = SampleLoader(audioContext, project, 'samples')
+audioContext.importSample = SampleImporter(audioContext, project, 'samples')
 
 
 var tempo = Observ(120)
