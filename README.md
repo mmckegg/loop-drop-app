@@ -18,7 +18,19 @@ If you want to use it with Launchpad (WHICH YOU SHOULD!), you need to go to chro
 
 **When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
 
+### Installing updates
+
+New versions are being pushed out all the time. To update:
+
+```bash
+$ git pull
+$ npm install
+$ npm run build # if you are not already running npm run watch
+```
+
 ## Get it on the Chrome Webstore (soon)
+
+I have to design a shiny icon first. And fix more bugs :/
 
 ## Supported Controllers
 
@@ -69,7 +81,7 @@ The first option allows you to choose a different sound for every button, wherea
 
 Click the `New` button next to the 'Chunks' heading in the sidebar.
 
-Choose 'Inherit Range' from the drop down, then select 'Trigger', and add an oscillator. There is a box labelled 'No Scale'. Use this to choose the desired musical scale (lets go for major today). You can also change the oscillator shape.
+Choose 'Inherit Range' from the drop down, then select 'Trigger', and add an oscillator. There is a box labeled 'No Scale'. Use this to choose the desired musical scale (lets go for major today). You can also change the oscillator shape.
 
 Now drag this new chunk (from the sidebar), to a controller in the setup pane. You should now be able to trigger the sounds. 
 
