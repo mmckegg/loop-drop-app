@@ -33,7 +33,7 @@ function gridSlots(fileObject){
     triggers, 
     busses,
     h('div.spacer'),
-    h('div.slot -addBus', 'Add Bus'),
+    //h('div.slot -addBus', 'Add Bus'),
     triggerSlot('output', fileObject)
   ]
 }
@@ -49,7 +49,7 @@ function rangeSlots(fileObject){
     triggers,
     h('div.spacer'),
     busses,
-    h('div.slot -addBus', 'Add Bus'),
+    //h('div.slot -addBus', 'Add Bus'),
     triggerSlot('output', fileObject)
   ]
 }
