@@ -5,6 +5,11 @@ var QueryParam = require('../../../../lib/query-param.js')
 
 module.exports = renderRouting
 
+var defaultOutputs = [
+  ['Master', ''],
+  ['Meddler', 'meddler']
+]
+
 function renderRouting(node, setup, collection){
 
   var data = node.resolved()
@@ -12,8 +17,7 @@ function renderRouting(node, setup, collection){
   if (data){
     var resolvedChunks = setup.resolved.chunks() || []
     var outputOptions = {
-      includeBlank: 'Master',
-      options: resolvedChunks.filter(rejectMatchingId, data).reduce(placeChunkInputs, [])
+      options: defaultOutputs.concat(resolvedChunks.filter(rejectMatchingId, data).reduce(placeChunkInputs, []))
     }
 
     var rows = (data.outputs || []).map(function(outputId){
