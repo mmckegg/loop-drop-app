@@ -13,7 +13,7 @@ function range(param, options){
     'ev-mousedown': MouseDragEvent(drag, {param: param, formatter: formatter})
   },[ 
     h('div', {style: AttributeHook(widthStyle)}),
-    h('span', formatter.display(param())),
+    h('span.value', formatter.display(param())),
     h('span.title', options.title)
   ])
   return h('div Param -range', {
