@@ -32,13 +32,15 @@ function Browser(state, actions){
     ev.dataTransfer.setData('filesrc', window.context.project.relative(ev.data.path))
   }
 
-  return function(header){
+  return function(header, className){
     var data = state()
-    return h('div', [
+    return h('div', {className: className}, [
       h('header', [
         h('span', header), h('button.new', {'ev-click': e(actions.newFile)}, 'New')
       ]),
-      forceArray(data.entries).filter(check).map(renderEntry)
+      h('ScrollBox', [
+        forceArray(data.entries).filter(check).map(renderEntry)
+      ])
     ])
   }
 

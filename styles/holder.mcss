@@ -24,11 +24,15 @@ Holder {
 
       div {
 
+        display: flex
+        flex-direction: column
+
         header {
           font-size: 130%;
           color: #FFF;
           margin-bottom: 5px;
           display: flex
+          flex-shrink: 0
 
           span {
             flex: 1
@@ -48,6 +52,11 @@ Holder {
               box-shadow: 0px 0px 5px #3A3;
             }
           }
+        }
+
+        div {
+          overflow-y: auto
+          flex: 1
         }
 
         flex: 1

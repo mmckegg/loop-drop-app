@@ -95,9 +95,21 @@ watch(selectedSetup, function(path){
       }
     }
 
+    setTimeout(scrollToSelectedSetup, 10)
+
     lastSelectedSetup = setup
   }
 })
+
+function scrollToSelectedSetup(){
+  var el = document.querySelector('.SetupsBrowser .-selected')
+  el && el.scrollIntoViewIfNeeded()
+}
+
+function scrollToSelectedChunk(){
+  var el = document.querySelector('.ChunksBrowser .-selected')
+  el && el.scrollIntoViewIfNeeded()
+}
 
 // load selected file on change
 var lastSelectedChunk = null
@@ -117,6 +129,8 @@ watch(selectedChunk, function(path){
         chunk = addChunk(src)
       }
     }
+
+    setTimeout(scrollToSelectedChunk, 10)
 
     highlightChunkOnCurrentSetup(chunk)
     lastSelectedChunk = chunk 

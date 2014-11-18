@@ -20,8 +20,8 @@ module.exports = function(element, state, actions, context){
           renderMainParams(state.main, actions.main)
         ]),
         h('div.browser', [
-          setupBrowser('Setups'),
-          chunkBrowser('Chunks')
+          setupBrowser('Setups', 'SetupsBrowser'),
+          chunkBrowser('Chunks', 'ChunksBrowser')
         ])
       ]),
       h('div.main', [
