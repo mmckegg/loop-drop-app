@@ -29,24 +29,13 @@ var loadDefaultProject = require('./lib/load-default-project')
 //////
 
 
-
 var project = Project()
 
-var recorder = Recorder()
-var soundbank = Soundbank(audioContext)
-var triggerOutput = SoundbankTrigger(soundbank)
-var player = Ditty()
+// main output and metering
 var output = audioContext.createGain()
 var outputRms = AudioRMS(audioContext)
 outputRms.observ = StreamObserv(outputRms)
 output.connect(outputRms.input)
-
-audioContext.scheduler
-  .pipe(player)
-  .pipe(triggerOutput)
-  .pipe(recorder)
-
-soundbank.connect(output)
 output.connect(audioContext.destination)
 
 // needed for soundbank sample loading
@@ -70,12 +59,8 @@ var context = window.context = {
     external: require('loop-drop-setup/external')
   },
   audio: audioContext,
-  recorder: recorder,
-  soundbank: soundbank,
   scheduler: audioContext.scheduler,
-  triggerOutput: triggerOutput,
   outputRms: outputRms,
-  player: player,
   project: project
 }
 
@@ -139,7 +124,20 @@ watch(selectedChunk, function(path){
 
 
 function addSetup(src){
-  var setup = Setup(context)
+  var ctx = Object.create(context)
+  ctx.recorder = Recorder()
+  ctx.soundbank = Soundbank(ctx.audio)
+  ctx.triggerOutput = SoundbankTrigger(ctx.soundbank)
+  ctx.player = Ditty()
+
+  ctx.scheduler
+   .pipe(ctx.player)
+   .pipe(ctx.triggerOutput)
+   .pipe(ctx.recorder)
+
+  ctx.soundbank.connect(output)
+
+  var setup = Setup(ctx)
   setup.load(src)
   setups.push(setup)
   setup.onLoad(function(){
@@ -167,6 +165,11 @@ function addSetup(src){
   })
 
   setup.onClose(function(){
+
+    // disconnect
+    ctx.player.emit('close') // unpipe scheduler hack
+    ctx.soundbank.disconnect()
+
     var index = setups.indexOf(setup)
     if (~index){
       setups.splice(index, 1)
