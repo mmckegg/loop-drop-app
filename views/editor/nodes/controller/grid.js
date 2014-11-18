@@ -35,7 +35,7 @@ function renderGrid(controller, setup){
             className: classes
           }))
         }
-        rows.push(h('div.row', buttons))
+        rows.push(h('div.row', {style: AttributeHook('')}, buttons))
       }
 
       var positionElements = []
