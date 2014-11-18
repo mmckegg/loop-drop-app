@@ -23,7 +23,7 @@ function renderGrid(controller, setup){
           var classes = '.button'
           var buttonState = grid.get(r,c)
           if (buttonState){
-            classes += ' -present'
+            if (buttonState.isTrigger) classes += ' -present'
             if (buttonState.isPlaying) classes += ' -playing'
             if (buttonState.isRecording) classes += ' -recording'
             if (buttonState.isActive) classes += ' -active'
