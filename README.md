@@ -28,9 +28,9 @@ $ npm update
 $ npm run build # if you are not already running npm run watch
 ```
 
-## Get it on the Chrome Webstore (soon)
+## Get it on the Chrome Webstore
 
-I have to design a shiny icon first. And fix more bugs :/
+Here: https://chrome.google.com/webstore/detail/loop-drop/lbihechibofgmjpfnegjblhoicglanbj
 
 ## Supported Controllers
 
