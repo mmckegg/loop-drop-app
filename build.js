@@ -51,11 +51,11 @@ catw('package.json', function(stream){
         background: {
           scripts: ['background.js']
         }
-      }//,
-      //icons: {
-      //  16: "icon-16.png", 
-      //  128: "icon-128.png"
-      //}
+      },
+      icons: {
+        48: "icon48.png", 
+        128: "icon128.png"
+      }
     }, null, 2), popStep)
 
     fs.writeFile(
@@ -82,6 +82,18 @@ catw('styles/*.css', function(stream){
   stream.pipe(fs.createWriteStream('build/extra.css')).on('finish', popStep)
 })
 
+// icon128.png
+pendingStep()
+fs.createReadStream('icon128.png')
+  .pipe(fs.createWriteStream('build/icon128.png'))
+  .on('finish', popStep)
+
+// icon48.png
+pendingStep()
+fs.createReadStream('icon48.png')
+  .pipe(fs.createWriteStream('build/icon48.png'))
+  .on('finish', popStep)
+
 // bundle.js
 pendingStep()
 var w = watchify('./index.js')
@@ -89,7 +101,7 @@ var pendingBundleError = false
 w.on('update', bundle)
 bundle()
 function bundle(){
-  w.bundle({debug: true}).on('error', handleError).pipe(fs.createWriteStream('build/bundle.js')).on('finish', function(){
+  w.bundle({debug: !!~process.argv.indexOf('-d')}).on('error', handleError).pipe(fs.createWriteStream('build/bundle.js')).on('finish', function(){
     popStep()
     handleSucess()
   })
