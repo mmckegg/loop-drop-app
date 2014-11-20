@@ -4,6 +4,6 @@ Helper {
   text-align: center
 
   a {
-    color: #77E
+    color: #5A91D8
   }
 }
