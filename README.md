@@ -3,7 +3,13 @@ Loop Drop
 
 MIDI looper, modular synth and sampler app built around Novation Launchpad controller.
 
-## Build and Install from source
+## Get it on the Chrome Webstore
+
+[![Loop Drop on the Chrome Webstore](https://raw.githubusercontent.com/mmckegg/loop-drop-app/master/tile.png)](https://chrome.google.com/webstore/detail/loop-drop/lbihechibofgmjpfnegjblhoicglanbj)
+
+https://chrome.google.com/webstore/detail/loop-drop/lbihechibofgmjpfnegjblhoicglanbj
+
+## Or Build and Install from source
 
 ```bash
 $ git clone https://github.com/mmckegg/loop-drop-app
@@ -27,10 +33,6 @@ $ git pull
 $ npm update
 $ npm run build # if you are not already running npm run watch
 ```
-
-## Get it on the Chrome Webstore
-
-Here: https://chrome.google.com/webstore/detail/loop-drop/lbihechibofgmjpfnegjblhoicglanbj
 
 ## Supported Controllers
 
