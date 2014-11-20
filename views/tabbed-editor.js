@@ -17,7 +17,9 @@ function TabbedEditor(state, actions){
 
     var editor = (data.rawMode && fileObject) ?
       rawEditor(fileObject) :
-      renderEditor(fileObject)
+      fileObject ? 
+        renderEditor(fileObject) :
+        renderHelper()
 
     var rawCheckbox = h('span.raw', [
       'raw', h('input.raw', {
@@ -54,6 +56,18 @@ function TabbedEditor(state, actions){
 
 }
 
+function renderHelper(){
+  return h('div CenterTab', 
+    h('div Helper', [
+      'For help, view the ',
+      h('a', {href: 'https://github.com/mmckegg/loop-drop-app#getting-started', target: '_blank'}, 'getting started guide'),
+      ' or ',
+      h('br'),
+      h('a', {href: 'https://github.com/mmckegg/loop-drop-app/issues', target: '_blank'}, 'ask a question'),
+      ' on github.'
+    ])
+  )
+}
 
 
 function getItem(state){
