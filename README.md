@@ -20,10 +20,6 @@ $ npm run build # or npm run watch (to automatically rebuild)
 
 Then open chrome and go the the extensions tab. Tick the enable developer mode then **'Load Unpacked Extension'** and navigate to 'loop-drop-app/build' (the entire directory).
 
-If you want to use it with Launchpad (WHICH YOU SHOULD!), you need to go to chrome://flags/#enable-web-midi and enable Web Midi. Then restart Chrome.
-
-**When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
-
 ### Installing updates
 
 New versions are being pushed out all the time. To update:
@@ -45,13 +41,17 @@ If your controller isn't supported, copy one of the above controller bindings an
 
 ## Getting Started
 
-You can clone the [sample project](https://github.com/mmckegg/loop-drop-sample-project) and load that to help with getting started.
+Download the [sample project](https://github.com/mmckegg/loop-drop-sample-project) 
+
+**When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
 
 ### Using with a Launchpad (or other midi controller)
 
-Currently, Chrome doesn't detect when midi controllers are plugged in, so you have to restart Chrome (completely, not just the Chrome App) each time after you have plugged in the controller. This will be sorted soon (see  https://code.google.com/p/chromium/issues/detail?id=279097)
+> You need to go to chrome://flags/#enable-web-midi and enable Web Midi. Then restart Chrome.
 
-Now create a new setup. Click the `+ controller` button and select Novation Launchpad (or whatever) from the first drop down. Then select the midi port your controller is connected to from the second drop down. If it is not showing up, try restarting Chrome.
+> Currently, Chrome doesn't detect when midi controllers are plugged in, so you have to restart Chrome (completely, not just the Chrome App) each time after you have plugged in the controller. This will be sorted soon (see  https://code.google.com/p/chromium/issues/detail?id=279097)
+
+Create a new setup. Click the `+ controller` button and select Novation Launchpad (or whatever) from the first drop down. Then select the midi port your controller is connected to from the second drop down. If it is not showing up, try restarting Chrome.
 
 At this point, your Launchpad hardware should light up, with a visual metronome ticking down the side.
 
