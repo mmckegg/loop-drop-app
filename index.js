@@ -82,6 +82,7 @@ watch(selectedSetup, function(path){
 
     setTimeout(scrollToSelectedSetup, 10)
 
+    process.nextTick(grabInputForSelected)
     lastSelectedSetup = setup
   }
 })
@@ -122,6 +123,20 @@ watch(selectedChunk, function(path){
   }
 })
 
+function grabInputForSelected(){
+  var setup = lastSelectedSetup
+  if (setup && setup.selectedChunkId && setup.controllers){
+    var chunkId = setup.selectedChunkId()
+    var length = setup.controllers.getLength()
+    for (var i=0;i<length;i++){
+      var controller = setup.controllers.get(i)
+      var chunkPositions = controller().chunkPositions || {}
+      if (controller.grabInput && chunkPositions[chunkId]){
+        controller.grabInput()
+      }
+    }
+  }
+}
 
 function addSetup(src){
   var ctx = Object.create(context)
@@ -161,6 +176,7 @@ function addSetup(src){
         var path = project.resolve(src)
         state.chunks.selected.set(path)
       }
+      process.nextTick(grabInputForSelected)
     }
   })
 
