@@ -125,17 +125,30 @@ watch(selectedChunk, function(path){
 
 function grabInputForSelected(){
   var setup = lastSelectedSetup
-  if (setup && setup.selectedChunkId && setup.controllers){
-    var chunkId = setup.selectedChunkId()
+
+  if (setup && setup.controllers){
     var length = setup.controllers.getLength()
     for (var i=0;i<length;i++){
       var controller = setup.controllers.get(i)
-      var chunkPositions = controller().chunkPositions || {}
-      if (controller.grabInput && chunkPositions[chunkId]){
+      if (controller.grabInput){
         controller.grabInput()
       }
     }
+
+    // now focus the selected chunk
+    if (setup.selectedChunkId){
+      var chunkId = setup.selectedChunkId()
+      for (var i=0;i<length;i++){
+        var controller = setup.controllers.get(i)
+        var chunkPositions = controller().chunkPositions || {}
+        if (controller.grabInput && chunkPositions[chunkId]){
+          controller.grabInput()
+        }
+      }
+    }
   }
+
+
 }
 
 function addSetup(src){
