@@ -24,6 +24,7 @@ var ObservStruct = require('observ-struct')
 var watch = require('observ/watch')
 var StreamObserv = require('./lib/stream-observ')
 var renderLoop = require('./views')
+var noDrop = require('./lib/no-drop.js')
 
 var loadDefaultProject = require('./lib/load-default-project')
 //////
@@ -368,6 +369,11 @@ var actions = {
 }
 
 var forceUpdate = null
+
+// disable default drop handler
+noDrop(document)
+
+// main render loop
 setTimeout(function(){
   forceUpdate = renderLoop(document.body, state, actions, context)
 }, 100)
