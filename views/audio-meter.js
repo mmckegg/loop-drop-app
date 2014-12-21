@@ -15,7 +15,7 @@ AudioMeter.prototype.type = 'Widget'
 
 AudioMeter.prototype.init = function(){
   var startState = {value: this.value(), opts: this.opts}
-  var main = mercury.main(startState, render)
+  var main = mercury.main(startState, render, mercury)
 
   var state = this.state = {
     value: this.value,

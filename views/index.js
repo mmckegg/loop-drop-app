@@ -29,7 +29,7 @@ module.exports = function(element, state, actions, context){
         chunkEditor()
       ])
     ])
-  })
+  }, mercury)
 
   state(loop.update)
   element.appendChild(loop.target)

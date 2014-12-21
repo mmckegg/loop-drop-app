@@ -35,7 +35,7 @@ function renderGrid(controller, setup){
             className: classes
           }))
         }
-        rows.push(h('div.row', {style: AttributeHook('')}, buttons))
+        rows.push(h('div.row', buttons))
       }
 
       var positionElements = []
@@ -84,7 +84,7 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
 
   return h('div.chunk', { 
     className: selectedChunkId == chunk.id ? '-selected' : null, 
-    style: AttributeHook(style),
+    style: style,
     draggable: true,
     'ev-click': mercury.event(setup.selectedChunkId.set, chunk.id),
     'ev-dragstart': MPE(startDrag, {chunk: chunk, controller: controller}),
@@ -237,18 +237,4 @@ function mixColor(a, b){
     (a[1] + b[1]) / 2,
     (a[2] + b[2]) / 2
   ]
-}
-
-function AttributeHook(value) {
-  if (!(this instanceof AttributeHook)) {
-    return new AttributeHook(value);
-  }
-  this.value = value;
-}
-
-AttributeHook.prototype.hook = function (node, prop, prev) {
-  if (prev && prev.value === this.value) {
-    return;
-  }
-  node.setAttributeNS(null, prop, this.value)
 }

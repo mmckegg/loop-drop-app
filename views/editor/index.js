@@ -45,7 +45,7 @@ Editor.prototype.init = function(){
     } else {
       return h('div')
     }
-  })
+  }, mercury)
 
   bindToObject(this, update)
 

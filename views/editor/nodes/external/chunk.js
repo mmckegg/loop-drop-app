@@ -10,8 +10,12 @@ module.exports = function(node, setup, collection){
   if (data){
 
     var selected = setup.selectedChunkId() == data.id
-    var headerStyle = 'background-color:'+color(innerData.color, selected ? 0.5 : 0.1)
-    var mainStyle = 'border: 2px solid '+color(innerData.color, selected ? 1 : 0)
+    var headerStyle = {
+      backgroundColor: color(innerData.color, selected ? 0.5 : 0.1)
+    }
+    var mainStyle = {
+      border: '2px solid '+color(innerData.color, selected ? 1 : 0)
+    }
 
     return h('div ExternalNode', {
       draggable: true,
@@ -19,10 +23,10 @@ module.exports = function(node, setup, collection){
       'ev-dragend': MPE(dragEnd, {chunk: node, collection: collection, setup: setup}),
       'ev-dragover': MPE(dragOver, {chunk: node, collection: collection, setup: setup}),
       'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
-      'style': AttributeHook(mainStyle)
+      'style': mainStyle
     }, [
       h('header', {
-        style: AttributeHook(headerStyle)
+        style: headerStyle
       }, [
         h('span', innerData.id),
         h('button.remove Button -warn', {
@@ -42,20 +46,6 @@ function color(rgb, a){
     rgb = [100,100,100]
   }
   return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
-}
-
-function AttributeHook(value) {
-  if (!(this instanceof AttributeHook)) {
-    return new AttributeHook(value);
-  }
-  this.value = value;
-}
-
-AttributeHook.prototype.hook = function (node, prop, prev) {
-  if (prev && prev.value === this.value) {
-    return;
-  }
-  node.setAttributeNS(null, prop, this.value)
 }
 
 function dragOver(ev){

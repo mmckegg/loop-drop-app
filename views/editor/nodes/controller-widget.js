@@ -45,7 +45,7 @@ Controller.prototype.init = function(){
     } else {
       return h('div')
     }
-  })
+  }, mercury)
 
   bindToNode(this, update)
   bindToSetup(this, update)
