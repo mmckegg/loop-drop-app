@@ -18,7 +18,7 @@ function TabbedEditor(state, actions){
     var editor = (data.rawMode && fileObject) ?
       rawEditor(fileObject) :
       fileObject ? 
-        h('div', renderEditor(fileObject)) :
+        renderEditor(fileObject) :
         renderHelper()
 
     var rawCheckbox = h('span.raw', [
