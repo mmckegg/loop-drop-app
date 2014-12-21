@@ -12,8 +12,8 @@ function range(param, options){
     tabIndex: '0',
     'ev-mousedown': MouseDragEvent(drag, {param: param, formatter: formatter})
   },[ 
-    h('div', {style: AttributeHook(widthStyle)}),
     h('span.value', formatter.display(param())),
+    h('div', {style: widthStyle}),
     h('span.title', options.title)
   ])
   return h('div Param -range', {
@@ -43,19 +43,7 @@ function drag(ev){
 }
 
 function widthPercent(decimal){
-  return 'width:' + (Math.round(Math.min(1, Math.max(decimal, 0))*1000)/10) + '%'
-}
-
-function AttributeHook(value) {
-  if (!(this instanceof AttributeHook)) {
-    return new AttributeHook(value);
+  return {
+    width: (Math.round(Math.min(1, Math.max(decimal, 0))*1000)/10) + '%'
   }
-  this.value = value;
-}
-
-AttributeHook.prototype.hook = function (node, prop, prev) {
-  if (prev && prev.value === this.value) {
-    return;
-  }
-  node.setAttributeNS(null, prop, this.value)
 }

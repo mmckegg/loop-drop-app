@@ -74,13 +74,16 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
     right: (chunk.origin[1] + chunk.shape[1]) / shape[1]
   }
 
-  var style = 'top:'+percent(box.top)+
-              ';height:'+percent(box.bottom - box.top)+
-              ';left:'+percent(box.left)+
-              ';width:'+percent(box.right - box.left)+
-              ';border-color:'+color(chunk.color, 1)+
-              ';background-color:'+color(chunk.color, 0.1)+
-              ';color:'+color(mixColor(chunk.color, [255,255,255]),1)
+  var style = {
+    'top': percent(box.top),
+    'height': percent(box.bottom - box.top),
+    'left': percent(box.left),
+    'width': percent(box.right - box.left),
+    'border-color': color(chunk.color, 1),
+    'background-color': color(chunk.color, 0.1),
+    'color': color(mixColor(chunk.color, [255,255,255]),1)
+  }
+
 
   return h('div.chunk', { 
     className: selectedChunkId == chunk.id ? '-selected' : null, 
