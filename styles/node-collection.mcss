@@ -9,6 +9,14 @@ NodeCollection {
     }
   }
 
+  -across {
+    display: block
+    div {
+      display: inline-block
+      margin: 4px
+    }
+  }
+
   div.spawner {
     background: #3D3D3D;
     border: 1px #444 solid;

@@ -47,10 +47,19 @@ audioContext.importSample = SampleImporter(audioContext, project, 'samples')
 var tempo = Observ(120)
 tempo(audioContext.scheduler.setTempo.bind(audioContext.scheduler))
 
-var selectedSetup = Observ()
-var selectedChunk = Observ()
-var setups = ObservArray([])
-var chunks = ObservArray([])
+var selected = Observ()
+var items = ObservArray([])
+var lastSelected = null
+
+selected(function(path){
+  if (path){
+    var src = project.relative(path)
+    lastSelected = findItemByPath(items, path)
+
+    setTimeout(scrollToSelected, 10)
+    process.nextTick(grabInputForSelected)
+  }
+})
 
 
 var context = window.context = {
@@ -65,91 +74,16 @@ var context = window.context = {
   project: project
 }
 
-// load selected setup on change
-var lastSelectedSetup = null
-watch(selectedSetup, function(path){
-  if (path){
-    var src = project.relative(path)
-    var setup = findItemByPath(setups, path)
-
-    if (!setup){
-      if (setups.getLength() === 0){
-        setup = addSetup(src)
-      } else {
-        setup = lastSelectedSetup
-        setup.load(src)
-      }
-    }
-
-    setTimeout(scrollToSelectedSetup, 10)
-
-    process.nextTick(grabInputForSelected)
-    lastSelectedSetup = setup
-  }
-})
-
-function scrollToSelectedSetup(){
-  var el = document.querySelector('.SetupsBrowser .-selected')
+function scrollToSelected(){
+  var el = document.querySelector('.SetupsBrowser .-selected, .ChunksBrowser .-selected')
   el && el.scrollIntoViewIfNeeded()
 }
-
-function scrollToSelectedChunk(){
-  var el = document.querySelector('.ChunksBrowser .-selected')
-  el && el.scrollIntoViewIfNeeded()
-}
-
-// load selected file on change
-var lastSelectedChunk = null
-watch(selectedChunk, function(path){
-  if (path){
-    var src = project.relative(path)
-    var chunk = findItemByPath(chunks, path)
-
-    if (!chunk){
-      if (lastSelectedChunk){
-        chunk = lastSelectedChunk
-        chunk.load(src, function(){
-          project.backup(chunk.file)
-        })
-
-      } else {
-        chunk = addChunk(src)
-      }
-    }
-
-    setTimeout(scrollToSelectedChunk, 10)
-
-    highlightChunkOnCurrentSetup(chunk)
-    lastSelectedChunk = chunk 
-  }
-})
 
 function grabInputForSelected(){
-  var setup = lastSelectedSetup
-
-  if (setup && setup.controllers){
-    var length = setup.controllers.getLength()
-    for (var i=0;i<length;i++){
-      var controller = setup.controllers.get(i)
-      if (controller.grabInput){
-        controller.grabInput()
-      }
-    }
-
-    // now focus the selected chunk
-    if (setup.selectedChunkId){
-      var chunkId = setup.selectedChunkId()
-      for (var i=0;i<length;i++){
-        var controller = setup.controllers.get(i)
-        var chunkPositions = controller().chunkPositions || {}
-        if (controller.grabInput && chunkPositions[chunkId]){
-          controller.grabInput()
-        }
-      }
-    }
+  var item = lastSelected
+  if (item && item.grabInput){
+    item.grabInput()
   }
-
-
 }
 
 function addSetup(src){
@@ -168,28 +102,31 @@ function addSetup(src){
 
   var setup = Setup(ctx)
   setup.load(src)
-  setups.push(setup)
+  items.push(setup)
   setup.onLoad(function(){
     // don't backup a corrupted file!
     if (Object.keys(setup() || {}).length){
       project.backup(setup.file)
     }
   })
+
+  setup.onRequestEditChunk(function(chunkId){
+    var chunks = setup.chunks() || []
+    chunks.some(function(chunk){
+      if (chunk.id === chunkId && chunk.src){
+        src = chunk.src
+        return true
+      }
+    })
+    if (src){
+      var path = project.resolve(src)
+      actions.chunks.open(path)
+    }
+  })
   
   setup.selectedChunkId(function(id){
     var src = null
-    if (selectedSetup() === setup.path){
-      var chunks = setup.chunks() || []
-      chunks.some(function(chunk){
-        if (chunk.id === id && chunk.src){
-          src = chunk.src
-          return true
-        }
-      })
-      if (src){
-        var path = project.resolve(src)
-        state.chunks.selected.set(path)
-      }
+    if (selected() === setup.path){
       process.nextTick(grabInputForSelected)
     }
   })
@@ -200,13 +137,13 @@ function addSetup(src){
     ctx.player.emit('close') // unpipe scheduler hack
     ctx.soundbank.disconnect()
 
-    var index = setups.indexOf(setup)
+    var index = items.indexOf(setup)
     if (~index){
-      setups.splice(index, 1)
+      items.splice(index, 1)
     }
-    if (setup.path === selectedSetup()){
-      lastSelectedSetup = setups.get(index) || setups.get(0)
-      selectedSetup.set(lastSelectedSetup ? lastSelectedSetup.path : null)
+    if (setup.path === selected()){
+      var lastSelectedSetup = items.get(index) || items.get(0)
+      selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
     }
   })
   return setup
@@ -215,48 +152,24 @@ function addSetup(src){
 function addChunk(src){
   var chunk = FileObject(context)
   chunk.load(src)
-  chunks.push(chunk)
+  items.push(chunk)
   chunk.onLoad(function(){
     if (chunk.file){
       project.backup(chunk.file)
     }
   })
   chunk.onClose(function(){
-    var index = chunks.indexOf(chunk)
+    var index = items.indexOf(chunk)
     if (~index){
-      chunks.splice(index, 1)
+      items.splice(index, 1)
     }
-    if (chunk.path === selectedChunk()){
-      lastSelectedChunk = chunks.get(index) || chunks.get(0)
-      selectedChunk.set(lastSelectedChunk ? lastSelectedChunk.path : null)
+    if (chunk.path === selected()){
+      var lastSelectedChunk = items.get(index) || items.get(0)
+      selected.set(lastSelectedChunk ? lastSelectedChunk.path : null)
     }
   })
   return chunk
 }
-
-function highlightChunkOnCurrentSetup(chunk){
-  if (lastSelectedSetup && chunk){
-    var currentPath = null
-    var id = lastSelectedSetup.selectedChunkId()
-    var res = lastSelectedSetup.chunks() || []
-    res.some(function(chunk){
-      if (chunk.id === id && chunk.src){
-        currentPath = project.resolve(chunk.src)
-        return true
-      }
-    })
-    if (chunk.path != currentPath){
-      var res = lastSelectedSetup.chunks() || []
-      res.some(function(chunk){
-        if (project.resolve(chunk.src) === chunk.path){
-          lastSelectedSetup.selectedChunkId.set(chunk.id)
-          return true
-        }
-      })
-    }
-  }
-}
-
 
 var state = window.state = ObservStruct({
 
@@ -264,39 +177,51 @@ var state = window.state = ObservStruct({
     tempo: tempo
   }),
 
+  selected: selected,
+  items: items,
+  rawMode: Observ(false),
+
   setups: ObservStruct({
-    selected: selectedSetup,
+    items: items,
+    selected: selected,
     renaming: Observ(false),
     entries: project.getDirectory('setups'),
-    items: setups,
-    rawMode: Observ(false)
   }),
 
   chunks: ObservStruct({
-    selected: selectedChunk,
+    items: items,
+    selected: selected,
     renaming: Observ(false),
     entries: project.getDirectory('chunks'),
-    items: chunks,
-    rawMode: Observ(false)
   })
 
 })
 
 var actions = {
+
+  closeFile: function(path){
+    var setup = findItemByPath(items, path)
+    if (setup){
+      setup.destroy()
+    }
+  },
+
   main: {
     changeProject: function(){
       loadDefaultProject.choose()
     }
   },
   setups: {
-    openNewWindow: function(path){
+
+    open: function(path){
       var src = project.relative(path)
-      var setup = findItemByPath(setups, path)
+      var setup = findItemByPath(items, path)
       if (!setup){
         setup = addSetup(src)
       }
-      state.setups.selected.set(path)
+      selected.set(path)
     },
+
     newFile: function(){
       project.getFile('setups/New Setup.json', function(err, file){
         file.set(JSON.stringify({node: 'setup', controllers: [], chunks: []}))
@@ -306,7 +231,7 @@ var actions = {
       })
     },
     deleteFile: function(path){
-      var setup = findItemByPath(setups, path)
+      var setup = findItemByPath(items, path)
       if (setup){
         setup.file.close()
         setup.file.delete()
@@ -316,23 +241,19 @@ var actions = {
           file&&file.delete()
         })
       }
-    },
-    closeFile: function(path){
-      var setup = findItemByPath(setups, path)
-      if (setup){
-        setup.destroy()
-      }
     }
   },
   chunks: {
-    openNewWindow: function(path){
+
+    open: function(path){
       var src = project.relative(path)
-      var chunk = findItemByPath(chunks, path)
+      var chunk = findItemByPath(items, path)
       if (!chunk){
         chunk = addChunk(src)
       }
-      state.chunks.selected.set(path)
+      selected.set(path)
     },
+
     newFile: function(){
       project.getFile('chunks/New Chunk.json', function(err, file){
         file.set(JSON.stringify({
@@ -343,12 +264,12 @@ var actions = {
           outputs: ['output'],
         }))
         var chunk = addChunk(file.src)
-        state.chunks.selected.set(file.path)
+        selected.set(file.path)
         state.chunks.renaming.set(true)
       })
     },
     deleteFile: function(path){
-      var chunk = findItemByPath(chunks, path)
+      var chunk = findItemByPath(items, path)
       if (chunk){
         chunk.file.close()
         chunk.file.delete()
@@ -357,12 +278,6 @@ var actions = {
         project.getFile(src, function(err, file){
           file&&file.delete()
         })
-      }
-    },
-    closeFile: function(path){
-      var chunk = findItemByPath(chunks, path)
-      if (chunk){
-        chunk.destroy()
       }
     }
   }

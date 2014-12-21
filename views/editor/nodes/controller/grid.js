@@ -90,6 +90,7 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
     style: style,
     draggable: true,
     'ev-click': mercury.event(setup.selectedChunkId.set, chunk.id),
+    'ev-dblclick': mercury.event(setup.requestEditChunk, chunk.id),
     'ev-dragstart': MPE(startDrag, {chunk: chunk, controller: controller}),
     'ev-dragend': MPE(endDrag, {chunk: chunk, controller: controller})
   },[

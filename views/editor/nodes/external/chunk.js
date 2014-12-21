@@ -2,6 +2,8 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var MPE = require('../../../../lib/mouse-position-event.js')
 var renderRouting = require('./routing.js')
+var range = require('../../params/range.js')
+var QueryParam = require('../../../../lib/query-param.js')
 
 module.exports = function(node, setup, collection){
   var data = node()
@@ -17,28 +19,42 @@ module.exports = function(node, setup, collection){
       border: '2px solid '+color(innerData.color, selected ? 1 : 0)
     }
 
+    var minimised = QueryParam(node, 'minimised')
+    var className = data.minimised ? '-minimised' : ''
+    var volume = QueryParam(node, 'volume')
+
     return h('div ExternalNode', {
       draggable: true,
+      className: className,
       'ev-dragstart': MPE(dragStart, {chunk: node, collection: collection}),
       'ev-dragend': MPE(dragEnd, {chunk: node, collection: collection, setup: setup}),
       'ev-dragover': MPE(dragOver, {chunk: node, collection: collection, setup: setup}),
+      'ev-dblclick': mercury.event(setup.requestEditChunk, data.id),
       'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
       'style': mainStyle
     }, [
       h('header', {
         style: headerStyle
       }, [
+        h('button.twirl', {
+          'ev-click': mercury.event(toggleParam, minimised)
+        }),
         h('span', innerData.id),
+        range(volume, {format: 'dB', title: 'vol', width: 150, pull: true}),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
       ]),
-      h('section', [
+      data.minimised ? '' : h('section', [
         renderRouting(node, setup, collection)
       ])
     ])
   }
   return h('UnknownNode')
+}
+
+function toggleParam(param){
+  param.set(!param.read())
 }
 
 function color(rgb, a){

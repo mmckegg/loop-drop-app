@@ -1,6 +1,7 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var select = require('../../params/select.js')
+var range = require('../../params/range.js')
 var QueryParam = require('../../../../lib/query-param.js')
 
 module.exports = renderRouting
@@ -20,16 +21,17 @@ function renderRouting(node, setup, collection){
       options: defaultOutputs.concat(resolvedChunks.filter(rejectMatchingId, data).reduce(placeChunkInputs, []))
     }
 
-    var rows = (data.outputs || []).map(function(outputId){
-      return h('tr', [
-        h('td.title', outputId),
-        h('td', select(QueryParam(node, ['routes[?]', outputId], {}), outputOptions))
+    var routeParams = (data.outputs || []).map(function(outputId){
+      return h('div -block', [
+        h('div.extTitle', outputId),
+        h('div', select(QueryParam(node, ['routes[?]', outputId], {}), outputOptions))
       ])
     })
 
-    return h('div ParamList', h('table.routes', [
-      rows
-    ]))
+    return h('div ParamList', [
+      routeParams
+    ])
+
   }
 
 }

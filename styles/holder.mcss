@@ -76,11 +76,6 @@ Holder {
     div {
       flex: 1
       margin: 4px
-
-      :first-child {
-        width: 450px
-        flex: none
-      }
     }
   }
 }

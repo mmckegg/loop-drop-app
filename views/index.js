@@ -8,8 +8,7 @@ var audioMeterOptions = {red: 1, amber: 0.9, min: 0, max: 1.3, steps: 60}
 module.exports = function(element, state, actions, context){
   var setupBrowser = require('./browser.js')(state.setups, actions.setups)
   var chunkBrowser = require('./browser.js')(state.chunks, actions.chunks)
-  var setupEditor = require('./tabbed-editor.js')(state.setups, actions.setups)
-  var chunkEditor = require('./tabbed-editor.js')(state.chunks, actions.chunks)
+  var renderEditor = require('./tabbed-editor.js')(state, actions)
 
 
   var loop = mercury.main(state, function(data){
@@ -25,8 +24,7 @@ module.exports = function(element, state, actions, context){
         ])
       ]),
       h('div.main', [
-        setupEditor(),
-        chunkEditor()
+        renderEditor()
       ])
     ])
   }, mercury)

@@ -7,11 +7,11 @@ module.exports = renderSetup
 function renderSetup(setup){
   if (setup){
     return h('SetupNode', [
-      h('NodeCollection', [
+      h('.main NodeCollection -across', [
         renderCollection(setup.controllers, setup),
         spawner(setup)
       ]),
-      h('NodeCollection .chunks', [
+      h('.chunks NodeCollection', [
         renderCollection(setup.chunks, setup)
       ])
     ])

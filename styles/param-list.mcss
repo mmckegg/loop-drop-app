@@ -35,8 +35,18 @@ ParamList {
       opacity: 0.6
       pointer-events: none
     }
+
+    div.extTitle {
+      font-size: 80%
+      color: #AAA
+    }
+
     margin: 4px;
     display: flex
+
+    -block {
+      display: block
+    }
 
     -flex {
       flex: 1 200px

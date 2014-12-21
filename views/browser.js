@@ -29,6 +29,7 @@ function Browser(state, actions){
   }
 
   function dragStart(ev){
+    window.currentDrag = null
     ev.dataTransfer.setData('filesrc', window.context.project.relative(ev.data.path))
   }
 
@@ -55,8 +56,7 @@ function Browser(state, actions){
 
     // handle rename click
     var click = selected ?
-      mercury.event(state.renaming.set, true) :
-      mercury.event(state.selected.set, entry.path)
+      mercury.event(state.renaming.set, true) : null
       
     var classList = []
     if (selected){
@@ -70,11 +70,7 @@ function Browser(state, actions){
     var buttons = [
       h('button.delete', {
         'ev-click': e(actions.deleteFile, entry.path),
-      }, 'delete'),
-      h('button.newWindow', {
-        'title': 'Open in new tab',
-        'ev-click': e(actions.openNewWindow, entry.path)
-      }, '+')
+      }, 'delete')
     ]
 
     if (renaming){
@@ -96,6 +92,7 @@ function Browser(state, actions){
       'draggable': true,
       'ev-dragstart': DataTransfer(dragStart, entry),
       'ev-click': click,
+      'ev-dblclick': e(actions.open, entry.path),
       'className': classList.join(' ')
     }, [ nameElement, buttons ])
   }
