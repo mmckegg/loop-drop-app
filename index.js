@@ -56,11 +56,10 @@ selected(function(path){
     var src = project.relative(path)
     lastSelected = findItemByPath(items, path)
 
-    setTimeout(scrollToSelected, 10)
+    scrollToSelected()
     process.nextTick(grabInputForSelected)
   }
 })
-
 
 var context = window.context = {
   nodes: {
@@ -75,8 +74,10 @@ var context = window.context = {
 }
 
 function scrollToSelected(){
-  var el = document.querySelector('.SetupsBrowser .-selected, .ChunksBrowser .-selected')
-  el && el.scrollIntoViewIfNeeded()
+  setTimeout(function(){
+    var el = document.querySelector('.SetupsBrowser .-selected, .ChunksBrowser .-selected')
+    el && el.scrollIntoViewIfNeeded()
+  }, 10)
 }
 
 function grabInputForSelected(){
@@ -311,6 +312,11 @@ var actions = {
 }
 
 var forceUpdate = null
+
+
+// scrollToSelected when entries change
+state.setups.entries(scrollToSelected)
+state.chunks.entries(scrollToSelected)
 
 // disable default drop handler
 noDrop(document)
