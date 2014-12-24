@@ -123,6 +123,22 @@ function addSetup(src){
       actions.chunks.open(path)
     }
   })
+
+  setup.onRequestCreateChunk(function(target){
+    actions.chunks.newFile(function(err, src){
+
+      setTimeout(function(){ // ensure rename has completed
+        var id = setup.getNewChunkId(src)
+        setup.chunks.push({
+          node: 'external',
+          src: src,
+          id: id
+        })
+        target.controller.chunkPositions.put(id, target.at)
+      }, 50)
+
+    })
+  })
   
   setup.selectedChunkId(function(id){
     var src = null
@@ -254,7 +270,7 @@ var actions = {
       selected.set(path)
     },
 
-    newFile: function(){
+    newFile: function(cb){
       project.getFile('chunks/New Chunk.json', function(err, file){
         file.set(JSON.stringify({
           node: 'chunk', 
@@ -266,6 +282,17 @@ var actions = {
         var chunk = addChunk(file.src)
         selected.set(file.path)
         state.chunks.renaming.set(true)
+
+        if (typeof cb == 'function'){
+          // hacky callback on rename completed
+          var removeWatcher = state.chunks.renaming(function(value){
+            if (!value){
+              var src = project.relative(selected())
+              removeWatcher()
+              cb(null, src)
+            }
+          })
+        }
       })
     },
     deleteFile: function(path){

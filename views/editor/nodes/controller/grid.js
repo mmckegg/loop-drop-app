@@ -32,7 +32,8 @@ function renderGrid(controller, setup){
           }
 
           buttons.push(h('div', {
-            className: classes
+            className: classes,
+            'ev-dblclick': mercury.event(setup.requestCreateChunk, {controller: controller, at: [r,c]})
           }))
         }
         rows.push(h('div.row', buttons))
@@ -187,15 +188,7 @@ function drop(ev){
   var src = ev.dataTransfer.getData('filesrc')
   if (src && ev.data.setup && ev.data.setup.chunks){
 
-    var lookup = ev.data.setup.chunks.controllerContextLookup()
-    var base = getBaseName(src, '.json')
-    var incr = 0
-    var id = base
-
-    while (lookup[id]){
-      incr += 1
-      id = base + ' ' + (incr + 1)
-    }
+    var id = ev.data.setup.getNewChunkId(src)
 
     ev.data.setup.chunks.push({
       'node': 'external',
