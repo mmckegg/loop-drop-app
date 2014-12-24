@@ -243,7 +243,7 @@ var actions = {
       project.getFile('setups/New Setup.json', function(err, file){
         file.set(JSON.stringify({node: 'setup', controllers: [], chunks: []}))
         var setup = addSetup(file.src)
-        selectedSetup.set(file.path)
+        selected.set(file.path)
         state.setups.renaming.set(true)
       })
     },
