@@ -14,18 +14,37 @@ function AudioMeter(value, opts){
 AudioMeter.prototype.type = 'Widget'
 
 AudioMeter.prototype.init = function(){
-  var startState = {value: this.value(), opts: this.opts}
-  var main = mercury.main(startState, render, mercury)
+  var element = mercury.create(render(this.opts))
 
   var state = this.state = {
     value: this.value,
     opts: this.opts,
+    lastL: 0,
+    lastR: 0,
     update: function(){
-      main.update({value: state.value(), opts: state.opts})
+      var current = state.value() || [state.opts.min, state.opts.min]
+      var l = abs(current[0], state.opts)
+      var r = abs(current[1], state.opts)
+      updateActive(element.childNodes[0].childNodes, l, state.lastL)
+      updateActive(element.childNodes[1].childNodes, r, state.lastR)
+      state.lastL = l
+      state.lastR  = r
     }
   }
   bind(this.state)
-  return main.target
+  return element
+}
+
+function updateActive(nodes, current, last){
+  if (current > last){
+    for (var i=last;i<=current;i++){
+      nodes[i].classList.add('-active')
+    }
+  } else {
+    for (var i=current;i<=last;i++){
+      nodes[i].classList.remove('-active')
+    }
+  }
 }
 
 AudioMeter.prototype.update = function(prev, elem){
@@ -55,27 +74,28 @@ function unbind(state){
   }
 }
 
-function render(state){
-  var value = state.value || [0,0]
-  var opts = state.opts
+function render(opts){
   return h('AudioMeter', [
-    h('div.left', getElements(value[0], opts)),
-    h('div.right', getElements(value[1], opts))
+    h('div.left', getElements(opts)),
+    h('div.right', getElements(opts))
   ])
 }
 
-function getElements(value, options){
+function abs(value, options){
+  return Math.min(Math.max(Math.floor((value - options.min) * options.steps / (options.max - options.min)), 0), options.steps-1)
+}
+
+function getElements(options){
   var result = []
   var range = options.max - options.min
   var step = range / options.steps
   for (var i=options.min;i<options.max;i+=step){
-    var className = value > i ? '-active' : ''
     if (i>=options.red){
-      result.push(h('div -red', {className: className}))
+      result.push(h('div -red'))
     } else if (i>=options.amber){
-      result.push(h('div -amber', {className: className}))
+      result.push(h('div -amber'))
     } else {
-      result.push(h('div', {className: className}))
+      result.push(h('div'))
     }
   }
   return result
