@@ -10,9 +10,11 @@ NodeCollection {
   }
 
   -across {
+    overflow: hidden
     display: block
     div {
-      display: inline-block
+      display: block
+      float: left
       margin: 4px
     }
   }

@@ -55,10 +55,10 @@ function renderGrid(controller, setup){
           'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
           'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
         }, [
-          rows,
-          chunks.map(function(chunk){
+          h('div.rows', rows),
+          h('div.chunks', chunks.map(function(chunk){
             return renderChunkBlock(chunk, grid.shape, grid.stride, controller, setup)
-          })
+          }))
         ]),
         h('LoopPosition', positionElements)
       ]) 

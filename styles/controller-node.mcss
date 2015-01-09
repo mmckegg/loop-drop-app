@@ -1,6 +1,4 @@
 ControllerNode {
-
-  transform: translate3d(0,0,0)
   position: relative
   margin-top: 6px
   background: #464545;
