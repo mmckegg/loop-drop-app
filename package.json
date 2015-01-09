@@ -1,7 +1,7 @@
 {
   "name": "loop-drop",
   "description": "MIDI looper, modular synth and sampler app built around Novation Launchpad controller.",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "private": true,
   "author": "Matt McKegg",
   "scripts": {
