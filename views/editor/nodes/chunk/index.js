@@ -2,40 +2,96 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var renderCollection = require('../collection.js')
 
+var Range = require('../../params/range.js')
 var ChunkOptions = require('./options.js')
-var SlotEditor = require('./slot.js')
+//var SlotEditor = require('./slot.js')
 var SlotChooser = require('./slot-chooser.js')
+var ScaleChooser = require('../../params/scale-chooser.js')
+
+var IndexParam = require('../../params/index-param.js')
+var QueryParam = require('loop-drop-setup/query-param')
 
 module.exports = renderChunk
 
-function renderChunk(fileObject){
-  if (fileObject){
-    var data = fileObject()
-    var slotEditor = SlotEditor(getSelectedSlotParam(fileObject))
+function renderChunk(chunk){
+  if (chunk){
+    //var slotEditor = SlotEditor(chunk)
+
+    var options = [
+      h('h1', 'Slots'),
+
+      h('ParamList -compact', [
+        shapeParams(QueryParam(chunk, 'shape'))
+      ]),
+
+      SlotChooser(chunk),
+
+      h('h1', 'Chunk Options'),
+      ChunkOptions(chunk)
+    ]
+
+    if (chunk.scale){
+      options.push(
+        h('h1', 'Scale'),
+        renderScaleChooser(chunk)
+      )
+    }
 
     return h('ChunkNode', [
-      ChunkOptions(fileObject),
-      SlotChooser(fileObject),
-      slotEditor
+
+      h('div.options', options),
+
+      h('div.slot', [
+        currentSlotEditor(chunk)
+      ])
+
     ])
   }
 }
 
-var matchTriggers = /[0-9]+/
+function renderScaleChooser(node){
+  return h('ParamList -compact', [
+    ScaleChooser(node.scale),
+    Range(node.offset, {
+      title: 'offset', 
+      format: 'semitone', 
+      defaultValue: 0, 
+      width: 200, 
+      flex: true
+    })
+  ])
+}
 
-function getSelectedSlotParam(fileObject){
-  var data = fileObject()
-  var selectedSlotId = data.selectedSlotId
-  if (selectedSlotId == null){
-    selectedSlotId = data.node === 'chunk/range' ? 'trigger' : '0'
-  }
+function shapeParams(param){
+  return [
+    h('div -block -flexSmall', [
+      h('div', Range(IndexParam(param, 0), { 
+        title: 'rows',
+        format: 'bit',
+        defaultValue: 1
+      }))
+    ]),
 
-  if (selectedSlotId.match(matchTriggers)){
-    return fileObject.getParam(['triggerSlots[?]', parseInt(selectedSlotId)], [])
-  } else if (selectedSlotId === 'trigger'){
-    return fileObject.getParam('triggerSlots[0]', [])
+    h('div -block -flexSmall', [
+      h('div', Range(IndexParam(param, 1), { 
+        title: 'cols',
+        format: 'bit',
+        defaultValue: 1
+      }))
+    ])
+  ]
+}
+
+function currentSlotEditor(chunk){
+  var renderNode = require('../')
+  var slotId = chunk.selectedSlotId()
+  if (chunk.templateSlot && slotId === '$template'){
+    return renderNode(chunk.templateSlot.node)
   } else {
-    return fileObject.getParam(['slots[id=?]', selectedSlotId])
+    var slots = chunk.context.slotLookup
+    var slot = slots.get(slotId)
+    if (slot){
+      return renderNode(slot)
+    }
   }
-
 }

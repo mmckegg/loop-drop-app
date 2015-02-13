@@ -5,17 +5,18 @@ var nodeEditors = {
   controller: require('./controller'),
   chunk: require('./chunk'),
   setup: require('./setup.js'),
-  external: require('./external')
+  external: require('./external'),
+  slot: require('./slot'),
+  source: require('./source'),
+  processor: require('./processor')
 }
 
-module.exports = function(node, fileObject, collection){
+module.exports = function(node){
   if (node){
     var data = node()
-    if (data){
-      var editor = nodeEditors[getRoot(data.node)]
-      if (editor){
-        return editor(node, fileObject, collection)
-      }
+    var editor = nodeEditors[getRoot(data.node)]
+    if (editor){
+      return editor(node) || h('UnknownNode')
     }
   }
   return h('UnknownNode')

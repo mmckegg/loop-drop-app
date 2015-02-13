@@ -12,6 +12,19 @@ body {
   line-height: 1.2;
 }
 
+h1 {
+  color: #C0C0C0;
+  font-size: 130%;
+  margin: 4px 0;
+  font-weight: normal;
+  text-shadow: 0px 0px 2px black;
+  flex: 1;
+}
+
+* + h1 {
+  margin-top: 16px
+}
+ 
 * {
   box-sizing:border-box;
 }

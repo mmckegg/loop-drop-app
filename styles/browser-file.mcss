@@ -4,6 +4,35 @@ BrowserFile {
   color: #AAA
 
   display: flex
+  margin-left: 20px
+
+  -directory {
+    font-weight: bold
+    margin-left: 0
+  }
+
+  -open {
+    button.twirl {
+      background-image: svg(twirl-max)
+    }
+  }
+
+  button.twirl {
+    opacity: 0.6
+    height: 12px
+    width: 12px
+    margin-right: 2px
+    border: none
+    background: transparent
+    background-repeat: no-repeat
+    background-position: center
+    background-image: svg(twirl-min)
+
+    :focus {
+      outline: none;
+      opacity: 1
+    }
+  }
 
   span {
     flex: 1
@@ -125,6 +154,26 @@ BrowserFile {
     }
     button.newWindow {
       display: none !important
+    }
+  }
+
+  @svg twirl-min {
+    width: 8px
+    height: 8px
+    content: "<path d='M2,0 L2,8 L7,4 Z' />"
+
+    path {
+      fill: #FFF
+    }
+  }
+
+  @svg twirl-max {
+    width: 8px
+    height: 8px
+    content: "<path d='M0,2 L8,2 L4,7 Z' />"
+
+    path {
+      fill: #FFF
     }
   }
 }

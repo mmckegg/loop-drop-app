@@ -1,0 +1,11 @@
+AudioSlot {
+  section {
+    border-radius: 3px
+    background: #333
+    padding: 6px 8px
+    overflow: hidden
+  }
+  section + section {
+    margin-top: 5px
+  }
+}

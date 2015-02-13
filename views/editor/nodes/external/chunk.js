@@ -3,11 +3,14 @@ var h = require('micro-css/h')(mercury.h)
 var MPE = require('../../../../lib/mouse-position-event.js')
 var renderRouting = require('./routing.js')
 var range = require('../../params/range.js')
-var QueryParam = require('../../../../lib/query-param.js')
+var QueryParam = require('loop-drop-setup/query-param.js')
 
-module.exports = function(node, setup, collection){
+module.exports = function(node){
   var data = node()
   var innerData = node.resolved() || {}
+
+  var setup = node.context.setup
+  var collection = node.context.collection
 
   if (data){
 
@@ -40,13 +43,13 @@ module.exports = function(node, setup, collection){
           'ev-click': mercury.event(toggleParam, minimised)
         }),
         h('span', innerData.id),
-        range(volume, {format: 'dB', title: 'vol', width: 150, pull: true}),
+        range(volume, {format: 'dB', title: 'vol', defaultValue: 1, width: 150, pull: true}),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
       ]),
       data.minimised ? '' : h('section', [
-        renderRouting(node, setup, collection)
+        renderRouting(node)
       ])
     ])
   }

@@ -1,72 +1,47 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var MPE = require('../../../../lib/mouse-position-event.js')
-var getBaseName = require('path').basename
 var nextTick = require('next-tick')
+var getBaseName = require('path').basename
+var GridStateHook = require('./grid-state-hook.js')
 
-module.exports = renderGrid
-function renderGrid(controller, setup){
-  var data = controller && controller.gridState()
+module.exports = function renderGrid(controller){
+  var context = controller.context
+  var setup = context.setup
+  var chunks = getChunks(controller)
+  var playback = controller.playback
+  var shape = playback.shape()
 
-  if (data){
-    var grid = data.grid
-    var chunks = data.chunks
-    var selectedChunkId = setup.selectedChunkId()
-    var selectedTriggerId = setup.selectedTriggerId()
-
-    if (grid && chunks){
-      var rows = []
-      var length = grid.shape[0] * grid.shape[1]
-      for (var r=0;r<grid.shape[0];r++){
-        var buttons = []
-        for (var c=0;c<grid.shape[1];c++){
-          var classes = '.button'
-          var buttonState = grid.get(r,c)
-          if (buttonState){
-            if (buttonState.isTrigger) classes += ' -present'
-            if (buttonState.isPlaying) classes += ' -playing'
-            if (buttonState.isRecording) classes += ' -recording'
-            if (buttonState.isActive) classes += ' -active'
-            if (buttonState.noRepeat) classes += ' -noRepeat'
-            if (selectedTriggerId === buttonState.id) classes += ' -selected'
-          }
-
-          buttons.push(h('div', {
-            className: classes,
-            'ev-dblclick': mercury.event(setup.requestCreateChunk, {controller: controller, at: [r,c]})
-          }))
-        }
-        rows.push(h('div.row', buttons))
-      }
-
-      var positionElements = []
-      if (data.loopLength){
-        for (var i=0;i<data.loopLength;i++){
-          var active = Math.floor(data.loopPosition) == i
-          positionElements.push(h('div', {className: active ? '-active' : ''}))
-        }
-      }
-
-      return h('div', [
-        h('LoopGrid', {
-          className: grid.shape[1] > 16 ? '-min' : '',
-          'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
-          'ev-drop': MPE(drop, {controller: controller, setup: setup}),
-          'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
-          'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
-        }, [
-          h('div.rows', rows),
-          h('div.chunks', chunks.map(function(chunk){
-            return renderChunkBlock(chunk, grid.shape, grid.stride, controller, setup)
-          }))
-        ]),
-        h('LoopPosition', positionElements)
-      ]) 
+  var rows = []
+  for (var r=0;r<shape[0];r++){
+    var buttons = []
+    for (var c=0;c<shape[1];c++){      
+      buttons.push(h('div.button', {
+        'ev-dblclick': mercury.event(createChunk, {controller: controller, at: [r,c]})
+      }))
     }
+    rows.push(h('div.row', buttons))
   }
+
+  return h('LoopGrid', {
+    className: shape[1] > 16 ? '-min' : '',
+    'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
+    'ev-drop': MPE(drop, {controller: controller, setup: setup}),
+    'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
+    'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
+  }, [
+    h('div.rows', {'ev-state': GridStateHook(controller.gridState)}, rows),
+    h('div.chunks', chunks.map(function(chunk){
+      return renderChunkBlock(chunk, controller)
+    }))
+  ])
+
 }
 
-function renderChunkBlock(chunk, shape, stride, controller, setup){
+function renderChunkBlock(chunk, controller){
+  var setup = controller.context.setup
+  var shape = controller.playback.shape()
+
   var selectedChunkId = setup.selectedChunkId()
   var box = {
     top: chunk.origin[0] / shape[0],
@@ -90,8 +65,8 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
     className: selectedChunkId == chunk.id ? '-selected' : null, 
     style: style,
     draggable: true,
-    'ev-click': mercury.event(setup.selectedChunkId.set, chunk.id),
-    'ev-dblclick': mercury.event(setup.requestEditChunk, chunk.id),
+    'ev-click': mercury.event(selectChunk, { chunkId: chunk.id, controller: controller }),
+    'ev-dblclick': mercury.event(editChunk, { chunkId: chunk.id, controller: controller }),
     'ev-dragstart': MPE(startDrag, {chunk: chunk, controller: controller}),
     'ev-dragend': MPE(endDrag, {chunk: chunk, controller: controller})
   },[
@@ -104,11 +79,32 @@ function renderChunkBlock(chunk, shape, stride, controller, setup){
   ])
 }
 
+function getChunks(controller){
+  var context = controller.context
+  var chunkPositions = controller.chunkPositions ? controller.chunkPositions() : {}
+  var chunks = []
+  for (var k in chunkPositions){
+
+    var chunk = context.chunkLookup.get(k)
+
+    if (chunk){
+      var data = chunk()
+      chunks.push({
+        id: data.id,
+        color: data.color,
+        shape: data.shape,
+        origin: chunkPositions[k]
+      })
+    }
+
+  }
+  return chunks
+}
+
 function startDrag(ev){
   window.currentDrag = ev
   ev.value = ev.data.chunk.origin.slice()
   ev.controller = ev.data.controller
-  console.log('start', ev)
 }
 
 function endDrag(ev){
@@ -118,7 +114,6 @@ function endDrag(ev){
 var entering = null
 function dragLeave(ev){
   if (window.currentDrag && (!entering || entering !== ev.data.controller)){
-    console.log('LEAVE')
     var chunkId = getId(currentDrag.data.chunk)
     if (chunkId){
       ev.data.controller.chunkPositions.delete(chunkId)
@@ -149,8 +144,9 @@ function dragOver(ev){
 
     var chunkId = getId(currentDrag.data.chunk)
     if (chunkId){
-      var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
-      var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
+      var shape = ev.data.controller.playback.shape()
+      var height = ev.offsetHeight / shape[0]
+      var width = ev.offsetWidth / shape[1]
 
       if (!currentDrag.controller){
         currentDrag.controller = ev.data.controller
@@ -178,26 +174,27 @@ function dragOver(ev){
     
   }
 
-  if (~ev.dataTransfer.types.indexOf('filesrc')){
+  if (~ev.dataTransfer.types.indexOf('filepath')){
     ev.dataTransfer.dropEffect = 'link'
     ev.event.preventDefault()
   }
 }
 
 function drop(ev){
-  var src = ev.dataTransfer.getData('filesrc')
-  if (src && ev.data.setup && ev.data.setup.chunks){
-
-    var id = ev.data.setup.getNewChunkId(src)
-
+  var path = ev.dataTransfer.getData('filepath')
+  if (path && ev.data.setup && ev.data.setup.chunks){
+    var id = ev.data.setup.resolveAvailableChunk(getBaseName(path, '.json'))
     ev.data.setup.chunks.push({
       'node': 'external',
       'id': id,
-      'src': src
+      'src': ev.data.setup.context.fileObject.relative(path),
+      'minimised': true,
+      'routes': {output: '$default'}
     })
     
-    var height = ev.offsetHeight / ev.data.controller.grid().shape[0]
-    var width = ev.offsetWidth / ev.data.controller.grid().shape[1]
+    var shape = ev.data.controller.playback.shape()
+    var height = ev.offsetHeight / shape[0]
+    var width = ev.offsetWidth / shape[1]
     var r = Math.floor(ev.offsetY/height)
     var c = Math.floor(ev.offsetX/width)
     ev.data.controller.chunkPositions.put(id, [r,c])
@@ -230,8 +227,73 @@ function mixColor(a, b){
     return b
   }
   return [
-    (a[0] + b[0]) / 2,
-    (a[1] + b[1]) / 2,
-    (a[2] + b[2]) / 2
+    (a[0] + a[0] + b[0]) / 3,
+    (a[1] + a[0] + b[1]) / 3,
+    (a[2] + a[0] + b[2]) / 3
   ]
 }
+
+function editChunk(target){
+  var chunkId = target.chunkId
+  var context = target.controller.context
+  var setup = context.setup
+  var project = context.project
+  var actions = context.actions
+
+  // get the chunks file path
+  var src = null
+  var chunks = setup.chunks() || []
+  chunks.some(function(chunk){
+    if (chunk.id === chunkId && chunk.src){
+      src = chunk.src
+      return true
+    }
+  })
+
+  if (src){
+    var path = project.resolve([context.cwd||'', src])
+    actions.open(path)
+  }
+}
+
+function createChunk(target){
+  var controller = target.controller
+  var context = controller.context
+  var actions = context.actions
+  var setup = context.setup
+  var project = context.project
+  var fileObject = context.fileObject
+  var at = target.at
+
+
+  var path = fileObject.resolvePath('New Chunk.json')
+  context.project.resolveAvailable(project.relative(path), function(err, src){
+    actions.newChunk(project.resolve(src), function(err, src){
+      var id = setup.resolveAvailableChunk(getBaseName(src, '.json'))
+      setup.chunks.push({
+        node: 'external',
+        src: fileObject.relative(project.resolve(src)),
+        id: id,
+        minimised: true,
+        routes: {output: '$default'}
+      })
+      controller.chunkPositions.put(id, at)
+      setup.selectedChunkId.set(id)
+    }, 50)
+  })
+}
+
+function selectChunk(target){
+  var controller = target.controller
+  var setup = controller.context.setup
+  controller.grabInput && controller.grabInput()
+  setup.selectedChunkId.set(target.chunkId)
+}
+
+//
+//node.selectedChunkId&&node.selectedChunkId(function(id){
+//  var src = null
+//  if (state.selected() === object.path){
+//    process.nextTick(actions.grabInputForSelected)
+//  }
+//})

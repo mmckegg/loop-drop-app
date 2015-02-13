@@ -59,7 +59,10 @@ LoopGrid {
     position: absolute
     top: 0; right: 0; left: 0; bottom: 0
     transform: translate3d(0,0,0)
+    pointer-events: none
+
     div.chunk {
+      pointer-events: auto
       border: 1px solid #378
       border-radius: 3px
       display: table-cell;

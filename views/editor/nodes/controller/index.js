@@ -5,11 +5,15 @@ var h = require('micro-css/h')(mercury.h)
 
 var renderGrid = require('./grid.js')
 var renderParams = require('./params.js')
-var ControllerWidget = require('../controller-widget.js')
+var renderLoopPosition = require('./loop-position.js')
+var SubLoop = require('../sub-loop.js')
 
-module.exports = function(node, setup, collection){
-  if (node && setup && collection){
-    var state = {node: node, setup: setup, collection: collection}
+module.exports = function(node){
+  if (node){
+    var context = node.context
+    var collection = context.collection
+    
+    var state = {node: node}
     var nameSuffix = node().port ? ' (' + node().port + ')' : ''
     return h('div ControllerNode', {
       draggable: true,
@@ -18,14 +22,15 @@ module.exports = function(node, setup, collection){
       'ev-dragover': MPE(dragOver, state)
     }, [
       h('header', [
-        h('span', 'Controller' + nameSuffix),
+        h('span', 'Loop Grid' + nameSuffix),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
       ]),
       h('section', [
-        ControllerWidget(renderGrid, node, setup, collection),
-        h('div.controls', renderParams(state.node, state.setup))
+        renderGrid(node),
+        SubLoop(node.playback.loopPosition, renderLoopPosition),
+        h('div.controls', renderParams(state.node))
       ])
     ])
   } else {

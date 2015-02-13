@@ -1,0 +1,52 @@
+ModParam {
+  display: flex
+  flex-wrap: wrap
+  min-width: 280px
+
+  -flex {
+    flex: 1
+  }
+
+  (a) {
+    font-size: 80%;
+    display: inline-block;
+    padding: 2px 4px;
+    border: 1px solid #A9A9A9;
+    margin-left: -1px;
+    background: #666;
+    color: white
+    text-decoration: none
+    height: 17px
+    cursor: pointer
+
+    :focus {
+      outline-style: none;
+      color: white;
+      box-shadow: white 0 0 4px;
+      z-index: 100;
+    }
+
+    -selected {
+      background: #AAA;
+      color: #333
+    }
+  }
+
+  div.sub {
+    width: 100%;
+    display: flex;
+
+    div {
+      min-width: 0
+
+      select {
+        border-radius: 0
+        margin-left: 0
+        height: 17px
+      }
+
+    }
+
+
+  }
+}

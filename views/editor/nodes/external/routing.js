@@ -2,18 +2,20 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var select = require('../../params/select.js')
 var range = require('../../params/range.js')
-var QueryParam = require('../../../../lib/query-param.js')
+var QueryParam = require('loop-drop-setup/query-param.js')
 
 module.exports = renderRouting
 
 var defaultOutputs = [
-  ['Master', ''],
-  ['Meddler', 'meddler']
+  ['Default', '$default'],
+  ['Meddler', '$meddler']
 ]
 
-function renderRouting(node, setup, collection){
+function renderRouting(node){
 
   var data = node.resolved()
+  var setup = node.context.setup
+
 
   if (data){
     var resolvedChunks = setup.resolved.chunks() || []

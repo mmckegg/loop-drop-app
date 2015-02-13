@@ -1,33 +1,21 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var renderCollection = require('./collection.js')
+var Collection = require('./collection.js')
+var Spawner = require('./spawner.js')
 
 module.exports = renderSetup
 
 function renderSetup(setup){
-  if (setup){
-    return h('SetupNode', [
-      h('.main NodeCollection -across', [
-        renderCollection(setup.controllers, setup),
-        spawner(setup)
-      ]),
-      h('.chunks NodeCollection', [
-        renderCollection(setup.chunks, setup)
-      ])
+  var controllerSpawners = setup.context.nodes.controller._spawners
+  return h('SetupNode', [
+    h('.main NodeCollection -across', [
+      h('h1', 'Controllers'),
+      Collection(setup.controllers),
+      Spawner(setup.controllers, {nodes: controllerSpawners})
+    ]),
+    h('.chunks NodeCollection', [
+      h('h1', 'Chunks'),
+      Collection(setup.chunks)
     ])
-  }
-}
-
-function spawnController(opts){
-  if (opts.node && opts.setup){
-    opts.setup.controllers.push({ node: opts.node })
-  }
-}
-
-function spawner(setup){
-  return h('div.spawner -controller', [
-    h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnController, {node: 'controller/launchpad', setup: setup })
-    }, '+ controller')
   ])
 }

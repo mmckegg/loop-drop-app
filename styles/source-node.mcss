@@ -1,0 +1,9 @@
+SourceNode {
+  $node
+
+  border-color: #4B5F5F
+
+  header {
+    background: #4B5F5F
+  }
+}

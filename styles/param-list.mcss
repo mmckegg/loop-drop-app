@@ -3,6 +3,10 @@ ParamList {
   display: flex
   flex-wrap: wrap
 
+  -compact {
+    padding: 0
+  }
+
   table {
     (td.title){
       width: 90%
@@ -23,6 +27,10 @@ ParamList {
     color: #FFF;
     padding-right: 12px;
     text-align: center;
+  }
+
+  button {
+    margin: 4px
   }
 
   div {

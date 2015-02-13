@@ -1,330 +1,299 @@
-var Soundbank = require('soundbank')
-var Ditty = require('ditty')
-var SoundbankTrigger = require('soundbank-trigger')
-var Recorder = require('loop-recorder')
-var AudioRMS = require('audio-rms')
-
-// preloaded with all of the shared audio sources/processors/modulators/providers
-var audioContext = require('loop-drop-audio-context')
+process.nextTick = null
+process.nextTick = require('next-tick')
 
 // persistence
 var WebFS = require('web-fs')
-var Project = require('loop-drop-project')
 var Setup = require('loop-drop-setup')
-var FileObject = require('./lib/object')
-var SampleLoader = require('./lib/sample-loader.js')
-var SampleImporter = require('./lib/sample-importer.js')
+var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('./lib/random-color.js')
 var findItemByPath = require('./lib/find-item-by-path.js')
 
 // state and rendering
-var Observ = require('observ')
-var ObservArray = require('observ-array')
-var ObservStruct = require('observ-struct')
-var watch = require('observ/watch')
-var StreamObserv = require('./lib/stream-observ')
-var renderLoop = require('./views')
+var hg = require('mercury')
 var noDrop = require('./lib/no-drop.js')
+var renderLoop = require('./views')
 
-var loadDefaultProject = require('./lib/load-default-project')
+// path
+var getDirectory = require('path').dirname
+var getExt = require('path').extname
+var getBaseName = require('path').basename
+
 //////
 
 
-var project = Project()
+var rootContext = window.rootContext = require('./context')
+var project = rootContext.project
+var state = window.state = hg.struct({
+  tempo: rootContext.tempo,
+  selected: hg.value(),
+  items: hg.array([]),
+  rawMode: hg.value(false),
+  renaming: hg.value(false),
+  entries: project.getDirectory('.'),
+  subEntries: hg.varhash({})
+})
 
-// main output and metering
-var output = audioContext.createGain()
-var outputRms = AudioRMS(audioContext)
-outputRms.observ = StreamObserv(outputRms)
-output.connect(outputRms.input)
-output.connect(audioContext.destination)
+// record output
+var stopRecording = null
+var recorders = []
 
-// needed for soundbank sample loading
-audioContext.loadSample = SampleLoader(audioContext, project, 'samples')
-audioContext.importSample = SampleImporter(audioContext, project, 'samples')
+function noop(){}
+
+function recordOutput(path){
+  console.log('recording output to', path)
+  var fs = project._state.fs
+  var stream = fs.createWriteStream(path)
+  var WaveRecorder = require('wave-recorder')
+  var recorder = WaveRecorder(rootContext.audio, {silenceDuration: 5, bitDepth: 32})
+  recorder.pipe(stream)
+
+  recorder.on('header', function(){
+    fs.write(path, recorder._header, 0, recorder._header.length, 0, noop)
+  })
+  recorders.push(recorder)
+  rootContext.output.connect(recorder.input)
+  return function stop(){
+    recorder.destroy()
+    recorders.splice(recorders.indexOf(recorder, 1))
+    clearTimeout(headerTimer)
+  }
+}
 
 
-var tempo = Observ(120)
-tempo(audioContext.scheduler.setTempo.bind(audioContext.scheduler))
+var actions = rootContext.actions = {
 
-var selected = Observ()
-var items = ObservArray([])
-var lastSelected = null
+  open: function(path){
+    var ext = getExt(path)
+    if (!ext){
+      path = path + '/' + 'index.json'
+    }
 
-selected(function(path){
-  if (path){
     var src = project.relative(path)
-    lastSelected = findItemByPath(items, path)
+    var current = findItemByPath(state.items, path)
 
-    scrollToSelected()
-    process.nextTick(grabInputForSelected)
-  }
-})
+    if (!current){
+      current = actions.addFileObject(src)
+    }
 
-var context = window.context = {
-  nodes: {
-    controller: require('./midi-controllers.js'),
-    chunk: require('./chunk-types.js'),
-    external: require('loop-drop-setup/external')
+    state.selected.set(path)
   },
-  audio: audioContext,
-  scheduler: audioContext.scheduler,
-  outputRms: outputRms,
-  project: project
-}
-
-function scrollToSelected(){
-  setTimeout(function(){
-    var el = document.querySelector('.SetupsBrowser .-selected, .ChunksBrowser .-selected')
-    el && el.scrollIntoViewIfNeeded()
-  }, 10)
-}
-
-function grabInputForSelected(){
-  var item = lastSelected
-  if (item && item.grabInput){
-    item.grabInput()
-  }
-}
-
-function addSetup(src){
-  var ctx = Object.create(context)
-  ctx.recorder = Recorder()
-  ctx.soundbank = Soundbank(ctx.audio)
-  ctx.triggerOutput = SoundbankTrigger(ctx.soundbank)
-  ctx.player = Ditty()
-
-  ctx.scheduler
-   .pipe(ctx.player)
-   .pipe(ctx.triggerOutput)
-   .pipe(ctx.recorder)
-
-  ctx.soundbank.connect(output)
-
-  var setup = Setup(ctx)
-  setup.load(src)
-  items.push(setup)
-  setup.onLoad(function(){
-    // don't backup a corrupted file!
-    if (Object.keys(setup() || {}).length){
-      project.backup(setup.file)
-    }
-  })
-
-  setup.onRequestEditChunk(function(chunkId){
-    var chunks = setup.chunks() || []
-    chunks.some(function(chunk){
-      if (chunk.id === chunkId && chunk.src){
-        src = chunk.src
-        return true
-      }
-    })
-    if (src){
-      var path = project.resolve(src)
-      actions.chunks.open(path)
-    }
-  })
-
-  setup.onRequestCreateChunk(function(target){
-    actions.chunks.newFile(function(err, src){
-
-      setTimeout(function(){ // ensure rename has completed
-        var id = setup.getNewChunkId(src)
-        setup.chunks.push({
-          node: 'external',
-          src: src,
-          id: id
-        })
-        target.controller.chunkPositions.put(id, target.at)
-      }, 50)
-
-    })
-  })
-  
-  setup.selectedChunkId(function(id){
-    var src = null
-    if (selected() === setup.path){
-      process.nextTick(grabInputForSelected)
-    }
-  })
-
-  setup.onClose(function(){
-
-    // disconnect
-    ctx.player.emit('close') // unpipe scheduler hack
-    ctx.soundbank.disconnect()
-
-    var index = items.indexOf(setup)
-    if (~index){
-      items.splice(index, 1)
-    }
-    if (setup.path === selected()){
-      var lastSelectedSetup = items.get(index) || items.get(0)
-      selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
-    }
-  })
-  return setup
-}
-
-function addChunk(src){
-  var chunk = FileObject(context)
-  chunk.load(src)
-  items.push(chunk)
-  chunk.onLoad(function(){
-    if (chunk.file){
-      project.backup(chunk.file)
-    }
-  })
-  chunk.onClose(function(){
-    var index = items.indexOf(chunk)
-    if (~index){
-      items.splice(index, 1)
-    }
-    if (chunk.path === selected()){
-      var lastSelectedChunk = items.get(index) || items.get(0)
-      selected.set(lastSelectedChunk ? lastSelectedChunk.path : null)
-    }
-  })
-  return chunk
-}
-
-var state = window.state = ObservStruct({
-
-  main: ObservStruct({
-    tempo: tempo
-  }),
-
-  selected: selected,
-  items: items,
-  rawMode: Observ(false),
-
-  setups: ObservStruct({
-    items: items,
-    selected: selected,
-    renaming: Observ(false),
-    entries: project.getDirectory('setups'),
-  }),
-
-  chunks: ObservStruct({
-    items: items,
-    selected: selected,
-    renaming: Observ(false),
-    entries: project.getDirectory('chunks'),
-  })
-
-})
-
-var actions = {
 
   closeFile: function(path){
-    var setup = findItemByPath(items, path)
-    if (setup){
-      setup.destroy()
+    var object = findItemByPath(state.items, path)
+    if (object){
+      object.close()
     }
   },
 
-  main: {
-    changeProject: function(){
-      loadDefaultProject.choose()
-    }
-  },
-  setups: {
-
-    open: function(path){
+  toggleDirectory: function(path){
+    var directory = state.subEntries.get(path)
+    if (directory){
+      state.subEntries.put(path, null)
+      directory.close()
+    } else {
       var src = project.relative(path)
-      var setup = findItemByPath(items, path)
-      if (!setup){
-        setup = addSetup(src)
-      }
-      selected.set(path)
-    },
+      state.subEntries.put(path, project.getDirectory(src))
+    }
+  },
 
-    newFile: function(){
-      project.getFile('setups/New Setup.json', function(err, file){
-        file.set(JSON.stringify({node: 'setup', controllers: [], chunks: []}))
-        var setup = addSetup(file.src)
-        selected.set(file.path)
-        state.setups.renaming.set(true)
-      })
-    },
-    deleteFile: function(path){
-      var setup = findItemByPath(items, path)
-      if (setup){
-        setup.file.close()
-        setup.file.delete()
-      } else {
-        var src = project.relative(path)
-        project.getFile(src, function(err, file){
-          file&&file.delete()
+  newSetup: function(){
+    project.resolveAvailable('./New Setup', function(err, src){
+      project.createDirectory(src, function(err, dir){
+        project.getFile(src + '/index.json', function(err, file){
+          file.set(JSON.stringify({node: 'setup', controllers: [], chunks: []}))
+          var setup = actions.addFileObject(file.src)
+          state.selected.set(file.path)
+          state.renaming.set(true)
         })
-      }
-    }
+      })
+    })
   },
-  chunks: {
 
-    open: function(path){
-      var src = project.relative(path)
-      var chunk = findItemByPath(items, path)
-      if (!chunk){
-        chunk = addChunk(src)
+  rename: function(path, newName, cb){
+    var src = project.relative(path)
+    var ext = getExt(path)
+
+    var newPath = getDirectory(path) + '/' + newName
+    var newSrc = project.relative(newPath)
+
+    var newFileSrc = ext ? newSrc : newSrc + '/index.json' 
+    var filePath = ext ? path : path + '/index.json'
+
+    var isSelected = path === state.selected() || filePath === state.selected()
+
+    project.moveEntry(src, newSrc, function(err){
+      if (err) return cb&&cb(err)
+      var item = findItemByPath(state.items, filePath)
+      if (item){
+        item.load(newFileSrc)
+        if (isSelected){
+          state.selected.set(item.path)
+        }
       }
-      selected.set(path)
-    },
 
-    newFile: function(cb){
-      project.getFile('chunks/New Chunk.json', function(err, file){
-        file.set(JSON.stringify({
-          node: 'chunk', 
-          color: randomColor([255,255,255]),
-          slots: [{id: 'output'}], 
-          shape: [4,4],
-          outputs: ['output'],
-        }))
-        var chunk = addChunk(file.src)
-        selected.set(file.path)
-        state.chunks.renaming.set(true)
 
-        if (typeof cb == 'function'){
-          // hacky callback on rename completed
-          var removeWatcher = state.chunks.renaming(function(value){
-            if (!value){
-              var src = project.relative(selected())
-              removeWatcher()
-              cb(null, src)
-            }
-          })
+    })
+  },
+
+  deleteEntry: function(path, cb){
+    var src = project.relative(path)
+    project.deleteEntry(src, cb)
+  },
+
+  newChunk: function(path, cb){
+    // ensure expanded
+    var dir = getDirectory(path)
+    if (!state.subEntries.get(dir)){
+      actions.toggleDirectory(dir)
+    }
+
+    var src = project.relative(path)
+    var fileObject = actions.addFileObject(src)
+
+    fileObject.set({
+      node: 'chunk', 
+      color: randomColor([255,255,255]),
+      slots: [{id: 'output', node: 'slot'}], 
+      shape: [4,4],
+      outputs: ['output'],
+    })
+
+    state.selected.set(fileObject.path)
+    state.renaming.set(true)
+
+    if (typeof cb == 'function'){
+      // hacky callback on rename completed
+      var removeWatcher = state.renaming(function(value){
+        if (!value){
+
+          setTimeout(function(){ // ensure rename has completed
+            var src = project.relative(state.selected())
+            cb(null, src)
+          }, 50)
+
+          removeWatcher()
         }
       })
-    },
-    deleteFile: function(path){
-      var chunk = findItemByPath(items, path)
-      if (chunk){
-        chunk.file.close()
-        chunk.file.delete()
-      } else {
-        var src = project.relative(path)
-        project.getFile(src, function(err, file){
-          file&&file.delete()
-        })
+    }
+  },
+
+  scrollToSelected: function(){
+    setTimeout(function(){
+      var el = document.querySelector('.SetupsBrowser .-selected, .ChunksBrowser .-selected')
+      el && el.scrollIntoViewIfNeeded()
+    }, 10)
+  },
+
+  grabInputForSelected: function(){
+    var item = lastSelected
+    if (item && item.node && item.node.grabInput){
+      item.node.grabInput()
+    }
+  },
+
+  addFileObject: function(src){
+
+    var object = FileObject(rootContext)
+
+    object.onLoad(function(){
+
+      // don't backup a corrupted file!
+      if (Object.keys(object() || {}).length){
+        project.backup(object.file)
       }
+
+      if (!~state.items.indexOf(object)){
+        state.items.push(object)
+      }
+
+      if (object.node && object.node.grabInput){
+        object.node.grabInput()
+      }
+
+    })
+
+    object.onClose(function(){
+      console.log('closing', object.path)
+      var index = state.items.indexOf(object)
+      if (~index){
+        state.items.splice(index, 1)
+      }
+      if (object.path === state.selected()){
+        var lastSelectedSetup = state.items.get(index) || state.items.get(0)
+        state.selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
+      }
+    })
+
+    object.load(src)
+    return object
+  },
+
+  chooseProject: function(){
+    chrome.fileSystem.chooseEntry({type: 'openDirectory'}, actions.loadProject)
+  },
+
+  loadDefaultProject: function(){
+    chrome.storage.local.get('projectDirectory', function(items) {
+      if (items.projectDirectory) {
+        chrome.fileSystem.isRestorable(items.projectDirectory, function(bIsRestorable) {
+          if (!bIsRestorable){
+            return actions.chooseProject()
+          }
+          chrome.fileSystem.restoreEntry(items.projectDirectory, function(chosenEntry) {
+            if (chosenEntry) {
+              actions.loadProject(chosenEntry)
+            }
+          })
+        })
+      } else {
+        actions.chooseProject()
+      }
+    })
+  },
+
+  loadProject: function(entry){
+    console.log('loading project', entry)
+
+    stopRecording && stopRecording()
+    stopRecording = null
+
+    var fs = WebFS(entry)
+
+    project.load(entry.fullPath, fs, loaded)
+
+    function loaded(){
+      chrome.storage.local.set({'projectDirectory': chrome.fileSystem.retainEntry(entry)})
+      //stopRecording = recordOutput(project.resolve('./session.wav'))
+      chrome.fileSystem.getDisplayPath(entry, function(path){
+        console.log('Loaded project', path)
+      })
     }
   }
 }
 
-var forceUpdate = null
 
+// state binding
+var lastSelected = null
+state.entries(actions.scrollToSelected)
+state.selected(function(path){
+  if (path){
+    var src = project.relative(path)
+    lastSelected = findItemByPath(state.items, path)
 
-// scrollToSelected when entries change
-state.setups.entries(scrollToSelected)
-state.chunks.entries(scrollToSelected)
+    actions.scrollToSelected()
+    process.nextTick(actions.grabInputForSelected)
+  }
+})
+
 
 // disable default drop handler
 noDrop(document)
 
 // main render loop
+var forceUpdate = null
 setTimeout(function(){
-  forceUpdate = renderLoop(document.body, state, actions, context)
+  forceUpdate = renderLoop(document.body, state, actions, rootContext)
 }, 100)
 
 
-loadDefaultProject()
+actions.loadDefaultProject()

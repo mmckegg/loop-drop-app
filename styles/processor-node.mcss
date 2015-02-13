@@ -1,0 +1,9 @@
+ProcessorNode {
+  $node
+
+  border-color: #644B77
+  
+  header {
+    background: #644B77
+  }
+}
