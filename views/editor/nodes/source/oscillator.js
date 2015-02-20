@@ -44,10 +44,18 @@ module.exports = function(node){
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'note'), {
-        title: 'note',
-        format: 'midi',
-        defaultValue: 69,
+      ModRange(QueryParam(node, 'noteOffset'), {
+        title: 'pitch',
+        format: 'semitone',
+        defaultValue: 0,
+        width: 200,
+        flex: true
+      }),
+
+      ModRange(QueryParam(node, 'octave'), {
+        title: 'octave',
+        format: 'octave',
+        defaultValue: 0,
         width: 200,
         flex: true
       })

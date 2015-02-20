@@ -1,8 +1,9 @@
 var wrap = require('audio-slot/source')
+//var crap = require('audio-slot/constant-source')
 
 module.exports = {
   sample: wrap(require('soundbank-sample')),
-  oscillator: wrap(require('soundbank-oscillator')),
+  oscillator: require('audio-slot/oscillator'),
   granular: wrap(require('soundbank-granular'))
 }
 
@@ -10,17 +11,19 @@ module.exports._spawners = [
 
   ['Sample', { 
     node: 'source/sample',
+    mode: 'oneshot',
     offset: [ 0, 1 ]
   }],
 
   ['Oscillator', {
     node: 'source/oscillator',
-    amp: { node: 'modulator/adsr', value: 0.6, release: 0.01 },
-    note: 60
+    amp: { node: 'modulator/adsr', value: 0.6, release: 0.01 }
   }], 
 
   ['Granular', {
-    node: 'source/granular'
+    node: 'source/granular',
+    mode: 'loop',
+    offset: [ 0, 1 ]
   }]
   
 ]
