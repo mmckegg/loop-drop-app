@@ -1,8 +1,8 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var Collection = require('../collection.js')
-var SlotOptions = require('./options.js')
 var Spawner = require('../spawner.js')
+var Range = require('../../params/range.js')
 
 
 module.exports = renderSlot
@@ -12,8 +12,7 @@ function renderSlot(node){
   var processorSpawners = node.context.nodes.processor._spawners
 
   return h('AudioSlot', [
-    SlotOptions(node),
-
+    
     checkIsTrigger(node) ? h('section', [
       h('h1', 'Sources'),
       Collection(node.sources),
@@ -24,7 +23,17 @@ function renderSlot(node){
       h('h1', 'Processors'),
       Collection(node.processors),
       Spawner(node.processors, {nodes: processorSpawners})
-    ])
+    ]),
+
+    h('section.options', [
+      h('h1', 'Output'),
+      Range(node.volume, {
+        title: 'volume', 
+        flex: true, 
+        defaultValue: 1, 
+        format: 'dB'
+      })
+    ]),
 
   ])
 }
