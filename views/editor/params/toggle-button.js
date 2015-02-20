@@ -20,7 +20,7 @@ module.exports = function(param, options){
       param: param,
       value: isOn ? offValue : onValue
     })
-  }, options.title)
+  }, isOn ? options.title : (options.offTitle || options.title) )
 }
 
 function setValue(ev){

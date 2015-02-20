@@ -2,6 +2,7 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var select = require('../../params/select.js')
 var range = require('../../params/range.js')
+var ToggleButton = require('../../params/toggle-button.js')
 
 var QueryParam = require('loop-drop-setup/query-param')
 
@@ -19,7 +20,14 @@ function renderOptions(chunk){
       h('div -block', [
         h('div.extTitle', 'Grid Mode'),
         h('div', select(QueryParam(chunk, 'node'), {options: chunkNodeChoices}))
-      ])
+      ]),
+
+      h('div -block', [
+        h('div.extTitle', 'Choke Mode'),
+        h('div', ToggleButton(chunk.chokeAll, {title: 'All', offTitle: 'Single'}))
+      ]),
+
+
     ])
   ])
 }
