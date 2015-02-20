@@ -1,6 +1,5 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var MPE = require('../../../../lib/mouse-position-event.js')
 var renderRouting = require('./routing.js')
 var range = require('../../params/range.js')
 var QueryParam = require('loop-drop-setup/query-param.js')
@@ -27,12 +26,8 @@ module.exports = function(node){
     var volume = QueryParam(node, 'volume')
 
     return h('div ExternalNode', {
-      draggable: true,
       className: className,
-      'ev-dragstart': MPE(dragStart, {chunk: node, collection: collection}),
-      'ev-dragend': MPE(dragEnd, {chunk: node, collection: collection, setup: setup}),
-      'ev-dragover': MPE(dragOver, {chunk: node, collection: collection, setup: setup}),
-      'ev-dblclick': mercury.event(setup.requestEditChunk, data.id),
+      'ev-dblclick': mercury.event(editChunk, node),
       'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
       'style': mainStyle
     }, [
@@ -56,6 +51,15 @@ module.exports = function(node){
   return h('UnknownNode')
 }
 
+function editChunk(chunk){
+  var context = chunk.context
+  var descriptor = chunk()
+  if (descriptor && descriptor.src){
+    var path = context.project.resolve([context.cwd||'', descriptor.src])
+    context.actions.open(path)
+  }
+}
+
 function toggleParam(param){
   param.set(!param.read())
 }
@@ -65,22 +69,4 @@ function color(rgb, a){
     rgb = [100,100,100]
   }
   return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
-}
-
-function dragOver(ev){
-  var currentDrag = window.currentDrag
-  if (currentDrag && currentDrag.data.chunk){
-    var index = ev.data.collection.indexOf(ev.data.chunk)
-    if (~index){
-      ev.data.collection.move(currentDrag.data.chunk, index)
-    }
-  }
-}
-
-function dragStart(ev){
-  window.currentDrag = ev
-}
-
-function dragEnd(ev){
-  window.currentDrag = null
 }

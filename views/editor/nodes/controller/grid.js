@@ -25,10 +25,10 @@ module.exports = function renderGrid(controller){
 
   return h('LoopGrid', {
     className: shape[1] > 16 ? '-min' : '',
-    'ev-dragover': MPE(dragOver, {controller: controller, setup: setup}),
-    'ev-drop': MPE(drop, {controller: controller, setup: setup}),
-    'ev-dragleave': MPE(dragLeave, {controller: controller, setup: setup}),
-    'ev-dragenter': MPE(dragEnter, {controller: controller, setup: setup}),
+    'ev-dragover': MPE(dragOver, controller),
+    'ev-drop': MPE(drop, controller),
+    'ev-dragleave': MPE(dragLeave, controller),
+    'ev-dragenter': MPE(dragEnter, controller),
   }, [
     h('div.rows', {'ev-state': GridStateHook(controller.gridState)}, rows),
     h('div.chunks', chunks.map(function(chunk){
@@ -60,15 +60,16 @@ function renderChunkBlock(chunk, controller){
     'color': color(mixColor(chunk.color, [255,255,255]),1)
   }
 
+  var node = setup.chunks.lookup.get(chunk.id)
 
   return h('div.chunk', { 
     className: selectedChunkId == chunk.id ? '-selected' : null, 
     style: style,
     draggable: true,
     'ev-click': mercury.event(selectChunk, { chunkId: chunk.id, controller: controller }),
-    'ev-dblclick': mercury.event(editChunk, { chunkId: chunk.id, controller: controller }),
-    'ev-dragstart': MPE(startDrag, {chunk: chunk, controller: controller}),
-    'ev-dragend': MPE(endDrag, {chunk: chunk, controller: controller})
+    'ev-dblclick': mercury.event(editChunk, node),
+    'ev-dragstart': MPE(startDrag, node),
+    'ev-dragend': MPE(endDrag, node)
   },[
     h('span.label', chunk.id),
     //h('div.handle -top'),
@@ -103,8 +104,6 @@ function getChunks(controller){
 
 function startDrag(ev){
   window.currentDrag = ev
-  ev.value = ev.data.chunk.origin.slice()
-  ev.controller = ev.data.controller
 }
 
 function endDrag(ev){
@@ -113,23 +112,25 @@ function endDrag(ev){
 
 var entering = null
 function dragLeave(ev){
-  if (window.currentDrag && (!entering || entering !== ev.data.controller)){
-    var chunkId = getId(currentDrag.data.chunk)
+  var controller = ev.data
+  if (window.currentDrag && (!entering || entering !== controller)){
+    var chunkId = getId(currentDrag.data)
     if (chunkId){
-      ev.data.controller.chunkPositions.delete(chunkId)
+      controller.chunkPositions.delete(chunkId)
     }
   }
 }
 function dragEnter(ev){
-  entering = ev.data.controller
+  entering = ev.data
+
   nextTick(function(){
     entering = null
   })
 }
 
 function getId(chunk){
-  if (typeof currentDrag.data.chunk == 'function'){
-    chunk = currentDrag.data.chunk()
+  if (typeof chunk== 'function'){
+    chunk = chunk()
   }
 
   if (chunk){
@@ -138,24 +139,17 @@ function getId(chunk){
 }
 
 function dragOver(ev){
+  var controller = ev.data
   var currentDrag = window.currentDrag
 
   if (currentDrag){
 
-    var chunkId = getId(currentDrag.data.chunk)
+    var chunkId = getId(currentDrag.data)
+
     if (chunkId){
-      var shape = ev.data.controller.playback.shape()
+      var shape = controller.playback.shape()
       var height = ev.offsetHeight / shape[0]
       var width = ev.offsetWidth / shape[1]
-
-      if (!currentDrag.controller){
-        currentDrag.controller = ev.data.controller
-      }
-
-      if (currentDrag.controller !== ev.data.controller){
-        currentDrag.controller.chunkPositions.delete(chunkId)
-        currentDrag.controller = ev.data.controller
-      }
 
       var x = ev.offsetX - currentDrag.offsetX
       var y = ev.offsetY - currentDrag.offsetY
@@ -163,15 +157,15 @@ function dragOver(ev){
       var r = Math.round(y/width)
       var c = Math.round(x/width)
 
-      if (!currentDrag.value || currentDrag.value[0] !== r || currentDrag.value[1] !== c){
-        currentDrag.value = [r,c]
-        ev.data.controller.chunkPositions.put(chunkId, currentDrag.value)
+      var currentValue = controller.chunkPositions.get(chunkId)
+
+      if (!currentValue || currentValue[0] !== r || currentValue[1] !== c){
+        controller.chunkPositions.put(chunkId, [r,c])
       }
     }
 
     ev.dataTransfer.dropEffect = 'move'
-    ev.event.preventDefault()
-    
+    ev.event.preventDefault()  
   }
 
   if (~ev.dataTransfer.types.indexOf('filepath')){
@@ -182,24 +176,26 @@ function dragOver(ev){
 
 function drop(ev){
   var path = ev.dataTransfer.getData('filepath')
-  if (path && ev.data.setup && ev.data.setup.chunks){
-    var id = ev.data.setup.resolveAvailableChunk(getBaseName(path, '.json'))
-    ev.data.setup.chunks.push({
+  var controller = ev.data
+  var setup = controller.context.setup
+
+  if (path && setup && setup.chunks){
+    var id = setup.resolveAvailableChunk(getBaseName(path, '.json'))
+    setup.chunks.push({
       'node': 'external',
       'id': id,
-      'src': ev.data.setup.context.fileObject.relative(path),
+      'src': setup.context.fileObject.relative(path),
       'minimised': true,
       'routes': {output: '$default'}
     })
     
-    var shape = ev.data.controller.playback.shape()
+    var shape = controller.playback.shape()
     var height = ev.offsetHeight / shape[0]
     var width = ev.offsetWidth / shape[1]
     var r = Math.floor(ev.offsetY/height)
     var c = Math.floor(ev.offsetX/width)
-    ev.data.controller.chunkPositions.put(id, [r,c])
+    controller.chunkPositions.put(id, [r,c])
   }
-
 }
 
 function getElementMouseOffset(offsetX, offsetY, clientX, clientY){
@@ -233,26 +229,12 @@ function mixColor(a, b){
   ]
 }
 
-function editChunk(target){
-  var chunkId = target.chunkId
-  var context = target.controller.context
-  var setup = context.setup
-  var project = context.project
-  var actions = context.actions
-
-  // get the chunks file path
-  var src = null
-  var chunks = setup.chunks() || []
-  chunks.some(function(chunk){
-    if (chunk.id === chunkId && chunk.src){
-      src = chunk.src
-      return true
-    }
-  })
-
-  if (src){
-    var path = project.resolve([context.cwd||'', src])
-    actions.open(path)
+function editChunk(chunk){
+  var context = chunk.context
+  var descriptor = chunk()
+  if (descriptor && descriptor.src){
+    var path = context.project.resolve([context.cwd||'', descriptor.src])
+    context.actions.open(path)
   }
 }
 
