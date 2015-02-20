@@ -139,11 +139,6 @@ function LFO(param, options){
 
 function ADSR(param, options){
   return h('div.sub -adsr', [
-    Range(QueryParam(param, 'startValue'), {
-      flex: true,
-      title: '>',
-      format: options.format
-    }),
 
     Range(QueryParam(param, 'attack'), {
       flex: true,
@@ -168,12 +163,6 @@ function ADSR(param, options){
       flex: true,
       title: 'r',
       format: 'ms'
-    }),
-
-    Range(QueryParam(param, 'endValue'), {
-      flex: true,
-      title: '<',
-      format: options.format
     })
 
   ])
