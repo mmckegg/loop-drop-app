@@ -37,7 +37,7 @@ function renderBrowser(state, actions){
 
   return h('div', {className: 'Browser'}, [
     h('header', [
-      h('span', 'Setups'), h('button.new', {'ev-click': e(actions.newSetup)}, 'New')
+      h('span', 'Setups'), h('button.new', {'ev-click': e(actions.newSetup)}, '+ New')
     ]),
     h('ScrollBox', entries)
   ])
