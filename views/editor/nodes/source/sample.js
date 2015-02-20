@@ -6,6 +6,7 @@ var Range = require('../../params/range.js')
 var ModRange = require('../../params/mod-range.js')
 var Select = require('../../params/select.js')
 var SampleTrimmer = require('../../params/sample-trimmer.js')
+var SampleChooser = require('../../params/sample-chooser.js')
 
 var QueryParam = require('loop-drop-setup/query-param')
 
@@ -28,6 +29,8 @@ module.exports = function(node){
     ])),
 
     h('ParamList', [
+
+      SampleChooser(node),
 
       Select(QueryParam(node, 'mode'), { 
         options: modeChoices 

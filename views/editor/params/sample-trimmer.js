@@ -6,6 +6,10 @@ var QueryParam = require('loop-drop-setup/query-param')
 var IndexParam = require('./index-param.js')
 var WaveHook = require('./wave-hook.js')
 
+var DragEvent = require('../../../lib/drag-event.js')
+var importSample = require('../../../lib/import-sample.js')
+var cancelEvent = require('../../../lib/cancel-event.js')
+
 var read = require('./read.js')
 var change = require('./value-event.js')
 
@@ -22,7 +26,13 @@ module.exports = function(node){
 
   var range = endOffset - startOffset
 
-  return h('SampleTrimmer', [
+  return h('SampleTrimmer', {
+    draggable: true,
+    'ev-dragstart': cancelEvent(),
+    'ev-dragover': DragEvent(dragOver, node),
+    'ev-dragleave': DragEvent(dragLeave, node),
+    'ev-drop': DragEvent(drop, node)
+  },[
 
     svg('svg WaveView', {
       'viewBox': '0 0 500 400',
@@ -74,6 +84,33 @@ module.exports = function(node){
   ])
 }
 
+function dragOver(ev){
+  var item = ev.dataTransfer.items[0]
+  if (item && item.kind === 'file' && item.type === 'audio/wav'){
+    ev.currentTarget.classList.add('-dragOver')
+    ev.dataTransfer.dropEffect = 'copy'
+    ev.preventDefault()
+  }
+}
+
+function dragLeave(ev){
+  ev.currentTarget.classList.remove('-dragOver')
+}
+
+function drop(ev){
+  var node = ev.data
+  var context = ev.data.context
+  var file = ev.dataTransfer.items[0].getAsFile()
+
+  dragLeave(ev)
+
+  importSample(context, file, function(err, descriptor){
+    for (var k in descriptor){
+      QueryParam(node, k).set(descriptor[k])
+    }
+  })
+}
+
 function getGainTransform(value){
   var offsetHeight = (((currentHeightScale*height) - height) / 2) / currentHeightScale
   return 'scale(' + currentWidthScale + ' ' + currentHeightScale + ') translate(0 ' + -offsetHeight + ')'
@@ -82,6 +119,8 @@ function getGainTransform(value){
 function handleChange(value){
   this.data.set(value)
 }
+
+function noop(){}
 
 function ValueHook(value){
   this.value = value

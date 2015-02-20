@@ -7,6 +7,7 @@ var ModRange = require('../../params/mod-range.js')
 var Select = require('../../params/select.js')
 var ToggleButton = require('../../params/toggle-button.js')
 var SampleTrimmer = require('../../params/sample-trimmer.js')
+var SampleChooser = require('../../params/sample-chooser.js')
 
 var QueryParam = require('loop-drop-setup/query-param')
 
@@ -29,6 +30,8 @@ module.exports = function(node){
     ])),
 
     h('ParamList', [
+
+      SampleChooser(node),
 
       Select(QueryParam(node, 'mode'), { 
         options: modeChoices,
@@ -80,7 +83,7 @@ module.exports = function(node){
       }),
 
       Range(QueryParam(node, 'release'), {
-        title: 'hold',
+        title: 'release',
         format: 'ratio',
         defaultValue: 0.5,
         flex: true

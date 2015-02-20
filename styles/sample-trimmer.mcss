@@ -5,7 +5,7 @@ SampleTrimmer {
 
   position: relative;
 
-  -dragover {
+  -dragOver {
     background: #888
   }
 

@@ -28,6 +28,14 @@ SlotChooser {
 
     position: relative
 
+    -dragOver {
+      border: 1px solid #2AAA2A;
+      background-color: #53AB53
+      opacity: 1
+      box-shadow: 0 0 4px black;
+      z-index: 1
+    }
+
     button.remove {
       border-radius: 7px;
       position: absolute;

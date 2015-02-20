@@ -6,7 +6,7 @@ var getBaseName = require('path').basename
 var getExt = require('path').extname
 
 var renameWidget = require('../lib/rename-widget')
-var DataTransfer = require('../lib/data-transfer')
+var DragEvent = require('../lib/drag-event')
 
 var currentRename = null
 
@@ -102,7 +102,7 @@ function renderEntry(entry, state, actions){
   return h('BrowserFile', { 
     'data-entry': entry,
     'draggable': true,
-    'ev-dragstart': DataTransfer(dragStart, entry),
+    'ev-dragstart': DragEvent(dragStart, entry),
     'ev-click': click,
     'ev-dblclick': e(actions.open, entry.path),
     'className': classList.join(' ')
