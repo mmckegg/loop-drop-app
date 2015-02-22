@@ -4,7 +4,20 @@ SetupNode {
   display: flex
   flex: 1
   div.main {
+    display: flex
+    flex-direction: column
     flex: 1
+    div {
+      overflow-y: auto
+      flex: 1
+    }
+
+    section {
+      padding: 10px;
+      background: #222;
+      margin: 10px;
+      box-shadow: 0 0 3px black;
+    }
   }
   div.chunks {
     width: 350px

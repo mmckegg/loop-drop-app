@@ -30,9 +30,7 @@ function renderRouting(node){
       ])
     })
 
-    return h('div ParamList', [
-      routeParams
-    ])
+    return routeParams
 
   }
 

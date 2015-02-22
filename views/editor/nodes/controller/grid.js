@@ -257,6 +257,7 @@ function createChunk(target){
         src: fileObject.relative(project.resolve(src)),
         id: id,
         minimised: true,
+        scale: '$global',
         routes: {output: '$default'}
       })
       controller.chunkPositions.put(id, at)

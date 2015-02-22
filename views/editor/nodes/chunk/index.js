@@ -51,8 +51,8 @@ function renderChunk(chunk){
 
 function renderScaleChooser(node){
   return h('ParamList -compact', [
-    ScaleChooser(node.scale),
-    Range(node.offset, {
+    ScaleChooser(QueryParam(node.scale, 'notes', {})),
+    Range(QueryParam(node.scale, 'offset', {}), {
       title: 'offset', 
       format: 'semitone', 
       defaultValue: 0, 
