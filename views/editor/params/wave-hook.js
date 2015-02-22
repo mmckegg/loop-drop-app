@@ -22,9 +22,9 @@ WaveHook.prototype.hook = function(node, prop, current){
     current = null
   }
 
-  if (!current && self.node.modulators){
+  if (!current && self.node.resolvedBuffer){
     nextTick(function(){
-      self.removeListener = watch(self.node.modulators, self.update.bind(self, node))
+      self.removeListener = watch(self.node.resolvedBuffer, self.update.bind(self, node))
     })
   }
 }
@@ -41,10 +41,9 @@ WaveHook.prototype.unhook = function(node, prop, next){
   }
 }
 
-WaveHook.prototype.update = function(node, modulators){
+WaveHook.prototype.update = function(node, buffer){
   var descriptor = read(this.node) || {}
   var gain = getValue(descriptor.amp, 1)
-  var buffer = modulators.buffer && modulators.buffer.resolved && modulators.buffer.resolved()
 
   if (buffer){
     var data = buffer ? buffer.getChannelData(0) : []
