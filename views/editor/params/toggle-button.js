@@ -9,8 +9,8 @@ module.exports = function(param, options){
     value = options.defaultValue || false
   }
 
-  var onValue = options.onValue == undefined ? true : options.onValue
-  var offValue = options.offValue == undefined ? false : options.offValue
+  var onValue = 'onValue' in options ? options.onValue : true
+  var offValue = 'offValue' in options ? options.offValue : false
 
   var isOn = value == onValue
 
