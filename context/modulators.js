@@ -2,7 +2,7 @@ var wrap = require('audio-slot/source')
 
 module.exports = {
   lfo: wrap(require('lfo')),
-  adsr: require('audio-slot/envelope') //wrap(require('adsr'))
+  adsr: require('audio-slot/modulators/envelope') //wrap(require('adsr'))
 }
 
 module.exports._spawners = [

@@ -3,7 +3,7 @@ var wrap = require('audio-slot/source')
 
 module.exports = {
   sample: wrap(require('soundbank-sample')),
-  oscillator: require('audio-slot/oscillator'),
+  oscillator: require('audio-slot/sources/oscillator'),
   granular: wrap(require('soundbank-granular'))
 }
 
