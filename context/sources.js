@@ -1,10 +1,9 @@
-var wrap = require('audio-slot/source')
 //var crap = require('audio-slot/constant-source')
 
 module.exports = {
   sample: require('audio-slot/sources/sample'),
   oscillator: require('audio-slot/sources/oscillator'),
-  granular: wrap(require('soundbank-granular'))
+  granular: require('audio-slot/sources/granular')
 }
 
 module.exports._spawners = [

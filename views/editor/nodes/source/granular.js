@@ -42,22 +42,22 @@ module.exports = function(node){
         title: 'BPM Sync'
       }),
 
-      Range(QueryParam(node, 'length'), {
-        title: 'length',
+      Range(QueryParam(node, 'duration'), {
+        title: 'duration',
         defaultValue: 1,
         format: isSyncing ? 'beat' : 'ms',
         flex: true
       }),
 
       Range(QueryParam(node, 'rate'), {
-        title: 'length',
+        title: 'rate',
         defaultValue: 16,
         format: 'ratio32',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'gain'), {
-        title: 'gain',
+      ModRange(QueryParam(node, 'amp'), {
+        title: 'amp',
         format: 'dB',
         defaultValue: 1,
         flex: true
@@ -72,6 +72,7 @@ module.exports = function(node){
       Range(QueryParam(node, 'attack'), {
         title: 'attack',
         format: 'ratio',
+        defaultValue: 0.1,
         flex: true
       }),
 
@@ -85,7 +86,7 @@ module.exports = function(node){
       Range(QueryParam(node, 'release'), {
         title: 'release',
         format: 'ratio',
-        defaultValue: 0.5,
+        defaultValue: 0.1,
         flex: true
       })
 
