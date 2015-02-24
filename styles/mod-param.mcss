@@ -39,6 +39,13 @@ ModParam {
     div {
       min-width: 0
 
+      -flex {
+        flex: 1
+        select {
+          width: 100%
+        }
+      }
+
       select {
         border-radius: 0
         margin-left: 0

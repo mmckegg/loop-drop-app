@@ -27,7 +27,7 @@ function select(param, opt){
     optionElements.unshift(h('option', {value: ''}, display))
   }
 
-  return h('div', {className: opt.flex ? '-flexSmall' : ''}, h('select', {
+  return h('div', {className: opt.flex ? '-flex' : ''}, h('select', {
     'name': 'value', 'ev-change': change(handleChange, 'value', param)
   }, optionElements))
 }

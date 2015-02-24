@@ -63,7 +63,7 @@ module.exports = function(node){
         flex: true
       }),
 
-      Range(QueryParam(node, 'transpose'), {
+      ModRange(QueryParam(node, 'transpose'), {
         title: 'transpose',
         format: 'semitone',
         flex: true

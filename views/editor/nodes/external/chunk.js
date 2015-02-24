@@ -1,7 +1,10 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var renderRouting = require('./routing.js')
+
 var range = require('../../params/range.js')
+var ModRange = require('../../params/mod-range.js')
+
 var QueryParam = require('loop-drop-setup/query-param.js')
 var ToggleButton = require('../../params/toggle-button.js')
 
@@ -24,8 +27,8 @@ module.exports = function(node){
 
     var minimised = QueryParam(node, 'minimised')
     var className = data.minimised ? '-minimised' : ''
-    var volume = QueryParam(node, 'volume')
-    var offset = QueryParam(node, 'offset')
+    var volume = QueryParam(node, 'volume', null, node.context)
+    var offset = QueryParam(node, 'offset', null, node.context)
 
     return h('div ExternalNode', {
       className: className,
@@ -60,7 +63,7 @@ module.exports = function(node){
 
           h('div -block', [
             h('div.extTitle', 'Offset'),
-            h('div', range(offset, {
+            h('div', ModRange(offset, {
               format: 'semitone', 
               width: 150
             }))

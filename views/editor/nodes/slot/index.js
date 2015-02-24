@@ -41,5 +41,5 @@ function renderSlot(node){
 function checkIsTrigger(node){
   var data = node()
   var id = data && data.id
-  return isFinite(id) || !id
+  return isFinite(id) || !id || id.$param
 }

@@ -81,7 +81,17 @@ function renderOptions(chunk){
 function selectTemplateSlot(chunk){
   var data = chunk.templateSlot()
   if (!data || !data.node){
-    chunk.templateSlot.set({ node: 'slot', output: 'output' })
+    chunk.templateSlot.set({
+      id: { $param: 'id' },
+      noteOffset: {
+        node: 'modulator/scale', 
+        value: { $param: 'value'}, 
+        offset: { $param: 'offset' },  
+        scale: { $param: 'scale' }
+      },
+      node: 'slot', 
+      output: 'output' 
+    })
   }
   chunk.selectedSlotId.set('$template')
 }

@@ -33,7 +33,10 @@ module.exports = {
     external: require('loop-drop-project/external'),
     slot: require('./slots.js'),
     controller: require('./controllers.js'),
+
     chunk: require('./chunks.js'),
+    modulatorChunk: require('loop-drop-setup/modulator-chunk'),
+
     source: require('./sources.js'),
     modulator: require('./modulators.js'),
     processor: require('./processors.js'),

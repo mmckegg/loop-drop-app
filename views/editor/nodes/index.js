@@ -8,7 +8,8 @@ var nodeEditors = {
   external: require('./external'),
   slot: require('./slot'),
   source: require('./source'),
-  processor: require('./processor')
+  processor: require('./processor'),
+  modulatorChunk: require('./modulator-chunk')
 }
 
 module.exports = function(node){

@@ -22,25 +22,42 @@ module.exports = function(param, options){
   var value = read(param)
   var currentNode = value instanceof Object ? value.node : null
 
-  //HACK: need to get the modulators from local context
-  var modulatorSpawners = window.rootContext.nodes.modulator._spawners
+  var modulatorSpawners = [
+
+    ['LFO', {
+      node: 'modulator/lfo'
+    }],
+
+    ['ENV', {
+      node: 'modulator/adsr',
+      release: 0.1
+    }]
+  ]
+
+  if (param.context && param.context.paramLookup){
+    modulatorSpawners.push(['LNK', {
+      node: 'modulator/param'
+    }])
+  }
+
   var buttons = []
   for (var i=0;i<modulatorSpawners.length;i++){
     var title = modulatorSpawners[i][0]
     var descriptor = modulatorSpawners[i][1]
-    buttons.push(h('a', {
-      tabIndex: 0,
-      className: currentNode == descriptor.node ? '-selected' : '',
-      'ev-click': mercury.event(addModulator, { param: param, descriptor: descriptor })
-    }, title))
-  }
+    var isSelected = currentNode == descriptor.node
 
-  buttons.push(
-    h('a', {
-      tabIndex: 0,
-      'ev-click': mercury.event(removeModulator, { param: param }) 
-    }, 'X')
-  )
+    if (!isSelected){
+      buttons.push(h('a', {
+        tabIndex: 0,
+        'ev-click': mercury.event(addModulator, { param: param, descriptor: descriptor })
+      }, title))
+    } else {
+      buttons.push(h('a -selected', {
+        tabIndex: 0,
+        'ev-click': mercury.event(removeModulator, { param: param })
+      }, title))
+    }
+  }
 
   var modulatorElement = null
   if (value instanceof Object){
@@ -48,6 +65,8 @@ module.exports = function(param, options){
       modulatorElement = ADSR(param, options)
     } else if (value.node === 'modulator/lfo'){
       modulatorElement = LFO(param, options)
+    } else if (value.node === 'modulator/param'){
+      modulatorElement = Link(param, options)
     }
   }
 
@@ -166,4 +185,28 @@ function ADSR(param, options){
     })
 
   ])
+}
+
+function Link(param, options){  
+  if (param.context && param.context.paramLookup){
+    var paramLookup = param.context.paramLookup
+
+    var options = [['None', '']]
+    var keys = paramLookup.keys()
+    for (var i=0;i<keys.length;i++){
+      var p = paramLookup.get(keys[i])
+      if (p.context.chunk !== param.context.chunk){
+        options.push([p.id() + ' (modulator)', p.id()])
+      }
+    }
+
+    return h('div.sub -link', [
+      Select(QueryParam(param, 'param'), {
+        defaultValue: '',
+        options: options,
+        flex: true
+      })
+
+    ])
+  }
 }
