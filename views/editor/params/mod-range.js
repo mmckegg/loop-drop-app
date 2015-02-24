@@ -8,14 +8,6 @@ var read = require('./read.js')
 var QueryParam = require('loop-drop-setup/query-param')
 var extend = require('xtend')
 
-var lfoShapes = [
-  ['Sine', 'sine'],
-  ['Square', 'square'],
-  ['Sawtooth /|', 'sawtooth'],
-  ['Sawtooth |\\', 'sawtooth_i'],
-  ['Triangle', 'triangle'],
-]
-
 module.exports = function(param, options){
   options = options || {}
 
@@ -25,7 +17,8 @@ module.exports = function(param, options){
   var modulatorSpawners = [
 
     ['LFO', {
-      node: 'modulator/lfo'
+      node: 'modulator/lfo',
+      trigger: true
     }],
 
     ['ENV', {
@@ -110,15 +103,26 @@ function LFO(param, options){
 
   var mode = QueryParam(param, 'mode')
   var sync = QueryParam(param, 'sync')
+  var trigger = QueryParam(param, 'trigger')
 
   var isAdding = mode.read() === 'add'
   var isSyncing = sync.read()
+  var isTrigger = trigger.read()
 
   return h('div.sub -lfo', [
 
-    Select(QueryParam(param, 'shape'), {
-      defaultValue: 'sine',
-      options: lfoShapes
+    Range(QueryParam(param, 'skew'), {
+      defaultValue: 0,
+      title: 'skew',
+      format: 'offset1',
+      flex: true
+    }),
+
+    Range(QueryParam(param, 'curve'), {
+      defaultValue: 1,
+      title: 'curve',
+      format: 'ratio1',
+      flex: true
     }),
 
     Range(QueryParam(param, 'amp'), {
@@ -143,6 +147,15 @@ function LFO(param, options){
         value: !isSyncing
       })
     }, 'S'),
+
+    h('a', {
+      tabIndex: 0,
+      className: isTrigger ? '-selected' : '',
+      'ev-click': mercury.event(setParam, {
+        param: trigger, 
+        value: isTrigger ? false : true
+      })
+    }, 'T'),
 
     h('a', {
       tabIndex: 0,
