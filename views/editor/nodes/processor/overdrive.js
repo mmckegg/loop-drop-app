@@ -16,13 +16,12 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      ModRange(QueryParam(node, 'band'), {
+      ModRange(QueryParam(node, 'preBand'), {
         title: 'pre band',
         defaultValue: 0.5,
         format: 'ratio',
         flex: true
       }),
-
       ModRange(QueryParam(node, 'color'), {
         title: 'color',
         defaultValue: 800,
