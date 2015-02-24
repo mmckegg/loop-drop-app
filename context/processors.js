@@ -1,25 +1,12 @@
-var wrap = require('audio-slot/processor')
-var Bitcrusher = require('bitcrusher')
-
 module.exports = {
-
-  gain: wrap(function(context){ 
-    return context.createGain() 
-  }),
-
-  filter: wrap(function(context){ 
-    return context.createBiquadFilter()
-  }),
-
-  bitcrusher: wrap(function(context){
-    return Bitcrusher(context, {bufferSize: 256})
-  }),
-
-  delay: wrap(require('soundbank-delay')),
-  dipper: wrap(require('soundbank-dipper')),
-  overdrive: wrap(require('soundbank-overdrive')),
-  pitchshift: wrap(require('soundbank-pitch-shift')),
-  reverb: wrap(require('soundbank-reverb'))
+  gain: require('audio-slot/processors/gain'),
+  filter: require('audio-slot/processors/filter'),
+  bitcrusher: require('audio-slot/processors/bitcrusher'),
+  delay: require('audio-slot/processors/delay'),
+  dipper: require('audio-slot/processors/dipper'),
+  overdrive: require('audio-slot/processors/overdrive'),
+  pitchshift: require('audio-slot/processors/pitchshift'),
+  reverb: require('audio-slot/processors/reverb')
 }
 
 module.exports._spawners = [
