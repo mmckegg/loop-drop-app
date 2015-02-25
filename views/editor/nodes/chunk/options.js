@@ -2,21 +2,32 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var select = require('../../params/select.js')
 var range = require('../../params/range.js')
-var shapeChooser = require('../../params/shape.js')
+var ToggleButton = require('../../params/toggle-button.js')
 
-var chunkNodeOptions = [
-  ['Chunk', 'chunk'],
-  ['Inherit Range', 'chunk/range']
+var QueryParam = require('loop-drop-setup/query-param')
+
+var chunkNodeChoices = [
+  ['Triggers', 'chunk'],
+  ['Chromatic Scale', 'chunk/scale']
 ]
 
 module.exports = renderOptions
 
-function renderOptions(fileObject){
-  var param = fileObject.getParam
+function renderOptions(chunk){
+
   return h('section.options', [
     h('ParamList', [
-      select(param('node'), {options: chunkNodeOptions}),
-      shapeChooser(param('shape'))
+      h('div -block', [
+        h('div.extTitle', 'Grid Mode'),
+        h('div', select(QueryParam(chunk, 'node'), {options: chunkNodeChoices}))
+      ]),
+
+      h('div -block', [
+        h('div.extTitle', 'Choke Mode'),
+        h('div', ToggleButton(chunk.chokeAll, {title: 'All', offTitle: 'Single'}))
+      ]),
+
+
     ])
   ])
 }

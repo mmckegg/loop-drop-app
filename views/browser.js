@@ -3,117 +3,131 @@ var h = require('micro-css/h')(mercury.h)
 var e = mercury.event
 
 var getBaseName = require('path').basename
+var getExt = require('path').extname
+
 var renameWidget = require('../lib/rename-widget')
-var DataTransfer = require('../lib/data-transfer')
+var DragEvent = require('../lib/drag-event')
 
-module.exports = Browser
+var currentRename = null
 
-function Browser(state, actions){
+module.exports = renderBrowser
 
-  var currentRename = null
+function renderBrowser(state, actions){
 
-  function saveRename(){
-    if (currentRename && state.renaming() && state.selected()){
-      var newFileName = currentRename.getValue()
-      var item = getItemByPath(state.items, state.selected())
-      if (item){
-        item.rename(newFileName)
+  var entries = []
+
+  // render two-level tree
+  if (state.entries()){
+    state.entries().forEach(function(entry){
+      if (entry.type === 'directory'){
+        entries.push(renderEntry(entry, state, actions))
+        var sub = state.subEntries.get(entry.path)
+        if (sub && sub()){
+          sub().forEach(function(subEntry){
+            var fileName = getBaseName(subEntry.path)
+            var ext = getExt(fileName)
+            if (subEntry.type === 'file' && fileName !== 'index.json' && ext === '.json'){
+              entries.push(renderEntry(subEntry, state, actions))
+            }
+          })
+        }
       }
-      state.selected.set(item.file.path)
-      state.renaming.set(false)
-    }
+    })
   }
 
-  function cancelRename(){
-    state.renaming.set(false)
-  }
-
-  function dragStart(ev){
-    window.currentDrag = null
-    ev.dataTransfer.setData('filesrc', window.context.project.relative(ev.data.path))
-  }
-
-  return function(header, className){
-    var data = state()
-    return h('div', {className: className}, [
-      h('header', [
-        h('span', header), h('button.new', {'ev-click': e(actions.newFile)}, 'New')
-      ]),
-      h('ScrollBox', [
-        forceArray(data.entries).filter(check).map(renderEntry)
-      ])
-    ])
-  }
-
-  function renderEntry(entry){
-
-    var selected = state.selected() == entry.path
-    var renaming = selected && state.renaming()
-
-    if (renaming){
-      console.log('renaming', entry.path)
-    }
-
-    // handle rename click
-    var click = selected ?
-      mercury.event(state.renaming.set, true) : null
-      
-    var classList = []
-    if (selected){
-      classList.push('-selected')
-    }
-    if (renaming){
-      classList.push('-renaming')
-      currentRename = renameWidget(entry.fileName, saveRename, cancelRename)
-    }
-
-    var buttons = [
-      h('button.delete', {
-        'ev-click': e(actions.deleteFile, entry.path),
-      }, 'delete')
-    ]
-
-    if (renaming){
-      buttons.push(
-        h('button.save', {
-          'ev-click': e(saveRename)
-        }, 'save'),
-        h('button.cancel', {
-          'ev-click': e(cancelRename)
-        }, 'cancel')
-      )
-    }
-
-    var nameElement = renaming ? 
-      currentRename : h('span', getBaseName(entry.fileName, '.json'))
-
-    return h('BrowserFile', { 
-      'data-entry': entry,
-      'draggable': true,
-      'ev-dragstart': DataTransfer(dragStart, entry),
-      'ev-click': click,
-      'ev-dblclick': e(actions.open, entry.path),
-      'className': classList.join(' ')
-    }, [ nameElement, buttons ])
-  }
-
-  var renameState = {
-    path: null,
-    selection: null
-  }
-
+  return h('div', {className: 'Browser'}, [
+    h('header', [
+      h('span', 'Setups'), h('button.new', {'ev-click': e(actions.newSetup)}, '+ New')
+    ]),
+    h('ScrollBox', entries)
+  ])
 }
 
-function forceArray(maybeArray){
-  if (Array.isArray(maybeArray)){
-    return maybeArray
-  } else {
-    return []
+function renderEntry(entry, state, actions){
+
+  var selected = state.selected() == entry.path
+    
+  var classList = []
+  var expander = ''
+
+  if (entry.type === 'directory'){
+    classList.push('-directory')
+    expander = h('button.twirl', {
+      'ev-click': mercury.event(actions.toggleDirectory, entry.path)
+    })
+
+    if (state.subEntries.get(entry.path)){
+      classList.push('-open')
+    }
+
+    // handle index.json selected
+    selected = selected || entry.path + '/index.json' === state.selected()
   }
+
+  var renaming = selected && state.renaming()
+  var renameState = { state: state, entry: entry, actions: actions }
+
+  // handle rename click
+  var click = selected ?
+    mercury.event(state.renaming.set, true) : null
+
+  if (selected){
+    classList.push('-selected')
+  }
+  if (renaming){
+    classList.push('-renaming')
+    currentRename = renameWidget(entry.fileName, saveRename, cancelRename, renameState)
+  }
+
+  var buttons = [
+    h('button.delete', {
+      'ev-click': e(actions.deleteEntry, entry.path),
+    }, 'delete')
+  ]
+
+  if (renaming){
+    buttons.push(
+      h('button.save', {
+        'ev-click': e(saveRename, renameState)
+      }, 'save'),
+      h('button.cancel', {
+        'ev-click': e(cancelRename, renameState)
+      }, 'cancel')
+    )
+  }
+
+  var nameElement = renaming ? 
+    currentRename : h('span', getBaseName(entry.fileName, '.json'))
+
+  return h('BrowserFile', { 
+    'data-entry': entry,
+    'draggable': true,
+    'ev-dragstart': DragEvent(dragStart, entry),
+    'ev-click': click,
+    'ev-dblclick': e(actions.open, entry.path),
+    'className': classList.join(' ')
+  }, [expander, nameElement, buttons ])
 }
 
-function check(entry){
-  return (entry.type === 'file')
+function dragStart(ev){
+  window.currentDrag = null
+  ev.dataTransfer.setData('filepath', ev.data.path)
+}
+
+function saveRename(){
+  var state = this.data.state
+  var entry = this.data.entry
+  var actions = this.data.actions
+  if (currentRename){
+    actions.rename(entry.path, currentRename.getValue())
+  }
+
+  state.renaming.set(false)
+}
+
+function cancelRename(){
+  var state = this.data.state
+  state.renaming.set(false)
 }
 
 function getItemByPath(items, path){

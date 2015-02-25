@@ -1,0 +1,12 @@
+NodeSpawner {
+  background: #3D3D3D;
+  border-top: 1px #444 solid;
+  display: flex;
+  padding: 5px;
+  margin: -6px -8px;
+  margin-top: 10px;
+
+  * {
+    margin-right: 3px
+  }
+}

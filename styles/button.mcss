@@ -16,6 +16,12 @@ Button {
     color: #FFF;
   }
 
+  :focus {
+    outline-style: none;
+    color: white;
+    box-shadow: white 0 0 4px;
+  }
+
   -main {
     padding: 5px
     height: auto

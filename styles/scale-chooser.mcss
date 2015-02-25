@@ -1,0 +1,25 @@
+ScaleChooser {
+  
+  display: flex
+  min-width: 150px
+  flex: 1
+
+  div.button {
+    height: 20px
+    flex: 1
+    margin: 2px
+    background: #3C493C
+    border: 1px solid #2A2A2A
+    border-radius: 3px
+    cursor: pointer
+
+    :hover {
+      border-color: #666
+    }
+
+    -selected {
+      background: #53AB53
+      border-color: #336C20
+    }
+  }
+}

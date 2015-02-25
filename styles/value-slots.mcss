@@ -1,0 +1,38 @@
+ValueSlots {
+  padding: 3px
+
+  div.slot {
+    
+    -trigger {
+      display: flex;
+      padding: 3px;
+      background: #555;
+      border-radius: 3px;
+      margin: 2px;
+
+      span {
+        display: block
+      }
+    }
+
+    -spawn {
+      padding: 3px;
+      background: #888;
+      border-radius: 3px;
+      border: 1px solid #2A2A2A;
+      cursor: pointer;
+      width: 100%;
+      position: relative;
+      text-align: center;
+      opacity: 0.3
+      color: #3C493C
+
+      :hover {
+        opacity: 1
+        color: #AFA
+        background-color: #383
+        border-color: #AFA
+      }
+    }
+  }
+}

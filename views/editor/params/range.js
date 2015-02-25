@@ -5,10 +5,14 @@ var MouseDragEvent = require('../../../lib/mouse-drag-event.js')
 var read = require('./read.js')
 var cancelEvent = require('../../../lib/cancel-event.js')
 
+var getValue = require('./get-value.js')
+
 module.exports = range
 
 function range(param, options){
-  var value = read(param)
+  var defaultValue = options.defaultValue || 0
+  var value = getValue(read(param), defaultValue)
+
   var formatter = formatters[options.format] || formatters.default
   var widthStyle = widthPercent(formatter.size(value))
 
@@ -16,6 +20,18 @@ function range(param, options){
 
   if (options.large){
     classes.push('-large')
+  }
+
+  if (options.full){
+    classes.push('-full')
+  }
+
+  if (options.flex){
+    if (options.flex === 'small'){
+      classes.push('-flexSmall')
+    } else {
+      classes.push('-flex')
+    }
   }
 
   if (options.pull){
@@ -27,18 +43,20 @@ function range(param, options){
     tabIndex: '0',
     'draggable': true,
     'ev-dragstart': cancelEvent(),
-    'ev-mousedown': MouseDragEvent(drag, {param: param, formatter: formatter})
+    'ev-mousedown': MouseDragEvent(drag, {
+      param: param, 
+      formatter: formatter, 
+      defaultValue: defaultValue
+    })
   },[ 
     h('div', {style: widthStyle}),
     h('span.value', formatter.display(value)),
     h('span.title', options.title)
   ])
-  return h('div Param -range', {
+  return h('RangeParam', {
     className: classes.join(' '),
     style: style
-  },[
-    h('div', slider)
-  ])
+  }, slider)
 }
 
 function drag(ev){
@@ -50,12 +68,12 @@ function drag(ev){
     var offsetX = ev.x - start.x
     var offsetY = ev.y - start.y
     var offset = offsetX / (range + Math.abs(offsetY))
-    //console.log(offsetX, offsetY, offset)
     var value = formatter.value(offset, this.data.startValue)
+    value = getNewValue(read(param), value)
     param.set(value)
   } else if (ev.type === 'mousedown') {
     this.data.range = ev.currentTarget.getBoundingClientRect().width
-    this.data.startValue = read(param)
+    this.data.startValue = getValue(read(param), this.data.defaultValue)
     this.data.start = ev
   }
 }
@@ -64,4 +82,18 @@ function widthPercent(decimal){
   return {
     width: (Math.round(Math.min(1, Math.max(decimal, 0))*1000)/10) + '%'
   }
+}
+
+function getNewValue(object, value){
+  if (object instanceof Object && !Array.isArray(object)){
+    var v = obtain(object)
+    v.value = getNewValue(v.value, value)
+    return v
+  } else {
+    return value
+  }
+}
+
+function obtain(obj){
+  return JSON.parse(JSON.stringify(obj))
 }

@@ -2,7 +2,6 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 
 var Observ = require('observ')
-var ObservStruct = require('observ-struct')
 var nextTick = require('next-tick')
 var watch = require('observ/watch')
 
@@ -40,8 +39,8 @@ Editor.prototype.init = function(){
   }
 
   var loop = mercury.main(null, function(){
-    if (state.fileObject){
-      return renderNode(state.fileObject, state.fileObject)
+    if (state.fileObject && state.fileObject.node){
+      return renderNode(state.fileObject.node)
     } else {
       return h('div')
     }
@@ -77,6 +76,7 @@ function bindToObject(self, update){
 
   if (fileObject){
     state.releases.push(
+      fileObject.onNode(update),
       fileObject(update)
     )
     if (fileObject.resolved){

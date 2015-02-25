@@ -4,7 +4,7 @@ var range = require('./editor/params/range.js')
 
 module.exports = function(state, actions){
   return h('MainParams', [
-    h('button.changeProject', { 'ev-click': mercury.event(actions.changeProject) }, 'Change Project'),
+    h('button.changeProject', { 'ev-click': mercury.event(actions.chooseProject) }, 'Change Project'),
     range(state.tempo, {large: true, format: 'bpm'})
   ])
 }

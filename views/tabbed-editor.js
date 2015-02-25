@@ -1,6 +1,7 @@
 var mercury = require("mercury")
 var h = require('micro-css/h')(mercury.h)
 var getBaseName = require('path').basename
+var getDirectory = require('path').dirname
 
 var change = require('./editor/params/value-event.js')
 
@@ -44,20 +45,32 @@ function TabbedEditor(state, actions){
     //  ])
     //} else {
 
-    var data = item()
+    var data = item&&item()
+    if (data){
+      var pre = data.node === 'setup' ? h('strong', 'Setup:') : ''
+      var selected = state.selected() == item.path
+      return h('div.tab', { 
+        'ev-click': mercury.event(state.selected.set, item.path),
+        'className': selected ? '-selected' : null
+      }, [
+        h('span', [pre, ' ', getName(item.path)]), 
+        h('button.close', {'ev-click': mercury.event(actions.closeFile, item.path)})
+      ])
+    } else {
+      return ''
+    }
 
-    var pre = data.node === 'setup' ? h('strong', 'Setup:') : ''
-
-    var selected = state.selected() == item.path
-    return h('div.tab', { 
-      'ev-click': mercury.event(state.selected.set, item.path),
-      'className': selected ? '-selected' : null
-    }, [
-      h('span', [pre, ' ', getBaseName(item.path, '.json')]), 
-      h('button.close', {'ev-click': mercury.event(actions.closeFile, item.path)})
-    ])
   }
 
+}
+
+function getName(path){
+  var base = getBaseName(path, '.json')
+  if (base === 'index'){
+    return getBaseName(getDirectory(path))
+  } else {
+    return base
+  }
 }
 
 function renderHelper(){

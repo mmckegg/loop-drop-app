@@ -1,26 +1,78 @@
 SlotChooser {
   
   margin-top: 5px;
-  display: flex
+  display: flex;
   background: #222;
-  padding: 5px;
-  margin: 0 -5px;
-  border-top: 1px solid #111;
+  padding: 8px;
+  flex-wrap: wrap;
+  position: relative;
+  border: 1px solid #201F1F;
+  border-right: none;
+  border-radius: 3px;
+
+  margin-right: -8px
+  margin-left: -8px
 
   div.spacer {
-    flex: 1
+    width: 100%
+    height: 3px
   }
   div.slot {
     padding: 4px;
     background: #3C493C;
     color: #888;
-    margin: 0 1px;
     border-radius: 3px;
     border: 1px solid #2A2A2A;
     cursor: pointer
+    width: 100%
+
+    position: relative
+
+    -dragOver {
+      border: 1px solid #2AAA2A;
+      background-color: #53AB53
+      opacity: 1
+      box-shadow: 0 0 4px black;
+      z-index: 1
+    }
+
+    button.remove {
+      border-radius: 7px;
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      visibility: hidden;
+      font-size: 10px;
+      padding: 1px 3px;
+      border: 1px solid silver;
+      background: #333;
+      color: silver;
+      box-shadow: 0 0 4px black;
+      z-index: 1
+
+      :hover {
+        background: #A00
+        color: white
+      }
+    }
 
     :hover {
       border-color: #666
+      button.remove {
+        visibility: visible
+      }
+    }
+
+    text-align: center
+
+    -spawn {
+      opacity: 0.3
+      color: #3C493C
+
+      :hover {
+        color: #AFA
+        border-color: #AFA
+      }
     }
 
     -selected {
@@ -30,6 +82,7 @@ SlotChooser {
     }
 
     -output {
+      flex: 1
       background: #355
       -selected {
         background: #3AA

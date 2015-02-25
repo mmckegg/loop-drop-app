@@ -1,13 +1,19 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var MPE = require('../../../../lib/mouse-position-event.js')
 var renderRouting = require('./routing.js')
-var range = require('../../params/range.js')
-var QueryParam = require('../../../../lib/query-param.js')
 
-module.exports = function(node, setup, collection){
+var range = require('../../params/range.js')
+var ModRange = require('../../params/mod-range.js')
+
+var QueryParam = require('loop-drop-setup/query-param.js')
+var ToggleButton = require('../../params/toggle-button.js')
+
+module.exports = function(node){
   var data = node()
   var innerData = node.resolved() || {}
+
+  var setup = node.context.setup
+  var collection = node.context.collection
 
   if (data){
 
@@ -21,15 +27,12 @@ module.exports = function(node, setup, collection){
 
     var minimised = QueryParam(node, 'minimised')
     var className = data.minimised ? '-minimised' : ''
-    var volume = QueryParam(node, 'volume')
+    var volume = QueryParam(node, 'volume', null, node.context)
+    var offset = QueryParam(node, 'offset', null, node.context)
 
     return h('div ExternalNode', {
-      draggable: true,
       className: className,
-      'ev-dragstart': MPE(dragStart, {chunk: node, collection: collection}),
-      'ev-dragend': MPE(dragEnd, {chunk: node, collection: collection, setup: setup}),
-      'ev-dragover': MPE(dragOver, {chunk: node, collection: collection, setup: setup}),
-      'ev-dblclick': mercury.event(setup.requestEditChunk, data.id),
+      'ev-dblclick': mercury.event(editChunk, node),
       'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
       'style': mainStyle
     }, [
@@ -40,17 +43,45 @@ module.exports = function(node, setup, collection){
           'ev-click': mercury.event(toggleParam, minimised)
         }),
         h('span', innerData.id),
-        range(volume, {format: 'dB', title: 'vol', width: 150, pull: true}),
+        range(volume, {format: 'dB', title: 'vol', defaultValue: 1, width: 150, pull: true}),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
       ]),
       data.minimised ? '' : h('section', [
-        renderRouting(node, setup, collection)
+        h('div ParamList', [
+          renderRouting(node),
+          h('div -block', [
+            h('div.extTitle', 'Scale'),
+            h('div', ToggleButton(QueryParam(node, 'scale'), {
+              title: 'Global', 
+              offTitle: 'Local', 
+              offValue: undefined,
+              onValue: '$global'
+            }))
+          ]),
+
+          h('div -block', [
+            h('div.extTitle', 'Offset'),
+            h('div', ModRange(offset, {
+              format: 'semitone', 
+              width: 150
+            }))
+          ])
+        ])
       ])
     ])
   }
   return h('UnknownNode')
+}
+
+function editChunk(chunk){
+  var context = chunk.context
+  var descriptor = chunk()
+  if (descriptor && descriptor.src){
+    var path = context.project.resolve([context.cwd||'', descriptor.src])
+    context.actions.open(path)
+  }
 }
 
 function toggleParam(param){
@@ -62,22 +93,4 @@ function color(rgb, a){
     rgb = [100,100,100]
   }
   return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
-}
-
-function dragOver(ev){
-  var currentDrag = window.currentDrag
-  if (currentDrag && currentDrag.data.chunk){
-    var index = ev.data.collection.indexOf(ev.data.chunk)
-    if (~index){
-      ev.data.collection.move(currentDrag.data.chunk, index)
-    }
-  }
-}
-
-function dragStart(ev){
-  window.currentDrag = ev
-}
-
-function dragEnd(ev){
-  window.currentDrag = null
 }

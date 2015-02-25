@@ -2,14 +2,16 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var range = require('../../params/range.js')
 var select = require('../../params/select.js')
+var QueryParam = require('loop-drop-setup/query-param')
 
-var controllerOptions = require('../../../../midi-controllers.js')._choices
+//TODO: this should be retrieved from context.nodes instead
+var controllerOptions = require('../../../../context/controllers.js')._choices
 
 module.exports = renderParams
 
-function renderParams(controller, setup){
+function renderParams(controller){
   var params = [
-    select(controller.node, {
+    select(QueryParam(controller, 'node'), {
       options: controllerOptions,
       flex: true,
       missingPrefix: ' (unknown)'

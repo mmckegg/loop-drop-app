@@ -19,14 +19,4 @@ NodeCollection {
     }
   }
 
-  div.spawner {
-    background: #3D3D3D;
-    border: 1px #444 solid;
-    border-radius: 4px;
-    display: flex;
-    margin-top: 5px;
-    margin-bottom: 5px
-    padding: 5px;
-  }
-
 }

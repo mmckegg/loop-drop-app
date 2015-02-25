@@ -5,13 +5,17 @@ var externalEditors = {
   chunk: require('./chunk.js')
 }
 
-module.exports = function(node, setup, collection){
+module.exports = function(node){
   var data = node()
+
+  var setup = node.context.setup
+  var collection = node.context.collection
+
   var innerData = node.resolved() || {}
   if (innerData.node && innerData.node !== 'external'){
     var editor = externalEditors[getRoot(innerData.node)]
     if (editor){
-      return editor(node, setup, collection)
+      return editor(node)
     }
   }
   return h('div ExternalNode', [
