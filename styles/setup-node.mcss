@@ -1,25 +1,62 @@
 SetupNode {
   padding: 4px
-  overflow: auto
   display: flex
+  flex-direction: column
   flex: 1
+  overflow: hidden
+
   div.main {
+
     display: flex
-    flex-direction: column
     flex: 1
-    div {
-      overflow-y: auto
+
+    div.controllers {
       flex: 1
     }
 
-    section {
-      padding: 10px;
-      background: #222;
-      margin: 10px;
-      box-shadow: 0 0 3px black;
+    div.chunks {
+      width: 350px
     }
+
+    div {
+      overflow-y: auto
+    }
+
   }
-  div.chunks {
-    width: 350px
+  div.options {
+
+    display: flex;
+    margin: -4px;
+    background: #222;
+    box-shadow: 0 0 5px #000;
+    margin-top: 1px;
+    z-index: 100;
+
+    section {
+      padding: 14px;
+      display: flex
+      h1 {
+        flex: none
+        margin-right: 5px
+      }
+      div.param {
+        flex: 1
+        display: flex
+        margin: 3px;
+      }
+      div.chooser {
+        flex: 1
+        display: flex
+      }
+    }
+
+    section.scale {
+      flex: 1
+    }
+
+    section.volume {
+      width: 350px
+    }
+
   }
 }

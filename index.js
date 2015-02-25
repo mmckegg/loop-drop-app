@@ -18,6 +18,8 @@ var getDirectory = require('path').dirname
 var getExt = require('path').extname
 var getBaseName = require('path').basename
 
+var extend = require('xtend')
+
 //////
 
 
@@ -140,23 +142,32 @@ var actions = rootContext.actions = {
     project.deleteEntry(src, cb)
   },
 
-  newChunk: function(path, cb){
+  newChunk: function(path, descriptor, cb){
     // ensure expanded
     var dir = getDirectory(path)
     if (!state.subEntries.get(dir)){
       actions.toggleDirectory(dir)
     }
 
+    if (typeof descriptor === 'function'){
+      cb = descriptor
+      descriptor = null
+    }
+
+    descriptor = descriptor || {}
+
     var src = project.relative(path)
     var fileObject = actions.addFileObject(src)
 
-    fileObject.set({
+    descriptor = extend({
       node: 'chunk', 
       color: randomColor([255,255,255]),
       slots: [{id: 'output', node: 'slot'}], 
       shape: [4,4],
       outputs: ['output'],
-    })
+    }, descriptor)
+
+    fileObject.set(descriptor)
 
     state.selected.set(fileObject.path)
     state.renaming.set(true)
