@@ -38,6 +38,9 @@ $ npm run build # if you are not already running npm run watch
 
 - [Qwerty Keyboard](https://github.com/mmckegg/loop-qwerty)
 - [Novation Launchpad](https://github.com/mmckegg/loop-launchpad)
+
+**Still needs updating for v2:**
+
 - [Akai MPK Mini](https://github.com/mmckegg/loop-mpkmini)
 - [Akai APC Mini](https://github.com/fourseven/loop-apcmini)
 
@@ -47,7 +50,7 @@ If your controller isn't supported, copy one of the above controller bindings an
 
 **When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
 
-Download the [sample project](https://github.com/mmckegg/loop-drop-sample-project/archive/master.zip). To load the project, select 'Choose Project' from the Loop Drop sidebar.
+Download the [sample project](https://github.com/mmckegg/loop-drop-sample-project/archive/master.zip). To load the project, select 'Choose Project' from the Loop Drop sidebar. **Sample project is out of date, needs to be updated to work with v2**
 
 ### Using with a Launchpad (or other midi controller)
 
@@ -55,7 +58,7 @@ Download the [sample project](https://github.com/mmckegg/loop-drop-sample-projec
 
 > Currently, Chrome doesn't detect when midi controllers are plugged in, so you have to restart Chrome (completely, not just the Chrome App) each time after you have plugged in the controller. This will be sorted soon (see  https://code.google.com/p/chromium/issues/detail?id=279097)
 
-Create a new setup. Click the `+ controller` button and select Novation Launchpad (or whatever) from the first drop down. Then select the midi port your controller is connected to from the second drop down. If it is not showing up, try restarting Chrome.
+Create a new setup. Click the `+ MIDI Controller` button and select Novation Launchpad (or whatever) from the first drop down. Then select the midi port your controller is connected to from the second drop down. If it is not showing up, try restarting Chrome.
 
 At this point, your Launchpad hardware should light up, with a visual metronome ticking down the side.
 
@@ -77,26 +80,9 @@ See [here](https://github.com/mmckegg/loop-qwerty) for how the keyboard controls
 
 ### Chunks
 
-There are currently two types of chunks (that can be selected using the first drop down):
-  - Chunk
-  - Inherit Range
+There are currently 3 types of chunks:
+  - Triggers
+  - Chromatic
+  - Modulator
 
-The first option allows you to choose a different sound for every button, whereas inherit range copies a single sound over all of the buttons in the chunk, but with a different offset. This can be used to create a chromatic scale, or for slicing a sample.
-
-## Create a simple oscillator synth chunk
-
-Click the `New` button next to the 'Chunks' heading in the sidebar.
-
-Choose 'Inherit Range' from the drop down, then select 'Trigger', and add an oscillator. There is a box labeled 'No Scale'. Use this to choose the desired musical scale (lets go for major today). You can also change the oscillator shape.
-
-Now drag this new chunk (from the sidebar), to a controller in the setup pane. You should now be able to trigger the sounds. 
-
-## Create a drum kit from your own drum samples
-
-Click the `New` button next to the 'Chunks' heading in the sidebar. Leave the drop down as 'Range'.
-
-Choose the desired amount of rows and columns (1 row, 4 cols).
-
-Now go through each slot (1-4), and click the `+ sample` button. You can either drag in a file from your hard drive, or click the 'Choose File' button and browse for the desired drum samples.
-
-You can add a global effect (such as overdrive) that applies to the overall sound of that chunk using the 'Output' slot.
+The first option allows you to choose a different sound for every button, whereas chromatic copies a single sound over all of the buttons in the chunk, but with a different note offset based on the global (or local) scale.
