@@ -66,7 +66,7 @@ To make it do anything, you'll need to create and drag in some chunks (see below
 
 Once you have some chunks loaded, you should be able to trigger sounds using the **main grid** on the Launchpad hardware that corresponds to the interface grid that you have added chunks to.
 
-See [here](https://github.com/mmckegg/loop-qwerty) for details of how to trigger and loop with the Novation Launchpad controller.
+See [here](https://github.com/loopjs/loop-launchpad) for details of how to trigger and loop with the Novation Launchpad controller.
 
 ### Using with Qwerty Keys
 
