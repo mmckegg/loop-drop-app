@@ -45,7 +45,7 @@ module.exports = function(node){
       Range(QueryParam(node, 'duration'), {
         title: 'duration',
         defaultValue: 1,
-        format: isSyncing ? 'beat' : 'ms',
+        format: isSyncing ? 'beats' : 'ms',
         flex: true
       }),
 
