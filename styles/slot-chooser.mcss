@@ -58,8 +58,11 @@ SlotChooser {
 
     :hover {
       border-color: #666
-      button.remove {
-        visibility: visible
+
+      -selected {
+        button.remove {
+          visibility: visible
+        }
       }
     }
 
