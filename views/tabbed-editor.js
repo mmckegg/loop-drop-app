@@ -5,9 +5,9 @@ var getDirectory = require('path').dirname
 
 var change = require('./editor/params/value-event.js')
 
-
 var renderEditor = require('./editor')
-var rawEditor = require('loop-drop-editor/raw')
+var rawEditor = require('./editor/raw.js')
+
 module.exports = TabbedEditor
 
 function TabbedEditor(state, actions){
