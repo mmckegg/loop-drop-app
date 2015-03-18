@@ -2,3 +2,4 @@ node_modules
 build
 old
 webstore/local-config.json
+**/.DS_Store

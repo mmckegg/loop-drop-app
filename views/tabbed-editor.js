@@ -3,7 +3,7 @@ var h = require('micro-css/h')(mercury.h)
 var getBaseName = require('path').basename
 var getDirectory = require('path').dirname
 
-var change = require('./editor/params/value-event.js')
+var ValueEvent = require('lib/value-event')
 
 var renderEditor = require('./editor')
 var rawEditor = require('./editor/raw.js')
@@ -26,7 +26,7 @@ function TabbedEditor(state, actions){
       'raw', h('input.raw', {
         'type': 'checkbox', 
         'checked': state.rawMode(),
-        'ev-change': change(state.rawMode.set, 'checked')
+        'ev-change': ValueEvent(state.rawMode.set, 'checked')
       })
     ]) 
 

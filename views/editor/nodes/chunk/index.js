@@ -2,13 +2,13 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var renderCollection = require('../collection.js')
 
-var Range = require('../../params/range.js')
 var ChunkOptions = require('./options.js')
 //var SlotEditor = require('./slot.js')
 var SlotChooser = require('./slot-chooser.js')
-var ScaleChooser = require('../../params/scale-chooser.js')
 
-var IndexParam = require('../../params/index-param.js')
+var Range = require('lib/params/range')
+var ScaleChooser = require('lib/params/scale-chooser')
+var IndexParam = require('lib/index-param')
 var QueryParam = require('loop-drop-setup/query-param')
 
 module.exports = renderChunk

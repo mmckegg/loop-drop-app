@@ -1,12 +1,11 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 
-var QueryParam = require('loop-drop-setup/query-param')
 var Header = require('../header.js')
-var Range = require('../../params/range.js')
-var ModRange = require('../../params/mod-range.js')
-var ToggleButton = require('../../params/toggle-button.js')
-var Select = require('../../params/select.js')
+var Range = require('lib/params/range')
+var ModRange = require('lib/params/mod-range')
+var ToggleButton = require('lib/params/toggle-button')
+var Select = require('lib/params/select')
 
 var filterChoices = [
   ['Lowpass', 'lowpass'],

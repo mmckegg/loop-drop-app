@@ -5,8 +5,8 @@ var e = mercury.event
 var getBaseName = require('path').basename
 var getExt = require('path').extname
 
-var renameWidget = require('../lib/rename-widget')
-var DragEvent = require('../lib/drag-event')
+var renameWidget = require('lib/rename-widget')
+var DragEvent = require('lib/drag-event')
 
 var currentRename = null
 

@@ -4,9 +4,9 @@ var Collection = require('./collection.js')
 var Spawner = require('./spawner.js')
 var getBaseName = require('path').basename
 
-var ScaleChooser = require('../params/scale-chooser.js')
-var Range = require('../params/range.js')
 var QueryParam = require('loop-drop-setup/query-param')
+var ScaleChooser = require('lib/params/scale-chooser')
+var Range = require('lib/params/range')
 
 module.exports = renderSetup
 

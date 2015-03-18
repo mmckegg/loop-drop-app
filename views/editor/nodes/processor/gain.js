@@ -1,9 +1,8 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 
-var QueryParam = require('loop-drop-setup/query-param')
 var Header = require('../header.js')
-var ModRange = require('../../params/mod-range.js')
+var ModRange = require('lib/params/mod-range')
 
 module.exports = function(node){
   var data = node()

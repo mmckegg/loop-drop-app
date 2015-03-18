@@ -1,11 +1,11 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var range = require('../../params/range.js')
-var select = require('../../params/select.js')
+var range = require('lib/params/range.js')
+var select = require('lib/params/select.js')
 var QueryParam = require('loop-drop-setup/query-param')
 
 //TODO: this should be retrieved from context.nodes instead
-var controllerOptions = require('../../../../context/controllers.js')._choices
+var controllerOptions = require('lib/context/controllers.js')._choices
 
 module.exports = renderParams
 

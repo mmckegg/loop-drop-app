@@ -2,14 +2,12 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var Header = require('../header.js')
 
-var Range = require('../../params/range.js')
-var ModRange = require('../../params/mod-range.js')
-var Select = require('../../params/select.js')
-var ToggleButton = require('../../params/toggle-button.js')
-var SampleTrimmer = require('../../params/sample-trimmer.js')
-var SampleChooser = require('../../params/sample-chooser.js')
-
-var QueryParam = require('loop-drop-setup/query-param')
+var Range = require('lib/params/range')
+var ModRange = require('lib/params/mod-range')
+var Select = require('lib/params/select')
+var ToggleButton = require('lib/params/toggle-button')
+var SampleTrimmer = require('lib/params/sample-trimmer')
+var SampleChooser = require('lib/params/sample-chooser')
 
 var modeChoices = [
   ['Loop', 'loop'],

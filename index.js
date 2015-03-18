@@ -5,12 +5,12 @@ process.nextTick = require('next-tick')
 var WebFS = require('web-fs')
 var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
-var randomColor = require('./lib/random-color.js')
-var findItemByPath = require('./lib/find-item-by-path.js')
+var randomColor = require('lib/random-color.js')
+var findItemByPath = require('lib/find-item-by-path.js')
 
 // state and rendering
 var hg = require('mercury')
-var noDrop = require('./lib/no-drop.js')
+var noDrop = require('lib/no-drop.js')
 var renderLoop = require('./views')
 
 // path
@@ -23,7 +23,7 @@ var extend = require('xtend')
 //////
 
 
-var rootContext = window.rootContext = require('./context')
+var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
 var state = window.state = hg.struct({
   tempo: rootContext.tempo,

@@ -1,5 +1,5 @@
 
-var JSMN = require('../../lib/jsmn.js')
+var JSMN = require('lib/jsmn.js')
 var deepEqual = require('deep-equal')
 var watch = require('observ/watch')
 

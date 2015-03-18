@@ -1,6 +1,6 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var MPE = require('../../../../lib/mouse-position-event.js')
+var MPE = require('lib/mouse-position-event.js')
 var nextTick = require('next-tick')
 var getBaseName = require('path').basename
 var GridStateHook = require('./grid-state-hook.js')

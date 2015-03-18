@@ -1,11 +1,11 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 
-var Range = require('../params/range.js')
-var ModRange = require('../params/mod-range.js')
-var ToggleButton = require('../params/toggle-button.js')
+var Range = require('lib/params/range')
+var ModRange = require('lib/params/mod-range')
+var ToggleButton = require('lib/params/toggle-button')
 
-var IndexParam = require('../params/index-param.js')
+var IndexParam = require('lib/index-param')
 
 module.exports = function(node){
   var setup = node.context.setup

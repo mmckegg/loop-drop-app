@@ -2,7 +2,7 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var Collection = require('../collection.js')
 var Spawner = require('../spawner.js')
-var Range = require('../../params/range.js')
+var Range = require('lib/params/range')
 
 
 module.exports = renderSlot

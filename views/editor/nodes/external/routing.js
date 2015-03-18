@@ -1,8 +1,8 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var select = require('../../params/select.js')
-var range = require('../../params/range.js')
-var QueryParam = require('loop-drop-setup/query-param.js')
+var select = require('lib/params/select')
+var range = require('lib/params/range')
+var QueryParam = require('loop-drop-setup/query-param')
 
 module.exports = renderRouting
 

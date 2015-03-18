@@ -2,11 +2,11 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var renderRouting = require('./routing.js')
 
-var range = require('../../params/range.js')
-var ModRange = require('../../params/mod-range.js')
+var range = require('lib/params/range')
+var ModRange = require('lib/params/mod-range')
 
-var QueryParam = require('loop-drop-setup/query-param.js')
-var ToggleButton = require('../../params/toggle-button.js')
+var QueryParam = require('loop-drop-setup/query-param')
+var ToggleButton = require('lib/params/toggle-button')
 
 module.exports = function(node){
   var data = node()

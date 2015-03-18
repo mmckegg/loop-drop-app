@@ -1,6 +1,5 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var range = require('./editor/params/range.js')
 var watch = require('observ/watch')
 
 module.exports = AudioMeter

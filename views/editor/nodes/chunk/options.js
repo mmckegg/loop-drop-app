@@ -1,8 +1,8 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var select = require('../../params/select.js')
-var range = require('../../params/range.js')
-var ToggleButton = require('../../params/toggle-button.js')
+var select = require('lib/params/select.js')
+var range = require('lib/params/range.js')
+var ToggleButton = require('lib/params/toggle-button.js')
 
 var QueryParam = require('loop-drop-setup/query-param')
 
