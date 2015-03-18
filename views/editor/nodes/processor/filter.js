@@ -24,12 +24,12 @@ module.exports = function(node){
   var data = node()
 
   var params = [
-    Select(QueryParam(node, 'type'), {
+    Select(node.type, {
       defaultValue: 'lowpass',
       options: typeChoices 
     }),
 
-    ModRange(QueryParam(node, 'frequency'), {
+    ModRange(node.frequency, {
       title: 'freq',
       defaultValue: 300,
       format: 'arfo',
@@ -39,7 +39,7 @@ module.exports = function(node){
 
   if (~qTypes.indexOf(data.type || 'lowpass')){
     params.push(
-      ModRange(QueryParam(node, 'Q'), {
+      ModRange(node.Q, {
         title: 'Q',
         defaultValue: 1,
         format: 'ratio100',
@@ -50,7 +50,7 @@ module.exports = function(node){
 
   if (~gainTypes.indexOf(data.type || 'lowpass')){
     params.push(
-      ModRange(QueryParam(node, 'gain'), {
+      ModRange(node.gain, {
         title: 'gain',
         defaultValue: 1,
         format: 'dBn',

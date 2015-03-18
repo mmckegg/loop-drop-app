@@ -16,27 +16,27 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      ModRange(QueryParam(node, 'preBand'), {
+      ModRange(node.preBand, {
         title: 'pre band',
         defaultValue: 0.5,
         format: 'ratio',
         flex: true
       }),
-      ModRange(QueryParam(node, 'color'), {
+      ModRange(node.color, {
         title: 'color',
         defaultValue: 800,
         format: 'arfo',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'gain'), {
+      ModRange(node.gain, {
         title: 'gain',
         defaultValue: 1,
         format: 'dB',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'postCut'), {
+      ModRange(node.postCut, {
         title: 'post cut',
         defaultValue: 3000,
         format: 'arfo',

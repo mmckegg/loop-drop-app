@@ -22,44 +22,44 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      ToggleButton(QueryParam(node, 'reverse'), {
+      ToggleButton(node.reverse, {
         title: 'Reverse'
       }),
 
-      Range(QueryParam(node, 'time'), {
+      Range(node.time, {
         title: 'time',
         defaultValue: 3,
         format: 'ms',
         flex: true
       }),
 
-      Range(QueryParam(node, 'decay'), {
+      Range(node.decay, {
         title: 'decay',
         defaultValue: 2,
         format: 'ratioExp',
         flex: true
       }),
 
-      Select(QueryParam(node, 'filterType'), {
+      Select(node.filterType, {
         defaultValue: 'lowpass',
         options: filterChoices 
       }),
 
-      ModRange(QueryParam(node, 'cutoff'), {
+      ModRange(node.cutoff, {
         title: 'cutoff',
         defaultValue: 20000,
         format: 'arfo',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'wet'), {
+      ModRange(node.wet, {
         title: 'wet',
         defaultValue: 1,
         format: 'dB',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'dry'), {
+      ModRange(node.dry, {
         title: 'dry',
         defaultValue: 1,
         format: 'dB',

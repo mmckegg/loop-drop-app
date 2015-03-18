@@ -20,12 +20,12 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      Select(QueryParam(node, 'mode'), {
+      Select(node.mode, {
         defaultValue: 'modulate',
         options: modeChoices 
       }),
 
-      ModRange(QueryParam(node, 'ratio'), {
+      ModRange(node.ratio, {
         title: 'ratio',
         defaultValue: 1,
         format: 'ratio',

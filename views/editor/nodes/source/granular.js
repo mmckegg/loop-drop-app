@@ -19,8 +19,7 @@ var modeChoices = [
 module.exports = function(node){
   var data = node()
 
-  var sync = QueryParam(node, 'sync')
-  var isSyncing = sync.read()
+  var isSyncing = node.sync()
 
   return h('SourceNode -granular', [
 
@@ -33,57 +32,57 @@ module.exports = function(node){
 
       SampleChooser(node),
 
-      Select(QueryParam(node, 'mode'), { 
+      Select(node.mode, { 
         options: modeChoices,
         defaultValue: 'loop'
       }),
 
-      ToggleButton(sync, {
+      ToggleButton(node.sync, {
         title: 'BPM Sync'
       }),
 
-      Range(QueryParam(node, 'duration'), {
+      Range(node.duration, {
         title: 'duration',
         defaultValue: 1,
         format: isSyncing ? 'beats' : 'ms',
         flex: true
       }),
 
-      Range(QueryParam(node, 'rate'), {
+      Range(node.rate, {
         title: 'rate',
         defaultValue: 16,
         format: 'ratio32',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'amp'), {
+      ModRange(node.amp, {
         title: 'amp',
         format: 'dB',
         defaultValue: 1,
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'transpose'), {
+      ModRange(node.transpose, {
         title: 'transpose',
         format: 'semitone',
         flex: true
       }),
 
-      Range(QueryParam(node, 'attack'), {
+      Range(node.attack, {
         title: 'attack',
         format: 'ratio',
         defaultValue: 0.1,
         flex: true
       }),
 
-      Range(QueryParam(node, 'hold'), {
+      Range(node.hold, {
         title: 'hold',
         format: 'ratio',
         defaultValue: 1,
         flex: true
       }),
 
-      Range(QueryParam(node, 'release'), {
+      Range(node.release, {
         title: 'release',
         format: 'ratio',
         defaultValue: 0.1,

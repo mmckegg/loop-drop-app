@@ -15,8 +15,7 @@ var filterChoices = [
 module.exports = function(node){
   var data = node()
 
-  var sync = QueryParam(node, 'sync')
-  var isSyncing = sync.read()
+  var isSyncing = node.sync()
 
   return h('ProcessorNode -delay', [
 
@@ -24,44 +23,44 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      ToggleButton(sync, {
+      ToggleButton(node.sync, {
         title: 'BPM Sync'
       }),
 
-      ModRange(QueryParam(node, 'time'), {
+      ModRange(node.time, {
         title: 'time',
         defaultValue: 0.25,
         format: isSyncing ? 'beat' : 'ms',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'feedback'), {
+      ModRange(node.feedback, {
         title: 'feedback',
         defaultValue: 0.6,
         format: 'dB',
         flex: true
       }),
 
-      Select(QueryParam(node, 'filterType'), {
+      Select(node.filterType, {
         defaultValue: 'lowpass',
         options: filterChoices 
       }),
 
-      ModRange(QueryParam(node, 'cutoff'), {
+      ModRange(node.cutoff, {
         title: 'cutoff',
         defaultValue: 20000,
         format: 'arfo',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'wet'), {
+      ModRange(node.wet, {
         title: 'wet',
         defaultValue: 1,
         format: 'dB',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'dry'), {
+      ModRange(node.dry, {
         title: 'dry',
         defaultValue: 1,
         format: 'dB',

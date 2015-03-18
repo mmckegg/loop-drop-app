@@ -14,7 +14,7 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      ModRange(QueryParam(node, 'gain'), {
+      ModRange(node.gain, {
         defaultValue: 1,
         format: 'dB',
         flex: true

@@ -14,14 +14,14 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      Range(QueryParam(node, 'bitDepth'), {
+      Range(node.bitDepth, {
         title: 'bit depth',
         defaultValue: 8,
         format: 'bit',
         flex: true
       }),
 
-      Range(QueryParam(node, 'frequency'), {
+      Range(node.frequency, {
         title: 'freq',
         defaultValue: 1,
         format: 'sampleRatio',

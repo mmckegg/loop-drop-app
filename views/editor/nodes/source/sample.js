@@ -32,24 +32,24 @@ module.exports = function(node){
 
       SampleChooser(node),
 
-      Select(QueryParam(node, 'mode'), { 
+      Select(node.mode, { 
         options: modeChoices 
       }),
 
-      ModRange(QueryParam(node, 'amp'), {
+      ModRange(node.amp, {
         title: 'amp',
         defaultValue: 1,
         format: 'dB',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'transpose'), {
+      ModRange(node.transpose, {
         title: 'transpose',
         format: 'semitone',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'tune'), {
+      ModRange(node.tune, {
         title: 'tune',
         format: 'cents',
         flex: true

@@ -27,24 +27,24 @@ module.exports = function(node){
 
     h('ParamList', [
 
-      Select(QueryParam(node, 'shape'), { 
+      Select(node.shape, { 
         options: shapeChoices 
       }),
 
-      ModRange(QueryParam(node, 'amp'), {
+      ModRange(node.amp, {
         title: 'amp',
         defaultValue: 1,
         format: 'dB',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'detune'), {
+      ModRange(node.detune, {
         title: 'detune',
         format: 'cents',
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'noteOffset'), {
+      ModRange(node.noteOffset, {
         title: 'pitch',
         format: 'semitone',
         defaultValue: 0,
@@ -52,7 +52,7 @@ module.exports = function(node){
         flex: true
       }),
 
-      ModRange(QueryParam(node, 'octave'), {
+      ModRange(node.octave, {
         title: 'octave',
         format: 'octave',
         defaultValue: 0,
