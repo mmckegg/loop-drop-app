@@ -58,6 +58,8 @@ Download the [sample project](https://github.com/mmckegg/loop-drop-sample-projec
 
 > Currently, Chrome doesn't detect when midi controllers are plugged in, so you have to restart Chrome (completely, not just the Chrome App) each time after you have plugged in the controller. This will be sorted soon (see  https://code.google.com/p/chromium/issues/detail?id=279097)
 
+> You may have to select your midi controller manually from the port selector if your system calls it something different.
+
 Create a new setup. Click the `+ MIDI Controller` button and select Novation Launchpad (or whatever) from the first drop down. Then select the midi port your controller is connected to from the second drop down. If it is not showing up, try restarting Chrome.
 
 At this point, your Launchpad hardware should light up, with a visual metronome ticking down the side.
