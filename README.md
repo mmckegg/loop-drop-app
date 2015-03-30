@@ -50,7 +50,7 @@ If your controller isn't supported, copy one of the above controller bindings an
 
 **When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
 
-Download the [sample project](https://github.com/mmckegg/loop-drop-sample-project/archive/master.zip). To load the project, select 'Choose Project' from the Loop Drop sidebar. **Sample project is out of date, needs to be updated to work with v2**
+Download the [sample project](https://github.com/mmckegg/loop-drop-sample-project/archive/master.zip) and extract. To load the project, select 'Choose Project' from the Loop Drop sidebar.
 
 ### Using with a Launchpad (or other midi controller)
 
