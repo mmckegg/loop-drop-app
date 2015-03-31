@@ -38,4 +38,11 @@ Button {
       background: #A00
     }
   }
+
+  -edit {
+    border: 1px solid #666;
+    padding: 0 6px;
+    background: #3A3A3A;
+    color: #DDD;
+  }
 }

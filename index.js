@@ -8,6 +8,8 @@ var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
 
+var QueryParam = require('loop-drop-setup/query-param')
+
 // state and rendering
 var hg = require('mercury')
 var noDrop = require('lib/no-drop')
@@ -132,8 +134,7 @@ var actions = rootContext.actions = {
           state.selected.set(item.path)
         }
       }
-
-
+      cb&&cb()
     })
   },
 
@@ -144,47 +145,50 @@ var actions = rootContext.actions = {
 
   newChunk: function(path, descriptor, cb){
     // ensure expanded
-    var dir = getDirectory(path)
-    if (!state.subEntries.get(dir)){
-      actions.toggleDirectory(dir)
-    }
 
-    if (typeof descriptor === 'function'){
-      cb = descriptor
-      descriptor = null
-    }
+    project.resolveAvailable(project.relative(path), function(err, src){
+      if (typeof descriptor === 'function'){
+        cb = descriptor
+        descriptor = null
+      }
 
-    descriptor = descriptor || {}
+      descriptor = descriptor || {}
 
-    var src = project.relative(path)
-    var fileObject = actions.addFileObject(src)
+      descriptor = extend({
+        node: 'chunk', 
+        color: randomColor([255,255,255]),
+        slots: [{id: 'output', node: 'slot'}], 
+        shape: [4,4],
+        outputs: ['output'],
+      }, descriptor)
 
-    descriptor = extend({
-      node: 'chunk', 
-      color: randomColor([255,255,255]),
-      slots: [{id: 'output', node: 'slot'}], 
-      shape: [4,4],
-      outputs: ['output'],
-    }, descriptor)
-
-    fileObject.set(descriptor)
-
-    state.selected.set(fileObject.path)
-    state.renaming.set(true)
-
-    if (typeof cb == 'function'){
-      // hacky callback on rename completed
-      var removeWatcher = state.renaming(function(value){
-        if (!value){
-
-          setTimeout(function(){ // ensure rename has completed
-            var src = project.relative(state.selected())
-            cb(null, src)
-          }, 50)
-
-          removeWatcher()
-        }
+      project.getFile(src, function(err, file){
+        if (err) return cb&&cb(err)
+        file.set(JSON.stringify(descriptor))
+        cb(null, src)
       })
+    })
+  },
+
+  updateChunkReferences: function(chunkId, newChunkId, chunk){
+    var setup = chunk.context.setup
+    var fileObject = chunk.context.fileObject
+    var descriptor = chunk()
+
+    setup.updateChunkReferences(chunkId, newChunkId)
+
+    if (chunk._type === 'ExternalNode' && descriptor.src) {
+
+      // only rename if old file matches ID
+      var oldSrc = './' + chunkId + '.json'
+      var newSrc = './' + newChunkId + '.json'
+      if (oldSrc === descriptor.src) {
+        var path = fileObject.resolvePath(oldSrc)
+        actions.rename(path, newChunkId + '.json', function(){
+          QueryParam(chunk, 'src').set(newSrc)
+        })
+      }
+
     }
   },
 
@@ -288,6 +292,12 @@ var lastSelected = null
 state.entries(actions.scrollToSelected)
 state.selected(function(path){
   if (path){
+
+    var dir = getDirectory(path)
+    if (!state.subEntries.get(dir)){
+      actions.toggleDirectory(dir)
+    }
+
     var src = project.relative(path)
     lastSelected = findItemByPath(state.items, path)
 
@@ -305,6 +315,5 @@ var forceUpdate = null
 setTimeout(function(){
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
 }, 100)
-
 
 actions.loadDefaultProject()

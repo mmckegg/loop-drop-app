@@ -4,11 +4,13 @@ var h = require('micro-css/h')(mercury.h)
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 var ToggleButton = require('lib/params/toggle-button')
+var RenameHook = require('lib/rename-hook')
 
 var IndexParam = require('lib/index-param')
 
 module.exports = function(node){
   var setup = node.context.setup
+  var actions = node.context.actions
   var collection = node.context.collection
   var slotLookup = node.context.slotLookup
 
@@ -54,7 +56,10 @@ module.exports = function(node){
       h('button.twirl', {
         'ev-click': mercury.event(toggleParam, node.minimised)
       }),
-      h('span', [node.id(), ' (modulator)']),
+      h('span', [
+        h('span', {'ev-hook': RenameHook(node, selected, actions.updateChunkReferences)}), 
+        ' (modulator)'
+      ]),
       h('button.remove Button -warn', {
         'ev-click': mercury.event(collection.remove, node),
       }, 'X')

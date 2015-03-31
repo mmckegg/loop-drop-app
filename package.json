@@ -11,7 +11,7 @@
   "dependencies": {
     "adsr": "^1.0.0",
     "audio-rms": "^1.1.0",
-    "audio-slot": "^3.0.0",
+    "audio-slot": "^3.2.0",
     "bopper": "^2.7.0",
     "brace": "^0.5.0",
     "browserify": "3.37.2",
@@ -23,9 +23,9 @@
     "geval": "^2.1.1",
     "json-query": "^1.4.0",
     "lfo": "^3.0.0",
-    "loop-drop-project": "^3.0.0",
-    "loop-drop-setup": "^2.0.0",
-    "loop-launchpad": "^3.0.0",
+    "loop-drop-project": "^3.4.0",
+    "loop-drop-setup": "^2.8.0",
+    "loop-launchpad": "^3.1.0",
     "loop-qwerty": "^2.0.0",
     "mercury": "^14.0.0",
     "micro-css": "~0.5.0",
@@ -38,7 +38,7 @@
     "watchify": "^0.7.2",
     "wav": "~0.1.2",
     "wave-recorder": "^2.0.0",
-    "web-fs": "^1.4.0",
+    "web-fs": "^1.7.0",
     "xtend": "^4.0.0"
   },
   "window": {
