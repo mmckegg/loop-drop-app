@@ -5,12 +5,12 @@ process.nextTick = require('next-tick')
 var WebFS = require('web-fs')
 var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
-var randomColor = require('lib/random-color.js')
-var findItemByPath = require('lib/find-item-by-path.js')
+var randomColor = require('lib/random-color')
+var findItemByPath = require('lib/find-item-by-path')
 
 // state and rendering
 var hg = require('mercury')
-var noDrop = require('lib/no-drop.js')
+var noDrop = require('lib/no-drop')
 var renderLoop = require('./views')
 
 // path
