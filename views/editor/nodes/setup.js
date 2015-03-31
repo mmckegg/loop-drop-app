@@ -7,6 +7,7 @@ var getBaseName = require('path').basename
 var QueryParam = require('loop-drop-setup/query-param')
 var ScaleChooser = require('lib/params/scale-chooser')
 var Range = require('lib/params/range')
+var rename = require('lib/rename-hook').rename
 
 module.exports = renderSetup
 
@@ -97,19 +98,18 @@ function spawnTriggers(setup, descriptor){
   var fileObject = context.fileObject
 
   var path = fileObject.resolvePath('New Chunk.json')
-  context.project.resolveAvailable(project.relative(path), function(err, src){
-    actions.newChunk(project.resolve(src), descriptor, function(err, src){
-      var id = setup.resolveAvailableChunk(getBaseName(src, '.json'))
-      setup.chunks.push({
-        node: 'external',
-        src: fileObject.relative(project.resolve(src)),
-        id: id,
-        minimised: true,
-        scale: '$global',
-        routes: {output: '$default'}
-      })
-      setup.selectedChunkId.set(id)
-    }, 50)
+  actions.newChunk(path, descriptor, function(err, src){
+    var id = setup.resolveAvailableChunk(getBaseName(src, '.json'))
+    var chunk = setup.chunks.push({
+      node: 'external',
+      src: fileObject.relative(project.resolve(src)),
+      id: id,
+      minimised: true,
+      scale: '$global',
+      routes: {output: '$default'}
+    })
+    setup.selectedChunkId.set(id)
+    rename(chunk)
   })
 }
 
@@ -133,10 +133,11 @@ function spawnChromatic(setup){
 
 function spawnModulator(setup){
   var id = setup.resolveAvailableChunk('modulator')
-  setup.chunks.push({
+  var chunk = setup.chunks.push({
     node: 'modulatorChunk',
     id: id,
     minimised: false
   })
   setup.selectedChunkId.set(id)
+  rename(chunk)
 }

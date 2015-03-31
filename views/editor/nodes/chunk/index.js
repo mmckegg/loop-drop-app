@@ -21,13 +21,14 @@ function renderChunk(chunk){
       h('h1', 'Slots'),
 
       h('ParamList -compact', [
-        shapeParams(QueryParam(chunk, 'shape'))
+        shapeParams(chunk.shape)
       ]),
 
       SlotChooser(chunk),
 
       h('h1', 'Chunk Options'),
       ChunkOptions(chunk)
+
     ]
 
     if (chunk.scale){

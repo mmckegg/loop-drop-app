@@ -7,6 +7,7 @@ var ModRange = require('lib/params/mod-range')
 
 var QueryParam = require('loop-drop-setup/query-param')
 var ToggleButton = require('lib/params/toggle-button')
+var RenameHook = require('lib/rename-hook')
 
 module.exports = function(node){
   var data = node()
@@ -14,6 +15,7 @@ module.exports = function(node){
 
   var setup = node.context.setup
   var collection = node.context.collection
+  var actions = node.context.actions
 
   if (data){
 
@@ -32,7 +34,6 @@ module.exports = function(node){
 
     return h('div ExternalNode', {
       className: className,
-      'ev-dblclick': mercury.event(editChunk, node),
       'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
       'style': mainStyle
     }, [
@@ -42,8 +43,11 @@ module.exports = function(node){
         h('button.twirl', {
           'ev-click': mercury.event(toggleParam, minimised)
         }),
-        h('span', innerData.id),
+        h('span', {'ev-rename': RenameHook(node, selected, actions.updateChunkReferences)}),
         range(volume, {format: 'dB', title: 'vol', defaultValue: 1, width: 150, pull: true}),
+        h('button.edit Button -edit', {
+          'ev-click': mercury.event(editChunk, node)
+        }, 'edit'),
         h('button.remove Button -warn', {
           'ev-click': mercury.event(collection.remove, node),
         }, 'X')
@@ -82,6 +86,12 @@ function editChunk(chunk){
     var path = context.project.resolve([context.cwd||'', descriptor.src])
     context.actions.open(path)
   }
+}
+
+function updateChunkReferences(hook){
+  var chunk = hook.object
+  var setup = chunk.context.setup
+  setup.updateChunkReferences(hook.lastValue, hook.value)
 }
 
 function toggleParam(param){

@@ -39,7 +39,7 @@ ModParam {
     div {
       min-width: 0
 
-      -flex {
+      -flex, -flexSmall {
         flex: 1
         select {
           width: 100%
