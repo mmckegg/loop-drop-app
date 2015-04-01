@@ -6,7 +6,8 @@
   "author": "Matt McKegg",
   "scripts": {
     "watch": "node build -w -d",
-    "build": "node build -d"
+    "build": "node build -d",
+    "release": "node build && mkdir -p releases && zip -r \"releases/loop drop `npv`.zip\" build/"
   },
   "dependencies": {
     "adsr": "^1.0.0",
@@ -59,9 +60,10 @@
     "storage"
   ],
   "devDependencies": {
-    "tape": "*",
     "cli-color": "^0.3.2",
     "growl": "^1.8.1",
-    "mkdirp": "^0.5.0"
+    "mkdirp": "^0.5.0",
+    "npv": "^0.1.0",
+    "tape": "*"
   }
 }

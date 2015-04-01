@@ -1,5 +1,6 @@
 node_modules
 build
+releases
 old
 webstore/local-config.json
 **/.DS_Store
