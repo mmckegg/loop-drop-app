@@ -9,7 +9,7 @@ ControllerNode {
 
   header {
     display: flex
-    padding: 3px
+    padding: 5px 3px
 
     span {
       flex: 1
