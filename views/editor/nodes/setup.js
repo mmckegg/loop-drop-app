@@ -126,11 +126,11 @@ function spawnChromatic(setup){
         scale: { $param: 'scale' }
       },
       node: 'slot', 
-      output: 'output' 
+      output: 'output'
     },
     selectedSlotId: '$template'
   }, {
-    shape: [2, 4]
+    minimised: false
   })
 }
 

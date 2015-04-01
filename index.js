@@ -158,7 +158,7 @@ var actions = rootContext.actions = {
         node: 'chunk', 
         color: randomColor([255,255,255]),
         slots: [{id: 'output', node: 'slot'}], 
-        shape: [4,4],
+        shape: [2,4],
         outputs: ['output'],
       }, descriptor)
 
