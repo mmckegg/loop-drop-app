@@ -83,6 +83,11 @@ LoopGrid {
 
       div.handle {
         position: absolute
+
+        :hover {
+          background: rgba(255,255,255, 0.1)
+        }
+
         -move {
           left: 10px
           right: 10px
@@ -93,29 +98,29 @@ LoopGrid {
         -top {
           left:0
           right:0
-          top:0
-          height: 10px
+          top:-3px
+          height: 5px
           cursor: row-resize
         }
         -bottom {
           left:0
           right:0
-          bottom:0
-          height: 10px
+          bottom:-3px
+          height: 8px
           cursor: row-resize
         }
         -left {
-          left:0
+          left:-3px
           top:0
           bottom:0
-          width: 10px
+          width: 8px
           cursor: col-resize
         }
         -right {
-          right:0
+          right:-3px
           top:0
           bottom:0
-          width: 10px
+          width: 8px
           cursor: col-resize
         }
       }

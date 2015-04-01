@@ -1,9 +1,12 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var MPE = require('lib/mouse-position-event.js')
+var MPE = require('lib/mouse-position-event')
+var MouseDragEvent = require('lib/mouse-drag-event')
 var nextTick = require('next-tick')
 var getBaseName = require('path').basename
 var GridStateHook = require('./grid-state-hook.js')
+
+var QueryParam = require('loop-drop-project/query-param')
 
 module.exports = function renderGrid(controller){
   var context = controller.context
@@ -72,12 +75,48 @@ function renderChunkBlock(chunk, controller){
     'ev-dragend': MPE(endDrag, node)
   },[
     h('span.label', chunk.id),
-    //h('div.handle -top'),
-    //h('div.handle -bottom'),
-    //h('div.handle -left'),
-    //h('div.handle -right'),
-    h('div.handle -move')
+    chunk.resizable ? [
+      h('div.handle -bottom', { 
+        draggable: true,
+        'ev-mousedown': MouseDragEvent(resize, { edge: 'bottom', node: node, shape: shape })
+      }),
+      h('div.handle -right', { 
+        draggable: true,
+        'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: node, shape: shape })
+      })
+    ] : null
   ])
+}
+
+function resize(ev){
+  var edge = this.data.edge
+  var node = this.data.node
+  var shape = this.data.shape
+
+  if (ev.type === 'mousedown'){
+    this.lastOffset = 0
+    this.startValue = QueryParam(node, 'shape').read()
+    this.start = ev
+  } else if (this.start) {
+    if (edge === 'bottom'){
+      var offset = Math.round((ev.y - this.start.y) / 30)
+      if (this.lastOffset !== offset){
+        QueryParam(node, 'shape').set([ clamp1(this.startValue[0]+offset), this.startValue[1] ])
+        this.lastOffset = offset
+      }
+    } else if (edge === 'right'){
+      var offset = Math.round((ev.x - this.start.x) / (248 / shape[1]))
+      if (this.lastOffset !== offset){
+        QueryParam(node, 'shape').set([ this.startValue[0], clamp1(this.startValue[1]+offset) ])
+        this.lastOffset = offset
+      }
+    }
+  }
+
+}
+
+function clamp1(val){
+  return Math.max(val, 1)
 }
 
 function getChunks(controller){
@@ -94,7 +133,8 @@ function getChunks(controller){
         id: data.id,
         color: data.color,
         shape: data.shape,
-        origin: chunkPositions[k]
+        origin: chunkPositions[k],
+        resizable: !!chunk.templateSlot
       })
     }
 
