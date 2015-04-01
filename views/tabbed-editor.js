@@ -74,7 +74,13 @@ function getName(path){
 }
 
 function renderHelper(){
-  return h('div CenterTab', 
+
+  var noMidi = !window.navigator.requestMIDIAccess
+
+  return h('div CenterTab', [
+
+    noMidi ? renderNoMidi() : null,
+
     h('div Helper', [
       'For help, view the ',
       h('a', {href: 'https://github.com/mmckegg/loop-drop-app#getting-started', target: '_blank'}, 'getting started guide'),
@@ -83,7 +89,19 @@ function renderHelper(){
       h('a', {href: 'https://github.com/mmckegg/loop-drop-app/issues', target: '_blank'}, 'ask a question'),
       ' on github.'
     ])
-  )
+
+  ])
+}
+
+function renderNoMidi(){
+  return h('div Helper -warning', [
+    h('header', 'MIDI not enabled'),
+    h('p', [
+      'To use midi controllers with Loop Drop, you need to go to ', 
+      h('strong', 'chrome://flags#enable-web-midi'), 
+      ' and click enable then restart Chrome.' 
+    ])
+  ])
 }
 
 

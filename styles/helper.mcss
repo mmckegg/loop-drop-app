@@ -3,6 +3,20 @@ Helper {
   color: #777
   text-align: center
 
+  -webkit-user-select: text
+  cursor: text
+
+  -warning {
+    header {
+      color: #E09A2C
+    }
+    color: #CCC
+  }
+
+  header {
+    font-size: 150%
+  }
+
   a {
     color: #5A91D8
   }
