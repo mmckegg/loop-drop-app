@@ -20,7 +20,7 @@ function renderChunk(chunk){
     var options = [
       h('h1', 'Slots'),
 
-      h('ParamList -compact', [
+      chunk.templateSlot ? null : h('ParamList -compact', [
         shapeParams(chunk.shape)
       ]),
 

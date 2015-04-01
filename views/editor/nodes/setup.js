@@ -8,6 +8,7 @@ var QueryParam = require('loop-drop-setup/query-param')
 var ScaleChooser = require('lib/params/scale-chooser')
 var Range = require('lib/params/range')
 var rename = require('lib/rename-hook').rename
+var extend = require('xtend')
 
 module.exports = renderSetup
 
@@ -91,7 +92,7 @@ function ChunkSpawner(setup){
   ])
 }
 
-function spawnTriggers(setup, descriptor){
+function spawnTriggers(setup, descriptor, additionalOverrides){
   var context = setup.context
   var actions = context.actions
   var project = context.project
@@ -100,14 +101,14 @@ function spawnTriggers(setup, descriptor){
   var path = fileObject.resolvePath('New Chunk.json')
   actions.newChunk(path, descriptor, function(err, src){
     var id = setup.resolveAvailableChunk(getBaseName(src, '.json'))
-    var chunk = setup.chunks.push({
+    var chunk = setup.chunks.push(extend({
       node: 'external',
       src: fileObject.relative(project.resolve(src)),
       id: id,
       minimised: true,
       scale: '$global',
       routes: {output: '$default'}
-    })
+    }, additionalOverrides))
     setup.selectedChunkId.set(id)
     rename(chunk)
   })
@@ -128,6 +129,8 @@ function spawnChromatic(setup){
       output: 'output' 
     },
     selectedSlotId: '$template'
+  }, {
+    shape: [2, 4]
   })
 }
 

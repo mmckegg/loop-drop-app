@@ -2,12 +2,15 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var renderRouting = require('./routing.js')
 
-var range = require('lib/params/range')
+var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 
-var QueryParam = require('loop-drop-setup/query-param')
 var ToggleButton = require('lib/params/toggle-button')
 var RenameHook = require('lib/rename-hook')
+
+var QueryParam = require('loop-drop-project/query-param')
+var FlagParam = require('lib/flag-param')
+var IndexParam = require('lib/index-param')
 
 module.exports = function(node){
   var data = node()
@@ -30,7 +33,10 @@ module.exports = function(node){
     var minimised = QueryParam(node, 'minimised')
     var className = data.minimised ? '-minimised' : ''
     var volume = QueryParam(node, 'volume', null, node.context)
-    var offset = QueryParam(node, 'offset', null, node.context)
+    var flags = QueryParam(node, 'flags')
+    var offset = QueryParam(node, 'offset')
+
+    var isScale = innerData.node === 'chunk/scale'
 
     return h('div ExternalNode', {
       className: className,
@@ -44,7 +50,7 @@ module.exports = function(node){
           'ev-click': mercury.event(toggleParam, minimised)
         }),
         h('span', {'ev-rename': RenameHook(node, selected, actions.updateChunkReferences)}),
-        range(volume, {format: 'dB', title: 'vol', defaultValue: 1, width: 150, pull: true}),
+        Range(volume, {format: 'dB', title: 'vol', defaultValue: 1, width: 150, pull: true}),
         h('button.edit Button -edit', {
           'ev-click': mercury.event(editChunk, node)
         }, 'edit'),
@@ -53,26 +59,45 @@ module.exports = function(node){
         }, 'X')
       ]),
       data.minimised ? '' : h('section', [
-        h('div ParamList', [
-          renderRouting(node),
-          h('div -block', [
-            h('div.extTitle', 'Scale'),
-            h('div', ToggleButton(QueryParam(node, 'scale'), {
-              title: 'Global', 
-              offTitle: 'Local', 
-              offValue: undefined,
-              onValue: '$global'
-            }))
+
+        // shape chooser
+        isScale ? [
+          h('ParamList', [
+            shapeParams(QueryParam(node, 'shape'))
           ]),
+          h('ParamList', [
+            ModRange(offset, {
+              title: 'offset',
+              format: 'semitone', 
+              flex: true
+            })
+          ])
+        ]: null,
+
+        h('ParamList', [
 
           h('div -block', [
-            h('div.extTitle', 'Offset'),
-            h('div', ModRange(offset, {
-              format: 'semitone', 
-              width: 150
-            }))
-          ])
+            h('div.extTitle', 'Use Global'),
+            h('ParamList -compact', [
+
+              ToggleButton(FlagParam(flags, 'noRepeat'), {
+                title: 'Repeat', 
+                onValue: false,
+                offValue: true 
+              }),
+
+              isScale ? ToggleButton(QueryParam(node, 'scale'), {
+                title: 'Scale', 
+                offValue: undefined,
+                onValue: '$global'
+              }) : null
+
+            ])
+          ]),
+          
+          renderRouting(node)
         ])
+
       ])
     ])
   }
@@ -96,6 +121,31 @@ function updateChunkReferences(hook){
 
 function toggleParam(param){
   param.set(!param.read())
+}
+
+function shapeParams(param){
+
+  window.woo = IndexParam(param, 0)
+  window.loo = IndexParam(param, 1)
+
+
+  return [
+    h('div -block -flexSmall', [
+      h('div', Range(IndexParam(param, 0), { 
+        title: 'rows',
+        format: 'bit',
+        defaultValue: 1
+      }))
+    ]),
+
+    h('div -block -flexSmall', [
+      h('div', Range(IndexParam(param, 1), { 
+        title: 'cols',
+        format: 'bit',
+        defaultValue: 1
+      }))
+    ])
+  ]
 }
 
 function color(rgb, a){
