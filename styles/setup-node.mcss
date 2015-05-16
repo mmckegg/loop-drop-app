@@ -9,6 +9,7 @@ SetupNode {
 
     display: flex
     flex: 1
+    min-height: 0
 
     div.controllers {
       flex: 1
