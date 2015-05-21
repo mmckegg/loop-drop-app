@@ -226,7 +226,8 @@ function drop(ev){
       'id': id,
       'src': setup.context.fileObject.relative(path),
       'minimised': true,
-      'routes': {output: '$default'}
+      'routes': {output: '$default'},
+      'scale': '$global'
     })
     
     var shape = controller.playback.shape()
