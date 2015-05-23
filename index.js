@@ -316,4 +316,9 @@ setTimeout(function(){
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
 }, 100)
 
+
 actions.loadDefaultProject()
+
+
+var applyTempo = require('lib/keyboard-tempo')
+applyTempo(rootContext.tempo, rootContext.speed)
