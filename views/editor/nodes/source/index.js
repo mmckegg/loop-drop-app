@@ -6,7 +6,8 @@ var Header = require('../header.js')
 var editors = {
   'source/sample': require('./sample.js'),
   'source/oscillator': require('./oscillator.js'),
-  'source/granular': require('./granular.js')
+  'source/granular': require('./granular.js'),
+  'source/noise': require('./noise.js')
 }
 
 module.exports = function(node){
