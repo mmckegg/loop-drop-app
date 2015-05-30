@@ -7,8 +7,7 @@ var QueryParam = require('loop-drop-setup/query-param')
 module.exports = renderRouting
 
 var defaultOutputs = [
-  ['Default', '$default'],
-  ['Meddler', '$meddler']
+  ['Default', '$default']
 ]
 
 function renderRouting(node){
