@@ -10,7 +10,6 @@
     "release": "node build && mkdir -p releases && zip -r \"releases/loop drop `npv`.zip\" build/"
   },
   "dependencies": {
-    "adsr": "^1.0.0",
     "audio-rms": "^1.1.0",
     "audio-slot": "^3.3.0",
     "bopper": "^2.7.0",
@@ -23,7 +22,6 @@
     "frac": "^0.3.1",
     "geval": "^2.1.1",
     "json-query": "^1.4.0",
-    "lfo": "^3.0.0",
     "loop-drop-project": "^3.5.0",
     "loop-drop-setup": "^2.9.0",
     "loop-launchpad": "^3.1.0",
