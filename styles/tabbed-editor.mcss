@@ -70,6 +70,7 @@ TabbedEditor {
 
   div {
     flex: 1
+    min-width: 0
     background: #333;
     border: 1px solid #AAA
     border-top: none
