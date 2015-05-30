@@ -215,6 +215,13 @@ var actions = rootContext.actions = {
     }, 10)
   },
 
+  scrollToSelectedChunk: function() {
+    setTimeout(function(){
+      var el = document.querySelector('.ExternalNode.-selected')
+      el && el.scrollIntoViewIfNeeded()
+    }, 10)
+  },
+
   grabInputForSelected: function(){
     var item = lastSelected
     if (item && item.node && item.node.grabInput){
@@ -243,6 +250,10 @@ var actions = rootContext.actions = {
 
       // handle deletion of chunks when removed
       syncRemovedChunks(object)
+
+      if (object.node && object.node.selectedChunkId) {
+        object.node.selectedChunkId(actions.scrollToSelectedChunk)
+      }
 
     })
 

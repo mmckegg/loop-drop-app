@@ -22,7 +22,9 @@ module.exports = function(node){
     border: '2px solid '+color(node.color(), selected ? 1 : 0)
   }
 
-  var className = node.minimised() ? '-minimised' : ''
+  var classNames = [] 
+  if (node.minimised()) classNames.push('-minimised')
+  if (selected) classNames.push('-selected')
 
   var elements = []
   var shape = node.shape()
@@ -46,7 +48,7 @@ module.exports = function(node){
   }
 
   return h('div ExternalNode', {
-    className: className,
+    className: classNames.join(' '),
     'ev-click': mercury.event(setup.selectedChunkId.set, node.id()),
     'style': mainStyle
   }, [

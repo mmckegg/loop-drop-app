@@ -291,9 +291,13 @@ function mixColor(a, b){
 function editChunk(chunk){
   var context = chunk.context
   var descriptor = chunk()
-  if (descriptor && descriptor.src){
-    var path = context.project.resolve([context.cwd||'', descriptor.src])
-    context.actions.open(path)
+  if (descriptor) {
+    if (descriptor.minimised) {
+      QueryParam(chunk, 'minimised').set(false)
+    } else if (descriptor.src) {
+      var path = context.project.resolve([context.cwd||'', descriptor.src])
+      context.actions.open(path)
+    }
   }
 }
 

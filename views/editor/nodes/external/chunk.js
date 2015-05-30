@@ -31,15 +31,18 @@ module.exports = function(node){
     }
 
     var minimised = QueryParam(node, 'minimised')
-    var className = data.minimised ? '-minimised' : ''
     var volume = QueryParam(node, 'volume', null, node.context)
     var flags = QueryParam(node, 'flags')
     var offset = QueryParam(node, 'offset')
 
     var isScale = innerData.node === 'chunk/scale'
 
+    var classNames = [] 
+    if (data.minimised) classNames.push('-minimised')
+    if (selected) classNames.push('-selected')
+
     return h('div ExternalNode', {
-      className: className,
+      className: classNames.join(' '),
       'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
       'style': mainStyle
     }, [
