@@ -170,6 +170,22 @@ var actions = rootContext.actions = {
     })
   },
 
+  importChunk: function(path, cwd, cb) {
+    var src = project.relative(path)
+    var baseName = getBaseName(path)
+    var targetSrc = project.relative(cwd + '/' + baseName)
+
+    project.resolveAvailable(targetSrc, function(err, toSrc) {
+      copyExternalFilesTo(path, cwd)
+      project.copyEntry(src, toSrc, function(err){
+        if (cb) {
+          if (err) return cb(err)
+          cb(null, project.resolve(toSrc))
+        }
+      })
+    })
+  },
+
   updateChunkReferences: function(chunkId, newChunkId, chunk){
     var setup = chunk.context.setup
     var fileObject = chunk.context.fileObject
@@ -224,6 +240,9 @@ var actions = rootContext.actions = {
       if (object.node && object.node.grabInput){
         object.node.grabInput()
       }
+
+      // handle deletion of chunks when removed
+      syncRemovedChunks(object)
 
     })
 
@@ -305,6 +324,52 @@ state.selected(function(path){
     process.nextTick(actions.grabInputForSelected)
   }
 })
+
+function copyExternalFilesTo(path, target) {
+  var src = project.relative(path)
+  var fromRoot = getDirectory(path)
+
+  project.getFile(src, function(err, file) {
+    if (!err) {
+      JSON.stringify(JSON.parse(file()), function(key, value) {
+        if (value && value.node === 'AudioBuffer') {
+          var from = project.resolve([fromRoot, value.src])
+          var to = project.resolve([target, value.src])
+          project.resolveAvailable(to, function(err, checkTo) {
+            if (to === checkTo) {
+              project.copyEntry(from, to)
+              console.log(from, to)
+            }
+          })
+        }
+        return value
+      })
+    }
+  })
+}
+
+function syncRemovedChunks(object) {
+  if (object.node && object.node.chunks && object.node.chunks.onUpdate) {
+    var chunkObjects = object.node.chunks.map(function(x){return x})
+    object.node.chunks.onUpdate(function(diff) {
+      if (diff[1]) {
+        for (var i=diff[0];i<diff[0]+diff[1];i++) {
+          var chunk = chunkObjects[i]
+          var descriptor = chunk&&chunk()
+          if (chunk && descriptor.id && chunk.getPath) {
+            var path = chunk.getPath()
+            var truePath = object.resolvePath('./' + descriptor.id + '.json')
+            if (path === truePath) {
+              var src = project.relative(chunk.getPath())
+              project.deleteEntry(src)
+            }
+          }
+        }
+      }
+      chunkObjects.splice.apply(chunkObjects, diff)
+    })
+  }
+}
 
 
 // disable default drop handler

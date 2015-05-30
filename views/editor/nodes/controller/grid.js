@@ -20,7 +20,9 @@ module.exports = function renderGrid(controller){
     var buttons = []
     for (var c=0;c<shape[1];c++){      
       buttons.push(h('div.button', {
-        'ev-dblclick': mercury.event(createChunk, {controller: controller, at: [r,c]})
+        'ev-dblclick': mercury.event(createChunk, {controller: controller, at: [r,c]}),
+        'ev-dragenter': MPE(enterButton, controller),
+        'ev-dragleave': MPE(leaveButton, controller)
       }))
     }
     rows.push(h('div.row', buttons))
@@ -142,6 +144,14 @@ function getChunks(controller){
   return chunks
 }
 
+function enterButton(ev) {
+  ev.currentTarget.classList.add('-dragOver')
+}
+
+function leaveButton(ev) {
+  ev.currentTarget.classList.remove('-dragOver')
+}
+
 function startDrag(ev){
   window.currentDrag = ev
 }
@@ -209,7 +219,7 @@ function dragOver(ev){
   }
 
   if (~ev.dataTransfer.types.indexOf('filepath')){
-    ev.dataTransfer.dropEffect = 'link'
+    ev.dataTransfer.dropEffect = 'copy'
     ev.event.preventDefault()
   }
 }
@@ -217,25 +227,33 @@ function dragOver(ev){
 function drop(ev){
   var path = ev.dataTransfer.getData('filepath')
   var controller = ev.data
+  var actions = controller.context.actions
   var setup = controller.context.setup
+  var fileObject = setup.context.fileObject
 
   if (path && setup && setup.chunks){
-    var id = setup.resolveAvailableChunk(getBaseName(path, '.json'))
-    setup.chunks.push({
-      'node': 'external',
-      'id': id,
-      'src': setup.context.fileObject.relative(path),
-      'minimised': true,
-      'routes': {output: '$default'},
-      'scale': '$global'
+
+    actions.importChunk(path, setup.context.cwd, function(err, newPath) {
+      if (err) throw err
+
+      var id = getBaseName(newPath, '.json')
+      setup.chunks.push({
+        'node': 'external',
+        'id': id,
+        'src': fileObject.relative(newPath),
+        'minimised': true,
+        'routes': {output: '$default'},
+        'scale': '$global'
+      })
+      
+      var shape = controller.playback.shape()
+      var height = ev.offsetHeight / shape[0]
+      var width = ev.offsetWidth / shape[1]
+      var r = Math.floor(ev.offsetY/height)
+      var c = Math.floor(ev.offsetX/width)
+      controller.chunkPositions.put(id, [r,c])
     })
-    
-    var shape = controller.playback.shape()
-    var height = ev.offsetHeight / shape[0]
-    var width = ev.offsetWidth / shape[1]
-    var r = Math.floor(ev.offsetY/height)
-    var c = Math.floor(ev.offsetX/width)
-    controller.chunkPositions.put(id, [r,c])
+
   }
 }
 
