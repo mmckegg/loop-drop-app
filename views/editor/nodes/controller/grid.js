@@ -163,9 +163,9 @@ function dragLeave(ev){
 function dragEnter(ev){
   entering = ev.data
 
-  nextTick(function(){
+  setTimeout(function(){
     entering = null
-  })
+  }, 1)
 }
 
 function getId(chunk){
