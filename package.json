@@ -5,9 +5,9 @@
   "private": true,
   "author": "Matt McKegg",
   "scripts": {
-    "watch": "node build -w -d",
-    "build": "node build -d",
-    "release": "node build && mkdir -p releases && zip -r \"releases/loop drop `npv`.zip\" build/"
+    "watch": "ulimit -n 1024; node build -w -d",
+    "build": "ulimit -n 1024; node build -d",
+    "release": "ulimit -n 1024; node build && mkdir -p releases && zip -r \"releases/loop drop `npv`.zip\" build/"
   },
   "dependencies": {
     "audio-rms": "^1.1.0",
