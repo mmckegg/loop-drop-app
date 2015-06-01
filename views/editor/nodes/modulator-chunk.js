@@ -7,6 +7,7 @@ var ToggleButton = require('lib/params/toggle-button')
 var RenameHook = require('lib/rename-hook')
 
 var IndexParam = require('lib/index-param')
+var FlagParam = require('lib/flag-param')
 
 module.exports = function(node){
   var setup = node.context.setup
@@ -29,6 +30,7 @@ module.exports = function(node){
   var elements = []
   var shape = node.shape()
   var length = shape[0] * shape[1]
+
   for (var i=0;i<length;i++){
     var id = String(i)
     var slot = slotLookup.get(id)
@@ -68,7 +70,12 @@ module.exports = function(node){
     ]),
     node.minimised() ? '' : h('section', [
       h('div ParamList', [
-        shapeParams(node.shape)
+        shapeParams(node.shape),
+        ToggleButton(FlagParam(node.flags, 'noRepeat'), {
+          title: 'Use Repeat', 
+          onValue: false,
+          offValue: true 
+        })
       ]),
 
       h('ValueSlots', elements)
