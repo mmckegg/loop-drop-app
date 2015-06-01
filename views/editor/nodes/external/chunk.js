@@ -77,6 +77,8 @@ module.exports = function(node){
           ])
         ]: null,
 
+        Params(node),
+
         h('ParamList', [
 
           h('div -block', [
@@ -127,11 +129,6 @@ function toggleParam(param){
 }
 
 function shapeParams(param){
-
-  window.woo = IndexParam(param, 0)
-  window.loo = IndexParam(param, 1)
-
-
   return [
     h('div -block -flexSmall', [
       h('div', Range(IndexParam(param, 0), { 
@@ -149,6 +146,22 @@ function shapeParams(param){
       }))
     ])
   ]
+}
+
+function Params(node) {
+  var paramValues = QueryParam(node, 'paramValues')
+  var params = QueryParam(node, 'params').read()
+  if (params instanceof Array) {
+    return params.map(function(key) {
+      return h('ParamList', [
+        ModRange(QueryParam(paramValues, key), {
+          title: key,
+          format: 'offset', 
+          flex: true
+        })
+      ])
+    })
+  }
 }
 
 function color(rgb, a){
