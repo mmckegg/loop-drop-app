@@ -7,22 +7,18 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 
 Tweet [@MattMcKegg](https://twitter.com/MattMcKegg) or join irc channel #loopjs on freenode.
 
-## Get it on the Chrome Webstore
+## Buy the packaged app (soon) ...
 
-[![Loop Drop on the Chrome Webstore](https://raw.githubusercontent.com/mmckegg/loop-drop-app/master/tile.png)](https://chrome.google.com/webstore/detail/loop-drop/lbihechibofgmjpfnegjblhoicglanbj)
+![](https://raw.githubusercontent.com/mmckegg/loop-drop-app/master/tile.png)
 
-https://chrome.google.com/webstore/detail/loop-drop/lbihechibofgmjpfnegjblhoicglanbj
-
-## Or Build and Install from source
+## ...or Build and Install from source
 
 ```bash
 $ git clone https://github.com/mmckegg/loop-drop-app
 $ cd loop-drop-app
 $ npm install
-$ npm run build # or npm run watch (to automatically rebuild) 
+$ npm start
 ```
-
-Then open chrome and go the the extensions tab. Tick the enable developer mode then **'Load Unpacked Extension'** and navigate to 'loop-drop-app/build' (the entire directory).
 
 ### Installing updates
 
@@ -48,15 +44,7 @@ If your controller isn't supported, copy one of the above controller bindings an
 
 ## Getting Started
 
-**When the app first launches, it will prompt you for a place to store its files. Create a directory somewhere useful and call it Loop Drop or something.**
-
-Download the [sample project](https://github.com/mmckegg/loop-drop-sample-project/archive/master.zip) and extract. To load the project, select 'Choose Project' from the Loop Drop sidebar.
-
 ### Using with a Launchpad (or other midi controller)
-
-> You need to go to chrome://flags/#enable-web-midi and enable Web Midi. Then restart Chrome.
-
-> Currently, Chrome doesn't detect when midi controllers are plugged in, so you have to restart Chrome (completely, not just the Chrome App) each time after you have plugged in the controller. This will be sorted soon (see  https://code.google.com/p/chromium/issues/detail?id=279097)
 
 > You may have to select your midi controller manually from the port selector if your system calls it something different.
 
