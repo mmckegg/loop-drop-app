@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    var shell = require('shell')
+    var insertCss = require('insert-css')
+    var version = require('./package.json').version
+    var ipc = require('ipc')
+
+    function newProject() {
+      ipc.send('choose-project', 'new')
+    }
+
+    function demoProject() {
+      ipc.send('choose-project', 'demo')
+    }
+
+    function browse() {
+      ipc.send('choose-project', 'browse')
+    }
+
+    insertCss(require('./styles'))
+  </script>
+</head>
+  <body>
+    <div class='ChooseProject'>
+
+      <header>
+        <img src='icon128.png' width='128' />
+        <h1>Loop Drop</h1>
+        <h2>version <script>document.write(version)</script></h2>
+      </header>
+
+      <section class='.actions'>
+        <button onclick='newProject()' class='-new'>New Project</button>
+        <button onclick='demoProject()'>Open Demo Project</button>
+        <button onclick='browse()'>Browse...</button>
+      </section>
+
+      <div>
+        <p>
+          visit
+          <a href='javascript:shell.openExternal("http://loopjs.com")'>loopjs.com</a>
+          for help
+        </p>
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -2,7 +2,7 @@ process.nextTick = null
 process.nextTick = require('next-tick')
 
 // persistence
-var WebFS = require('web-fs')
+var fs = require('fs')
 var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('lib/random-color')
@@ -14,6 +14,7 @@ var QueryParam = require('loop-drop-setup/query-param')
 var hg = require('mercury')
 var noDrop = require('lib/no-drop')
 var renderLoop = require('./views')
+var ipc = require('ipc')
 
 // path
 var getDirectory = require('path').dirname
@@ -23,6 +24,8 @@ var getBaseName = require('path').basename
 var extend = require('xtend')
 
 //////
+var insertCss = require('insert-css')
+insertCss(require('./styles'))
 
 
 var rootContext = window.rootContext = require('lib/context')
@@ -277,41 +280,16 @@ var actions = rootContext.actions = {
     chrome.fileSystem.chooseEntry({type: 'openDirectory'}, actions.loadProject)
   },
 
-  loadDefaultProject: function(){
-    chrome.storage.local.get('projectDirectory', function(items) {
-      if (items.projectDirectory) {
-        chrome.fileSystem.isRestorable(items.projectDirectory, function(bIsRestorable) {
-          if (!bIsRestorable){
-            return actions.chooseProject()
-          }
-          chrome.fileSystem.restoreEntry(items.projectDirectory, function(chosenEntry) {
-            if (chosenEntry) {
-              actions.loadProject(chosenEntry)
-            }
-          })
-        })
-      } else {
-        actions.chooseProject()
-      }
-    })
-  },
-
-  loadProject: function(entry){
-    console.log('loading project', entry)
+  loadProject: function(path){
+    console.log('loading project', path)
 
     stopRecording && stopRecording()
     stopRecording = null
 
-    var fs = WebFS(entry)
-
-    project.load(entry.fullPath, fs, loaded)
+    project.load(path, fs, loaded)
 
     function loaded(){
-      chrome.storage.local.set({'projectDirectory': chrome.fileSystem.retainEntry(entry)})
-      //stopRecording = recordOutput(project.resolve('./session.wav'))
-      chrome.fileSystem.getDisplayPath(entry, function(path){
-        console.log('Loaded project', path)
-      })
+      console.log('Loaded project', path)
     }
   }
 }
@@ -388,13 +366,12 @@ noDrop(document)
 
 // main render loop
 var forceUpdate = null
-setTimeout(function(){
+document.addEventListener("DOMContentLoaded", function(event) {
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
-}, 100)
-
-
-actions.loadDefaultProject()
-
+})
 
 var applyTempo = require('lib/keyboard-tempo')
 applyTempo(rootContext.tempo, rootContext.speed)
+
+ipc.send('loaded')
+ipc.on('load-project', actions.loadProject)

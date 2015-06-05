@@ -4,12 +4,14 @@ html, body {
   font-family: Helvetica, Arial;
   overflow: hidden;
   height: 100%
+  font-size: 12px
 }
 
 body {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  user-select: none;
 }
 
 h1 {
