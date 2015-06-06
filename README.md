@@ -27,7 +27,7 @@ New versions are being pushed out all the time. To update:
 ```bash
 $ git pull
 $ npm update
-$ npm run build # if you are not already running npm run watch
+$ npm start
 ```
 
 ## Supported Controllers
