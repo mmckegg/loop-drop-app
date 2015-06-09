@@ -362,11 +362,11 @@ function syncRemovedChunks(object) {
 
 
 // disable default drop handler
-noDrop(document)
 
 // main render loop
 var forceUpdate = null
 document.addEventListener("DOMContentLoaded", function(event) {
+  noDrop(document)
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
 })
 

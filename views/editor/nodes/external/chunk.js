@@ -149,7 +149,7 @@ function shapeParams(param){
 }
 
 function Params(node) {
-  var paramValues = QueryParam(node, 'paramValues')
+  var paramValues = QueryParam(node, 'paramValues', {})
   var params = QueryParam(node, 'params').read()
   if (params instanceof Array) {
     return params.map(function(key) {
