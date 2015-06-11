@@ -300,12 +300,6 @@ var lastSelected = null
 state.entries(actions.scrollToSelected)
 state.selected(function(path){
   if (path){
-
-    var dir = getDirectory(path)
-    if (!state.subEntries.get(dir)){
-      actions.toggleDirectory(dir)
-    }
-
     var src = project.relative(path)
     lastSelected = findItemByPath(state.items, path)
 
