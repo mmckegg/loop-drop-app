@@ -113,6 +113,10 @@ function loadProject(path) {
     mainWindow.show()
   })
 
+  mainWindow.webContents.on('will-navigate', function(e) {
+    e.preventDefault()
+  })
+
   mainWindow.loadUrl('file://' + __dirname + '/window.html')
   mainWindow.on('closed', function() {
     mainWindow = null
