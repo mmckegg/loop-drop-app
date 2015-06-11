@@ -25,7 +25,7 @@ ipc.on('choose-project', function(event, arg) {
       }
     })
   } else if (arg === 'demo') {
-    loadProject('/Users/matt/Code/loop-drop-sample-project')
+    loadProject(__dirname + '/demo-project')
   } else if (arg === 'browse') {
     dialog.showOpenDialog({ 
       title: 'Browse for Project Folder',

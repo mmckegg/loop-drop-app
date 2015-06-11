@@ -4,3 +4,4 @@ releases
 old
 webstore/local-config.json
 **/.DS_Store
+**/backup
