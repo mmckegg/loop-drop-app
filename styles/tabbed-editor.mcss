@@ -9,12 +9,16 @@ TabbedEditor {
     height: 26px
     flex-shrink: 0
 
-    span.raw {
+    span.controls {
       position: absolute
       right: 3px
       bottom: 3px
-      font-size: 80%
       color: white
+      display: flex
+
+      select {
+        margin-left: 5px
+      }
     }
 
     div.tab {

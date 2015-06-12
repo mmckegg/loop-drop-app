@@ -4,6 +4,8 @@ var getBaseName = require('path').basename
 var getDirectory = require('path').dirname
 
 var ValueEvent = require('lib/value-event')
+var Select = require('lib/params/select')
+var ToggleButton = require('lib/params/toggle-button')
 
 var renderEditor = require('./editor')
 var rawEditor = require('./editor/raw.js')
@@ -22,16 +24,25 @@ function TabbedEditor(state, actions){
         renderEditor(fileObject) :
         renderHelper()
 
-    var rawCheckbox = h('span.raw', [
-      'raw', h('input.raw', {
-        'type': 'checkbox', 
-        'checked': state.rawMode(),
-        'ev-change': ValueEvent(state.rawMode.set, 'checked')
+    var controls = h('span.controls', [
+      ToggleButton(state.rawMode, {
+        title: 'raw'
+      }),
+      Select(state.zoom, {
+        options: [
+          ['50%', 0.5],
+          ['75%', 0.75],
+          ['90%', 0.9],
+          ['100%', 1],
+          ['110%', 1.1],
+          ['125%', 1.25],
+          ['150%', 1.5]
+        ]
       })
     ]) 
 
     return h('TabbedEditor', [
-      h('header', [state.items._list.map(renderTab), rawCheckbox]),
+      h('header', [state.items._list.map(renderTab), controls]),
       editor
     ])
   }

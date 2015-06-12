@@ -1,6 +1,8 @@
 process.nextTick = null
 process.nextTick = require('next-tick')
 
+var frame = require('web-frame')
+
 // persistence
 var fs = require('fs')
 var Setup = require('loop-drop-setup')
@@ -15,6 +17,7 @@ var hg = require('mercury')
 var noDrop = require('lib/no-drop')
 var renderLoop = require('./views')
 var ipc = require('ipc')
+var watch = require('observ/watch')
 
 // path
 var getDirectory = require('path').dirname
@@ -31,6 +34,7 @@ insertCss(require('./styles'))
 var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
 var state = window.state = hg.struct({
+  zoom: hg.value(1),
   tempo: rootContext.tempo,
   selected: hg.value(),
   items: hg.array([]),
@@ -38,6 +42,10 @@ var state = window.state = hg.struct({
   renaming: hg.value(false),
   entries: project.getDirectory('.'),
   subEntries: hg.varhash({})
+})
+
+watch(state.zoom, function(value) {
+  frame.setZoomFactor(value || 1)
 })
 
 // record output
