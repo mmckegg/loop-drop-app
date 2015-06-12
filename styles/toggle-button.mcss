@@ -9,6 +9,20 @@ ToggleButton {
   color: #D0D0D0;
   cursor: pointer;
 
+  -main {
+    border-radius: 0
+    padding: 5px 7px
+    font-size: 110%
+    display: block
+
+    :after {
+      margin-top: -2px
+      border-radius: 4px;
+      width: 8px;
+      height: 8px;
+    }
+  }
+
   -active {
     background: #325736;
     :after {

@@ -1,7 +1,8 @@
 var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
-var renderMainParams = require('./main-params.js')
 var AudioMeter = require('./audio-meter.js')
+var Range = require('lib/params/range')
+var ToggleButton = require('lib/params/toggle-button')
 
 var audioMeterOptions = {red: 1, amber: 0.9, min: 0, max: 1.3, steps: 60}
 
@@ -15,7 +16,13 @@ module.exports = function(element, state, actions, context){
       h('div.side', [
         h('div.transport', [
           AudioMeter(context.output.rms.observ, audioMeterOptions),
-          renderMainParams(state, actions)
+          h('MainParams', [
+            Range(state.tempo, {large: true, format: 'bpm'}),
+            ToggleButton(state.recording, {
+              classList: ['.record', '-main'],
+              title: 'Record'
+            })
+          ])
         ]),
         h('div.browser', [
           renderBrowser(state, actions)

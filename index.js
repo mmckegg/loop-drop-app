@@ -9,6 +9,7 @@ var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
+var SessionRecorder = require('lib/session-recorder')
 
 var QueryParam = require('loop-drop-setup/query-param')
 
@@ -33,9 +34,11 @@ insertCss(require('./styles'))
 
 var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
+var recorder = SessionRecorder(rootContext)
 var state = window.state = hg.struct({
   zoom: hg.value(1),
   tempo: rootContext.tempo,
+  recording: recorder.recording,
   selected: hg.value(),
   items: hg.array([]),
   rawMode: hg.value(false),
@@ -47,33 +50,6 @@ var state = window.state = hg.struct({
 watch(state.zoom, function(value) {
   frame.setZoomFactor(value || 1)
 })
-
-// record output
-var stopRecording = null
-var recorders = []
-
-function noop(){}
-
-function recordOutput(path){
-  console.log('recording output to', path)
-  var fs = project._state.fs
-  var stream = fs.createWriteStream(path)
-  var WaveRecorder = require('wave-recorder')
-  var recorder = WaveRecorder(rootContext.audio, {silenceDuration: 5, bitDepth: 32})
-  recorder.pipe(stream)
-
-  recorder.on('header', function(){
-    fs.write(path, recorder._header, 0, recorder._header.length, 0, noop)
-  })
-  recorders.push(recorder)
-  rootContext.output.connect(recorder.input)
-  return function stop(){
-    recorder.destroy()
-    recorders.splice(recorders.indexOf(recorder, 1))
-    clearTimeout(headerTimer)
-  }
-}
-
 
 var actions = rootContext.actions = {
 
@@ -286,12 +262,7 @@ var actions = rootContext.actions = {
 
   loadProject: function(path){
     console.log('loading project', path)
-
-    stopRecording && stopRecording()
-    stopRecording = null
-
     project.load(path, fs, loaded)
-
     function loaded(){
       console.log('Loaded project', path)
     }
