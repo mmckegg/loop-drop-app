@@ -6,6 +6,7 @@
     var insertCss = require('insert-css')
     var version = require('./package.json').version
     var ipc = require('ipc')
+    var h = require('hyperscript')
 
     function newProject() {
       ipc.send('choose-project', 'new')
@@ -28,7 +29,7 @@
       <header>
         <img src='icon128.png' width='128' />
         <h1>Loop Drop</h1>
-        <h2>version <script>document.write(version)</script></h2>
+        <h2 id='version-container'>version <script>document.write(version)</script></h2>
       </header>
 
       <section class='.actions'>
@@ -46,5 +47,23 @@
       </div>
 
     </div>
+
+    <script>
+      fetch('http://loopjs.com/loop-drop/check-version/' + version).then(
+        function(response){ return response.json() }
+      ).then(function(data) {
+        if (data.updateAvailable) {
+          document.getElementById('version-container').appendChild(
+            h('span', [
+              ' - ', 
+              h('a', {
+                href: data.url,
+                title: 'version ' + data.version
+              }, 'update available')
+            ])
+          )
+        }
+      })
+    </script>
   </body>
 </html>

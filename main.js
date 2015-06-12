@@ -3,6 +3,7 @@ var BrowserWindow = require('browser-window')
 var dialog = require('dialog')
 var ipc = require('ipc')
 var fs = require('fs')
+var Shell = require('shell')
 var Menu = require('menu')
 var menu = Menu.buildFromTemplate(require('./menu'))
 
@@ -74,6 +75,11 @@ function chooseProject() {
 
   welcomeWindow.webContents.on('did-finish-load', function() {
     welcomeWindow.show()
+  })
+
+  welcomeWindow.webContents.on('will-navigate', function(e, url) {
+    e.preventDefault()
+    Shell.openExternal(url)
   })
 
   welcomeWindow.loadUrl('file://' + __dirname + '/welcome.html')
