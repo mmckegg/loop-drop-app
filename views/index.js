@@ -20,7 +20,8 @@ module.exports = function(element, state, actions, context){
             Range(state.tempo, {large: true, format: 'bpm'}),
             ToggleButton(state.recording, {
               classList: ['.record', '-main'],
-              title: 'Record'
+              title: 'Record',
+              description: 'Record output audio to project folder'
             })
           ])
         ]),
