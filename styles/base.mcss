@@ -23,6 +23,29 @@ h1 {
   flex: 1;
 }
 
+select {
+  font-size: 80%;
+  display: inline-block;
+  padding: 2px 4px;
+  height: 18px;
+  border: 1px solid #A9A9A9;
+  background: #666 svg(dropArrow) no-repeat right
+  -webkit-appearance: none;
+  color: #FFF;
+  padding-right: 12px;
+  border-radius: 0;
+  
+  @svg dropArrow {
+    width: 12px
+    height: 6px
+    content: "<path d='M2,0 L10,0 L6,6 Z' />"
+
+    path {
+      fill: #888
+    }
+  }
+}
+
 * + h1 {
   margin-top: 16px
 }

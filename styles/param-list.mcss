@@ -13,20 +13,10 @@ ParamList {
     }
   }
 
-  (select) {
+  select {
     flex: 1
     cursor: pointer
-    font-size: 80%;
-    display: inline-block;
-    padding: 2px 4px;
-    height: 18px;
-    border: 1px solid #A9A9A9;
-    margin-left: -1px;
-    background: #666 svg(dropArrow) no-repeat right
-    -webkit-appearance: none;
-    color: #FFF;
-    padding-right: 12px;
-    text-align: center;
+    margin: 4px;
   }
 
   button + button {
@@ -54,6 +44,9 @@ ParamList {
 
     -block {
       display: block
+      select {
+        margin: 0
+      }
     }
 
     -flex {
@@ -64,15 +57,5 @@ ParamList {
       flex: 1 100px
     }
 
-  }
-
-  @svg dropArrow {
-    width: 12px
-    height: 6px
-    content: "<path d='M2,0 L10,0 L6,6 Z' />"
-
-    path {
-      fill: #888
-    }
   }
 }
