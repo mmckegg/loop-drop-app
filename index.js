@@ -284,10 +284,6 @@ var actions = rootContext.actions = {
     return object
   },
 
-  chooseProject: function(){
-    chrome.fileSystem.chooseEntry({type: 'openDirectory'}, actions.loadProject)
-  },
-
   loadProject: function(path){
     console.log('loading project', path)
 
