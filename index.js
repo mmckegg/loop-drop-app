@@ -36,7 +36,7 @@ var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
 var recorder = SessionRecorder(rootContext)
 var state = window.state = hg.struct({
-  zoom: hg.value(1),
+  zoom: hg.value(1.1),
   tempo: rootContext.tempo,
   recording: recorder.recording,
   selected: hg.value(),
