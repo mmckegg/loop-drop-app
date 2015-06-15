@@ -51,7 +51,9 @@ app.on('window-all-closed', function() {
 })
 
 app.on('ready', function() {
-  Menu.setApplicationMenu(menu)
+  if (process.platform === 'darwin') {
+    Menu.setApplicationMenu(menu)
+  }
   chooseProject()
 });
 
