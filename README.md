@@ -25,7 +25,7 @@ Use beat repeat and hold down buttons to trigger at different rates relative to 
 Select, move, repeat, suppress. All using your hardware controller.
 
 
-## Download the app and get help at [loopjs.com](http://loopjs.com) (soon)
+## Download the app and get help at [loopjs.com](http://loopjs.com)
 
 [![](https://raw.githubusercontent.com/mmckegg/loop-drop-app/master/tile.png)](http://loopjs.com)
 
