@@ -8,19 +8,19 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 - [Watch a video of Loop Drop in action](https://www.youtube.com/watch?v=EBkmdNDIR6E)
 - [Visit the website](http://loopjs.com)
 
-### Create sounds and load samples
+#### Create sounds and load samples
 
 Drop them where you want on your controllers then start jamming!
 
-### Everything you play is recorded.
+#### Everything you play is recorded.
 
 Hit the loop button at any time. Whatever you just played will start to loop!
 
-### Play to the beat.
+#### Play to the beat.
             
 Use beat repeat and hold down buttons to trigger at different rates relative to tempo.
 
-### Transform your loops while they play.
+#### Transform your loops while they play.
 
 Select, move, repeat, suppress. All using your hardware controller.
 
