@@ -125,6 +125,11 @@ function loadProject(path) {
     e.preventDefault()
   })
 
+  mainWindow.webContents.on('will-navigate', function(e, url) {
+    e.preventDefault()
+    Shell.openExternal(url)
+  })
+
   mainWindow.loadUrl('file://' + __dirname + '/window.html')
   mainWindow.on('closed', function() {
     mainWindow = null

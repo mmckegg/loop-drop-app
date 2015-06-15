@@ -2,6 +2,7 @@ var mercury = require("mercury")
 var h = require('micro-css/h')(mercury.h)
 var getBaseName = require('path').basename
 var getDirectory = require('path').dirname
+var join = require('path').join
 
 var ValueEvent = require('lib/value-event')
 var Select = require('lib/params/select')
@@ -93,12 +94,12 @@ function renderHelper(){
     noMidi ? renderNoMidi() : null,
 
     h('div Helper', [
-      'For help, view the ',
-      h('a', {href: 'https://github.com/mmckegg/loop-drop-app#getting-started', target: '_blank'}, 'getting started guide'),
-      ' or ',
+      h('a', {href: 'http://loopjs.com/'}, [
+        h('img', {src: 'file://' + join(__dirname, '..', 'logo.png'), width: 128})
+      ]),
       h('br'),
-      h('a', {href: 'https://github.com/mmckegg/loop-drop-app/issues', target: '_blank'}, 'ask a question'),
-      ' on github.'
+      'For help visit ',
+      h('a', {href: 'http://loopjs.com/'}, 'loopjs.com')
     ])
 
   ])
