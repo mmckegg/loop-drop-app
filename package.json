@@ -8,7 +8,8 @@
   "scripts": {
     "start": "electron main.js",
     "release-mac": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=darwin --version=0.27.2 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.icns && sh codesign.sh && appdmg appdmg.json \"releases/Loop Drop v`npv`.dmg\"",
-    "release-win": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=win32 --version=0.27.2 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico"
+    "release-win": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=win32 --version=0.27.2 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico",
+    "release-linux": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=linux --version=0.27.2 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico"
   },
   "dependencies": {
     "audio-rms": "^1.1.0",
