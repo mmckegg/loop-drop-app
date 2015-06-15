@@ -1,65 +1,51 @@
 {
   "name": "loop-drop",
   "description": "MIDI looper, modular synth and sampler app built around Novation Launchpad controller.",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "private": true,
   "author": "Matt McKegg",
+  "main": "main.js",
   "scripts": {
-    "watch": "ulimit -n 1024; node build -w -d",
-    "build": "ulimit -n 1024; node build -d",
-    "release": "ulimit -n 1024; node build && mkdir -p releases && zip -r \"releases/loop drop `npv`.zip\" build/"
+    "start": "electron main.js",
+    "release-mac": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=darwin --version=0.28.1 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.icns && sh codesign.sh && appdmg appdmg.json \"releases/Loop Drop v`npv`.dmg\"",
+    "release-win": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=win32 --version=0.28.1 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico",
+    "release-linux": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=linux --version=0.28.1 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico"
   },
   "dependencies": {
     "audio-rms": "^1.1.0",
     "audio-slot": "~3.5.0",
     "bopper": "^2.7.0",
     "brace": "^0.5.0",
-    "browserify": "3.37.2",
-    "catw": "~0.2.0",
-    "concat-stream": "~1.4.1",
     "data-set": "^3.1.0",
     "deep-equal": "^0.2.1",
+    "electron-prebuilt": "^0.27.2",
     "frac": "^0.3.1",
     "geval": "^2.1.1",
+    "hyperscript": "^1.4.6",
+    "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
-    "loop-drop-project": "~3.6.0",
-    "loop-drop-setup": "~2.11.1",
+    "loop-drop-project": "~3.7.0",
+    "loop-drop-setup": "~2.11.2",
     "loop-launchpad": "~3.1.0",
-    "loop-qwerty": "~2.0.0",
+    "loop-qwerty": "~2.1.0",
     "mercury": "^14.0.0",
     "micro-css": "~0.6.1",
     "next-tick": "^0.2.2",
     "notevil": "^1.0.0",
     "observ": "^0.2.0",
+    "observ-struct": "^6.0.0",
     "tap-tempo": "0.0.0",
     "teoria": "~0.4.0",
     "through": "^2.3.4",
-    "watchify": "^0.7.2",
     "wav": "~0.1.2",
-    "wave-recorder": "^2.0.0",
+    "wave-recorder": "~2.1.0",
     "web-fs": "^1.7.0",
     "xtend": "^4.0.0"
   },
-  "window": {
-    "bounds": {
-      "width": 1200,
-      "height": 700
-    }
-  },
-  "permissions": [
-    {
-      "fileSystem": [
-        "write",
-        "retainEntries",
-        "directory"
-      ]
-    },
-    "audioCapture",
-    "storage"
-  ],
   "devDependencies": {
-    "cli-color": "^0.3.2",
-    "growl": "^1.8.1",
+    "appdmg": "^0.3.1",
+    "async-each": "^0.1.6",
+    "electron-packager": "^4.1.2",
     "mkdirp": "^0.5.0",
     "npv": "^0.1.0",
     "tape": "*"

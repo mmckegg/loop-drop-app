@@ -32,6 +32,7 @@ SetupNode {
     box-shadow: 0 0 5px #000;
     margin-top: 1px;
     z-index: 100;
+    flex-shrink: 0
 
     section {
       padding: 14px;

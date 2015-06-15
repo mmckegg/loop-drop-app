@@ -1,12 +1,15 @@
 process.nextTick = null
 process.nextTick = require('next-tick')
 
+var frame = require('web-frame')
+
 // persistence
-var WebFS = require('web-fs')
+var fs = require('fs')
 var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
+var SessionRecorder = require('lib/session-recorder')
 
 var QueryParam = require('loop-drop-setup/query-param')
 
@@ -14,6 +17,8 @@ var QueryParam = require('loop-drop-setup/query-param')
 var hg = require('mercury')
 var noDrop = require('lib/no-drop')
 var renderLoop = require('./views')
+var ipc = require('ipc')
+var watch = require('observ/watch')
 
 // path
 var getDirectory = require('path').dirname
@@ -23,12 +28,17 @@ var getBaseName = require('path').basename
 var extend = require('xtend')
 
 //////
+var insertCss = require('insert-css')
+insertCss(require('./styles'))
 
 
 var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
+var recorder = SessionRecorder(rootContext)
 var state = window.state = hg.struct({
+  zoom: hg.value(1.1),
   tempo: rootContext.tempo,
+  recording: recorder.recording,
   selected: hg.value(),
   items: hg.array([]),
   rawMode: hg.value(false),
@@ -37,32 +47,9 @@ var state = window.state = hg.struct({
   subEntries: hg.varhash({})
 })
 
-// record output
-var stopRecording = null
-var recorders = []
-
-function noop(){}
-
-function recordOutput(path){
-  console.log('recording output to', path)
-  var fs = project._state.fs
-  var stream = fs.createWriteStream(path)
-  var WaveRecorder = require('wave-recorder')
-  var recorder = WaveRecorder(rootContext.audio, {silenceDuration: 5, bitDepth: 32})
-  recorder.pipe(stream)
-
-  recorder.on('header', function(){
-    fs.write(path, recorder._header, 0, recorder._header.length, 0, noop)
-  })
-  recorders.push(recorder)
-  rootContext.output.connect(recorder.input)
-  return function stop(){
-    recorder.destroy()
-    recorders.splice(recorders.indexOf(recorder, 1))
-    clearTimeout(headerTimer)
-  }
-}
-
+watch(state.zoom, function(value) {
+  frame.setZoomFactor(value || 1)
+})
 
 var actions = rootContext.actions = {
 
@@ -273,45 +260,11 @@ var actions = rootContext.actions = {
     return object
   },
 
-  chooseProject: function(){
-    chrome.fileSystem.chooseEntry({type: 'openDirectory'}, actions.loadProject)
-  },
-
-  loadDefaultProject: function(){
-    chrome.storage.local.get('projectDirectory', function(items) {
-      if (items.projectDirectory) {
-        chrome.fileSystem.isRestorable(items.projectDirectory, function(bIsRestorable) {
-          if (!bIsRestorable){
-            return actions.chooseProject()
-          }
-          chrome.fileSystem.restoreEntry(items.projectDirectory, function(chosenEntry) {
-            if (chosenEntry) {
-              actions.loadProject(chosenEntry)
-            }
-          })
-        })
-      } else {
-        actions.chooseProject()
-      }
-    })
-  },
-
-  loadProject: function(entry){
-    console.log('loading project', entry)
-
-    stopRecording && stopRecording()
-    stopRecording = null
-
-    var fs = WebFS(entry)
-
-    project.load(entry.fullPath, fs, loaded)
-
+  loadProject: function(path){
+    console.log('loading project', path)
+    project.load(path, fs, loaded)
     function loaded(){
-      chrome.storage.local.set({'projectDirectory': chrome.fileSystem.retainEntry(entry)})
-      //stopRecording = recordOutput(project.resolve('./session.wav'))
-      chrome.fileSystem.getDisplayPath(entry, function(path){
-        console.log('Loaded project', path)
-      })
+      console.log('Loaded project', path)
     }
   }
 }
@@ -322,12 +275,6 @@ var lastSelected = null
 state.entries(actions.scrollToSelected)
 state.selected(function(path){
   if (path){
-
-    var dir = getDirectory(path)
-    if (!state.subEntries.get(dir)){
-      actions.toggleDirectory(dir)
-    }
-
     var src = project.relative(path)
     lastSelected = findItemByPath(state.items, path)
 
@@ -384,17 +331,16 @@ function syncRemovedChunks(object) {
 
 
 // disable default drop handler
-noDrop(document)
 
 // main render loop
 var forceUpdate = null
-setTimeout(function(){
+document.addEventListener("DOMContentLoaded", function(event) {
+  noDrop(document)
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
-}, 100)
-
-
-actions.loadDefaultProject()
-
+})
 
 var applyTempo = require('lib/keyboard-tempo')
 applyTempo(rootContext.tempo, rootContext.speed)
+
+ipc.send('loaded')
+ipc.on('load-project', actions.loadProject)

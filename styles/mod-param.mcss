@@ -45,15 +45,11 @@ ModParam {
           width: 100%
         }
       }
-
-      select {
-        border-radius: 0
-        margin-left: 0
-        height: 17px
-      }
-
     }
 
+    select {
+      flex: 1
+    }
 
   }
 }

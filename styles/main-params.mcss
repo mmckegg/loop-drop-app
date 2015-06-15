@@ -1,30 +1,50 @@
 MainParams {
   display: flex
 
-  button {
-    margin: -1px
-    border: 1px solid #494949;
-    background: #6F6F6F;
-    color: #D8D8D8;
-    cursor: pointer;
+  button.record {
+
+    :after {
+      background: #828282;
+    }
+
+    :focus {
+      box-shadow: rgb(232, 109, 101) 0 0 2px;
+    }
 
     :hover {
-      border: 1px solid #AA5;
-      background: #993;
-      color: #FFF;
-      box-shadow: 0px 0px 5px #AA3;
+      border-color: #BD8489;
+      color: #FFEEEE;
     }
 
-    :active {
-      background: #553;
+    -active {
+      background: #573236;
+      -webkit-animation: redBorderPulse 4s infinite
+
+      :after {
+        background: #D18282;
+        -webkit-animation: redPulse 1s infinite
+      }
     }
+
   }
 
-  button + div {
+  div + button {
     margin-left: 5px
   }
 
   div {
     flex: 1
   }
+}
+
+@-webkit-keyframes redPulse {
+  from { background-color: #926363;}
+  50% { background-color: #E28383; }
+  to { background-color: #A26363; }
+}
+
+@-webkit-keyframes redBorderPulse {
+  from { border-color: #926363;}
+  50% { border-color: #E28383; }
+  to { border-color: #A26363; }
 }

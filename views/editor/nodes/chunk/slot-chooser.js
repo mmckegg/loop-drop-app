@@ -2,6 +2,8 @@ var mercury = require('mercury')
 var h = require('micro-css/h')(mercury.h)
 var MPE = require('lib/mouse-position-event.js')
 var nextTick = require('next-tick')
+var importSample = require('lib/import-sample')
+var extend = require('xtend/immutable')
 
 module.exports = renderOptions
 
@@ -121,7 +123,7 @@ function dragEnd(ev){
 
 function dragOver(ev){
   ev.currentTarget.classList.add('-dragOver')
-  if (ev.altKey){
+  if (ev.altKey || containsFiles(ev.dataTransfer)) {
     ev.dataTransfer.dropEffect = 'copy'
   } else {
     ev.dataTransfer.dropEffect = 'move'
@@ -130,43 +132,64 @@ function dragOver(ev){
 }
 
 function drop(ev){
-  var sourceCollection = currentDrag.collection
+  dragLeave(ev)
+
   var targetCollection = ev.data.collection
-
-  var sourceLookup = sourceCollection.context.slotLookup
   var targetLookup = targetCollection.context.slotLookup
+  var target = targetLookup.get(ev.data.id)
 
-  var source = targetLookup.get(currentDrag.id)
-  var target = sourceLookup.get(ev.data.id)
-
-  var isCopying = ev.altKey
-
-  if (source && source !== target){
-
+  if (containsFiles(ev.dataTransfer)) {
+    var file = ev.dataTransfer.items[0].getAsFile()
     if (target){
-      // clear out existing
       targetCollection.remove(target)
     }
 
-    if (sourceCollection !== targetCollection || isCopying){
+    var node = targetCollection.push({
+      id: ev.data.id,
+      node: 'slot',
+      output: 'output',
+      sources: [
+        { node: 'source/sample', mode: 'oneshot' }
+      ]
+    })
 
-      // move to different collection
-      var descriptor = obtainWithId(ev.data.id, source())
+    importSample(targetCollection.context, file, function(err, descriptor){
+      var player = node.sources.get(0)
+      player.set(extend(player(), descriptor))
+      ev.data.select(ev.data.id)
+    })
 
-      if (!isCopying){
-        sourceCollection.remove(source)
+  } else {
+    var sourceCollection = currentDrag.collection
+    var sourceLookup = sourceCollection.context.slotLookup
+    var source = sourceLookup.get(currentDrag.id)
+    var isCopying = ev.altKey
+
+    if (source && source !== target){
+
+      if (target){
+        // clear out existing
+        targetCollection.remove(target)
       }
 
-      targetCollection.push(descriptor)
-    
-    } else {
-      source.id.set(ev.data.id)
+      if (sourceCollection !== targetCollection || isCopying){
+
+        // move to different collection
+        var descriptor = obtainWithId(ev.data.id, source())
+
+        if (!isCopying){
+          sourceCollection.remove(source)
+        }
+
+        targetCollection.push(descriptor)
+      
+      } else {
+        source.id.set(ev.data.id)
+      }
+
+      ev.data.select(ev.data.id)
     }
-
-    ev.data.select(ev.data.id)
   }
-
-  dragLeave(ev)
 }
 
 function dragLeave(ev){
@@ -177,4 +200,15 @@ function obtainWithId(id, obj){
   obj = JSON.parse(JSON.stringify(obj))
   obj.id = id
   return obj
+}
+
+function containsFiles(transfer) {
+  if (transfer.types) {
+    for (var i = 0; i < event.dataTransfer.types.length; i++) {
+      if (event.dataTransfer.types[i] == "Files") {
+        return true
+      }
+    }
+  }
+  return false
 }
