@@ -3,10 +3,10 @@ Loop Drop
 
 MIDI looper, modular synth and sampler app built around Novation Launchpad controller.
 
+## Overview
+
 - [Watch a video of Loop Drop in action](https://www.youtube.com/watch?v=EBkmdNDIR6E)
 - [Visit the website](http://loopjs.com)
-
-## Overview
 
 ### Create sounds and load samples
 
