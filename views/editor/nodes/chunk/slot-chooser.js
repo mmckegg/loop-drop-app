@@ -156,6 +156,7 @@ function drop(ev){
     importSample(targetCollection.context, file, function(err, descriptor){
       var player = node.sources.get(0)
       player.set(extend(player(), descriptor))
+      ev.data.select(ev.data.id)
     })
 
   } else {
