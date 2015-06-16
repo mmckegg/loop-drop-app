@@ -1,12 +1,21 @@
 {
   "name": "loop-drop",
-  "description": "MIDI looper, modular synth and sampler app built around Novation Launchpad controller.",
+  "description": "MIDI looper, modular synth and sampler app built around Novation Launchpad controller (electron app).",
   "version": "2.8.0",
-  "private": true,
+  "preferGlobal": true,
   "author": "Matt McKegg",
   "main": "main.js",
+  "homepage": "http://loopjs.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmckegg/loop-drop-app.git"
+  },
+  "license": "ISC",
   "scripts": {
     "start": "electron main.js"
+  },
+  "bin": {
+    "loop-drop": "scripts/cli.js"
   },
   "dependencies": {
     "audio-rms": "^1.1.0",

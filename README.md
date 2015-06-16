@@ -48,6 +48,16 @@ $ npm update
 $ npm start
 ```
 
+### You can also install via [npm](https://www.npmjs.com/package/loop-drop)
+
+```bash
+$ npm install -g loop-drop 
+$ loop-drop
+
+# install update
+$ npm update -g loop-drop 
+```
+
 ## Supported Controllers
 
 - [Qwerty Keyboard](https://github.com/mmckegg/loop-qwerty)
