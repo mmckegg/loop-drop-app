@@ -6,10 +6,7 @@
   "author": "Matt McKegg",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js",
-    "release-mac": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=darwin --version=0.28.1 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.icns && sh codesign.sh && appdmg appdmg.json \"releases/Loop Drop v`npv`.dmg\"",
-    "release-win": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=win32 --version=0.28.1 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico",
-    "release-linux": "mkdir -p build && rm -rf build/* && electron-packager ./ \"Loop Drop\" --prune --platform=linux --version=0.28.1 --arch=x64 --ignore=\"(build|releases|test|sounds|doc|tests|mocha|node_modules/midi)/\" --out=\"build\" --app-version=`npv` --icon=icon.ico"
+    "start": "electron main.js"
   },
   "dependencies": {
     "audio-rms": "^1.1.0",
@@ -39,17 +36,10 @@
     "through": "^2.3.4",
     "wav": "~0.1.2",
     "wave-recorder": "~2.1.0",
-    "web-fs": "^1.7.0",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
     "async-each": "^0.1.6",
-    "electron-packager": "^4.1.2",
-    "mkdirp": "^0.5.0",
-    "npv": "^0.1.0",
-    "tape": "*"
-  },
-  "optionalDependencies": {
-    "appdmg": "^0.3.1"
+    "mkdirp": "^0.5.0"
   }
 }

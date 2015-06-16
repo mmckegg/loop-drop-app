@@ -5,7 +5,8 @@ var ipc = require('ipc')
 var fs = require('fs')
 var Shell = require('shell')
 var Menu = require('menu')
-var menu = Menu.buildFromTemplate(require('./menu'))
+var menu = Menu.buildFromTemplate(require('lib/menu'))
+var join = require('path').join
 
 var welcomeWindow = null
 var mainWindow = null
@@ -26,7 +27,7 @@ ipc.on('choose-project', function(event, arg) {
       }
     })
   } else if (arg === 'demo') {
-    loadProject(__dirname + '/demo-project')
+    loadProject(join(__dirname, 'demo-project'))
   } else if (arg === 'browse') {
     dialog.showOpenDialog({ 
       title: 'Browse for Project Folder',
@@ -70,6 +71,7 @@ function chooseProject() {
 
   welcomeWindow = new BrowserWindow({
     title: 'Choose Project',
+    'accept-first-mouse': true,
     width: 500, 
     height: 550,
     show: false
@@ -84,7 +86,7 @@ function chooseProject() {
     Shell.openExternal(url)
   })
 
-  welcomeWindow.loadUrl('file://' + __dirname + '/welcome.html')
+  welcomeWindow.loadUrl('file://' + __dirname + '/views/welcome.html')
 
   welcomeWindow.on('closed', function() {
     welcomeWindow = null
@@ -114,6 +116,7 @@ function loadProject(path) {
     width: 1400, 
     height: 900,
     title: path + ' — Loop Drop',
+    'accept-first-mouse': true,
     show: false
   })
 
@@ -130,7 +133,7 @@ function loadProject(path) {
     Shell.openExternal(url)
   })
 
-  mainWindow.loadUrl('file://' + __dirname + '/window.html')
+  mainWindow.loadUrl('file://' + __dirname + '/views/window.html')
   mainWindow.on('closed', function() {
     mainWindow = null
     if (!quiting) {
