@@ -27,7 +27,7 @@ Select, move, repeat, suppress. All using your hardware controller.
 
 ## Download the app and get help at [loopjs.com](http://loopjs.com)
 
-[![](https://raw.githubusercontent.com/mmckegg/loop-drop-app/master/tile.png)](http://loopjs.com)
+[![](http://loopjs.com/loop-drop-with-launchpads.jpg)](http://loopjs.com)
 
 ## ...or Build and Install from source
 
