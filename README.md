@@ -77,4 +77,4 @@ If your controller isn't supported, copy one of the above controller bindings an
 - [wave-recorder](https://github.com/mmckegg/audio-slot)
 - [mercury](https://github.com/raynos/mercury)
 - [micro-css](https://github.com/mmckegg/micro-css)
-- [electon](https://github.com/atom/electron)
+- [electron](https://github.com/atom/electron)
