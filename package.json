@@ -12,7 +12,8 @@
   },
   "license": "ISC",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "postinstall": "node scripts/link-lib"
   },
   "bin": {
     "loop-drop": "scripts/cli.js"
