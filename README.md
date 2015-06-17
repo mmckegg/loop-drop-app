@@ -1,7 +1,9 @@
 Loop Drop
 ===
 
-MIDI looper, modular synth and sampler app built around Novation Launchpad controller.
+MIDI looper, modular synth and sampler app built around Novation Launchpad controller. 
+
+Written in **JavaScript** and powered by [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), [Web MIDI](https://webaudio.github.io/web-midi-api/), and [electron](http://electron.atom.io/).
 
 ## Overview
 
