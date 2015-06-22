@@ -6,10 +6,11 @@ ControllerNode {
   color: #EEE;
   border-radius: 4px;
   width: 260px;
+  overflow: hidden
 
   header {
     display: flex
-    padding: 5px 3px
+    padding: 5px 5px
 
     span {
       flex: 1
@@ -23,6 +24,13 @@ ControllerNode {
       button.remove {
         opacity: 1
       }
+    }
+  }
+
+  -input {
+    border-color: #6D9466
+    header {
+      background-color: #4B5645
     }
   }
 

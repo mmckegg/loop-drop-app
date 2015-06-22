@@ -5,6 +5,7 @@ var renderGrid = require('./grid.js')
 var renderParams = require('./params.js')
 var renderLoopPosition = require('./loop-position.js')
 var SubLoop = require('../sub-loop.js')
+var ObservClassHook = require('lib/observ-class-hook')
 
 module.exports = function(node){
   if (node){
@@ -13,7 +14,9 @@ module.exports = function(node){
     
     var state = {node: node}
     var nameSuffix = node().port ? ' (' + node().port + ')' : ''
-    return h('div ControllerNode', [
+    return h('div ControllerNode', {
+      'ev-class': ObservClassHook(node.activeInput, '-input')
+    }, [
       h('header', [
         h('span', 'Loop Grid' + nameSuffix),
         h('button.remove Button -warn', {

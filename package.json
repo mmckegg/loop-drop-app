@@ -34,7 +34,7 @@
     "loop-drop-project": "~3.7.0",
     "loop-drop-setup": "~2.11.2",
     "loop-launchpad": "~3.1.0",
-    "loop-qwerty": "~2.1.0",
+    "loop-qwerty": "~3.0.0",
     "mercury": "^14.0.0",
     "micro-css": "~0.6.1",
     "next-tick": "^0.2.2",
