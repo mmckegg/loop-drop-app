@@ -12,7 +12,7 @@
   },
   "license": "ISC",
   "scripts": {
-    "start": "electron main.js",
+    "start": "KEYBOARD=`node scripts/keyboard-layout.js` electron main.js",
     "postinstall": "node scripts/link-lib"
   },
   "bin": {
@@ -31,10 +31,11 @@
     "hyperscript": "^1.4.6",
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
+    "keyboard-layout": "^0.12.0",
     "loop-drop-project": "~3.7.0",
     "loop-drop-setup": "~2.11.2",
     "loop-launchpad": "~3.1.0",
-    "loop-qwerty": "~3.0.0",
+    "loop-qwerty": "~3.1.1",
     "mercury": "^14.0.0",
     "micro-css": "~0.6.1",
     "next-tick": "^0.2.2",
