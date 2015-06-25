@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var env = {}
+var env = process.env
 var spawn = require('child_process').spawn
 var electron = require('electron-prebuilt')
 var join = require('path').join
