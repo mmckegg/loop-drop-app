@@ -22,6 +22,7 @@
     "audio-rms": "^1.1.0",
     "audio-slot": "~3.5.0",
     "bopper": "^2.7.0",
+    "bplist-parser": "^0.1.0",
     "brace": "^0.5.0",
     "data-set": "^3.1.0",
     "deep-equal": "^0.2.1",
@@ -34,7 +35,7 @@
     "loop-drop-project": "~3.7.0",
     "loop-drop-setup": "~2.11.2",
     "loop-launchpad": "~3.1.0",
-    "loop-qwerty": "~3.1.2",
+    "loop-qwerty": "~3.2.0",
     "mercury": "^14.0.0",
     "micro-css": "~0.6.1",
     "next-tick": "^0.2.2",
@@ -47,9 +48,6 @@
     "wav": "~0.1.2",
     "wave-recorder": "~2.1.0",
     "xtend": "^4.0.0"
-  },
-  "optionalDependencies": {
-    "keyboard-layout": "^0.12.0"
   },
   "devDependencies": {
     "async-each": "^0.1.6",
