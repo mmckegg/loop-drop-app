@@ -4,6 +4,7 @@ var e = mercury.event
 
 var getBaseName = require('path').basename
 var getExt = require('path').extname
+var join = require('path').join
 
 var renameWidget = require('lib/rename-widget')
 var DragEvent = require('lib/drag-event')
@@ -61,7 +62,7 @@ function renderEntry(entry, state, actions){
     }
 
     // handle index.json selected
-    selected = selected || entry.path + '/index.json' === state.selected()
+    selected = selected || join(entry.path, 'index.json') === state.selected()
   }
 
   var renaming = selected && state.renaming()
