@@ -7,6 +7,7 @@ var editors = {
   'processor/overdrive': require('./overdrive.js'),
   'processor/filter': require('./filter.js'),
   'processor/reverb': require('./reverb.js'),
+  'processor/freeverb': require('./reverb.js'),
   'processor/bitcrusher': require('./bitcrusher.js'),
   'processor/delay': require('./delay.js'),
   'processor/dipper': require('./dipper.js'),
