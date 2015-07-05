@@ -5,6 +5,15 @@ ParamList {
 
   -compact {
     margin: 0
+
+    button {
+      margin: 0
+    }
+
+    button + button {
+      margin-left: 4px
+    }
+
   }
 
   table {
@@ -15,12 +24,21 @@ ParamList {
 
   select {
     flex: 1
+    flex-shrink: 0
     cursor: pointer
     margin: 4px;
   }
 
-  button + button {
-    margin-left: 4px
+  input {
+    [type='text'] {
+      flex: 1
+      flex-shrink: 0
+      margin: 4px
+    }
+  }
+
+  button {
+    margin: 4px
   }
 
   div {

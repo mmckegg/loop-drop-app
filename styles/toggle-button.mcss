@@ -50,5 +50,6 @@ ToggleButton {
     content: '';
     margin-left: 3px;
     vertical-align: middle;
+    margin-bottom: 1px;
   }
 }
