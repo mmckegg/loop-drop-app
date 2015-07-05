@@ -5,13 +5,14 @@ html, body {
   overflow: hidden;
   height: 100%
   font-size: 12px
+  -webkit-user-select: none
+  user-select: none
 }
 
 body {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
-  user-select: none;
 }
 
 h1 {
