@@ -27,7 +27,7 @@ ipc.on('choose-project', function(event, arg) {
       }
     })
   } else if (arg === 'demo') {
-    loadProject(join(__dirname, 'demo-project'))
+    loadProject(getDemoProjectPath())
   } else if (arg === 'browse') {
     dialog.showOpenDialog({ 
       title: 'Browse for Project Folder',
@@ -98,6 +98,22 @@ function createProject(path) {
     if (err) throw err
     loadProject(path)
   })
+}
+
+function getDemoProjectPath() {
+  // find demo-project by looking upwards
+  var searchLevels = 2
+  var lookUp = []
+  for (var i=0;i<searchLevels;i++) {
+    lookUp.push('..')
+    var current = join.apply(this, [__dirname].concat(lookUp, 'demo-project'))
+    if (fs.existsSync(current)) {
+      return current
+    }
+  }
+
+  // fallback
+  return join(__dirname, 'demo-project')
 }
 
 function loadProject(path) {
