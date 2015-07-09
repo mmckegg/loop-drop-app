@@ -16,7 +16,6 @@ ToggleButton {
     display: block
 
     :after {
-      margin-top: -2px
       border-radius: 4px;
       width: 8px;
       height: 8px;
