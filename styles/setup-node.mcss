@@ -21,6 +21,7 @@ SetupNode {
 
     div {
       overflow-y: auto
+      overflow-x: hidden
     }
 
   }
