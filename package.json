@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "audio-rms": "^1.1.0",
-    "audio-slot": "~3.9.0",
+    "audio-slot": "~3.10.0",
     "bopper": "^2.7.0",
     "bplist-parser": "^0.1.0",
     "brace": "^0.5.0",
