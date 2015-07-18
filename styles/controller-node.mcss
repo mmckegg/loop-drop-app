@@ -18,6 +18,7 @@ ControllerNode {
 
     button.remove {
       opacity: 0.2
+      margin: -1px 0
     }
 
     :hover {

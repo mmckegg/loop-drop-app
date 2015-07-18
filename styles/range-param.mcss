@@ -1,5 +1,5 @@
 RangeParam {
-  min-width: 80px
+  flex-basis: 80px
   display: flex
 
   -flex {
@@ -25,7 +25,7 @@ RangeParam {
   div.slider {
     position: relative;
     flex: 1;
-    height: 17px;
+    height: 18px;
     border: 1px solid #A6A6A6;
     background: #333;
 

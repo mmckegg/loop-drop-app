@@ -35,6 +35,10 @@ select {
   color: #FFF;
   padding-right: 12px;
   border-radius: 0;
+
+  :hover {
+    background-image: svg(dropArrow -active)
+  }
   
   @svg dropArrow {
     width: 12px
@@ -43,6 +47,12 @@ select {
 
     path {
       fill: #888
+    }
+
+    -active {
+      path {
+        fill: #DDD
+      }
     }
   }
 }

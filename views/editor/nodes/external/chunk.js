@@ -156,7 +156,7 @@ function Params(node) {
       return h('ParamList', [
         ModRange(QueryParam(paramValues, key), {
           title: key,
-          format: 'offset', 
+          format: 'ratio1', 
           flex: true
         })
       ])

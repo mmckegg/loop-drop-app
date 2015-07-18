@@ -44,6 +44,10 @@ $node {
       }
     }
 
+    button.edit {
+      margin-left: 3px
+    }
+
     button.remove {
       margin-left: 3px
       opacity: 0.6

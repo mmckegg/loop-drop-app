@@ -69,7 +69,7 @@ ParamList {
     }
 
     -flex {
-      flex: 1 200px
+      flex: 1 300px
     }
 
     -flexSmall {
