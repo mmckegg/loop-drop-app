@@ -1,7 +1,7 @@
 ModParam {
   display: flex
   flex-wrap: wrap
-  min-width: 280px
+  position: relative
 
   -flex {
     flex: 1
@@ -9,47 +9,90 @@ ModParam {
 
   (a) {
     font-size: 80%;
-    display: inline-block;
     padding: 2px 4px;
-    border: 1px solid #A9A9A9;
-    margin-left: -1px;
-    background: #666;
-    color: white
-    text-decoration: none
-    height: 17px
-    cursor: pointer
+    color: rgba(255, 255, 255, 0.44);
+    text-decoration: none;
+    padding-top: 3px;
+    background: #3C493C;
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    cursor: pointer;
+    height: 18px
+    opacity: 0.8
 
     :focus {
       outline-style: none;
-      color: white;
-      box-shadow: white 0 0 4px;
-      z-index: 100;
+      box-shadow: 0 0 1px rgb(255, 255, 255);
+    }
+
+    :hover {
+      border-color: #666
+      box-shadow: 0 0 1px rgb(12, 247, 12);
+      text-decoration: none
+      opacity: 1
     }
 
     -selected {
-      background: #AAA;
-      color: #333
+      color: #FFFFFF;
+      background: #53AB53;
+      border-color: #40FF00;
+      font-weight: bold;
+      opacity: 1
     }
+  }
+
+  select.link {
+    position: absolute
+    left: 0
+    width: 100%
+  }
+
+  div.param {
+    position: relative
+    z-index: 1
+    margin-right: 15px
+    flex: 1
   }
 
   div.sub {
-    width: 100%;
-    display: flex;
+    width: 100%
 
     div {
-      min-width: 0
+      display: flex
+      box-shadow: 0 0 10px #222;
+      background: linear-gradient(to bottom, #AAA,#555 90%);
+      padding-left: 1px;
 
-      -flex, -flexSmall {
-        flex: 1
-        select {
-          width: 100%
-        }
+      * {
+        margin: 1px
+        margin-left: 0
+      }
+
+      button.remove {
+        margin-top: 2px;
+        margin-left: 1px;
       }
     }
-
-    select {
-      flex: 1
-    }
-
   }
+
+  -linked {
+    div.param {
+
+      pointer-events: none;
+      padding: 2px;
+      background-color: #666;
+      font-size: 90%;
+      height: 16px;
+      margin-top: 1px
+      margin-left: 1px
+      margin-bottom: 1px
+
+      span.title {
+        font-weight: bold;
+      }
+    }
+  }
+
+
+
 }

@@ -70,7 +70,6 @@ module.exports = function(node){
         title: 'pitch',
         format: 'semitone',
         defaultValue: 0,
-        width: 200,
         flex: true
       }),
 
@@ -78,7 +77,6 @@ module.exports = function(node){
         title: 'octave',
         format: 'octave',
         defaultValue: 0,
-        width: 200,
         flex: true
       })
 
