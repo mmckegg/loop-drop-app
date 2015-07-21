@@ -11,7 +11,7 @@ var renderBrowser = require('./browser.js')
 module.exports = function(element, state, actions, context){
   var renderEditor = require('./tabbed-editor.js')(state, actions)
   
-  var loop = mercury.main(state, function(data){
+  var loop = mercury.main(state, function(){
     return h('Holder', [
       h('div.side', [
         h('div.transport', [
@@ -35,7 +35,12 @@ module.exports = function(element, state, actions, context){
     ])
   }, mercury)
 
-  state(loop.update)
+  state(function () {
+    // HACK: schedule 300 ms ahead to avoid audio interuption
+    window.rootContext.scheduler.schedule(0.3)
+    loop.update()
+  })
+
   element.appendChild(loop.target)
 
   return function(){

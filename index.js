@@ -221,6 +221,8 @@ var actions = rootContext.actions = {
 
     var object = FileObject(rootContext)
 
+    window.rootContext.scheduler.schedule(2)
+
     object.onLoad(function(){
 
       // don't backup a corrupted file!
