@@ -34,7 +34,7 @@
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
     "loop-drop-project": "~3.8.0",
-    "loop-drop-setup": "~2.12.1",
+    "loop-drop-setup": "~2.13.1",
     "loop-launchpad": "~3.1.0",
     "loop-qwerty": "~3.4.0",
     "mercury": "^14.0.0",
