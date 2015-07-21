@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 var MPE = require('lib/mouse-position-event.js')
 var nextTick = require('next-tick')
 var importSample = require('lib/import-sample')
@@ -20,7 +20,7 @@ function renderOptions(chunk){
       h('div.slot', {
         'style': {width: width},
         'className': selectedSlotId === '$template' ? '-selected' : '',
-        'ev-click': mercury.event(selectTemplateSlot, chunk)
+        'ev-click': send(selectTemplateSlot, chunk)
       }, 'template trigger')
     )
   } else {
@@ -45,11 +45,11 @@ function renderOptions(chunk){
 
             'style': {width: width},
             'className': selectedSlotId === id ? '-selected' : '',
-            'ev-click': mercury.event(chunk.selectedSlotId.set, id)
+            'ev-click': send(chunk.selectedSlotId.set, id)
           }, [
             id,
             h('button.remove', {
-              'ev-click': mercury.event(chunk.slots.remove, slot),
+              'ev-click': send(chunk.slots.remove, slot),
             }, 'X')
           ])
         )
@@ -62,7 +62,7 @@ function renderOptions(chunk){
             'ev-dragleave': MPE(dragLeave, dragInfo),
             'ev-drop': MPE(drop, dragInfo),
 
-            'ev-click': mercury.event(spawnSlot, { id: id, chunk: chunk })
+            'ev-click': send(spawnSlot, { id: id, chunk: chunk })
           }, '+ trigger')
         )
       }
@@ -75,7 +75,7 @@ function renderOptions(chunk){
     h('div.spacer'),
     h('div.slot -output', {
       'className': selectedSlotId === 'output' ? '-selected' : '',
-      'ev-click': mercury.event(chunk.selectedSlotId.set, 'output')
+      'ev-click': send(chunk.selectedSlotId.set, 'output')
     }, 'output')
   ])
 }

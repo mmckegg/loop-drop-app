@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 var MPE = require('lib/mouse-position-event')
 var MouseDragEvent = require('lib/mouse-drag-event')
 var nextTick = require('next-tick')
@@ -20,7 +20,7 @@ module.exports = function renderGrid(controller){
     var buttons = []
     for (var c=0;c<shape[1];c++){      
       buttons.push(h('div.button', {
-        'ev-dblclick': mercury.event(createChunk, {controller: controller, at: [r,c]}),
+        'ev-dblclick': send(createChunk, {controller: controller, at: [r,c]}),
         'ev-dragenter': MPE(enterButton, controller),
         'ev-dragleave': MPE(leaveButton, controller)
       }))
@@ -71,8 +71,8 @@ function renderChunkBlock(chunk, controller){
     className: selectedChunkId == chunk.id ? '-selected' : null, 
     style: style,
     draggable: true,
-    'ev-click': mercury.event(selectChunk, { chunkId: chunk.id, controller: controller }),
-    'ev-dblclick': mercury.event(editChunk, node),
+    'ev-click': send(selectChunk, { chunkId: chunk.id, controller: controller }),
+    'ev-dblclick': send(editChunk, node),
     'ev-dragstart': MPE(startDrag, node),
     'ev-dragend': MPE(endDrag, node)
   },[

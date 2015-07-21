@@ -1,5 +1,5 @@
-var mercury = require("mercury")
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 var getBaseName = require('path').basename
 var getDirectory = require('path').dirname
 var join = require('path').join
@@ -61,11 +61,11 @@ function TabbedEditor(state, actions){
     if (data){
       var selected = state.selected() == item.path
       return h('div.tab', { 
-        'ev-click': mercury.event(state.selected.set, item.path),
+        'ev-click': send(state.selected.set, item.path),
         'className': selected ? '-selected' : null
       }, [
         h('span', [getName(item.path)]), 
-        h('button.close', {'ev-click': mercury.event(actions.closeFile, item.path)})
+        h('button.close', {'ev-click': send(actions.closeFile, item.path)})
       ])
     } else {
       return ''

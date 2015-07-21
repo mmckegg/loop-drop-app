@@ -1,5 +1,4 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
 var MPE = require('lib/mouse-position-event.js')
 
 module.exports = Orderable

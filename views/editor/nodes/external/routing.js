@@ -1,5 +1,4 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
 var select = require('lib/params/select')
 var range = require('lib/params/range')
 var QueryParam = require('loop-drop-setup/query-param')

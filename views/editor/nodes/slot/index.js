@@ -1,5 +1,4 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
 var Collection = require('../collection.js')
 var Spawner = require('../spawner.js')
 var Range = require('lib/params/range')

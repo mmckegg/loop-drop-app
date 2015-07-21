@@ -1,6 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
-var e = mercury.event
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 
 var getBaseName = require('path').basename
 var getExt = require('path').extname
@@ -38,7 +37,7 @@ function renderBrowser(state, actions){
 
   return h('div', {className: 'Browser'}, [
     h('header', [
-      h('span', 'Setups'), h('button.new', {'ev-click': e(actions.newSetup)}, '+ New')
+      h('span', 'Setups'), h('button.new', {'ev-click': send(actions.newSetup)}, '+ New')
     ]),
     h('ScrollBox', entries)
   ])
@@ -54,7 +53,7 @@ function renderEntry(entry, state, actions){
   if (entry.type === 'directory'){
     classList.push('-directory')
     expander = h('button.twirl', {
-      'ev-click': mercury.event(actions.toggleDirectory, entry.path)
+      'ev-click': send(actions.toggleDirectory, entry.path)
     })
 
     if (state.subEntries.get(entry.path)){
@@ -70,7 +69,7 @@ function renderEntry(entry, state, actions){
 
   // handle rename click
   var click = selected ?
-    mercury.event(state.renaming.set, true) : null
+    send(state.renaming.set, true) : null
 
   if (selected){
     classList.push('-selected')
@@ -82,17 +81,17 @@ function renderEntry(entry, state, actions){
 
   var buttons = [
     h('button.delete', {
-      'ev-click': e(actions.deleteEntry, entry.path),
+      'ev-click': send(actions.deleteEntry, entry.path),
     }, 'delete')
   ]
 
   if (renaming){
     buttons.push(
       h('button.save', {
-        'ev-click': e(saveRename, renameState)
+        'ev-click': send(saveRename, renameState)
       }, 'save'),
       h('button.cancel', {
-        'ev-click': e(cancelRename, renameState)
+        'ev-click': send(cancelRename, renameState)
       }, 'cancel')
     )
   }
@@ -105,7 +104,7 @@ function renderEntry(entry, state, actions){
     'draggable': true,
     'ev-dragstart': DragEvent(dragStart, entry),
     'ev-click': click,
-    'ev-dblclick': e(actions.open, entry.path),
+    'ev-dblclick': send(actions.open, entry.path),
     'className': classList.join(' ')
   }, [expander, nameElement, buttons ])
 }

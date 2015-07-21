@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 var renderRouting = require('./routing.js')
 
 var Range = require('lib/params/range')
@@ -43,22 +43,22 @@ module.exports = function(node){
 
     return h('div ExternalNode', {
       className: classNames.join(' '),
-      'ev-click': mercury.event(setup.selectedChunkId.set, data.id),
+      'ev-click': send(setup.selectedChunkId.set, data.id),
       'style': mainStyle
     }, [
       h('header', {
         style: headerStyle
       }, [
         h('button.twirl', {
-          'ev-click': mercury.event(toggleParam, minimised)
+          'ev-click': send(toggleParam, minimised)
         }),
         h('span', {'ev-rename': RenameHook(node, selected, actions.updateChunkReferences)}),
         Range(volume, {format: 'dB', title: 'vol', defaultValue: 1, width: 150, pull: true}),
         h('button.edit Button -edit', {
-          'ev-click': mercury.event(editChunk, node)
+          'ev-click': send(editChunk, node)
         }, 'edit'),
         h('button.remove Button -warn', {
-          'ev-click': mercury.event(collection.remove, node),
+          'ev-click': send(collection.remove, node),
         }, 'X')
       ]),
       data.minimised ? '' : h('section', [

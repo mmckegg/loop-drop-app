@@ -1,5 +1,7 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var VirtualDom = require('virtual-dom')
+var MainLoop = require('main-loop')
+var h = require('micro-css/h')(require('virtual-dom/h'))
+
 var AudioMeter = require('./audio-meter.js')
 var Range = require('lib/params/range')
 var ToggleButton = require('lib/params/toggle-button')
@@ -11,7 +13,7 @@ var renderBrowser = require('./browser.js')
 module.exports = function(element, state, actions, context){
   var renderEditor = require('./tabbed-editor.js')(state, actions)
   
-  var loop = mercury.main(state, function(){
+  var loop = MainLoop(state, function(){
     return h('Holder', [
       h('div.side', [
         h('div.transport', [
@@ -33,7 +35,7 @@ module.exports = function(element, state, actions, context){
         renderEditor()
       ])
     ])
-  }, mercury)
+  }, VirtualDom)
 
   state(function () {
     // HACK: schedule 100 ms ahead to avoid audio interuption

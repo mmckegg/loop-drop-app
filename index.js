@@ -1,8 +1,3 @@
-process.nextTick = null
-process.nextTick = require('next-tick')
-
-var frame = require('web-frame')
-
 // persistence
 var fs = require('fs')
 var Setup = require('loop-drop-setup')
@@ -11,14 +6,19 @@ var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
 var SessionRecorder = require('lib/session-recorder')
 
+// state 
+var ipc = require('ipc')
+var Observ = require('observ')
+var ObservArray = require('observ-array')
+var ObservStruct = require('observ-struct')
+var ObservVarhash = require('observ-varhash')
 var QueryParam = require('loop-drop-setup/query-param')
+var watch = require('observ/watch')
 
-// state and rendering
-var hg = require('mercury')
+// rendering
 var noDrop = require('lib/no-drop')
 var renderLoop = require('./views')
-var ipc = require('ipc')
-var watch = require('observ/watch')
+var frame = require('web-frame')
 
 // path
 var getDirectory = require('path').dirname
@@ -36,16 +36,16 @@ insertCss(require('./styles'))
 var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
 var recorder = SessionRecorder(rootContext)
-var state = window.state = hg.struct({
-  zoom: hg.value(1.1),
+var state = window.state = ObservStruct({
+  zoom: Observ(1.1),
   tempo: rootContext.tempo,
   recording: recorder.recording,
-  selected: hg.value(),
-  items: hg.array([]),
-  rawMode: hg.value(false),
-  renaming: hg.value(false),
+  selected: Observ(),
+  items: ObservArray([]),
+  rawMode: Observ(false),
+  renaming: Observ(false),
   entries: project.getDirectory('.'),
-  subEntries: hg.varhash({})
+  subEntries: ObservVarhash({})
 })
 
 watch(state.zoom, function(value) {

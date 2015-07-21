@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 
 var renderGrid = require('./grid.js')
 var renderParams = require('./params.js')
@@ -20,7 +20,7 @@ module.exports = function(node){
       h('header', [
         h('span', 'Loop Grid' + nameSuffix),
         h('button.remove Button -warn', {
-          'ev-click': mercury.event(collection.remove, node),
+          'ev-click': send(collection.remove, node),
         }, 'X')
       ]),
       h('section', [

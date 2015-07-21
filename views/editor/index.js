@@ -1,5 +1,6 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var VirtualDom = require('virtual-dom')
+var MainLoop = require('main-loop')
+var h = require('micro-css/h')(require('virtual-dom/h'))
 
 var Observ = require('observ')
 var nextTick = require('next-tick')
@@ -41,13 +42,13 @@ Editor.prototype.init = function(){
     loop.update()
   }
 
-  var loop = mercury.main(null, function(){
+  var loop = MainLoop(null, function(){
     if (state.fileObject && state.fileObject.node){
       return renderNode(state.fileObject.node)
     } else {
       return h('div')
     }
-  }, mercury)
+  }, VirtualDom)
 
   bindToObject(this, update)
 

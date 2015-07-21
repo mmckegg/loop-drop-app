@@ -1,4 +1,7 @@
-var mercury = require('mercury')
+var VirtualDom = require('virtual-dom')
+var MainLoop = require('main-loop')
+var createElement = require('virtual-dom/create-element')
+var h = require('micro-css/h')(require('virtual-dom/h'))
 
 module.exports = SubLoop
 
@@ -16,11 +19,11 @@ SubLoop.prototype.init = function(){
   }
 
   if (typeof this.observ == 'function' && typeof this.render === 'function'){
-    var loop = mercury.main(this.observ(), this.render, mercury)
+    var loop = MainLoop(this.observ(), this.render, VirtualDom)
     this.removeListener = this.observ(loop.update)
     return loop.target
   } else {
-    return mercury.create(mercury.h('div'))
+    return createElement(h('div'))
   }
 }
 

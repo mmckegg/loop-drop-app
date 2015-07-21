@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
@@ -39,33 +39,33 @@ module.exports = function(node){
         h('strong', id + ': '),
         ModRange(slot.value, { flex: true, format: 'offset' }),
         h('button.remove Button -warn', {
-          'ev-click': mercury.event(node.slots.remove, slot),
+          'ev-click': send(node.slots.remove, slot),
         }, 'X')
       ]))
     } else {
       elements.push(h('div.slot -spawn', {
-        'ev-click': mercury.event(spawnSlot, { id: id, collection: node.slots })
+        'ev-click': send(spawnSlot, { id: id, collection: node.slots })
       }, [ '+ trigger']))
     }
   }
 
   return h('div ExternalNode', {
     className: classNames.join(' '),
-    'ev-click': mercury.event(setup.selectedChunkId.set, node.id()),
+    'ev-click': send(setup.selectedChunkId.set, node.id()),
     'style': mainStyle
   }, [
     h('header', {
       style: headerStyle
     }, [
       h('button.twirl', {
-        'ev-click': mercury.event(toggleParam, node.minimised)
+        'ev-click': send(toggleParam, node.minimised)
       }),
       h('span', [
         h('span', {'ev-hook': RenameHook(node, selected, actions.updateChunkReferences)}), 
         ' (modulator)'
       ]),
       h('button.remove Button -warn', {
-        'ev-click': mercury.event(collection.remove, node),
+        'ev-click': send(collection.remove, node),
       }, 'X')
     ]),
     node.minimised() ? '' : h('section', [

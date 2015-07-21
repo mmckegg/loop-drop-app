@@ -1,5 +1,6 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
+
 var renderCollection = require('../collection.js')
 
 var ChunkOptions = require('./options.js')
@@ -115,7 +116,7 @@ function ParamEditor(chunk){
           'ev-hook': EditableHook(IndexParam(chunk.params, i), selected)
         }),
         h('button.remove Button -warn', {
-          'ev-click': mercury.event(removeParam, {chunk: chunk, key: key}),
+          'ev-click': send(removeParam, {chunk: chunk, key: key}),
         }, 'X')
       ])
     ])
@@ -125,7 +126,7 @@ function ParamEditor(chunk){
     params, 
 
     h('NodeSpawner', h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnParam, chunk)
+      'ev-click': send(spawnParam, chunk)
     }, '+ param'))
   ]
 }

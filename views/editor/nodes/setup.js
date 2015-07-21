@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 var Collection = require('./collection.js')
 var Spawner = require('./spawner.js')
 var getBaseName = require('path').basename
@@ -79,15 +79,15 @@ function ChunkSpawner(setup){
 
   return h('NodeSpawner', [
     h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnTriggers, setup)
+      'ev-click': send(spawnTriggers, setup)
     }, '+ Triggers'),
 
     h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnChromatic, setup)
+      'ev-click': send(spawnChromatic, setup)
     }, '+ Chromatic'),
 
     h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawnModulator, setup)
+      'ev-click': send(spawnModulator, setup)
     }, '+ Modulator')
   ])
 }

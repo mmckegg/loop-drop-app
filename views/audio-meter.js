@@ -1,5 +1,6 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
+var createElement = require('virtual-dom/vdom/create-element')
 var watch = require('observ/watch')
 
 module.exports = AudioMeter
@@ -13,7 +14,7 @@ function AudioMeter(value, opts){
 AudioMeter.prototype.type = 'Widget'
 
 AudioMeter.prototype.init = function(){
-  var element = mercury.create(render(this.opts))
+  var element = createElement(render(this.opts))
 
   var state = this.state = {
     value: this.value,

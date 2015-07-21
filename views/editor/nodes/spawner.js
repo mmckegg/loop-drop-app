@@ -1,5 +1,5 @@
-var mercury = require('mercury')
-var h = require('micro-css/h')(mercury.h)
+var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 
 module.exports = Spawner
 
@@ -8,7 +8,7 @@ function Spawner(collection, options){
 
   for (var i=0;i<options.nodes.length;i++){
     buttons.push(h('button Button -main -spawn', {
-      'ev-click': mercury.event(spawn, {descriptor: options.nodes[i][1], collection: collection })
+      'ev-click': send(spawn, {descriptor: options.nodes[i][1], collection: collection })
     }, '+ ' + options.nodes[i][0]))
   }
 
