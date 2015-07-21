@@ -221,7 +221,7 @@ var actions = rootContext.actions = {
 
     var object = FileObject(rootContext)
 
-    window.rootContext.scheduler.schedule(2)
+    window.rootContext.scheduler.schedule(1)
 
     object.onLoad(function(){
 

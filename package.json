@@ -21,7 +21,7 @@
   "dependencies": {
     "audio-rms": "^1.1.0",
     "audio-slot": "~3.11.1",
-    "bopper": "~2.9.0",
+    "bopper": "~2.9.1",
     "bplist-parser": "^0.1.0",
     "brace": "^0.5.0",
     "data-set": "^3.1.0",

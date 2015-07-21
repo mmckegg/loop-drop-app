@@ -36,8 +36,8 @@ module.exports = function(element, state, actions, context){
   }, mercury)
 
   state(function () {
-    // HACK: schedule 300 ms ahead to avoid audio interuption
-    window.rootContext.scheduler.schedule(0.3)
+    // HACK: schedule 100 ms ahead to avoid audio interuption
+    window.rootContext.scheduler.schedule(0.1)
     loop.update()
   })
 
