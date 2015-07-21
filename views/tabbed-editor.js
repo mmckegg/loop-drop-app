@@ -59,13 +59,12 @@ function TabbedEditor(state, actions){
 
     var data = item&&item()
     if (data){
-      var pre = data.node === 'setup' ? h('strong', 'Setup:') : ''
       var selected = state.selected() == item.path
       return h('div.tab', { 
         'ev-click': mercury.event(state.selected.set, item.path),
         'className': selected ? '-selected' : null
       }, [
-        h('span', [pre, ' ', getName(item.path)]), 
+        h('span', [getName(item.path)]), 
         h('button.close', {'ev-click': mercury.event(actions.closeFile, item.path)})
       ])
     } else {
@@ -81,7 +80,8 @@ function getName(path){
   if (base === 'index'){
     return getBaseName(getDirectory(path))
   } else {
-    return base
+    var dir = getBaseName(getDirectory(path))
+    return dir + ' > ' + base
   }
 }
 
