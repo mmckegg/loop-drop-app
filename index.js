@@ -89,7 +89,7 @@ var actions = rootContext.actions = {
   },
 
   newSetup: function(){
-    project.resolveAvailable(join('.', 'New Setup'), function(err, src){
+    project.resolveAvailable('New Setup', function(err, src){
       project.createDirectory(src, function(err, dir){
         project.getFile(join(src, 'index.json'), function(err, file){
           file.set(JSON.stringify({node: 'setup', controllers: [], chunks: []}))
@@ -184,9 +184,9 @@ var actions = rootContext.actions = {
     if (chunk._type === 'ExternalNode' && descriptor.src) {
 
       // only rename if old file matches ID
-      var oldSrc = join('.', chunkId + '.json')
-      var newSrc = join('.', newChunkId + '.json')
-      if (oldSrc === descriptor.src) {
+      var oldSrc = chunkId + '.json'
+      var newSrc = newChunkId + '.json'
+      if (oldSrc === join(descriptor.src)) {
         var path = fileObject.resolvePath(oldSrc)
         actions.rename(path, newChunkId + '.json', function(){
           QueryParam(chunk, 'src').set(newSrc)
@@ -319,7 +319,7 @@ function syncRemovedChunks(object) {
           var descriptor = chunk&&chunk()
           if (chunk && descriptor.id && chunk.getPath) {
             var path = chunk.getPath()
-            var truePath = object.resolvePath(join('.', descriptor.id + '.json'))
+            var truePath = object.resolvePath(descriptor.id + '.json')
             if (path === truePath) {
               var src = project.relative(chunk.getPath())
               project.deleteEntry(src)
