@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "audio-rms": "^1.1.0",
-    "audio-slot": "~3.12.0",
+    "audio-slot": "~3.13.0",
     "bopper": "~2.9.1",
     "bplist-parser": "^0.1.0",
     "brace": "^0.5.0",
@@ -35,7 +35,7 @@
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
     "loop-drop-project": "~3.8.0",
-    "loop-drop-setup": "~2.13.1",
+    "loop-drop-setup": "~2.14.0",
     "loop-launchpad": "~3.1.0",
     "loop-qwerty": "~3.4.0",
     "main-loop": "^3.1.0",
