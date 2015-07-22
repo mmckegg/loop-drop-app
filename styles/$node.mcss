@@ -61,6 +61,13 @@ $node {
 
   }
 
+  h1 {
+    font-size: 100%;
+    padding: 3px 10px;
+    background-color: #555;
+    margin-top: 6px;
+  }
+
   section {
 
   }
