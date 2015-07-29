@@ -50,7 +50,7 @@ var state = window.state = ObservStruct({
 })
 
 var broadcastItemLoaded = null
-state.items.onLoaded = Event(function(broadcast) { 
+state.items.onLoad = Event(function(broadcast) { 
   broadcastItemLoaded = broadcast 
 })
 
