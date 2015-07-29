@@ -14,6 +14,7 @@ var ObservStruct = require('observ-struct')
 var ObservVarhash = require('observ-varhash')
 var QueryParam = require('loop-drop-setup/query-param')
 var watch = require('observ/watch')
+var Event = require('geval')
 
 // rendering
 var noDrop = require('lib/no-drop')
@@ -46,6 +47,11 @@ var state = window.state = ObservStruct({
   renaming: Observ(false),
   entries: project.getDirectory('.'),
   subEntries: ObservVarhash({})
+})
+
+var broadcastItemLoaded = null
+state.items.onLoaded = Event(function(broadcast) { 
+  broadcastItemLoaded = broadcast 
 })
 
 watch(state.zoom, function(value) {
@@ -224,6 +230,8 @@ var actions = rootContext.actions = {
     window.rootContext.scheduler.schedule(1)
 
     object.onLoad(function(){
+
+      broadcastItemLoaded(object)
 
       // don't backup a corrupted file!
       if (Object.keys(object() || {}).length){
