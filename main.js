@@ -150,7 +150,7 @@ function loadProject(path) {
   })
 
   mainWindow.loadUrl('file://' + __dirname + '/views/window.html')
-  mainWindow.on('closed', function() {
+  mainWindow.on('close', function() {
     mainWindow = null
     if (!quiting) {
       chooseProject()
