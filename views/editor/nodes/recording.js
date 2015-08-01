@@ -1,6 +1,6 @@
 var h = require('micro-css/h')(require('virtual-dom/h'))
 var svg = require('micro-css/h')(require('virtual-dom/virtual-hyperscript/svg'))
-var objectifyRecording = require('@loopjs/session-recorder/objectify')
+var objectifyRecording = require('lib/objectify-recording')
 var randomColor = require('lib/random-color')
 var ObservValueHook = require('lib/observ-value-hook')
 var ObservClassHook = require('lib/observ-class-hook')
