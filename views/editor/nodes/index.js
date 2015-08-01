@@ -4,6 +4,7 @@ var nodeEditors = {
   controller: require('./controller'),
   chunk: require('./chunk'),
   setup: require('./setup.js'),
+  recording: require('./recording.js'),
   external: require('./external'),
   slot: require('./slot'),
   source: require('./source'),

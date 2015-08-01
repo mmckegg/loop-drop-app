@@ -4,7 +4,7 @@ var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
-var SessionRecorder = require('lib/session-recorder')
+var ProjectRecorder = require('lib/project-recorder')
 
 // state 
 var ipc = require('ipc')
@@ -36,23 +36,27 @@ insertCss(require('./styles'))
 
 var rootContext = window.rootContext = require('lib/context')
 var project = rootContext.project
-var recorder = SessionRecorder(rootContext)
+
+var items = ObservArray([])
+var broadcastItemLoaded = null
+items.onLoad = Event(function(broadcast) { 
+  broadcastItemLoaded = broadcast 
+})
+
+var recorder = ProjectRecorder(rootContext, items)
 var state = window.state = ObservStruct({
   zoom: Observ(1.1),
   tempo: rootContext.tempo,
   recording: recorder.recording,
   selected: Observ(),
-  items: ObservArray([]),
+  items: items,
   rawMode: Observ(false),
   renaming: Observ(false),
   entries: project.getDirectory('.'),
   subEntries: ObservVarhash({})
 })
 
-var broadcastItemLoaded = null
-state.items.onLoad = Event(function(broadcast) { 
-  broadcastItemLoaded = broadcast 
-})
+
 
 watch(state.zoom, function(value) {
   frame.setZoomFactor(value || 1)
@@ -276,6 +280,7 @@ var actions = rootContext.actions = {
     project.load(path, fs, loaded)
     function loaded(){
       console.log('Loaded project', path)
+      require('./extend')(rootContext, state)
     }
   }
 }
@@ -355,5 +360,3 @@ applyTempo(rootContext.tempo, rootContext.speed)
 
 ipc.send('loaded')
 ipc.on('load-project', actions.loadProject)
-
-require('./extend')(rootContext, state)
