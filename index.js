@@ -53,6 +53,7 @@ var state = window.state = ObservStruct({
   rawMode: Observ(false),
   renaming: Observ(false),
   entries: project.getDirectory('.'),
+  recordingEntries: project.getDirectory('~recordings'),
   subEntries: ObservVarhash({})
 })
 
