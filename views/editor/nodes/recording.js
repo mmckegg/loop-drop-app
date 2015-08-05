@@ -6,6 +6,7 @@ var ObservValueHook = require('lib/observ-value-hook')
 var ObservClassHook = require('lib/observ-class-hook')
 var ObservStyleHook = require('lib/observ-style-hook')
 var send = require('value-event/event')
+var getTimeFromPosition = require('lib/time-from-position')
 
 module.exports = RecordingView
 
@@ -43,7 +44,7 @@ function ArrangementTimeline (recording) {
         width: finalWidth + 'px'
       }
     }, [
-      renderSvgTimeline(data.end, widthMultiplier),
+      renderSvgTimeline(data.end, widthMultiplier, recording.timeMapping),
       h('input', {
         type: 'range', 
         min: 0, 
@@ -94,21 +95,22 @@ function ArrangementTimeline (recording) {
   ])
 }
 
-function renderSvgTimeline (length, widthMultiplier) {
+function renderSvgTimeline (length, widthMultiplier, mapping) {
   var elements = []
   var xOffset = 6
 
   for (var i=0;i<length;i+=1) {
     var x = i * widthMultiplier + xOffset
     elements.push(svg('line', {
-      x1: x, x2: x, y1: 0, y2: i % 4 ? 3 : 6,
+      x1: x, x2: x, y1: 0, y2: i % 8 ? 3 : 12,
       stroke: 'rgba(255,255,255,0.5)'
     }))
 
     if (i % 8 === 0) {
+      var val = formatTime(getTimeFromPosition(i, mapping))
       elements.push(svg('text', {
-        x: x, y: 5
-      }, String(i)))
+        x: x+3, y: 5
+      }, val))
     }
   }
 
@@ -146,4 +148,10 @@ function ClipSVG (positionOffset, widthMultiplier, width, slots) {
 
 function toCssAlpha(rgb, alpha) {
   return 'rgba(' + rgb.join(',') + ',' + alpha + ')'
+}
+
+function formatTime (value) {
+  var minutes = Math.floor(value / 60)
+  var seconds = Math.round(value % 60)
+  return minutes + ':' + ('0'+seconds).slice(-2)
 }

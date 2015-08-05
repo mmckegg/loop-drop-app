@@ -12,7 +12,6 @@ ArrangementTimeline {
         dominant-baseline: text-before-edge;
         fill: rgba(255,255,255,0.5)
         font-size: 10px;
-        text-anchor: middle;
       }
       box-sizing: content-box;
       margin: 0 -6px;
