@@ -357,3 +357,4 @@ ipc.send('loaded')
 ipc.on('load-project', actions.loadProject)
 
 require('./extend')(rootContext, state)
+require('lib/context-menu')
