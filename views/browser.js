@@ -12,22 +12,24 @@ var currentRename = null
 
 module.exports = renderBrowser
 
-function renderBrowser(state, actions){
+function renderBrowser(entries, state, actions){
 
-  var entries = []
+  var elements = []
 
   // render two-level tree
-  if (state.entries()){
-    state.entries().forEach(function(entry){
-      if (entry.type === 'directory'){
-        entries.push(renderEntry(entry, state, actions))
+  if (entries()){
+    entries().forEach(function(entry){
+      var base = getBaseName(entry.path)
+
+      if (entry.type === 'directory' && base !== '~recordings') {
+        elements.push(renderEntry(entry, state, actions))
         var sub = state.subEntries.get(entry.path)
         if (sub && sub()){
           sub().forEach(function(subEntry){
             var fileName = getBaseName(subEntry.path)
             var ext = getExt(fileName)
             if (subEntry.type === 'file' && fileName !== 'index.json' && ext === '.json'){
-              entries.push(renderEntry(subEntry, state, actions))
+              elements.push(renderEntry(subEntry, state, actions))
             }
           })
         }
@@ -35,12 +37,7 @@ function renderBrowser(state, actions){
     })
   }
 
-  return h('div', {className: 'Browser'}, [
-    h('header', [
-      h('span', 'Setups'), h('button.new', {'ev-click': send(actions.newSetup)}, '+ New')
-    ]),
-    h('ScrollBox', entries)
-  ])
+  return h('ScrollBox', elements)
 }
 
 function renderEntry(entry, state, actions){

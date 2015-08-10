@@ -1,0 +1,122 @@
+ArrangementTimeline {
+  flex: 1
+  overflow: auto
+  padding: 5px
+
+  div.content {
+    position: relative
+    padding: 0 10px
+
+    svg {
+      text {
+        dominant-baseline: text-before-edge;
+        fill: rgba(255,255,255,0.5)
+        font-size: 10px;
+      }
+      box-sizing: content-box;
+      margin: 0 -6px;
+      position: absolute
+    }
+
+    div.cursor {
+      margin-left: 10px
+      width: 1px
+      top: 0
+      bottom: 0
+      background: lime
+      z-index: 50
+      opacity: 0.5
+      position: absolute
+    }
+
+    input {
+      box-sizing: content-box;
+      position: relative
+      z-index: 100
+      outline: none
+      height:20px;
+      -webkit-appearance: none;
+
+      cursor: col-resize;
+
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0.7)), color-stop(100%,rgba(34,34,34,0)))
+      
+      ::-webkit-slider-thumb {
+
+        -webkit-appearance: none;
+        position: relative;
+        top: 0px;
+        z-index: 1;
+        width: 0px;
+        height: 20px;
+
+        :after {
+          width: 20px
+          height: 10px
+          left: -11px
+          content: ' '
+          background: rgba(142, 255, 126, 0.3)
+          border-bottom-right-radius: 40px
+          border-bottom-left-radius: 40px
+          pointer-events: none
+          display:block;
+          position: absolute;
+          margin: 3px 0
+          color: #EEE
+        }
+      }
+
+    }
+
+    div.timeline {
+      div.primary {
+        padding: 1px 0
+        div.clip {
+          position: relative
+          display: inline-block
+          box-sizing: content-box;
+          border: 3px solid rgba(142, 255, 126, 0.05)
+          background-color: rgba(142, 255, 126, 0.2)
+          border-radius: 5px
+          height: 100px
+          box-shadow: 0 0 5px #222
+
+          border-left: none
+          border-right: none
+
+          div.trim {
+
+            top: 0; bottom: 0
+            max-width: 50%
+            width: 10px
+            position: absolute
+            cursor: ew-resize
+
+            :hover {
+              background-color: rgba(142, 255, 126, 0.2)
+            }
+
+            -dragging {
+              background-color: rgba(142, 255, 126, 0.3)
+            }
+
+            -start {
+              left: 0px;
+            }
+
+            -end {
+              right: 0px;
+            }
+          }
+
+          :focus {
+            outline: none
+            z-index: 1
+            border-color: rgba(142, 255, 126, 0.4)
+            background-color: rgba(142, 255, 126, 0.6)
+          }
+        }
+      }
+    }
+  }
+}

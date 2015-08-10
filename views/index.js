@@ -1,6 +1,7 @@
 var VirtualDom = require('virtual-dom')
 var MainLoop = require('main-loop')
 var h = require('micro-css/h')(require('virtual-dom/h'))
+var send = require('value-event/event')
 
 var AudioMeter = require('./audio-meter.js')
 var Range = require('lib/params/range')
@@ -28,7 +29,20 @@ module.exports = function(element, state, actions, context){
           ])
         ]),
         h('div.browser', [
-          renderBrowser(state, actions)
+
+          h('div', {className: 'Browser'}, [
+            h('header', [
+              h('span', 'Setups'), h('button.new', {'ev-click': send(actions.newSetup)}, '+ New')
+            ]),
+            renderBrowser(state.entries, state, actions)
+          ]),
+
+          h('div', {className: 'Browser'}, [
+            h('header', [
+              h('span', 'Recordings')
+            ]),
+            renderBrowser(state.recordingEntries, state, actions)
+          ])
         ])
       ]),
       h('div.main', [
