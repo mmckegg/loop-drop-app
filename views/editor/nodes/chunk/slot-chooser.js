@@ -133,7 +133,6 @@ function dragOver(ev){
 
 function drop(ev){
   dragLeave(ev)
-  ev.event.preventDefault()
 
   var targetCollection = ev.data.collection
   var targetLookup = targetCollection.context.slotLookup
