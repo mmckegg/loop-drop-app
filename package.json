@@ -50,6 +50,7 @@
     "observ-varhash": "^1.0.6",
     "tap-tempo": "~0.0.0",
     "teoria": "~0.4.0",
+    "throttle-observ": "^1.1.0",
     "through": "^2.3.4",
     "value-event": "~5.1.0",
     "virtual-dom": "~2.1.1",

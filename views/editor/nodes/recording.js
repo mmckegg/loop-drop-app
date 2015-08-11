@@ -7,6 +7,7 @@ var ObservValueHook = require('lib/observ-value-hook')
 var ObservStyleHook = require('lib/observ-style-hook')
 var ToggleButton = require('lib/params/toggle-button')
 var MouseDragEvent = require('lib/mouse-drag-event')
+var WaveHook = require('lib/wave-hook')
 
 module.exports = RecordingView
 
@@ -27,7 +28,12 @@ function RecordingView (recording) {
       h('section', [
         h('button', {
           'ev-click': send(recording.exportFile, 'wave')
-        }, 'Export PCM Wave')
+        }, 'Export PCM Wave'),
+        recording.rendering() ? h('progress', {
+          min: 0,
+          max: 1,
+          value: ObservValueHook(recording.renderProgress)
+        }) : null
       ])
     ])
   
@@ -69,12 +75,24 @@ function ArrangementTimeline (recording) {
       }, [
         h('div.primary', [
           recording.timeline.primary.map(function (clip) {
+            var waveScaler = (40 / widthMultiplier) * widthMultiplier
             return h('div.clip', {
               tabIndex: 0,
               style: {
                 width: clip.duration.resolved() * widthMultiplier + 'px'
               }
             }, [
+              svg('svg', {
+                width: clip.duration.resolved() * widthMultiplier,
+                height: 100,
+                viewBox: viewBox(
+                  clip.startOffset() * waveScaler, 0,
+                  clip.duration.resolved() * waveScaler, 
+                  100
+                ),
+                preserveAspectRatio: 'none',
+                innerHtml: WaveHook(recording.context, clip.src())
+              }),
               h('div.trim -start', {
                 'ev-mousedown': MouseDragEvent(handleTrimStart, clip)
               }),
@@ -120,7 +138,6 @@ function handleTrimStart(ev) {
       var startOffset = Math.min(Math.max(0, this.startOffset + offset), clip.startOffset.max())
       clip.startOffset.set(startOffset)
       clip.duration.set(this.duration + (this.startOffset - startOffset))
-      console.log(clip.duration(), clip.startOffset())
       this.lastOffset = offset
     }
   }
@@ -153,6 +170,10 @@ function renderSvgTimeline (length, widthMultiplier) {
   }, elements)
 }
 
+
+function viewBox (x, y, width, height) {
+  return x + ' ' + y + ' ' + width + ' ' + height
+}
 
 function toCssAlpha(rgb, alpha) {
   return 'rgba(' + rgb.join(',') + ',' + alpha + ')'

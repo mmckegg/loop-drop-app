@@ -71,18 +71,27 @@ ArrangementTimeline {
     div.timeline {
       div.primary {
         padding: 1px 0
+        white-space: nowrap
+
         div.clip {
           position: relative
           display: inline-block
           box-sizing: content-box;
-          border: 3px solid rgba(142, 255, 126, 0.05)
           background-color: rgba(142, 255, 126, 0.2)
-          border-radius: 5px
+          background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(50, 74, 42, 0.7)), color-stop(50%,rgba(34,34,34,0)), color-stop(100%,rgba(34,34,34,0.7)));          border-radius: 10px
           height: 100px
-          box-shadow: 0 0 5px #222
+          box-shadow: 0 0 3px #222
 
           border-left: none
           border-right: none
+          overflow: hidden
+
+          svg {
+            opacity: 0.4
+            (path) {
+              fill: #FFF
+            }
+          }
 
           div.trim {
 
@@ -114,6 +123,10 @@ ArrangementTimeline {
             z-index: 1
             border-color: rgba(142, 255, 126, 0.4)
             background-color: rgba(142, 255, 126, 0.6)
+
+            svg {
+              opacity: 1
+            }
           }
         }
       }

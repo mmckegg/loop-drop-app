@@ -25,6 +25,11 @@ RecordingNode {
         flex: none
         margin-right: 5px
       }
+      progress {
+        margin-left: 10px
+        height: 30px
+        width: 200px
+      }
       div.param {
         flex: 1
         display: flex
