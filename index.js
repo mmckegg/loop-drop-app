@@ -119,17 +119,21 @@ var actions = rootContext.actions = {
 
     var isSelected = path === state.selected() || filePath === state.selected()
 
-    project.moveEntry(src, newSrc, function(err){
+    project.resolveAvailable(newSrc, function (err, newSrc) {
       if (err) return cb&&cb(err)
-      var item = findItemByPath(state.items, filePath)
-      if (item){
-        item.load(newFileSrc)
-        if (isSelected){
-          state.selected.set(item.path)
+      project.moveEntry(src, newSrc, function(err){
+        if (err) return cb&&cb(err)
+        var item = findItemByPath(state.items, filePath)
+        if (item){
+          item.load(newFileSrc)
+          if (isSelected){
+            state.selected.set(item.path)
+          }
         }
-      }
-      cb&&cb()
+        cb&&cb()
+      })
     })
+
   },
 
   deleteEntry: function(path, cb){
@@ -246,6 +250,9 @@ var actions = rootContext.actions = {
         object.node.grabInput()
       }
 
+      // handle deletion of chunks when removed
+      syncRemovedChunks(object)
+
       if (object.node && object.node.selectedChunkId) {
         object.node.selectedChunkId(actions.scrollToSelectedChunk)
       }
@@ -312,6 +319,29 @@ function copyExternalFilesTo(path, target) {
       })
     }
   })
+}
+
+function syncRemovedChunks(object) {
+  if (object.node && object.node.chunks && object.node.chunks.onUpdate) {
+    var chunkObjects = object.node.chunks.map(function(x){return x})
+    object.node.chunks.onUpdate(function(diff) {
+      if (diff[1]) {
+        for (var i=diff[0];i<diff[0]+diff[1];i++) {
+          var chunk = chunkObjects[i]
+          var descriptor = chunk&&chunk()
+          if (chunk && descriptor.id && chunk.getPath) {
+            var path = chunk.getPath()
+            var truePath = object.resolvePath(descriptor.id + '.json')
+            if (path === truePath) {
+              var src = project.relative(chunk.getPath())
+              project.deleteEntry(src)
+            }
+          }
+        }
+      }
+      chunkObjects.splice.apply(chunkObjects, diff)
+    })
+  }
 }
 
 

@@ -314,7 +314,7 @@ function createChunk(target){
   var path = fileObject.resolvePath('New Chunk.json')
   context.project.resolveAvailable(project.relative(path), function(err, src){
     actions.newChunk(project.resolve(src), function(err, src){
-      var id = setup.resolveAvailableChunk(getBaseName(src, '.json'))
+      var id = setup.chunks.resolveAvailable(getBaseName(src, '.json'))
       setup.chunks.push({
         node: 'external',
         src: fileObject.relative(project.resolve(src)),
