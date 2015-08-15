@@ -58,7 +58,7 @@ module.exports = function(node){
           'ev-click': send(editChunk, node)
         }, 'edit'),
         h('button.remove Button -warn', {
-          'ev-click': send(collection.remove, node),
+          'ev-click': send(remove, node),
         }, 'X')
       ]),
       data.minimised ? '' : h('section', [
@@ -107,6 +107,24 @@ module.exports = function(node){
     ])
   }
   return h('UnknownNode')
+}
+
+function remove (chunk) {
+  var project = chunk.context.project
+  var collection = chunk.context.collection
+  var fileObject = chunk.context.fileObject
+
+  collection.remove(chunk)
+
+  var descriptor = chunk()
+  if (descriptor.id && chunk.getPath) {
+    var path = chunk.getPath()
+    var truePath = fileObject.resolvePath(descriptor.id + '.json')
+    if (path === truePath) {
+      var src = project.relative(chunk.getPath())
+      project.deleteEntry(src)
+    }
+  }
 }
 
 function editChunk(chunk){
