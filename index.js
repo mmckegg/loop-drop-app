@@ -40,6 +40,7 @@ var recorder = SessionRecorder(rootContext)
 var state = window.state = ObservStruct({
   zoom: Observ(1.1),
   tempo: rootContext.tempo,
+  swing: rootContext.swing,
   recording: recorder.recording,
   selected: Observ(),
   items: ObservArray([]),
