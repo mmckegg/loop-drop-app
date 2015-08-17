@@ -26,7 +26,8 @@ module.exports = function(element, state, actions, context){
               title: 'Record',
               description: 'Record output audio to project folder'
             })
-          ])
+          ]),
+          Range(state.swing, {format: 'ratio1', title: 'swing'})
         ]),
         h('div.browser', [
 

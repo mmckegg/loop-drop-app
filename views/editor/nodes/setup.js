@@ -100,7 +100,7 @@ function spawnTriggers(setup, descriptor, additionalOverrides){
 
   var path = fileObject.resolvePath('New Chunk.json')
   actions.newChunk(path, descriptor, function(err, src){
-    var id = setup.resolveAvailableChunk(getBaseName(src, '.json'))
+    var id = setup.chunks.resolveAvailable(getBaseName(src, '.json'))
     var chunk = setup.chunks.push(extend({
       node: 'external',
       src: fileObject.relative(project.resolve(src)),
@@ -135,7 +135,7 @@ function spawnChromatic(setup){
 }
 
 function spawnModulator(setup){
-  var id = setup.resolveAvailableChunk('modulator')
+  var id = setup.chunks.resolveAvailable('modulator')
   var chunk = setup.chunks.push({
     node: 'modulatorChunk',
     id: id,

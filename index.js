@@ -40,6 +40,7 @@ var recorder = SessionRecorder(rootContext)
 var state = window.state = ObservStruct({
   zoom: Observ(1.1),
   tempo: rootContext.tempo,
+  swing: rootContext.swing,
   recording: recorder.recording,
   selected: Observ(),
   items: ObservArray([]),
@@ -120,17 +121,21 @@ var actions = rootContext.actions = {
 
     var isSelected = path === state.selected() || filePath === state.selected()
 
-    project.moveEntry(src, newSrc, function(err){
+    project.resolveAvailable(newSrc, function (err, newSrc) {
       if (err) return cb&&cb(err)
-      var item = findItemByPath(state.items, filePath)
-      if (item){
-        item.load(newFileSrc)
-        if (isSelected){
-          state.selected.set(item.path)
+      project.moveEntry(src, newSrc, function(err){
+        if (err) return cb&&cb(err)
+        var item = findItemByPath(state.items, filePath)
+        if (item){
+          item.load(newFileSrc)
+          if (isSelected){
+            state.selected.set(item.path)
+          }
         }
-      }
-      cb&&cb()
+        cb&&cb()
+      })
     })
+
   },
 
   deleteEntry: function(path, cb){
