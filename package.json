@@ -22,7 +22,7 @@
     "audio-buffer-range-decoder": "^1.1.0",
     "audio-rms": "^1.1.0",
     "audio-slot": "~4.0.2",
-    "audio-timeline": "mmckegg/audio-timeline",
+    "audio-timeline": "~1.0.0",
     "bopper": "~2.9.2",
     "bplist-parser": "^0.1.0",
     "brace": "~0.5.0",
