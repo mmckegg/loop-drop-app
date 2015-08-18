@@ -69,7 +69,7 @@ function RecordingView (recording) {
 
 function ArrangementTimeline (recording) {
   var widthMultiplier = recording.scale()
-  var duration = recording.duration()
+  var duration = recording.duration() + 1
   var finalWidth = duration * widthMultiplier
 
   return h('ArrangementTimeline', {
