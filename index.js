@@ -15,6 +15,7 @@ var ObservVarhash = require('observ-varhash')
 var QueryParam = require('loop-drop-setup/query-param')
 var watch = require('observ/watch')
 var Event = require('geval')
+var TapTempo = require('tap-tempo')
 
 // rendering
 var noDrop = require('lib/no-drop')
@@ -60,6 +61,11 @@ watch(state.zoom, function(value) {
   frame.setZoomFactor(value || 1)
 })
 
+var tapTempo = TapTempo()
+tapTempo.on('tempo', function (value) {
+  rootContext.tempo.set(Math.round(value))
+})
+
 var actions = rootContext.actions = {
 
   open: function(path){
@@ -76,6 +82,10 @@ var actions = rootContext.actions = {
     }
 
     state.selected.set(path)
+  },
+
+  tapTempo: function () {
+    tapTempo.tap()
   },
 
   closeFile: function(path){
@@ -356,8 +366,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
 })
 
-var applyTempo = require('lib/keyboard-tempo')
-applyTempo(rootContext.tempo, rootContext.speed)
+var applyKeyboardTempo = require('lib/keyboard-tempo')
+applyKeyboardTempo(rootContext)
 
 ipc.send('loaded')
 ipc.on('load-project', actions.loadProject)

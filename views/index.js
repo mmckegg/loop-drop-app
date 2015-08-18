@@ -19,10 +19,27 @@ module.exports = function(element, state, actions, context){
       h('div.side', [
         h('div.transport', [
           AudioMeter(context.output.rms.observ, audioMeterOptions),
-          h('MainParams', [
-            Range(state.tempo, {large: true, format: 'bpm'}),
+          h('ModParam -value -flex', [
+            h('div.param -noDrop', [
+              Range(state.tempo, {large: true, format: 'bpm', flex: true}),
+            ]),
+            h('div.sub', [
+              h('div', [
+                Range(state.swing, {format: 'ratio1', title: 'swing', flex: true}),
+                h('button.action -slow', {
+                  'ev-mousedown': send(setValue, context.speed, 0.95),
+                  'ev-mouseup': send(setValue, context.speed, 1)
+                }, ['<||']),
+                h('button.action -tap', {
+                  'ev-click': send(actions.tapTempo)
+                }, ['TAP']),
+                h('button.action -fast', {
+                  'ev-mousedown': send(setValue, context.speed, 1.05),
+                  'ev-mouseup': send(setValue, context.speed, 1)
+                }, ['||>'])
+              ])
+            ])
           ]),
-          Range(state.swing, {format: 'ratio1', title: 'swing'})
         ]),
         h('div.browser', [
 
@@ -64,4 +81,8 @@ module.exports = function(element, state, actions, context){
     loop.update(state())
     console.log('force update')
   }
+}
+
+function setValue (target) {
+  target.set(this.opts)
 }

@@ -41,6 +41,36 @@ ModParam {
     }
   }
 
+  (button.action) {
+    font-size: 80%;
+    padding: 2px 4px;
+    color: rgba(255, 255, 255, 0.44);
+    text-decoration: none;
+    padding-top: 3px;
+    background: #443C49;
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    cursor: pointer;
+    height: 18px;
+    opacity: 0.8;
+
+    :focus {
+      outline-style: none;
+      box-shadow: 0 0 1px rgb(255, 255, 255);
+    }
+
+    :hover {
+      border-color: #666
+      box-shadow: 0 0 1px rgb(179, 12, 247);
+      text-decoration: none
+      opacity: 1
+    }
+
+    :active {
+      background-color: #643477
+    }
+  }
+
   select.link {
     position: absolute
     left: 0
@@ -52,6 +82,11 @@ ModParam {
     z-index: 1
     margin-right: 15px
     flex: 1
+
+    -noDrop {
+      margin-right: 0
+      flex: 200px
+    }
   }
 
   div.sub {
