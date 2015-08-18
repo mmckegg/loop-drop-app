@@ -123,6 +123,7 @@ ArrangementTimeline {
             z-index: 1
             border-color: rgba(142, 255, 126, 0.4)
             background-color: rgba(142, 255, 126, 0.6)
+            box-shadow: 0 0 3px #5EFF00
 
             svg {
               opacity: 1

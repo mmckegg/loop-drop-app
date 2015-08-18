@@ -1,0 +1,63 @@
+Transport {
+  display: flex 
+  margin: -2px 0
+
+  button {
+    display: block;
+    height: 34px
+    width: 34px
+    border-radius: 2px;
+    border: #6B806B 1px solid;
+    background-color: #2F2F2F;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    margin: 0 1px
+    box-shadow: 1px 1px 3px #111
+
+    -beginning {
+      background-image: svg(beginning)
+    }
+
+    -play {
+      background-image: svg(play)
+      -active {
+        background-image: svg(play -active)
+        background-color: #264525;
+        border-color: #58AE56;
+        box-shadow: 0 0 10px #26611C
+      }
+    }
+
+    :focus {
+      outline-style: none;
+      box-shadow: rgb(109, 232, 101) 0 0 2px;
+    }
+  }
+
+  @svg play {
+    height: 16px
+    width: 16px
+    content: "<path d='M0,0 L16,8 L0,16 Z' />"
+    
+    path {
+      fill: #AAA
+    }
+
+    -active {
+      path {
+        fill: #AFA
+      }
+    }
+  }
+
+  @svg beginning {
+    height: 16px
+    width: 16px
+    content: "<path d='M16,0 L1,8 L16,16 Z' /><path d='M0,0 L2,0 L2,16 L0,16 Z' />"
+    
+    path {
+      fill: #AAA
+    }
+  }
+}

@@ -7,6 +7,10 @@ RecordingNode {
   div.main {
     flex: 1
     display: flex
+
+    :focus {
+      outline: none
+    }
   }
 
   div.options {
@@ -17,6 +21,16 @@ RecordingNode {
     margin-top: 1px;
     z-index: 100;
     flex-shrink: 0
+    justify-content: space-between
+    position: relative
+
+    progress {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -8px;
+      width: 100%;
+    }
 
     section {
       padding: 14px;
@@ -38,6 +52,23 @@ RecordingNode {
       div.chooser {
         flex: 1
         display: flex
+      }
+
+      button.export {
+        background-color: #444;
+        border: 1px solid #777;
+        color: #FFF;
+        box-shadow: 1px 1px 3px #111;
+        cursor: pointer;
+
+        :hover {
+          background-color: #222;
+        }
+
+        :focus {
+          border-color: white
+          outline: none
+        }
       }
     }
 

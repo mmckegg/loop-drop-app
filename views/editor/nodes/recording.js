@@ -1,12 +1,14 @@
 var h = require('micro-css/h')(require('virtual-dom/h'))
 var svg = require('micro-css/h')(require('virtual-dom/virtual-hyperscript/svg'))
 var send = require('value-event/event')
+var KeyEvent = require('value-event/key')
 
 var randomColor = require('lib/random-color')
 var ObservValueHook = require('lib/observ-value-hook')
 var ObservStyleHook = require('lib/observ-style-hook')
 var ToggleButton = require('lib/params/toggle-button')
 var MouseDragEvent = require('lib/mouse-drag-event')
+var ZoomEvent = require('lib/zoom-event')
 var WaveHook = require('lib/wave-hook')
 
 module.exports = RecordingView
@@ -14,26 +16,51 @@ module.exports = RecordingView
 function RecordingView (recording) {
   return h('RecordingNode', [
     
-    h('div.main', [
+    h('div.main', {
+      tabIndex: 0,
+      'ev-keydown': KeyEvent(handleSpacebar, recording, { key: 32 })
+    }, [
       ArrangementTimeline(recording)
     ]),
     
     h('div.options', [
-      h('section', [
+
+      recording.rendering() ? h('progress', {
+        min: 0,
+        max: 1,
+        value: ObservValueHook(recording.renderProgress)
+      }) : null,
+
+      h('section Transport', [
+        h('button -beginning', {
+          'ev-click': send(goToBeginning, recording)
+        }),
         ToggleButton(recording.playing, {
-          classList: ['-main'],
-          title: 'Play'
+          custom: true,
+          classList: ['-play']
         })
       ]),
+      h('section Clock', [
+        h('span.hours', {
+          textContent: ObservValueHook(recording.position, getPaddedHours)
+        }, '00'),
+        ':',
+        h('span.minutes', {
+          textContent: ObservValueHook(recording.position, getPaddedMinutes)
+        }, '00'),
+        ':',
+        h('span.seconds', {
+          textContent: ObservValueHook(recording.position, getPaddedSeconds)
+        }, '00'),
+        '.',
+        h('span.fraction', {
+          textContent: ObservValueHook(recording.position, getPaddedFraction)
+        }, '00'),
+      ]),
       h('section', [
-        h('button', {
+        h('button.export', {
           'ev-click': send(recording.exportFile, 'wave')
-        }, 'Export PCM Wave'),
-        recording.rendering() ? h('progress', {
-          min: 0,
-          max: 1,
-          value: ObservValueHook(recording.renderProgress)
-        }) : null
+        }, 'Export Wave')
       ])
     ])
   
@@ -45,7 +72,9 @@ function ArrangementTimeline (recording) {
   var duration = recording.duration()
   var finalWidth = duration * widthMultiplier
 
-  return h('ArrangementTimeline', [
+  return h('ArrangementTimeline', {
+    'ev-mousewheel': ZoomEvent(handleZoom, recording)
+  }, [
     h('div.content', {
       style: {
         width: finalWidth + 'px'
@@ -64,7 +93,7 @@ function ArrangementTimeline (recording) {
       }),
       h('div.cursor', {
         style: ObservStyleHook(recording.position, 'left', function(value) {
-          return (value) * widthMultiplier + 'px'
+          return (value) * recording.scale() + 'px'
         })
       }),
 
@@ -105,6 +134,15 @@ function ArrangementTimeline (recording) {
       ])
     ])
   ])
+}
+
+function handleSpacebar(recording) {
+  recording.playing.set(!recording.playing())
+}
+
+function handleZoom(delta, recording) {
+  var value = Math.round(Math.max(4, Math.min(300, recording.scale() - (delta))))
+  recording.scale.set(value)
 }
 
 function handleTrimEnd(ev) {
@@ -170,6 +208,9 @@ function renderSvgTimeline (length, widthMultiplier) {
   }, elements)
 }
 
+function goToBeginning (recording) {
+  recording.position.set(0)
+}
 
 function viewBox (x, y, width, height) {
   return x + ' ' + y + ' ' + width + ' ' + height
@@ -183,4 +224,24 @@ function formatTime (value) {
   var minutes = Math.floor(value / 60)
   var seconds = Math.round(value % 60)
   return minutes + ':' + ('0'+seconds).slice(-2)
+}
+
+function getPaddedHours (value) {
+  return padded(Math.floor(value / 60 / 60) % 60)
+}
+
+function getPaddedMinutes (value) {
+  return padded(Math.floor(value / 60) % 60)
+}
+
+function getPaddedSeconds (value) {
+  return padded(Math.floor(value) % 60)
+}
+
+function getPaddedFraction (value) {
+  return padded((value % 1) * 100)
+}
+
+function padded(val) {
+  return ('0'+Math.round(val)).slice(-2)
 }
