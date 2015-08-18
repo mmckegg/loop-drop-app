@@ -19,6 +19,7 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
+    "audio-buffer-range-decoder": "^1.1.0",
     "audio-rms": "^1.1.0",
     "audio-slot": "~4.0.2",
     "audio-timeline": "mmckegg/audio-timeline",
