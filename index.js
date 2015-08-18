@@ -15,6 +15,7 @@ var ObservVarhash = require('observ-varhash')
 var QueryParam = require('loop-drop-setup/query-param')
 var watch = require('observ/watch')
 var Event = require('geval')
+var TapTempo = require('tap-tempo')
 
 // rendering
 var noDrop = require('lib/no-drop')
@@ -47,6 +48,7 @@ var state = window.state = ObservStruct({
   rawMode: Observ(false),
   renaming: Observ(false),
   entries: project.getDirectory('.'),
+  recordingEntries: project.getDirectory('~recordings'),
   subEntries: ObservVarhash({})
 })
 
@@ -57,6 +59,11 @@ state.items.onLoad = Event(function(broadcast) {
 
 watch(state.zoom, function(value) {
   frame.setZoomFactor(value || 1)
+})
+
+var tapTempo = TapTempo()
+tapTempo.on('tempo', function (value) {
+  rootContext.tempo.set(Math.round(value))
 })
 
 var actions = rootContext.actions = {
@@ -75,6 +82,10 @@ var actions = rootContext.actions = {
     }
 
     state.selected.set(path)
+  },
+
+  tapTempo: function () {
+    tapTempo.tap()
   },
 
   closeFile: function(path){
@@ -355,11 +366,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
   forceUpdate = renderLoop(document.body, state, actions, rootContext)
 })
 
-var applyTempo = require('lib/keyboard-tempo')
-applyTempo(rootContext.tempo, rootContext.speed)
+var applyKeyboardTempo = require('lib/keyboard-tempo')
+applyKeyboardTempo(rootContext)
 
 ipc.send('loaded')
 ipc.on('load-project', actions.loadProject)
 
 require('./extend')(rootContext, state)
 require('lib/context-menu')
+
+// disable pinch-zoom
+// see http://stackoverflow.com/questions/15416851/catching-mac-trackpad-zoom
+document.addEventListener('mousewheel', function (e) {
+  if (e.ctrlKey) {
+    e.preventDefault()
+  }
+})

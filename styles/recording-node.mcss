@@ -1,0 +1,76 @@
+RecordingNode {
+  display: flex
+  flex-direction: column
+  flex: 1
+  overflow: hidden
+
+  div.main {
+    flex: 1
+    display: flex
+
+    :focus {
+      outline: none
+    }
+  }
+
+  div.options {
+
+    display: flex;
+    background: #222;
+    box-shadow: 0 0 5px #000;
+    margin-top: 1px;
+    z-index: 100;
+    flex-shrink: 0
+    justify-content: space-between
+    position: relative
+
+    progress {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -8px;
+      width: 100%;
+    }
+
+    section {
+      padding: 14px;
+      display: flex
+      h1 {
+        flex: none
+        margin-right: 5px
+      }
+      progress {
+        margin-left: 10px
+        height: 30px
+        width: 200px
+      }
+      div.param {
+        flex: 1
+        display: flex
+        margin: 3px;
+      }
+      div.chooser {
+        flex: 1
+        display: flex
+      }
+
+      button.export {
+        background-color: #444;
+        border: 1px solid #777;
+        color: #FFF;
+        box-shadow: 1px 1px 3px #111;
+        cursor: pointer;
+
+        :hover {
+          background-color: #222;
+        }
+
+        :focus {
+          border-color: white
+          outline: none
+        }
+      }
+    }
+
+  }
+}
