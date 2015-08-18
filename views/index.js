@@ -21,26 +21,26 @@ module.exports = function(element, state, actions, context){
           AudioMeter(context.output.rms.observ, audioMeterOptions),
           h('MainParams', [
             Range(state.tempo, {large: true, format: 'bpm'}),
-            ToggleButton(state.recording, {
-              classList: ['.record', '-main'],
-              title: 'Record',
-              description: 'Record output audio to project folder'
-            })
           ]),
           Range(state.swing, {format: 'ratio1', title: 'swing'})
         ]),
         h('div.browser', [
 
-          h('div', {className: 'Browser'}, [
+          h('div -setups', [
             h('header', [
               h('span', 'Setups'), h('button.new', {'ev-click': send(actions.newSetup)}, '+ New')
             ]),
             renderBrowser(state.entries, state, actions)
           ]),
 
-          h('div', {className: 'Browser'}, [
+          h('div -recordings', [
             h('header', [
-              h('span', 'Recordings')
+              h('span', 'Recordings'),
+              ToggleButton(state.recording, {
+                classList: ['.record'],
+                title: 'Record',
+                description: 'Record output audio to project folder'
+              })
             ]),
             renderBrowser(state.recordingEntries, state, actions)
           ])
