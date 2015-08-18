@@ -374,3 +374,11 @@ ipc.on('load-project', actions.loadProject)
 
 require('./extend')(rootContext, state)
 require('lib/context-menu')
+
+// disable pinch-zoom
+// see http://stackoverflow.com/questions/15416851/catching-mac-trackpad-zoom
+document.addEventListener('mousewheel', function (e) {
+  if (e.ctrlKey) {
+    e.preventDefault()
+  }
+})
