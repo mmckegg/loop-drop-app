@@ -62,19 +62,25 @@ $ npm update -g loop-drop
 
 ## Supported Controllers
 
-- [Qwerty Keyboard](https://github.com/mmckegg/loop-qwerty)
-- [Novation Launchpad](https://github.com/mmckegg/loop-launchpad)
+More controllers will be supported soon. **Pull requests accepted!**
 
-If your controller isn't supported, copy one of the above controller bindings and modify to suit, then send a pull request!
+### Qwerty Keyboard
+
+![](http://loopjs.com/loop-drop-qwerty.png)
+
+[Watch "Using Loop Drop with a Qwerty Keyboard" on YouTube](http://youtu.be/tOpbRsDwYH4)
+
+### Novation Launchpad
+
+![](http://loopjs.com/loop-drop-launchpad.png)
 
 ## Module Overview
 
-- [bopper](https://github.com/wavejs/bopper)
-- [ditty](https://github.com/wavejs/ditty)
 - [audio-slot](https://github.com/mmckegg/audio-slot)
-- [loop-drop-setup](https://github.com/mmckegg/loop-drop-setup)
-- [loop-drop-project](https://github.com/mmckegg/loop-drop-project)
+- [audio-timeline](https://github.com/mmckegg/audio-slot)
 - [wave-recorder](https://github.com/mmckegg/audio-slot)
-- [mercury](https://github.com/raynos/mercury)
+- [loop-drop-project](https://github.com/mmckegg/loop-drop-project)
+- [bopper](https://github.com/wavejs/bopper)
 - [micro-css](https://github.com/mmckegg/micro-css)
 - [electron](https://github.com/atom/electron)
+- [mercury](https://github.com/raynos/mercury)
