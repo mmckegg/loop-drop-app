@@ -6,7 +6,7 @@ var Observ = require('observ')
 var nextTick = require('next-tick')
 var watch = require('observ/watch')
 
-var renderNode = require('./nodes')
+var renderNode = require('lib/render-node')
 
 module.exports = Editor
 

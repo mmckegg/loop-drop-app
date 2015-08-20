@@ -1,6 +1,5 @@
 // persistence
 var fs = require('fs')
-var Setup = require('loop-drop-setup')
 var FileObject = require('loop-drop-project/file-object')
 var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
@@ -12,7 +11,7 @@ var Observ = require('observ')
 var ObservArray = require('observ-array')
 var ObservStruct = require('observ-struct')
 var ObservVarhash = require('observ-varhash')
-var QueryParam = require('loop-drop-setup/query-param')
+var QueryParam = require('lib/query-param')
 var watch = require('observ/watch')
 var Event = require('geval')
 var TapTempo = require('tap-tempo')
@@ -35,7 +34,7 @@ var insertCss = require('insert-css')
 insertCss(require('./styles'))
 
 
-var rootContext = window.rootContext = require('lib/context')
+var rootContext = window.rootContext = require('./context')
 var project = rootContext.project
 var recorder = SessionRecorder(rootContext)
 var state = window.state = ObservStruct({
