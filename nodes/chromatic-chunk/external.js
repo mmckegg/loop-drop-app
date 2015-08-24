@@ -6,7 +6,7 @@ var ToggleButton = require('lib/params/toggle-button')
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 
-var QueryParam = require('loop-drop-project/query-param')
+var QueryParam = require('lib/query-param')
 var FlagParam = require('lib/flag-param')
 var IndexParam = require('lib/index-param')
 

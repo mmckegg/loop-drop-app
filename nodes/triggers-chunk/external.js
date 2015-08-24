@@ -3,7 +3,7 @@ var renderChunk = require('lib/widgets/chunk')
 var renderRouting = require('lib/widgets/routing')
 var renderParams = require('lib/widgets/params')
 var ToggleButton = require('lib/params/toggle-button')
-var QueryParam = require('loop-drop-project/query-param')
+var QueryParam = require('lib/query-param')
 var FlagParam = require('lib/flag-param')
 
 module.exports = function(node){

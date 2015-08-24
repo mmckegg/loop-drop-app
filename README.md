@@ -76,11 +76,14 @@ More controllers will be supported soon. **Pull requests accepted!**
 
 ## Module Overview
 
+- [loop-grid](https://github.com/mmckegg/loop-grid)
 - [audio-slot](https://github.com/mmckegg/audio-slot)
-- [audio-timeline](https://github.com/mmckegg/audio-slot)
-- [wave-recorder](https://github.com/mmckegg/audio-slot)
-- [loop-drop-project](https://github.com/mmckegg/loop-drop-project)
+- [audio-timeline](https://github.com/mmckegg/audio-timeline)
+- [wave-recorder](https://github.com/mmckegg/wave-recorder)
+- [web-midi](https://github.com/mmckegg/web-midi)
 - [bopper](https://github.com/wavejs/bopper)
 - [micro-css](https://github.com/mmckegg/micro-css)
-- [electron](https://github.com/atom/electron)
 - [mercury](https://github.com/raynos/mercury)
+- [observ-fs](https://github.com/mmckegg/observ-fs)
+- [observ-midi](https://github.com/mmckegg/observ-midi)
+- [electron](https://github.com/atom/electron)

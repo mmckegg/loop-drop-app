@@ -6,8 +6,11 @@ var Event = require('geval')
 var nextTick = require('next-tick')
 var resolveNode = require('observ-node-array/resolve')
 var getDirectory = require('path').dirname
-var relative = require('path').relative
 
+var relative = require('path').relative
+var resolve = require('path').resolve
+
+var ObservFile = require('observ-fs/file')
 var JsonFile = require('lib/json-file')
 
 module.exports = External
@@ -37,12 +40,11 @@ function External(parentContext){
   obs.resolved = Observ()
 
   obs.resolvePath = function(src){
-    return context.project.resolve([context.cwd||'', src])
+    return resolve(context.cwd, src)
   }
 
   obs.relative = function(path){
-    var currentDir = context.project.resolve([context.cwd])
-    var value = relative(currentDir, path)
+    var value = relative(context.cwd, path)
     if (/^\./.exec(value)){
       return value
     } else {
@@ -88,10 +90,11 @@ function External(parentContext){
 
     if (!externalParams){
       if (descriptor.src){
-        context.project.checkExists([context.cwd||'', descriptor.src], function(err, exists){
+        var path = resolve(parentContext.cwd, descriptor.src)
+        context.fs.exists(path, function(exists){
           if (exists){
             release&&release()
-            obs.file = context.project.getFile([context.cwd||'', descriptor.src])
+            obs.file = ObservFile(path, context.fs)
             externalParams = JsonFile(obs.file)
             externalParams.src = descriptor.src
             release = watch(externalParams, update)
