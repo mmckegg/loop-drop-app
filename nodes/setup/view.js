@@ -11,12 +11,8 @@ var rename = require('lib/rename-hook').rename
 var extend = require('xtend')
 
 var controllerSpawners = [
-  ['MIDI Controller', {
-    node: 'controller/launchpad'
-  }],
-  ['Qwerty Keys', {
-    node: 'controller/qwerty'
-  }]
+  { name: 'MIDI Controller', node: 'controller/launchpad' },
+  { name: 'Qwerty Keys', node: 'controller/qwerty' }
 ]
 
 module.exports = renderSetup
