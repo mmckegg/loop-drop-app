@@ -1,12 +1,13 @@
 var Struct = require('observ-struct')
 var Property = require('observ-default')
-var WaveFileWriter = require('wav/lib/file-writer')
+var WaveWriter = require('wav/lib/writer')
 
 var remote = require('remote')
 var Dialog = remote.require('dialog')
 var Timeline = require('audio-timeline')
 var RenderStream = require('audio-timeline/render-stream')
 var throttledWatch = require('throttle-observ/watch')
+var writeHeader = require('lib/write-header')
 
 module.exports = Recording
 
@@ -88,11 +89,17 @@ function Recording (parentContext) {
         obs.rendering.set(true)
         var stream = RenderStream(obs.timeline, 0, obs.timeline.duration(), bitDepth)
         stream.progress(obs.renderProgress.set)
-        stream.pipe(WaveFileWriter(path, {
+        var formatter = WaveWriter({
           bitDepth: bitDepth,
           sampleRate: context.audio.sampleRate,
           channels: 2
-        })).on('finish', function () {
+        })
+
+        formatter.on('header', function (header) {
+          writeHeader(path, header, context.fs)
+        })
+
+        stream.pipe(formatter).pipe(context.fs.createWriteStream(path)).on('finish', function () {
           obs.rendering.set(false)
         })
       }
