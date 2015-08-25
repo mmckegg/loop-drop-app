@@ -22,6 +22,7 @@ function Setup(parentContext){
 
   var context = Object.create(parentContext)
   var audioContext = context.audio
+  var refreshingParamCount = false
 
   var node = ObservStruct({
     controllers: NodeArray(context),
@@ -126,8 +127,11 @@ function Setup(parentContext){
   node.resolved = ObservStruct({
     selectedChunkId: node.selectedChunkId,
     controllers: node.controllers.resolved,
-    chunks: node.chunks.resolved
+    chunks: node.chunks.resolved,
+    paramCount: Observ(0)
   })
+
+  context.paramLookup(refreshParamCount)
 
   node.grabInput = function(){
     var length = node.controllers.getLength()
@@ -170,6 +174,23 @@ function Setup(parentContext){
   }
 
   return node
+
+  // scoped
+
+  function refreshParamCount () {
+    if (!refreshingParamCount) {
+      refreshingParamCount = true
+      process.nextTick(refreshParamCountNow)
+    }
+  }
+
+  function refreshParamCountNow () {
+    refreshingParamCount = false
+    var count = Object.keys(context.paramLookup()).length
+    if (count !== node.resolved.paramCount()) {
+      node.resolved.paramCount.set(count)
+    }
+  }
 }
 
 function get(obs){
