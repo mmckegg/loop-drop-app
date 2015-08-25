@@ -222,6 +222,13 @@ function LaunchControl (context) {
     }
   })
 
+  obs.destroy = function () {
+    port.close()
+    params.forEach(function(param) {
+      context.paramLookup.delete(param.id())
+    })
+  }
+
   return obs
 
   // scoped
