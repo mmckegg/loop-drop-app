@@ -53,7 +53,7 @@
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
     "observ-midi": "~2.1.0",
-    "observ-node-array": "~1.10.0",
+    "observ-node-array": "~1.10.1",
     "observ-struct": "^6.0.0",
     "observ-varhash": "^1.0.6",
     "rimraf": "~2.4.2",
@@ -64,8 +64,8 @@
     "value-event": "~5.1.0",
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",
-    "wave-recorder": "~2.2.0",
-    "web-midi": "~1.0.0",
+    "wave-recorder": "~2.2.1",
+    "web-midi": "~1.0.1",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
