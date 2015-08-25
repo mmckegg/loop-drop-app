@@ -12,7 +12,7 @@ var currentRename = null
 
 module.exports = renderBrowser
 
-function renderBrowser(entries, state, actions){
+function renderBrowser(entries, project){
 
   var elements = []
 
@@ -22,14 +22,14 @@ function renderBrowser(entries, state, actions){
       var base = getBaseName(entry.path)
 
       if (entry.type === 'directory' && base !== '~recordings') {
-        elements.push(renderEntry(entry, state, actions))
-        var sub = state.subEntries.get(entry.path)
+        elements.push(renderEntry(entry, project))
+        var sub = project.subEntries.get(entry.path)
         if (sub && sub()){
           sub().forEach(function(subEntry){
             var fileName = getBaseName(subEntry.path)
             var ext = getExt(fileName)
             if (subEntry.type === 'file' && fileName !== 'index.json' && ext === '.json'){
-              elements.push(renderEntry(subEntry, state, actions))
+              elements.push(renderEntry(subEntry, project))
             }
           })
         }
@@ -40,9 +40,10 @@ function renderBrowser(entries, state, actions){
   return h('ScrollBox', elements)
 }
 
-function renderEntry(entry, state, actions){
+function renderEntry(entry, project){
 
-  var selected = state.selected() == entry.path
+  var actions = project.actions
+  var selected = project.selected() == entry.path
     
   var classList = []
   var expander = ''
@@ -53,20 +54,20 @@ function renderEntry(entry, state, actions){
       'ev-click': send(actions.toggleDirectory, entry.path)
     })
 
-    if (state.subEntries.get(entry.path)){
+    if (project.subEntries.get(entry.path)){
       classList.push('-open')
     }
 
     // handle index.json selected
-    selected = selected || join(entry.path, 'index.json') === state.selected()
+    selected = selected || join(entry.path, 'index.json') === project.selected()
   }
 
-  var renaming = selected && state.renaming()
-  var renameState = { state: state, entry: entry, actions: actions }
+  var renaming = selected && project.renaming()
+  var renameState = { project: project, entry: entry }
 
   // handle rename click
   var click = selected ?
-    send(state.renaming.set, true) : null
+    send(project.renaming.set, true) : null
 
   if (selected){
     classList.push('-selected')
@@ -112,19 +113,20 @@ function dragStart(ev){
 }
 
 function saveRename(){
-  var state = this.data.state
+  var project = this.data.project
   var entry = this.data.entry
-  var actions = this.data.actions
+  var actions = project.actions
+  
   if (currentRename){
     actions.rename(entry.path, currentRename.getValue())
   }
 
-  state.renaming.set(false)
+  project.renaming.set(false)
 }
 
 function cancelRename(){
-  var state = this.data.state
-  state.renaming.set(false)
+  var project = this.data.project
+  project.renaming.set(false)
 }
 
 function getItemByPath(items, path){

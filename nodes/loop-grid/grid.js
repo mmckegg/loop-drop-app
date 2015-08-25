@@ -6,7 +6,7 @@ var nextTick = require('next-tick')
 var getBaseName = require('path').basename
 var GridStateHook = require('./grid-state-hook.js')
 
-var QueryParam = require('loop-drop-project/query-param')
+var QueryParam = require('lib/query-param')
 
 module.exports = function renderGrid (controller) {
   var context = controller.context
@@ -20,7 +20,6 @@ module.exports = function renderGrid (controller) {
     var buttons = []
     for (var c=0;c<shape[1];c++){      
       buttons.push(h('div.button', {
-        'ev-dblclick': send(createChunk, {controller: controller, at: [r,c]}),
         'ev-dragenter': MPE(enterButton, controller),
         'ev-dragleave': MPE(leaveButton, controller)
       }))
@@ -290,43 +289,17 @@ function mixColor(a, b){
 
 function editChunk(chunk){
   var context = chunk.context
+  var fileObject = chunk.context.fileObject
+  
   var descriptor = chunk()
   if (descriptor) {
     if (descriptor.minimised) {
       QueryParam(chunk, 'minimised').set(false)
     } else if (descriptor.src) {
-      var path = context.project.resolve([context.cwd||'', descriptor.src])
+      var path = fileObject.resolvePath(descriptor.src)
       context.actions.open(path)
     }
   }
-}
-
-function createChunk(target){
-  var controller = target.controller
-  var context = controller.context
-  var actions = context.actions
-  var setup = context.setup
-  var project = context.project
-  var fileObject = context.fileObject
-  var at = target.at
-
-
-  var path = fileObject.resolvePath('New Chunk.json')
-  context.project.resolveAvailable(project.relative(path), function(err, src){
-    actions.newChunk(project.resolve(src), function(err, src){
-      var id = setup.chunks.resolveAvailable(getBaseName(src, '.json'))
-      setup.chunks.push({
-        node: 'external',
-        src: fileObject.relative(project.resolve(src)),
-        id: id,
-        minimised: true,
-        scale: '$global',
-        routes: {output: '$default'}
-      })
-      controller.chunkPositions.put(id, at)
-      setup.selectedChunkId.set(id)
-    }, 50)
-  })
 }
 
 function selectChunk(target){

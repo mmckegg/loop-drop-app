@@ -39,7 +39,6 @@
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
     "keycode": "~2.1.0",
-    "loop-drop-project": "~3.10.1",
     "loop-grid": "~4.4.0",
     "main-loop": "~3.1.0",
     "micro-css": "~0.6.1",
@@ -49,6 +48,7 @@
     "observ": "^0.2.0",
     "observ-array": "^3.2.1",
     "observ-default": "^1.0.0",
+    "observ-fs": "~1.7.0",
     "observ-fs-audio-buffer": "~1.0.0",
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
@@ -56,6 +56,7 @@
     "observ-node-array": "~1.10.0",
     "observ-struct": "^6.0.0",
     "observ-varhash": "^1.0.6",
+    "rimraf": "~2.4.2",
     "tap-tempo": "~0.0.0",
     "teoria": "~0.4.0",
     "throttle-observ": "^1.1.0",
@@ -64,6 +65,7 @@
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",
     "wave-recorder": "~2.2.0",
+    "web-midi": "~1.0.0",
     "xtend": "^4.0.0"
   },
   "devDependencies": {

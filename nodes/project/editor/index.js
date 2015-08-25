@@ -38,7 +38,7 @@ Editor.prototype.init = function(){
     pendingUpdate = false
 
     // HACK: schedule 300 ms ahead to avoid audio interuption
-    window.rootContext.scheduler.schedule(0.3)
+    state.fileObject.context.scheduler.schedule(0.3)
     loop.update()
   }
 

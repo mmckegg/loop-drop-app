@@ -9,14 +9,11 @@ var RenderStream = require('audio-timeline/render-stream')
 var throttledWatch = require('throttle-observ/watch')
 var writeHeader = require('lib/write-header')
 
-module.exports = Recording
+module.exports = Recording 
 
 function Recording (parentContext) {
 
   var context = Object.create(parentContext)
-
-  //TODO: fs should already be in context
-  context.fs = context.project._state.fs
 
   var obs = Struct({
     timeline: Timeline(context),
@@ -89,6 +86,7 @@ function Recording (parentContext) {
         obs.rendering.set(true)
         var stream = RenderStream(obs.timeline, 0, obs.timeline.duration(), bitDepth)
         stream.progress(obs.renderProgress.set)
+
         var formatter = WaveWriter({
           bitDepth: bitDepth,
           sampleRate: context.audio.sampleRate,

@@ -102,11 +102,11 @@ function spawnTriggers(setup, descriptor, additionalOverrides){
   var fileObject = context.fileObject
 
   var path = fileObject.resolvePath('New Chunk.json')
-  actions.newChunk(path, descriptor, function(err, src){
-    var id = setup.chunks.resolveAvailable(getBaseName(src, '.json'))
+  actions.newChunk(path, descriptor, function(err, path){
+    var id = setup.chunks.resolveAvailable(getBaseName(path, '.json'))
     var chunk = setup.chunks.push(extend({
       node: 'external',
-      src: fileObject.relative(project.resolve(src)),
+      src: fileObject.relative(path),
       id: id,
       minimised: true,
       scale: '$global',
