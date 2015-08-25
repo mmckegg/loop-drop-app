@@ -9,6 +9,7 @@ var audioMeterOptions = {red: 1, amber: 0.9, min: 0, max: 1.3, steps: 60}
 
 var renderBrowser = require('./browser')
 var renderEditor = require('./tabbed-editor')
+var renderControllers = require('./global-controllers')
 
 module.exports = function(project) {
 
@@ -61,7 +62,8 @@ module.exports = function(project) {
           ]),
           renderBrowser(project.recordingEntries, project)
         ])
-      ])
+      ]),
+      renderControllers(project.globalControllers)
     ]),
     h('div.main', [
       renderEditor(project)

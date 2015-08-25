@@ -1,9 +1,11 @@
 var Observ = require('observ')
 var Property = require('observ-default')
+var NodeArray = require('observ-node-array')
 var ObservArray = require('observ-array')
 var ObservStruct = require('observ-struct')
 var ObservVarhash = require('observ-varhash')
 var watch = require('observ/watch')
+var computed = require('observ/computed')
 var Event = require('geval')
 
 var TapTempo = require('tap-tempo')
@@ -56,7 +58,8 @@ function Project (parentContext) {
     zoom: parentContext.zoom,
     tempo: Property(120),
     swing: Property(0),
-    rawMode: Property(false)
+    rawMode: Property(false),
+    globalControllers: NodeArray(context)
   })
 
   obs.context = context
@@ -69,6 +72,22 @@ function Project (parentContext) {
   obs.recordingEntries = ObservDirectory(resolve(context.cwd, '~recordings'), context.fs)
   obs.subEntries = ObservVarhash({})
   obs.outputRms = StreamObserv(output.rms)
+
+  obs.availableGlobalControllers = computed([context.midiPorts], function (portNames) {
+    var result = []
+    var controllers = context.nodeInfo.groupLookup['global-controllers']
+    if (controllers) {
+      controllers.forEach(function (info) {
+        if (info.portMatch && matchAny(portNames, info.portMatch)) {
+          result.push({
+            name: info.name,
+            node: info.node
+          })
+        }
+      })
+    }
+    return result
+  })
 
   // apply tempo
   watch(obs.tempo, scheduler.setTempo.bind(scheduler))
@@ -87,6 +106,7 @@ function Project (parentContext) {
     recording: obs.recording,
     recordingEntries: obs.recordingEntries,
     subEntries: obs.subEntries,
+    availableGlobalControllers: obs.availableGlobalControllers,
     selected: obs.selected
   })
 
@@ -350,5 +370,11 @@ function copyExternalFilesTo (fs, path, target) {
         return value
       })
     }
+  })
+}
+
+function matchAny (array, match) {
+  return Array.isArray(array) && match && array.some(function (value) {
+    return match.exec(value)
   })
 }

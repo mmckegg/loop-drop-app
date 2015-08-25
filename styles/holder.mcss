@@ -103,6 +103,21 @@ Holder {
         padding: 10px
       }
     }
+
+    div.controllers {
+      margin: 0 5px 
+      margin-top: 0
+
+      div {
+        margin: 5px 0
+      }
+
+      div.spawn {
+        select {
+          width: 100%
+        }
+      }
+    }
   }
   
 
