@@ -1,18 +1,19 @@
 var h = require('lib/h')
 var renderRouting = require('lib/widgets/routing')
+var FlagParam = require('lib/flag-param')
 var renderChunk = require('lib/widgets/chunk')
-var renderParams = require('lib/widgets/params')
+var SampleTrimmer = require('lib/params/sample-trimmer')
+var SampleChooser = require('lib/params/sample-chooser')
 var ToggleButton = require('lib/params/toggle-button')
 var QueryParam = require('lib/query-param')
-var FlagParam = require('lib/flag-param')
 
-module.exports = function(node){
+module.exports = function renderSlicerChunk (node) {
   var flags = QueryParam(node, 'flags')
   return renderChunk(node, {
     volume: true,
-    external: true,
     main: [
-      renderParams(node),
+      SampleChooser(node),
+      SampleTrimmer(node),
       h('ParamList', [
         h('div -block', [
           h('div.extTitle', 'Use Global'),
@@ -21,6 +22,14 @@ module.exports = function(node){
               title: 'Repeat', 
               onValue: false,
               offValue: true 
+            })
+          ])
+        ]),
+        h('div -block', [
+          h('div.extTitle', 'Choke Mode'),
+          h('ParamList -compact', [
+            ToggleButton(node.chokeAll, {
+              title: 'All', offTitle: 'Single'
             })
           ])
         ]),
