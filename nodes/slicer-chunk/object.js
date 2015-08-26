@@ -10,6 +10,8 @@ var computed = require('observ/computed')
 var computedNextTick = require('lib/computed-next-tick')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var detectTransients = require('lib/detect-transients')
+var throttle = require('throttle-observ')
+var throttleWatch = require('throttle-observ/watch')
 
 module.exports = SlicerChunk
 
@@ -44,7 +46,8 @@ function SlicerChunk (parentContext) {
   })
 
   obs.resolvedBuffer = ResolvedValue(obs.buffer)
-  obs.slices = computedNextTick([obs.shape, obs.resolvedBuffer, obs.offset, obs.sliceMode, obs.triggerMode], function (shape, buffer, offset, sliceMode, triggerMode) {
+
+  obs.slices = computedNextTick([obs.shape, obs.resolvedBuffer, throttle(obs.offset, 1000), obs.sliceMode, obs.triggerMode], function (shape, buffer, offset, sliceMode, triggerMode) {
     var count = shape[0] * shape[1]
     var playToEnd = triggerMode === 'full'
     if (sliceMode === 'transient') {
@@ -60,8 +63,22 @@ function SlicerChunk (parentContext) {
   obs.volume(function(value){
     output.gain.value = value
   })
+
+  var properties = Struct({
+    stretch: obs.stretch,
+    amp: obs.amp,
+    tempo: obs.tempo,
+    transpose: obs.transpose,
+    buffer: obs.buffer,
+    low: obs.low,
+    mid: obs.mid,
+    high: obs.high,
+    highcut: obs.highcut,
+    lowcut: obs.lowcut
+  })
+
   
-  var computedSlots = computed([obs, obs.slices, obs.resolvedBuffer], function (data, slices, buffer) {
+  var computedSlots = computed([throttle(properties, 100), obs.slices, obs.resolvedBuffer], function (data, slices, buffer) {
 
     var result = slices.map(function (offset, i) {
       if (data.stretch && buffer) {
@@ -121,7 +138,14 @@ function SlicerChunk (parentContext) {
     return result
   })
 
-  computedSlots(slots.set)
+  throttleWatch(computedSlots, 50, function (value) {
+    console.log('thing')
+    slots.set(value)
+
+    // HACK: bump shape to trigger update of slot mapping
+    obs.shape.set(obs.shape())
+  })
+
   slots.onUpdate(obs.routes.reconnect)
 
   obs.destroy = function(){
