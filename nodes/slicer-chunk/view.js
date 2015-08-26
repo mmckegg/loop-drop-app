@@ -12,8 +12,8 @@ var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
 
 var sliceOptions = [
-  ['Use Transients', 'transient'],
   ['Equal Slices', 'divide'],
+  ['Use Transients', 'transient']
 ]
 
 var triggerOptions = [
