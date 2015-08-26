@@ -5,7 +5,6 @@ var renderChunk = require('lib/widgets/chunk')
 var SampleTrimmer = require('lib/params/sample-trimmer')
 var SampleChooser = require('lib/params/sample-chooser')
 var ToggleButton = require('lib/params/toggle-button')
-var QueryParam = require('lib/query-param')
 var IndexParam = require('lib/index-param')
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
@@ -22,7 +21,6 @@ var triggerOptions = [
 ]
 
 module.exports = function renderSlicerChunk (node) {
-  var flags = QueryParam(node, 'flags')
   return renderChunk(node, {
     volume: true,
     main: [
