@@ -77,6 +77,8 @@ function SlicerChunk (parentContext) {
     lowcut: obs.lowcut
   })
 
+  obs.amp.triggerable = true
+  obs.transpose.triggerable = true
   
   var computedSlots = computed([throttle(properties, 100), obs.slices, obs.resolvedBuffer], function (data, slices, buffer) {
 
