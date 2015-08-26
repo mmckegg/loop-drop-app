@@ -6,34 +6,124 @@ var SampleTrimmer = require('lib/params/sample-trimmer')
 var SampleChooser = require('lib/params/sample-chooser')
 var ToggleButton = require('lib/params/toggle-button')
 var QueryParam = require('lib/query-param')
+var IndexParam = require('lib/index-param')
+var Range = require('lib/params/range')
+var ModRange = require('lib/params/mod-range')
+var Select = require('lib/params/select')
+
+var sliceOptions = [
+  ['Use Transients', 'transient'],
+  ['Equal Slices', 'divide'],
+]
+
+var triggerOptions = [
+  ['Oneshot', 'slice'],
+  ['Play to end', 'full']
+]
 
 module.exports = function renderSlicerChunk (node) {
   var flags = QueryParam(node, 'flags')
   return renderChunk(node, {
     volume: true,
     main: [
-      SampleChooser(node),
-      SampleTrimmer(node),
-      h('ParamList', [
-        h('div -block', [
-          h('div.extTitle', 'Use Global'),
-          h('ParamList -compact', [
-            ToggleButton(FlagParam(flags, 'noRepeat'), {
-              title: 'Repeat', 
-              onValue: false,
-              offValue: true 
-            })
-          ])
+      h('section', [
+
+        h('ParamList', [
+          h('div -block -flexSmall', [
+            h('div', Range(IndexParam(node.shape, 0), { 
+              title: 'rows',
+              format: 'bit',
+              defaultValue: 1
+            }))
+          ]),
+          h('div -block -flexSmall', [
+            h('div', Range(IndexParam(node.shape, 1), { 
+              title: 'cols',
+              format: 'bit',
+              defaultValue: 1
+            }))
+          ]),
+          ToggleButton(FlagParam(node.flags, 'noRepeat'), {
+            title: 'Use Repeat', 
+            onValue: false,
+            offValue: true 
+          })
+        ])
+      ]),
+
+      h('h1', 'Audio Sample'),
+      h('section', [
+
+        h('ParamList', [
+          SampleChooser(node),
+          Select(node.triggerMode, { options: triggerOptions }),
+          ModRange(node.amp, {
+            title: 'amp',
+            format: 'dB',
+            flex: 'small'
+          }),
+
+          ModRange(node.transpose, {
+            title: 'transpose',
+            format: 'semitone',
+            flex: 'small'
+          })
         ]),
-        h('div -block', [
-          h('div.extTitle', 'Choke Mode'),
-          h('ParamList -compact', [
-            ToggleButton(node.chokeAll, {
-              title: 'All', offTitle: 'Single'
-            })
-          ])
-        ]),
-        renderRouting(node)
+
+        SampleTrimmer(node)
+      ]),
+
+      h('h1', 'Slicing'),
+      h('section', [
+        h('ParamList', [
+          Select(node.sliceMode, { options: sliceOptions }),
+          ToggleButton(node.chokeAll, {
+            title: 'Choke All'
+          }),
+          ToggleButton(node.stretch, {
+            title: 'Timestretch'
+          }),
+          node.stretch() ? Range(node.tempo, {
+            title: 'original bpm',
+            format: 'bpm',
+            flex: 'small'
+          }) : null
+        ])
+      ]),
+
+      h('h1', 'EQ / Output'),
+      h('section', [
+        h('ParamList', [
+          ModRange(node.low, {
+            title: 'low',
+            defaultValue: 1,
+            format: 'dBn',
+            flex: 'small'
+          }),,
+          ModRange(node.mid, {
+            title: 'mid',
+            defaultValue: 1,
+            format: 'dBn',
+            flex: 'small'
+          }),
+          ModRange(node.high, {
+            title: 'high',
+            defaultValue: 1,
+            format: 'dBn',
+            flex: 'small'
+          }),
+          ModRange(node.highcut, {
+            title: 'highcut',
+            format: 'arfo',
+            flex: 'small'
+          }),
+          ModRange(node.lowcut, {
+            title: 'lowcut',
+            format: 'arfo',
+            flex: 'small'
+          }),
+          renderRouting(node, { outputOnly: true })
+        ])
       ])
     ]
   })
