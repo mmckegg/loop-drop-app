@@ -1,0 +1,42 @@
+var h = require('lib/h')
+var Header = require('lib/widgets/header')
+var ModRange = require('lib/params/mod-range')
+var Select = require('lib/params/select')
+
+module.exports = function renderFilter(node) {
+  return h('ProcessorNode -filter', [
+    Header(node, h('span', 'EQ')),
+    h('section', [
+      h('ParamList', [
+        ModRange(node.low, {
+          title: 'low',
+          defaultValue: 1,
+          format: 'dBn',
+          flex: 'small'
+        }),
+        ModRange(node.mid, {
+          title: 'mid',
+          defaultValue: 1,
+          format: 'dBn',
+          flex: 'small'
+        }),
+        ModRange(node.high, {
+          title: 'high',
+          defaultValue: 1,
+          format: 'dBn',
+          flex: 'small'
+        }),
+        ModRange(node.highcut, {
+          title: 'highcut',
+          format: 'arfo',
+          flex: 'small'
+        }),
+        ModRange(node.lowcut, {
+          title: 'lowcut',
+          format: 'arfo',
+          flex: 'small'
+        })
+      ])
+    ])
+  ])
+}
