@@ -135,7 +135,10 @@ function getChunks(controller){
         color: data.color,
         shape: data.shape,
         origin: chunkPositions[k],
-        resizable: !!chunk.templateSlot
+
+        // HACK: find a better way to detect/set this
+        resizable: !!chunk.templateSlot || !chunk.slots
+        
       })
     }
 
