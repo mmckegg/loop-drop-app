@@ -12,19 +12,21 @@ module.exports = function(node){
     volume: true,
     external: true,
     main: [
-      renderParams(node),
-      h('ParamList', [
-        h('div -block', [
-          h('div.extTitle', 'Use Global'),
-          h('ParamList -compact', [
-            ToggleButton(FlagParam(flags, 'noRepeat'), {
-              title: 'Repeat', 
-              onValue: false,
-              offValue: true 
-            })
-          ])
-        ]),
-        renderRouting(node)
+      h('section', [
+        renderParams(node),
+        h('ParamList', [
+          h('div -block', [
+            h('div.extTitle', 'Use Global'),
+            h('ParamList -compact', [
+              ToggleButton(FlagParam(flags, 'noRepeat'), {
+                title: 'Repeat', 
+                onValue: false,
+                offValue: true 
+              })
+            ])
+          ]),
+          renderRouting(node)
+        ])
       ])
     ]
   })
