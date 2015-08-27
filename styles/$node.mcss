@@ -51,13 +51,17 @@ $node {
         opacity: 1
       }
     }
-
+    
     button.edit {
       margin-left: 3px
+      margin-top: -1px
+      margin-bottom: -1px
     }
 
     button.remove {
       margin-left: 3px
+      margin-top: -1px
+      margin-bottom: -1px
       opacity: 0.6
     }
 
