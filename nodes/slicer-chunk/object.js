@@ -12,6 +12,7 @@ var ResolvedValue = require('observ-node-array/resolved-value')
 var detectTransients = require('lib/detect-transients')
 var throttle = require('throttle-observ')
 var throttleWatch = require('throttle-observ/watch')
+var extend = require('xtend')
 
 module.exports = SlicerChunk
 
@@ -25,34 +26,24 @@ function SlicerChunk (parentContext) {
   context.slotLookup = lookup(slots, 'id')
 
   var obs = BaseChunk(context, {
-    offset: Property([0, 1]),
-    amp: Param(context, 1),
-    transpose: Param(context, 0),
+    sample: Sample(context),
+    eq: EQ(context),
 
-    lowcut: Param(context, 0),
-    highcut: Param(context, 20000),
-    low: Param(context, 0),
-    mid: Param(context, 0),
-    high: Param(context, 0),
-
-    buffer: Node(context),
-    outputs: Property(['output']),
-    triggerMode: Property('slice'),
     sliceMode: Property('divide'),
     stretch: Property(false),
     tempo: Property(100),
-    volume: Property(1),
-    routes: ExternalRouter(context)
+
+    outputs: Property(['output']),
+    routes: ExternalRouter(context),
+    volume: Property(1)
   })
 
-  obs.resolvedBuffer = ResolvedValue(obs.buffer)
-
-  obs.slices = computedNextTick([obs.shape, obs.resolvedBuffer, throttle(obs.offset, 1000), obs.sliceMode, obs.triggerMode], function (shape, buffer, offset, sliceMode, triggerMode) {
+  obs.slices = computedNextTick([obs.shape, obs.sample.resolvedBuffer, throttle(obs.sample.offset, 1000), obs.sliceMode, obs.sample.mode], function (shape, buffer, offset, sliceMode, triggerMode) {
     var count = shape[0] * shape[1]
     var playToEnd = triggerMode === 'full'
     if (sliceMode === 'transient') {
-      if (obs.resolvedBuffer()) {
-        var data = obs.resolvedBuffer().getChannelData(0)
+      if (buffer) {
+        var data = buffer.getChannelData(0)
         var transients = detectTransients(data, count, offset)
         return sliceOffsets(transients, offset, playToEnd)
       }
@@ -60,48 +51,28 @@ function SlicerChunk (parentContext) {
     return divideSlices(count, offset, playToEnd)
   })
 
-  obs.volume(function(value){
-    output.gain.value = value
-  })
-
-  var properties = Struct({
-    stretch: obs.stretch,
-    amp: obs.amp,
-    tempo: obs.tempo,
-    transpose: obs.transpose,
-    buffer: obs.buffer,
-    low: obs.low,
-    mid: obs.mid,
-    high: obs.high,
-    highcut: obs.highcut,
-    lowcut: obs.lowcut
-  })
-
-  obs.amp.triggerable = true
-  obs.transpose.triggerable = true
-  
-  var computedSlots = computed([throttle(properties, 100), obs.slices, obs.resolvedBuffer], function (data, slices, buffer) {
+  var computedSlots = computed([
+    obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.slices, obs.sample.resolvedBuffer
+  ], function (sample, stretch, tempo, eq, volume, slices, buffer) {
 
     var result = slices.map(function (offset, i) {
-      if (data.stretch && buffer) {
+      if (stretch && buffer) {
 
         var originalDuration = getOffsetDuration(buffer.duration, offset)
-        var stretchedDuration = data.tempo / 60 * originalDuration
+        var stretchedDuration = tempo / 60 * originalDuration
 
         return {
           node: 'slot',
           id: String(i),
           output: 'output',
           sources: [
-            { node: 'source/granular',
+            extend(sample, { 
+              node: 'source/granular',
               mode: 'oneshot',
-              amp: data.amp,
               duration: stretchedDuration,
               sync: true,
-              transpose: data.transpose,
-              offset: offset,
-              buffer: data.buffer
-            }
+              offset: offset
+            })
           ]
         }
       } else {
@@ -109,14 +80,13 @@ function SlicerChunk (parentContext) {
           node: 'slot',
           id: String(i),
           output: 'output',
+          volume: volume,
           sources: [
-            { node: 'source/sample',
+            extend(sample, { 
+              node: 'source/sample',
               mode: 'oneshot',
-              amp: data.amp,
-              transpose: data.transpose,
-              offset: offset,
-              buffer: data.buffer
-            }
+              offset: offset
+            })
           ]
         }
       }
@@ -127,20 +97,14 @@ function SlicerChunk (parentContext) {
       node: 'slot',
       id: 'output',
       processors: [
-        { node: 'processor/eq',
-          low: data.low,
-          mid: data.mid,
-          high: data.high,
-          highcut: data.highcut,
-          lowcut: data.lowcut
-        }
+        extend(eq, {node: 'processor/eq'})
       ]
     })
 
     return result
   })
 
-  throttleWatch(computedSlots, 50, function (value) {
+  throttleWatch(computedSlots, 500, function (value) {
     slots.set(value)
 
     // HACK: bump shape to trigger update of slot mapping
@@ -152,6 +116,33 @@ function SlicerChunk (parentContext) {
   obs.destroy = function(){
     obs.routes.destroy()
   }
+
+  return obs
+}
+
+function EQ (context) {
+  return Struct({
+    lowcut: Param(context, 0),
+    highcut: Param(context, 20000),
+    low: Param(context, 0),
+    mid: Param(context, 0),
+    high: Param(context, 0)
+  })
+}
+
+function Sample (context) {
+  var obs = Struct({
+    offset: Property([0, 1]),
+    amp: Param(context, 1),
+    transpose: Param(context, 0),
+    buffer: Node(context),
+    mode: Property('slice')
+  })
+
+  obs.context = context
+  obs.amp.triggerable = true
+  obs.transpose.triggerable = true
+  obs.resolvedBuffer = ResolvedValue(obs.buffer)
 
   return obs
 }
