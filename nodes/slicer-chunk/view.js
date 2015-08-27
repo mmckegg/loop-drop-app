@@ -53,22 +53,22 @@ module.exports = function renderSlicerChunk (node) {
       h('section', [
 
         h('ParamList', [
-          SampleChooser(node),
-          Select(node.triggerMode, { options: triggerOptions }),
-          ModRange(node.amp, {
+          SampleChooser(node.sample),
+          Select(node.sample.mode, { options: triggerOptions }),
+          ModRange(node.sample.amp, {
             title: 'amp',
             format: 'dB',
             flex: 'small'
           }),
 
-          ModRange(node.transpose, {
+          ModRange(node.sample.transpose, {
             title: 'transpose',
             format: 'semitone',
             flex: 'small'
           })
         ]),
 
-        SampleTrimmer(node)
+        SampleTrimmer(node.sample)
       ]),
 
       h('h1', 'Slicing'),
@@ -89,40 +89,53 @@ module.exports = function renderSlicerChunk (node) {
         ])
       ]),
 
-      h('h1', 'EQ / Output'),
+      h('h1', 'EQ'),
+      h('section', [
+        eqParams(node.eq)
+      ]),
+
+      h('h1', 'Routing'),
       h('section', [
         h('ParamList', [
-          ModRange(node.low, {
-            title: 'low',
-            defaultValue: 1,
-            format: 'dBn',
-            flex: 'small'
-          }),,
-          ModRange(node.mid, {
-            title: 'mid',
-            defaultValue: 1,
-            format: 'dBn',
-            flex: 'small'
-          }),
-          ModRange(node.high, {
-            title: 'high',
-            defaultValue: 1,
-            format: 'dBn',
-            flex: 'small'
-          }),
-          ModRange(node.highcut, {
-            title: 'highcut',
-            format: 'arfo',
-            flex: 'small'
-          }),
-          ModRange(node.lowcut, {
-            title: 'lowcut',
-            format: 'arfo',
-            flex: 'small'
-          }),
-          renderRouting(node, { outputOnly: true })
+          renderRouting(node)
         ])
       ])
     ]
   })
+}
+
+function eqParams(node) {
+  return h('ParamList', [
+    ModRange(node.low, {
+      title: 'low',
+      defaultValue: 1,
+      format: 'dBn',
+      flex: 'small'
+    }),,
+    ModRange(node.mid, {
+      title: 'mid',
+      defaultValue: 1,
+      format: 'dBn',
+      flex: 'small'
+    }),
+    ModRange(node.high, {
+      title: 'high',
+      defaultValue: 1,
+      format: 'dBn',
+      flex: 'small'
+    }),
+
+    ModRange(node.lowcut, {
+      title: 'lowcut',
+      format: 'arfo',
+      flex: 'small'
+    }),
+
+    ModRange(node.highcut, {
+      title: 'highcut',
+      format: 'arfo',
+      flex: 'small'
+    })
+
+  ])
 }
