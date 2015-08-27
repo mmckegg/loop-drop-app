@@ -94,6 +94,10 @@ function ChunkSpawner(setup){
     }, '+ Chromatic'),
 
     h('button Button -main -spawn', {
+      'ev-click': send(spawnMeddler, setup)
+    }, '+ Meddler'),
+
+    h('button Button -main -spawn', {
       'ev-click': send(spawnModulator, setup)
     }, '+ Modulator')
   ])
@@ -138,6 +142,15 @@ function spawnChromatic(setup){
     selectedSlotId: '$template'
   }, {
     minimised: false
+  })
+}
+
+function spawnMeddler (setup) {
+  spawnTriggers(setup, {
+    node: 'chunk/meddler',
+    inputs: ['input'],
+    shape: [1, 4],
+    color: [255,255,0]
   })
 }
 

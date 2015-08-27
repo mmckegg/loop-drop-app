@@ -10,28 +10,18 @@ var IndexParam = require('lib/index-param')
 var QueryParam = require('lib/query-param')
 
 var renderNode = require('lib/render-node')
-var SlotChooser = require('./slot-chooser')
+var SlotChooser = require('../triggers-chunk/slot-chooser')
 
 module.exports = renderTriggersChunk
 
 function renderTriggersChunk(chunk){
   return h('ChunkNode', [
     h('div.options', [
-      h('h1', 'Slots'),
+      h('h1', 'Meddler Slots'),
       h('ParamList -compact', [
         shapeParams(chunk.shape)
       ]),
       SlotChooser(chunk, spawnSlot),
-      h('h1', 'Chunk Options'),
-      h('section.options', [
-        h('ParamList', [
-          h('div -block', [
-            h('div.extTitle', 'Choke Mode'),
-            h('div', ToggleButton(chunk.chokeAll, {title: 'All', offTitle: 'Single'}))
-          ])
-        ])
-      ]),
-      h('h1', 'Params'),
       ParamEditor(chunk)
     ]),
     h('div.slot', [
@@ -88,8 +78,7 @@ function spawnSlot(ev){
 
   chunk.slots.push({
     id: ev.id,
-    node: 'slot',
-    output: 'output'
+    node: 'slot'
   })
 
   chunk.selectedSlotId.set(id)
