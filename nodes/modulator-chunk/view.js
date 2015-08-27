@@ -60,10 +60,8 @@ module.exports = function renderModulatorChunk (node) {
       h('button.twirl', {
         'ev-click': send(toggleParam, node.minimised)
       }),
-      h('span', [
-        h('span', {'ev-hook': RenameHook(node, selected, actions.updateChunkReferences)}), 
-        ' (modulator)'
-      ]),
+      h('span', {'ev-hook': RenameHook(node, selected, actions.updateChunkReferences)}), 
+      h('span.type', ['modulator']),
       h('button.remove Button -warn', {
         'ev-click': send(collection.remove, node),
       }, 'X')
