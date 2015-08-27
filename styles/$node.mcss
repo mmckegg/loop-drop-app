@@ -27,6 +27,14 @@ $node {
       flex: 1
     }
 
+    span.type {
+      flex: inherit
+      font-size: 80%
+      line-height: 1.5
+      margin: 0 4px
+      font-weight: bold
+    }
+
     button.twirl {
       opacity: 0.6
       height: 12px

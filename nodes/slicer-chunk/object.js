@@ -141,7 +141,6 @@ function SlicerChunk (parentContext) {
   })
 
   throttleWatch(computedSlots, 50, function (value) {
-    console.log('thing')
     slots.set(value)
 
     // HACK: bump shape to trigger update of slot mapping
