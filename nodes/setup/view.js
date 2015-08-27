@@ -82,6 +82,10 @@ function ChunkSpawner(setup){
 
   return h('NodeSpawner', [
     h('button Button -main -spawn', {
+      'ev-click': send(spawnSynth, setup)
+    }, '+ Synth'),
+
+    h('button Button -main -spawn', {
       'ev-click': send(spawnSlicer, setup)
     }, '+ Slicer'),
 
@@ -154,11 +158,24 @@ function spawnMeddler (setup) {
   })
 }
 
+
 function spawnModulator(setup){
   var id = setup.chunks.resolveAvailable('modulator')
   var chunk = setup.chunks.push({
     node: 'modulatorChunk',
     id: id,
+    minimised: false
+  })
+  setup.selectedChunkId.set(id)
+  rename(chunk)
+}
+
+function spawnSynth(setup){
+  var id = setup.chunks.resolveAvailable('synth')
+  var chunk = setup.chunks.push({
+    node: 'chunk/synth',
+    id: id,
+    routes: {output: '$default'},
     minimised: false
   })
   setup.selectedChunkId.set(id)
