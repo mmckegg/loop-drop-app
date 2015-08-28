@@ -27,12 +27,18 @@ function SynthChunk (parentContext) {
     osc1: Osc(context),
     osc2: Osc(context),
     osc3: Osc(context),
+    offset: Param(context, 0),
+    amp: Param(context, 1),
     filter: Filter(context),
     eq: EQ(context),
     outputs: Property(['output']),
     volume: Property(1),
     routes: ExternalRouter(context)
   })
+
+  context.offset = obs.offset
+
+  obs.amp.triggerable = true
 
   var scale = Property({
     offset: 0, 
@@ -44,8 +50,8 @@ function SynthChunk (parentContext) {
   }
   
   var computedSlots = computed([
-    obs.shape, obs.osc1, obs.osc2, obs.osc3, obs.filter, obs.eq, obs.volume, scale
-  ], function (shape, osc1, osc2, osc3, filter, eq, volume, scale) {
+    obs.shape, obs.osc1, obs.osc2, obs.osc3, obs.filter, obs.amp, obs.eq, obs.volume, scale
+  ], function (shape, osc1, osc2, osc3, filter, amp, eq, volume, scale) {
     var length = shape[0] * shape[1]
 
     var result = [{
@@ -58,9 +64,11 @@ function SynthChunk (parentContext) {
     }]
 
     for (var i = 0; i < length; i++) {
-
-      var noteOffset = applyScale(i, scale)
-
+      var noteOffset = {
+        node: 'modulator/scale',
+        value: i,
+        scale: scale
+      } 
       result.push({
         node: 'slot',
         id: String(i),
@@ -72,7 +80,10 @@ function SynthChunk (parentContext) {
           extend(osc3, {node: 'source/oscillator' })
         ],
         processors: [
-          extend(filter, {node: 'processor/filter'})
+          extend(filter, {node: 'processor/filter'}),
+          { node: 'processor/gain',
+            gain: amp
+          }
         ]
       })
     }
