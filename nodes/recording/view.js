@@ -138,11 +138,28 @@ function ArrangementTimeline (recording) {
 
 function handleSpacebar(recording) {
   recording.playing.set(!recording.playing())
+  ensureCursorVisible()
+}
+
+function ensureCursorVisible () {
+  var cursor = document.querySelector('.ArrangementTimeline div.\\.cursor')
+  if (cursor) {
+    cursor.scrollIntoViewIfNeeded()
+  }
+}
+
+function centerOnCursor () {
+  var timeline = document.querySelector('.ArrangementTimeline')
+  if (timeline) {
+    var cursor = timeline.querySelector('.ArrangementTimeline div.\\.cursor')
+    timeline.scrollLeft = cursor.offsetLeft - Math.round(timeline.clientWidth / 2)
+  }
 }
 
 function handleZoom(delta, recording) {
-  var value = Math.round(Math.max(4, Math.min(300, recording.scale() - (delta))))
+  var value = Math.round(Math.max(1, Math.min(300, recording.scale() - (delta))))
   recording.scale.set(value)
+  window.requestAnimationFrame(centerOnCursor)
 }
 
 function handleTrimEnd(ev) {
