@@ -88,9 +88,6 @@ ArrangementTimeline {
 
           svg {
             opacity: 0.4
-            (path) {
-              fill: #FFF
-            }
           }
 
           div.trim {
