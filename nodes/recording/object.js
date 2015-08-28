@@ -10,6 +10,7 @@ var throttledWatch = require('throttle-observ/watch')
 var writeHeader = require('lib/write-header')
 var getClosestPoint = require('lib/get-closest-point')
 var extend = require('xtend')
+var animateProp = require('animate-prop')
 
 module.exports = Recording 
 
@@ -76,15 +77,93 @@ function Recording (parentContext) {
 
   obs.destroy = obs.timeline.destroy
 
-  obs.splice = function () {
+  obs.splice = function (snapToCue) {
     var info = getPositionInfo(obs.position())
     if (info) {
-      var newClip = extend(info.clip(), {
-        startOffset: info.clip.startOffset() + info.clipOffset,
-        duration: info.clip.duration() - info.clipOffset
-      })
-      info.clip.duration.set(info.clipOffset)
-      obs.timeline.primary.insert(newClip, info.clipIndex + 1)
+      var pos = snapToCue ? 
+        getClosestPoint(info.clip.cuePoints(), info.clip.startOffset() + info.clipOffset) - info.clip.startOffset() :
+        info.clipOffset
+      
+      if (pos > 0 && pos < info.clip.duration()) {
+        var newClip = extend(info.clip(), {
+          startOffset: info.clip.startOffset() + pos,
+          duration: info.clip.duration() - pos
+        })
+        obs.timeline.primary.insert(newClip, info.clipIndex + 1)
+        info.clip.duration.set(pos)
+        obs.centerOnCursor(true)
+      }
+
+    }
+  }
+
+  obs.nextCue = function () {
+    var pos = obs.position()
+    var info = getPositionInfo(pos)
+    if (info) {
+      var markers = info.clip.cuePoints()
+      var time = info.clip.startOffset() + info.clipOffset
+      if (markers) {
+        for (var i = 0; i < markers.length; i++) {
+          if (markers[i] >= time) {
+            var marker = (markers[i] === time) ? markers[i+1] : markers[i]
+            if (marker != null) {
+              var offset = marker - time
+              obs.position.set(pos + offset)
+              obs.ensureCursorVisible(true)
+              return true
+            }
+          }
+        }
+      }
+    }
+  }
+
+  obs.centerOnCursor = function (animate) {
+    window.requestAnimationFrame(function () {
+      var timeline = document.querySelector('.ArrangementTimeline')
+      if (timeline) {
+        var newScroll = (obs.position() * obs.scale()) - Math.round(timeline.clientWidth / 2)
+        if (animate) {
+          animateProp(timeline, 'scrollLeft', newScroll, 200)
+        } else {
+          timeline.scrollLeft = newScroll
+        }
+      }
+    })
+  }
+
+
+  obs.ensureCursorVisible = function (animate) {
+    var timeline = document.querySelector('.ArrangementTimeline')
+    if (timeline) {
+      var startPos = timeline.scrollLeft / obs.scale()
+      var endPos = (timeline.scrollLeft + timeline.clientWidth) / obs.scale()
+      if (obs.position() < startPos || obs.position() > endPos) {
+        obs.centerOnCursor(animate)
+      }
+    }
+  }
+
+  obs.prevCue = function () {
+    var pos = obs.position()
+    var info = getPositionInfo(pos)
+    if (info) {
+      var markers = info.clip.cuePoints()
+      var time = info.clip.startOffset() + info.clipOffset
+      if (markers) {
+        for (var i = 0; i < markers.length; i++) {
+          if (markers[i] >= time) {
+            var marker = (markers[i] === time) ? markers[i-2] : markers[i-1]
+            if (marker != null) {
+              var offset = marker - time
+              obs.position.set(pos + offset)
+              obs.ensureCursorVisible(true)
+              return true
+            }
+          }
+        }
+      }
     }
   }
 
