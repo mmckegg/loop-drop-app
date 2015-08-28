@@ -59,6 +59,20 @@ module.exports = function renderSlicerChunk (node) {
         oscillatorParams(node.osc3)
       ]),
 
+      h('h1', 'Master'),
+      h('ParamList', [
+        ModRange(node.amp, {
+          title: 'amp',
+          format: 'dB',
+          flex: 'small'
+        }),
+        ModRange(node.offset, {
+          title: 'offset',
+          format: 'semitone',
+          flex: 'small'
+        })
+      ]),
+
       h('h1', 'Filter'),
       h('section', [
         filterParams(node.filter)
@@ -86,7 +100,7 @@ function eqParams(node) {
       defaultValue: 1,
       format: 'dBn',
       flex: 'small'
-    }),,
+    }),
     ModRange(node.mid, {
       title: 'mid',
       defaultValue: 1,
