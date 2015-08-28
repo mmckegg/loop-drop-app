@@ -8,6 +8,8 @@ var Timeline = require('audio-timeline')
 var RenderStream = require('audio-timeline/render-stream')
 var throttledWatch = require('throttle-observ/watch')
 var writeHeader = require('lib/write-header')
+var getClosestPoint = require('lib/get-closest-point')
+var extend = require('xtend')
 
 module.exports = Recording 
 
@@ -74,6 +76,18 @@ function Recording (parentContext) {
 
   obs.destroy = obs.timeline.destroy
 
+  obs.splice = function () {
+    var info = getPositionInfo(obs.position())
+    if (info) {
+      var newClip = extend(info.clip(), {
+        startOffset: info.clip.startOffset() + info.clipOffset,
+        duration: info.clip.duration() - info.clipOffset
+      })
+      info.clip.duration.set(info.clipOffset)
+      obs.timeline.primary.insert(newClip, info.clipIndex + 1)
+    }
+  }
+
   obs.exportFile = function (format) {
     Dialog.showSaveDialog({
       title: 'Export Recording (PCM Wave)',
@@ -107,6 +121,22 @@ function Recording (parentContext) {
   return obs
 
   // scoped
+
+  function getPositionInfo(pos) {
+    var current = 0
+    for (var i = 0; i < obs.timeline.primary.getLength(); i++) {
+      var clip = obs.timeline.primary.get(i)
+      var endTime = current + clip.duration.resolved()
+      if (pos >= current && pos < endTime) {
+        return {
+          clipIndex: i,
+          clip: clip, 
+          clipOffset: pos - current
+        }
+      }
+      current = endTime
+    }
+  }
 
   function start () {
     releasePositionIncrement && releasePositionIncrement()

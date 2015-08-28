@@ -35,6 +35,12 @@ Transport {
     }
   }
 
+  button.splice {
+    margin-left: 10px
+    color: #AAA
+    font-size: 15px
+  }
+
   @svg play {
     height: 16px
     width: 16px

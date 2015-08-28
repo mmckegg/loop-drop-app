@@ -80,7 +80,7 @@ ArrangementTimeline {
           background-color: rgba(142, 255, 126, 0.2)
           background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(50, 74, 42, 0.7)), color-stop(50%,rgba(34,34,34,0)), color-stop(100%,rgba(34,34,34,0.7)));          border-radius: 10px
           height: 100px
-          box-shadow: 0 0 3px #222
+          box-shadow: 0 1px 2px #000
 
           border-left: none
           border-right: none

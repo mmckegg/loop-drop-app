@@ -1,5 +1,6 @@
 var h = require('lib/h')
 var svg = require('micro-css/h')(require('virtual-dom/virtual-hyperscript/svg'))
+var ev = require('lib/dom-event')
 var send = require('value-event/event')
 var KeyEvent = require('value-event/key')
 
@@ -10,6 +11,7 @@ var ToggleButton = require('lib/params/toggle-button')
 var MouseDragEvent = require('lib/mouse-drag-event')
 var ZoomEvent = require('lib/zoom-event')
 var WaveHook = require('lib/wave-hook')
+var getClosestPoint = require('lib/get-closest-point')
 
 module.exports = RecordingView
 
@@ -18,7 +20,7 @@ function RecordingView (recording) {
     
     h('div.main', {
       tabIndex: 0,
-      'ev-keydown': KeyEvent(handleSpacebar, recording, { key: 32 })
+      'ev-keydown': ev(handleTimelineKeyEvent, recording)
     }, [
       ArrangementTimeline(recording)
     ]),
@@ -38,7 +40,11 @@ function RecordingView (recording) {
         ToggleButton(recording.playing, {
           custom: true,
           classList: ['-play']
-        })
+        }),
+        h('button.splice', {
+          'title': 'splice',
+          'ev-click': send(recording.splice)
+        }, ']|[')
       ]),
       h('section Clock', [
         h('span.hours', {
@@ -107,6 +113,7 @@ function ArrangementTimeline (recording) {
             var waveScaler = (40 / widthMultiplier) * widthMultiplier
             return h('div.clip', {
               tabIndex: 0,
+              'ev-keydown': ev(handleClipKeyEvent, clip), //bcksp
               style: {
                 width: clip.duration.resolved() * widthMultiplier + 'px'
               }
@@ -136,9 +143,29 @@ function ArrangementTimeline (recording) {
   ])
 }
 
-function handleSpacebar(recording) {
-  recording.playing.set(!recording.playing())
-  ensureCursorVisible()
+function handleTimelineKeyEvent (ev) {
+  var recording = this.data
+  if (ev.keyCode === 83) { // S
+    recording.splice()
+  } else if (ev.keyCode === 32) { // space
+    recording.playing.set(!recording.playing())
+    ensureCursorVisible()
+  }
+}
+
+function handleClipKeyEvent (ev) {
+  var clip = this.data
+  var collection = clip.context.collection
+
+  if (ev.keyCode === 8) { // backspace
+    clip.context.collection.remove(clip)
+  } else if (ev.keyCode === 68) { // D
+    // duplicate clip
+    var index = collection.indexOf(clip)
+    collection.insert(clip(), index + 1)
+  } else {
+    ev.startPropagation()
+  }
 }
 
 function ensureCursorVisible () {
@@ -164,6 +191,7 @@ function handleZoom(delta, recording) {
 
 function handleTrimEnd(ev) {
   var clip = this.data
+  var markers = ev.altKey ? null : clip.cuePoints()
   var widthMultiplier = clip.context.recording.scale()
   if (ev.type === 'mousedown'){
     this.lastOffset = 0
@@ -172,7 +200,8 @@ function handleTrimEnd(ev) {
   } else if (this.start) {
     var offset = (ev.x - this.start.x) / widthMultiplier
     if (this.lastOffset !== offset){
-      var duration = Math.min(Math.max(0, this.startValue + offset), clip.duration.max())
+      var newValue = getClosestPoint(markers, clip.startOffset() + this.startValue + offset) - clip.startOffset()
+      var duration = Math.min(Math.max(0, newValue), clip.duration.max())
       clip.duration.set(duration)
       this.lastOffset = offset
     }
@@ -181,6 +210,7 @@ function handleTrimEnd(ev) {
 
 function handleTrimStart(ev) {
   var clip = this.data
+  var markers = ev.altKey ? null : clip.cuePoints()
   var widthMultiplier = clip.context.recording.scale()
   if (ev.type === 'mousedown'){
     this.lastOffset = 0
@@ -190,7 +220,8 @@ function handleTrimStart(ev) {
   } else if (this.start) {
     var offset = ev.offsetX / widthMultiplier
     if (this.lastOffset !== offset){
-      var startOffset = Math.min(Math.max(0, this.startOffset + offset), clip.startOffset.max())
+      var newValue = getClosestPoint(markers, this.startOffset + offset)
+      var startOffset = Math.min(Math.max(0, newValue), clip.startOffset.max())
       clip.startOffset.set(startOffset)
       clip.duration.set(this.duration + (this.startOffset - startOffset))
       this.lastOffset = offset
