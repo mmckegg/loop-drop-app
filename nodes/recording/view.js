@@ -43,7 +43,7 @@ function RecordingView (recording) {
         }),
         h('button.splice', {
           'title': 'splice',
-          'ev-click': send(recording.splice)
+          'ev-click': send(recording.splice, true)
         }, ']|[')
       ]),
       h('section Clock', [
@@ -98,8 +98,8 @@ function ArrangementTimeline (recording) {
         value: ObservValueHook(recording.position)
       }),
       h('div.cursor', {
-        style: ObservStyleHook(recording.position, 'left', function(value) {
-          return (value) * recording.scale() + 'px'
+        style: ObservStyleHook(recording.position, 'transform', function(value) {
+          return 'translateX(' + (value) * recording.scale() + 'px)'
         })
       }),
 
@@ -146,10 +146,14 @@ function ArrangementTimeline (recording) {
 function handleTimelineKeyEvent (ev) {
   var recording = this.data
   if (ev.keyCode === 83) { // S
-    recording.splice()
+    recording.splice(!ev.altKey)
   } else if (ev.keyCode === 32) { // space
     recording.playing.set(!recording.playing())
-    ensureCursorVisible()
+    recording.ensureCursorVisible(true)
+  } else if (ev.keyCode === 39) { // right arrow
+    recording.nextCue()
+  } else if (ev.keyCode === 37) { // left arrow
+    recording.prevCue()
   }
 }
 
@@ -168,25 +172,10 @@ function handleClipKeyEvent (ev) {
   }
 }
 
-function ensureCursorVisible () {
-  var cursor = document.querySelector('.ArrangementTimeline div.\\.cursor')
-  if (cursor) {
-    cursor.scrollIntoViewIfNeeded()
-  }
-}
-
-function centerOnCursor () {
-  var timeline = document.querySelector('.ArrangementTimeline')
-  if (timeline) {
-    var cursor = timeline.querySelector('.ArrangementTimeline div.\\.cursor')
-    timeline.scrollLeft = cursor.offsetLeft - Math.round(timeline.clientWidth / 2)
-  }
-}
-
 function handleZoom(delta, recording) {
   var value = Math.round(Math.max(1, Math.min(300, recording.scale() - (delta))))
   recording.scale.set(value)
-  window.requestAnimationFrame(centerOnCursor)
+  recording.centerOnCursor()
 }
 
 function handleTrimEnd(ev) {
@@ -258,6 +247,7 @@ function renderSvgTimeline (length, widthMultiplier) {
 
 function goToBeginning (recording) {
   recording.position.set(0)
+  recording.centerOnCursor(true)
 }
 
 function viewBox (x, y, width, height) {
