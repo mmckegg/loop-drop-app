@@ -5,6 +5,7 @@ var MouseDragEvent = require('lib/mouse-drag-event')
 var nextTick = require('next-tick')
 var getBaseName = require('path').basename
 var GridStateHook = require('./grid-state-hook.js')
+var read = require('lib/read')
 
 var QueryParam = require('lib/query-param')
 
@@ -71,7 +72,7 @@ function renderChunkBlock(chunk, controller){
     style: style,
     draggable: true,
     'ev-click': send(selectChunk, { chunkId: chunk.id, controller: controller }),
-    'ev-dblclick': send(editChunk, node),
+    'ev-dblclick': send(toggleChunk, node),
     'ev-dragstart': MPE(startDrag, node),
     'ev-dragend': MPE(endDrag, node)
   },[
@@ -290,24 +291,16 @@ function mixColor(a, b){
   ]
 }
 
-function editChunk(chunk){
-  var context = chunk.context
-  var fileObject = chunk.context.fileObject
-  
-  var descriptor = chunk()
-  if (descriptor) {
-    if (descriptor.minimised) {
-      QueryParam(chunk, 'minimised').set(false)
-    } else if (descriptor.src) {
-      var path = fileObject.resolvePath(descriptor.src)
-      context.actions.open(path)
-    }
-  }
+function toggleChunk(chunk){
+  var minimised = chunk.minimised || QueryParam(chunk, 'minimised')
+  minimised.set(!read(minimised))
 }
 
 function selectChunk(target){
   var controller = target.controller
   var setup = controller.context.setup
+  var actions = controller.context.actions
   controller.grabInput && controller.grabInput()
   setup.selectedChunkId.set(target.chunkId)
+  actions.scrollToSelectedChunk()
 }
