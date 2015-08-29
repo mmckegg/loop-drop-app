@@ -31,6 +31,8 @@ var resolveAvailable = require('lib/resolve-available')
 var copyFile = require('lib/copy-file')
 var rimraf = require('rimraf')
 
+var scrollIntoView = require('scroll-into-view')
+
 module.exports = Project
 
 function Project (parentContext) {
@@ -115,6 +117,7 @@ function Project (parentContext) {
     obs.tempo.set(Math.round(value))
   })
 
+  var chunkScroller = null
   var actions = obs.actions = {
     open: function (path) {
       var ext = getExt(path)
@@ -270,10 +273,13 @@ function Project (parentContext) {
     },
 
     scrollToSelectedChunk: function() {
-      setTimeout(function(){
+      clearTimeout(chunkScroller)
+      chunkScroller = setTimeout(function(){
         var el = document.querySelector('.ExternalNode.-selected')
-        el && el.scrollIntoViewIfNeeded()
-      }, 10)
+        if (el) {
+          scrollIntoView(el, { time: 200 })
+        }
+      }, 200)
     },
 
     grabInputForSelected: function(){
@@ -305,10 +311,6 @@ function Project (parentContext) {
 
         if (object.node && object.node.grabInput) {
           object.node.grabInput()
-        }
-
-        if (object.node && object.node.selectedChunkId) {
-          object.node.selectedChunkId(actions.scrollToSelectedChunk)
         }
 
       })

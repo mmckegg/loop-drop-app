@@ -6,6 +6,10 @@ $node {
   color: #EEE;
   border-radius: 4px;
 
+  -selected {
+    box-shadow: 0 0 8px #000;
+  }
+
   -minimised {
     section {
       display: none
