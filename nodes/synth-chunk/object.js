@@ -25,8 +25,13 @@ function SynthChunk (parentContext) {
 
   var obs = BaseChunk(context, {
     osc1: Osc(context),
-    osc2: Osc(context),
-    osc3: Osc(context),
+    osc2: Osc(context, {
+      optional: true
+    }),
+    osc3: Osc(context, {
+      optional: true, 
+      allowMultiply: true 
+    }),
     offset: Param(context, 0),
     amp: Param(context, 1),
     filter: Filter(context),
@@ -69,22 +74,45 @@ function SynthChunk (parentContext) {
         value: i,
         scale: scale
       } 
+
+      var sources = [
+        extend(osc1, {node: 'source/oscillator' })
+      ]
+
+      var processors = [
+        extend(filter, {node: 'processor/filter'}),
+        { node: 'processor/gain',
+          gain: amp
+        }
+      ]
+
+      if (osc2.enabled) {
+        sources.push(extend(osc2, {
+          node: 'source/oscillator' 
+        }))
+      }
+
+      if (osc3.enabled) {
+        if (osc3.multiply) {
+          processors.unshift({ 
+            node: 'processor/ring-modulator',
+            carrier: osc3 
+          })
+        } else {
+          sources.push(extend(osc3, 
+            {node: 'source/oscillator' 
+          }))
+        }
+      }
+
+
       result.push({
         node: 'slot',
         id: String(i),
         output: 'output',
         noteOffset: noteOffset,
-        sources: [
-          extend(osc1, {node: 'source/oscillator' }),
-          extend(osc2, {node: 'source/oscillator' }),
-          extend(osc3, {node: 'source/oscillator' })
-        ],
-        processors: [
-          extend(filter, {node: 'processor/filter'}),
-          { node: 'processor/gain',
-            gain: amp
-          }
-        ]
+        sources: sources,
+        processors: processors
       })
     }
 
@@ -125,14 +153,24 @@ function Filter (context) {
   return obs
 }
 
-function Osc (context) {
-  var obs = Struct({
+function Osc (context, opts) {
+
+  var props = {
     amp: Param(context, 0.4),
     shape: Property('sine'),
     octave: Param(context, 0),
     detune: Param(context, 0)
-  })
+  }
 
+  if (opts && opts.optional) {
+    props['enabled'] = Property(false)
+  }
+
+  if (opts && opts.allowMultiply) {
+    props['multiply'] = Property(false)
+  }
+
+  var obs = Struct(props)
   obs.amp.triggerable = true
   obs.shape.triggerable = true
   obs.octave.triggerable = true

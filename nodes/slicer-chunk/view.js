@@ -9,6 +9,7 @@ var IndexParam = require('lib/index-param')
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
+var renderEqParams = require('../eq/params')
 
 var sliceOptions = [
   ['Equal Slices', 'divide'],
@@ -91,7 +92,7 @@ module.exports = function renderSlicerChunk (node) {
 
       h('h1', 'EQ'),
       h('section', [
-        eqParams(node.eq)
+        renderEqParams(node.eq)
       ]),
 
       h('h1', 'Routing'),
@@ -102,40 +103,4 @@ module.exports = function renderSlicerChunk (node) {
       ])
     ]
   })
-}
-
-function eqParams(node) {
-  return h('ParamList', [
-    ModRange(node.low, {
-      title: 'low',
-      defaultValue: 1,
-      format: 'dBn',
-      flex: 'small'
-    }),,
-    ModRange(node.mid, {
-      title: 'mid',
-      defaultValue: 1,
-      format: 'dBn',
-      flex: 'small'
-    }),
-    ModRange(node.high, {
-      title: 'high',
-      defaultValue: 1,
-      format: 'dBn',
-      flex: 'small'
-    }),
-
-    ModRange(node.lowcut, {
-      title: 'lowcut',
-      format: 'arfo',
-      flex: 'small'
-    }),
-
-    ModRange(node.highcut, {
-      title: 'highcut',
-      format: 'arfo',
-      flex: 'small'
-    })
-
-  ])
 }

@@ -7,6 +7,7 @@ var IndexParam = require('lib/index-param')
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
+var renderEqParams = require('../eq/params')
 
 var shapeChoices = require('../oscillator/shape-choices')
 var filterTypeChoices = [
@@ -49,15 +50,25 @@ module.exports = function renderSlicerChunk (node) {
         oscillatorParams(node.osc1)
       ]),
 
-      h('h1', 'Oscillator 2'),
-      h('section', [
+      h('h1.withOptions', [
+        h('span', 'Oscillator 2'),
+        ToggleButton(node.osc2.enabled, {
+          title: 'Enable'
+        })
+      ]),
+      node.osc2.enabled() ? h('section', [
         oscillatorParams(node.osc2)
-      ]),
+      ]) : null,
 
-      h('h1', 'Oscillator 3'),
-      h('section', [
-        oscillatorParams(node.osc3)
+      h('h1.withOptions', [
+        h('span', 'Oscillator 3'),
+        ToggleButton(node.osc3.enabled, {
+          title: 'Enable'
+        })
       ]),
+      node.osc3.enabled() ? h('section', [
+        oscillatorParams(node.osc3)
+      ]) : null,
 
       h('h1', 'Master'),
       h('ParamList', [
@@ -80,9 +91,10 @@ module.exports = function renderSlicerChunk (node) {
 
       h('h1', 'EQ'),
       h('section', [
-        eqParams(node.eq)
+        renderEqParams(node.eq)
       ]),
 
+      h('h1', 'Routing'),
       h('section', [
         h('ParamList', [
           renderRouting(node)
@@ -91,42 +103,6 @@ module.exports = function renderSlicerChunk (node) {
 
     ]
   })
-}
-
-function eqParams(node) {
-  return h('ParamList', [
-    ModRange(node.low, {
-      title: 'low',
-      defaultValue: 1,
-      format: 'dBn',
-      flex: 'small'
-    }),
-    ModRange(node.mid, {
-      title: 'mid',
-      defaultValue: 1,
-      format: 'dBn',
-      flex: 'small'
-    }),
-    ModRange(node.high, {
-      title: 'high',
-      defaultValue: 1,
-      format: 'dBn',
-      flex: 'small'
-    }),
-
-    ModRange(node.lowcut, {
-      title: 'lowcut',
-      format: 'arfo',
-      flex: 'small'
-    }),
-
-    ModRange(node.highcut, {
-      title: 'highcut',
-      format: 'arfo',
-      flex: 'small'
-    })
-
-  ])
 }
 
 function filterParams(node) {
@@ -158,6 +134,10 @@ function oscillatorParams(node) {
     Select(node.shape, { 
       options: shapeChoices 
     }),
+
+    node.multiply ? ToggleButton(node.multiply, {
+      title: 'Multiply'
+    }) : null,
 
     ModRange(node.octave, {
       title: 'octave',
