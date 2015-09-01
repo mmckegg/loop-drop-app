@@ -36,6 +36,7 @@ function ChromaticChunk (parentContext) {
     notes: [0,2,4,5,7,9,11]
   }
 
+  var volume = Property(1)
   var obs = ObservStruct({
     id: Observ(),
     shape: Property([1,4]),
@@ -47,13 +48,13 @@ function ChromaticChunk (parentContext) {
 
     slots: NodeArray(context),
     inputs: Property([]),
-    outputs: Property([]),
-    volume: Property(1),
+    outputs: Property(['output']),
+    volume: volume,
 
     params: Property([]),
     paramValues: NodeVarhash(parentContext),
 
-    routes: ExternalRouter(context, {output: '$default'}),
+    routes: ExternalRouter(context, {output: '$default'}, volume),
     flags: Property([]),
     chokeAll: Property(false),
     color: Property([255,255,255]),

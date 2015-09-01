@@ -16,19 +16,16 @@ function TriggersChunk (parentContext) {
   var slots = NodeArray(context)
   context.slotLookup = lookup(slots, 'id')
 
+  var volume = Property(1)
   var obs = BaseChunk(context, {
     slots: slots,
     inputs: Property([]),
     outputs: Property([]),
-    routes: ExternalRouter(context, {output: '$default'}),
+    routes: ExternalRouter(context, {output: '$default'}, volume),
     params: Property([]),
-    volume: Property(1),
+    volume: volume,
     paramValues: NodeVarhash(parentContext),
     selectedSlotId: Property()
-  })
-
-  obs.volume(function(value){
-    output.gain.value = value
   })
 
   context.chunk = obs
