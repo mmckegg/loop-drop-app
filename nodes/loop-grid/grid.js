@@ -19,7 +19,7 @@ module.exports = function renderGrid (controller) {
   var rows = []
   for (var r=0;r<shape[0];r++){
     var buttons = []
-    for (var c=0;c<shape[1];c++){      
+    for (var c=0;c<shape[1];c++){
       buttons.push(h('div.button', {
         'ev-dragenter': MPE(enterButton, controller),
         'ev-dragleave': MPE(leaveButton, controller)
@@ -78,11 +78,11 @@ function renderChunkBlock(chunk, controller){
   },[
     h('span.label', chunk.id),
     chunk.resizable ? [
-      h('div.handle -bottom', { 
+      h('div.handle -bottom', {
         draggable: true,
         'ev-mousedown': MouseDragEvent(resize, { edge: 'bottom', node: node, shape: shape })
       }),
-      h('div.handle -right', { 
+      h('div.handle -right', {
         draggable: true,
         'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: node, shape: shape })
       })
@@ -139,7 +139,7 @@ function getChunks(controller){
 
         // HACK: find a better way to detect/set this
         resizable: !!chunk.templateSlot || !chunk.slots
-        
+
       })
     }
 

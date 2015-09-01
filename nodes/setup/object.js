@@ -30,7 +30,7 @@ function Setup(parentContext){
     selectedChunkId: Observ(),
     volume: Property(1),
     globalScale: Property({
-      offset: 0, 
+      offset: 0,
       notes: [0,2,4,5,7,9,11]
     })
   })
@@ -99,10 +99,10 @@ function Setup(parentContext){
     return descriptor && descriptor.id || undefined
   })
 
-  context.chunkLookup = lookup(node.chunks, function(x){ 
+  context.chunkLookup = lookup(node.chunks, function(x){
     if (x){
       var data = x.resolved ? x.resolved() : x()
-      return data && data.id || undefined 
+      return data && data.id || undefined
     }
   }, resolve, resolveInner)
 

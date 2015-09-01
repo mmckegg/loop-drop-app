@@ -16,7 +16,7 @@ function renderExternalChromaticChunk (node) {
   var flags = QueryParam(node, 'flags')
   var shape = QueryParam(node, 'shape')
   var offset = QueryParam(node, 'offset')
-  
+
   return renderChunk(node, {
     volume: true,
     external: true,
@@ -24,14 +24,14 @@ function renderExternalChromaticChunk (node) {
       h('section', [
         h('ParamList', [
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(shape, 0), { 
+            h('div', Range(IndexParam(shape, 0), {
               title: 'rows',
               format: 'bit',
               defaultValue: 1
             }))
           ]),
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(shape, 1), { 
+            h('div', Range(IndexParam(shape, 1), {
               title: 'cols',
               format: 'bit',
               defaultValue: 1
@@ -51,12 +51,12 @@ function renderExternalChromaticChunk (node) {
             h('div.extTitle', 'Use Global'),
             h('ParamList -compact', [
               ToggleButton(FlagParam(flags, 'noRepeat'), {
-                title: 'Repeat', 
+                title: 'Repeat',
                 onValue: false,
-                offValue: true 
+                offValue: true
               }),
               ToggleButton(QueryParam(node, 'scale'), {
-                title: 'Scale', 
+                title: 'Scale',
                 offValue: undefined,
                 onValue: '$global'
               })
