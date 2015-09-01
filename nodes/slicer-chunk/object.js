@@ -38,7 +38,7 @@ function SlicerChunk (parentContext) {
     volume: Property(1)
   })
 
-  obs.slices = computedNextTick([obs.shape, obs.sample.resolvedBuffer, throttle(obs.sample.offset, 1000), obs.sliceMode, obs.sample.mode], function (shape, buffer, offset, sliceMode, triggerMode) {
+  obs.sample.slices = computedNextTick([obs.shape, obs.sample.resolvedBuffer, throttle(obs.sample.offset, 1000), obs.sliceMode, obs.sample.mode], function (shape, buffer, offset, sliceMode, triggerMode) {
     var count = shape[0] * shape[1]
     var playToEnd = triggerMode === 'full'
     if (sliceMode === 'transient') {
@@ -52,7 +52,7 @@ function SlicerChunk (parentContext) {
   })
 
   var computedSlots = computed([
-    obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.slices, obs.sample.resolvedBuffer
+    obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.sample.slices, obs.sample.resolvedBuffer
   ], function (sample, stretch, tempo, eq, volume, slices, buffer) {
 
     var result = slices.map(function (offset, i) {
