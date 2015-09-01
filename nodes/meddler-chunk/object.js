@@ -35,6 +35,7 @@ function MeddlerChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'}),
     params: Property([]),
     volume: Property(1),
+    color: Property([255,255,0]),
     paramValues: NodeVarhash(parentContext),
     selectedSlotId: Property()
   })

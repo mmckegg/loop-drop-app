@@ -18,7 +18,7 @@ function ModulatorChunk(parentContext){
     id: Observ(),
     slots: NodeArray(context),
     minimised: Property(false),
-    shape: Property([1,1]),
+    shape: Property([1,4]),
     color: Property([0,0,0]),
     flags: Property([])
   })

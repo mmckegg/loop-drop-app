@@ -18,6 +18,8 @@ module.exports = {
         node: 'slot',
         output: 'output'
       },
+      outputs: ['output'],
+      slots: [{id: 'output', node: 'slot'}],
       color: randomColor(),
       selectedSlotId: '$template'
     }

@@ -9,7 +9,8 @@ module.exports = {
     return {
       color: randomColor(),
       osc1: {
-        shape: 'sawtooth'
+        shape: 'sawtooth',
+        amp: 0.4
       },
       amp: {
         node: 'modulator/adsr',
