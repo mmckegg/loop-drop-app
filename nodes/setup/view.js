@@ -87,6 +87,8 @@ function renderScaleChooser(scale){
 }
 
 function handleChunkSpawn (chunk) {
-  rename(chunk)
+  setTimeout(function () {
+    rename(chunk)
+  }, 100)
   chunk.context.setup.selectedChunkId.set(chunk().id)
 }
