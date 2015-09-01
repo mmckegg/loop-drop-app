@@ -34,7 +34,7 @@ function SlicerChunk (parentContext) {
     tempo: Property(100),
 
     outputs: Property(['output']),
-    routes: ExternalRouter(context),
+    routes: ExternalRouter(context, {output: '$default'}),
     volume: Property(1)
   })
 

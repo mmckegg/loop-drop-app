@@ -32,7 +32,7 @@ function MeddlerChunk (parentContext) {
     slots: slots,
     inputs: Property(['input']),
     outputs: Property(['output']),
-    routes: ExternalRouter(context),
+    routes: ExternalRouter(context, {output: '$default'}),
     params: Property([]),
     volume: Property(1),
     paramValues: NodeVarhash(parentContext),

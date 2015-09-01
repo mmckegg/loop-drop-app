@@ -53,7 +53,7 @@ function ChromaticChunk (parentContext) {
     params: Property([]),
     paramValues: NodeVarhash(parentContext),
 
-    routes: ExternalRouter(context),
+    routes: ExternalRouter(context, {output: '$default'}),
     flags: Property([]),
     chokeAll: Property(false),
     color: Property([255,255,255]),

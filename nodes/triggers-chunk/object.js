@@ -20,7 +20,7 @@ function TriggersChunk (parentContext) {
     slots: slots,
     inputs: Property([]),
     outputs: Property([]),
-    routes: ExternalRouter(context),
+    routes: ExternalRouter(context, {output: '$default'}),
     params: Property([]),
     volume: Property(1),
     paramValues: NodeVarhash(parentContext),
