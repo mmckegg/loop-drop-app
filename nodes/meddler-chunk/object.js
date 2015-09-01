@@ -23,7 +23,7 @@ function MeddlerChunk (parentContext) {
   var slots = NodeArray(context)
   var extraSlots = Varhash({})
 
-  context.slotLookup = merge([ 
+  context.slotLookup = merge([
     lookup(slots, 'id'),
     extraSlots
   ])

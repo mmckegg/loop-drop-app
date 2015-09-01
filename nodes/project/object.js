@@ -96,8 +96,8 @@ function Project (parentContext) {
 
   var broadcastItemLoaded = null
   obs.items = ObservArray([])
-  obs.items.onLoad = Event(function(broadcast) { 
-    broadcastItemLoaded = broadcast 
+  obs.items.onLoad = Event(function(broadcast) {
+    broadcastItemLoaded = broadcast
   })
 
   obs.resolved = ObservStruct({
@@ -197,7 +197,7 @@ function Project (parentContext) {
     },
 
     deleteEntry: function (path, cb) {
-      rimraf(path, context.fs, cb || function(err) { 
+      rimraf(path, context.fs, cb || function(err) {
         if (err) throw err
       })
     },

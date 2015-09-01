@@ -29,8 +29,8 @@ function SynthChunk (parentContext) {
       optional: true
     }),
     osc3: Osc(context, {
-      optional: true, 
-      allowMultiply: true 
+      optional: true,
+      allowMultiply: true
     }),
     offset: Param(context, 0),
     amp: Param(context, 1),
@@ -46,14 +46,14 @@ function SynthChunk (parentContext) {
   obs.amp.triggerable = true
 
   var scale = Property({
-    offset: 0, 
+    offset: 0,
     notes: [0,2,4,5,7,9,11]
   })
 
   if (context.globalScale){
     var releaseGlobalScale = watch(context.globalScale, scale.set)
   }
-  
+
   var computedSlots = computed([
     obs.shape, obs.osc1, obs.osc2, obs.osc3, obs.filter, obs.amp, obs.eq, obs.volume, scale
   ], function (shape, osc1, osc2, osc3, filter, amp, eq, volume, scale) {
@@ -73,7 +73,7 @@ function SynthChunk (parentContext) {
         node: 'modulator/scale',
         value: i,
         scale: scale
-      } 
+      }
 
       var sources = [
         extend(osc1, {node: 'source/oscillator' })
@@ -88,19 +88,19 @@ function SynthChunk (parentContext) {
 
       if (osc2.enabled) {
         sources.push(extend(osc2, {
-          node: 'source/oscillator' 
+          node: 'source/oscillator'
         }))
       }
 
       if (osc3.enabled) {
         if (osc3.multiply) {
-          processors.unshift({ 
+          processors.unshift({
             node: 'processor/ring-modulator',
-            carrier: osc3 
+            carrier: osc3
           })
         } else {
-          sources.push(extend(osc3, 
-            {node: 'source/oscillator' 
+          sources.push(extend(osc3,
+            {node: 'source/oscillator'
           }))
         }
       }

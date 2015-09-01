@@ -66,7 +66,7 @@ function SlicerChunk (parentContext) {
           id: String(i),
           output: 'output',
           sources: [
-            extend(sample, { 
+            extend(sample, {
               node: 'source/granular',
               mode: 'oneshot',
               duration: stretchedDuration,
@@ -82,7 +82,7 @@ function SlicerChunk (parentContext) {
           output: 'output',
           volume: volume,
           sources: [
-            extend(sample, { 
+            extend(sample, {
               node: 'source/sample',
               mode: 'oneshot',
               offset: offset
@@ -171,7 +171,7 @@ function divideSlices(length, offset, playToEnd) {
 function subOffset(main, sub) {
   var range = main[1] - main[0]
   return [
-    main[0] + (sub[0] * range), 
+    main[0] + (sub[0] * range),
     main[0] + (sub[1] * range)
   ]
 }
