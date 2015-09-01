@@ -6,6 +6,7 @@ var nextTick = require('next-tick')
 var getBaseName = require('path').basename
 var GridStateHook = require('./grid-state-hook.js')
 var read = require('lib/read')
+var extend = require('xtend')
 
 var QueryParam = require('lib/query-param')
 
@@ -67,8 +68,8 @@ function renderChunkBlock(chunk, controller){
 
   var node = setup.chunks.lookup.get(chunk.id)
 
-  return h('div.chunk', { 
-    className: selectedChunkId == chunk.id ? '-selected' : null, 
+  return h('div.chunk', {
+    className: selectedChunkId == chunk.id ? '-selected' : null,
     style: style,
     draggable: true,
     'ev-click': send(selectChunk, { chunkId: chunk.id, controller: controller }),
@@ -163,12 +164,13 @@ function endDrag(ev){
   window.currentDrag = null
 }
 
+var cloneDrag = null
 var entering = null
 function dragLeave(ev){
   var controller = ev.data
   if (window.currentDrag && (!entering || entering !== controller)){
     var chunkId = getId(currentDrag.data)
-    if (chunkId){
+    if (chunkId && !ev.altKey){
       controller.chunkPositions.delete(chunkId)
     }
   }
@@ -197,31 +199,36 @@ function dragOver(ev){
 
   if (currentDrag){
 
-    var chunkId = getId(currentDrag.data)
+    if (ev.altKey) {
+      cloneDrag = currentDrag
+      ev.dataTransfer.dropEffect = 'copy'
+    } else {
+      var chunkId = getId(currentDrag.data)
 
-    if (chunkId){
-      var shape = controller.playback.shape()
-      var height = ev.offsetHeight / shape[0]
-      var width = ev.offsetWidth / shape[1]
+      if (chunkId){
+        var shape = controller.playback.shape()
+        var height = ev.offsetHeight / shape[0]
+        var width = ev.offsetWidth / shape[1]
 
-      var x = ev.offsetX - currentDrag.offsetX
-      var y = ev.offsetY - currentDrag.offsetY
+        var x = ev.offsetX - currentDrag.offsetX
+        var y = ev.offsetY - currentDrag.offsetY
 
-      var r = Math.round(y/width)
-      var c = Math.round(x/width)
+        var r = Math.round(y/width)
+        var c = Math.round(x/width)
 
-      var currentValue = controller.chunkPositions.get(chunkId)
+        var currentValue = controller.chunkPositions.get(chunkId)
 
-      if (!currentValue || currentValue[0] !== r || currentValue[1] !== c){
-        controller.chunkPositions.put(chunkId, [r,c])
+        if (!currentValue || currentValue[0] !== r || currentValue[1] !== c){
+          controller.chunkPositions.put(chunkId, [r,c])
+        }
       }
+
+      ev.dataTransfer.dropEffect = 'move'
+      cloneDrag = null
     }
 
-    ev.dataTransfer.dropEffect = 'move'
-    ev.event.preventDefault()  
-  }
-
-  if (~ev.dataTransfer.types.indexOf('filepath')){
+    ev.event.preventDefault()
+  } else if (~ev.dataTransfer.types.indexOf('filepath')){
     ev.dataTransfer.dropEffect = 'copy'
     ev.event.preventDefault()
   }
@@ -233,6 +240,33 @@ function drop(ev){
   var actions = controller.context.actions
   var setup = controller.context.setup
   var fileObject = setup.context.fileObject
+
+  var shape = controller.playback.shape()
+  var height = ev.offsetHeight / shape[0]
+  var width = ev.offsetWidth / shape[1]
+  var r = Math.floor(ev.offsetY/height)
+  var c = Math.floor(ev.offsetX/width)
+
+  var currentDrag = cloneDrag
+  cloneDrag = null
+
+  if (ev.altKey && !path && currentDrag) {
+    var data = currentDrag.data()
+    if (data) {
+      if (data.node === 'external') {
+        // duplicate external file
+        path = fileObject.resolvePath(data.src)
+      } else {
+        // duplicate local chunk
+        var id = setup.chunks.resolveAvailable(data.id)
+        var chunk = setup.chunks.push(extend(data, {
+          id: id
+        }))
+        controller.chunkPositions.put(id, [r,c])
+        return
+      }
+    }
+  }
 
   if (path && setup && setup.chunks){
 
@@ -248,12 +282,7 @@ function drop(ev){
         'routes': {output: '$default'},
         'scale': '$global'
       })
-      
-      var shape = controller.playback.shape()
-      var height = ev.offsetHeight / shape[0]
-      var width = ev.offsetWidth / shape[1]
-      var r = Math.floor(ev.offsetY/height)
-      var c = Math.floor(ev.offsetX/width)
+
       controller.chunkPositions.put(id, [r,c])
     })
 
