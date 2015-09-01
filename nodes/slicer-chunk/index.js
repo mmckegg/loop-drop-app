@@ -7,7 +7,10 @@ module.exports = {
   group: 'chunks',
   object: require('./object'),
   spawn: function () {
-    color: randomColor()
+    return {
+      color: randomColor(),
+      chokeAll: true
+    }
   },
   render: require('./view')
 }
