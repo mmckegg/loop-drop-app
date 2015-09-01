@@ -41,8 +41,10 @@ function renderExternalChromaticChunk (node) {
         h('ParamList', [
           ModRange(offset, {
             title: 'offset',
-            format: 'semitone', 
-            flex: true
+            format: 'semitone',
+            flex: true,
+            allowSpawn: true,
+            node: node
           })
         ]),
         renderParams(node),
