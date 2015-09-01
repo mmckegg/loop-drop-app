@@ -162,6 +162,10 @@ function Project (parentContext) {
           var setupPath = join(path, 'index.json')
           context.fs.writeFile(setupPath, JSON.stringify({node: 'setup'}), function (err) {
             if (err) throw err
+
+            // force reload of entries, just in case watchers are glitching
+            obs.entries.refresh()
+
             var setup = actions.addFileObject(setupPath)
             obs.selected.set(setupPath)
             obs.renaming.set(true)
@@ -183,6 +187,10 @@ function Project (parentContext) {
         if (err) return cb&&cb(err)
         context.fs.rename(path, newPath, function (err) {
           if (err) return cb&&cb(err)
+
+          // force reload of entries, just in case watchers are glitching
+          obs.entries.refresh()
+
           var item = findItemByPath(obs.items, filePath)
           if (item){
             item.load(newFilePath)
