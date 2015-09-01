@@ -76,7 +76,8 @@ ipc.on('load-project', function (path) {
   var projectFile = FileObject(rootContext)
 
   projectFile.onLoad(function () {
-    document.body.appendChild(createRootElement(projectFile.node)) 
+    document.body.appendChild(createRootElement(projectFile.node))
+    window.currentProject = projectFile.node
   })
 
   ensureProject(projectPath, function (err) {
