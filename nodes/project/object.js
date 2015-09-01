@@ -15,7 +15,6 @@ var AudioRMS = require('audio-rms')
 var ObservDirectory = require('observ-fs/directory')
 var FileObject = require('lib/file-object')
 var QueryParam = require('lib/query-param')
-var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
 var SessionRecorder = require('lib/session-recorder')
 var StreamObserv = require('lib/stream-observ')
@@ -200,31 +199,6 @@ function Project (parentContext) {
     deleteEntry: function (path, cb) {
       rimraf(path, context.fs, cb || function(err) { 
         if (err) throw err
-      })
-    },
-
-    newChunk: function (path, descriptor, cb) {
-      // ensure expanded
-
-      resolveAvailable(path, context.fs, function(err, path){
-        if (typeof descriptor === 'function'){
-          cb = descriptor
-          descriptor = null
-        }
-
-        descriptor = descriptor || {}
-        descriptor = extend({
-          node: 'chunk', 
-          color: randomColor([255,255,255]),
-          slots: [{id: 'output', node: 'slot'}], 
-          shape: [2,4],
-          outputs: ['output'],
-        }, descriptor)
-
-        context.fs.writeFile(path, JSON.stringify(descriptor), function(err){
-          if (err) return cb&&cb(err)
-          cb(null, path)
-        })
       })
     },
 

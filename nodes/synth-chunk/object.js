@@ -38,7 +38,7 @@ function SynthChunk (parentContext) {
     eq: EQ(context),
     outputs: Property(['output']),
     volume: Property(1),
-    routes: ExternalRouter(context)
+    routes: ExternalRouter(context, {output: '$default'})
   })
 
   context.offset = obs.offset
