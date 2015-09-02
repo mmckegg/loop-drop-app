@@ -35,7 +35,7 @@
     "decibels": "^1.0.0",
     "deep-equal": "^0.2.1",
     "dom-delegator": "~13.1.0",
-    "electron-prebuilt": "~0.31.1",
+    "electron-prebuilt": "~0.27.3",
     "frac": "^0.3.1",
     "geval": "^2.1.1",
     "hyperscript": "^1.4.6",
