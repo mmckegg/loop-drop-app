@@ -65,7 +65,9 @@ module.exports = function renderSlicerChunk (node) {
           ModRange(node.sample.transpose, {
             title: 'transpose',
             format: 'semitone',
-            flex: 'small'
+            flex: 'small',
+            allowSpawn: true,
+            node: node
           })
         ]),
 
