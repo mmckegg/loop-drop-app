@@ -29,23 +29,23 @@ module.exports = function renderSlicerChunk (node) {
 
         h('ParamList', [
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(node.shape, 0), { 
+            h('div', Range(IndexParam(node.shape, 0), {
               title: 'rows',
               format: 'bit',
               defaultValue: 1
             }))
           ]),
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(node.shape, 1), { 
+            h('div', Range(IndexParam(node.shape, 1), {
               title: 'cols',
               format: 'bit',
               defaultValue: 1
             }))
           ]),
           ToggleButton(FlagParam(node.flags, 'noRepeat'), {
-            title: 'Use Repeat', 
+            title: 'Use Repeat',
             onValue: false,
-            offValue: true 
+            offValue: true
           })
         ])
       ]),
