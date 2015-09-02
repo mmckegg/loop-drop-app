@@ -190,6 +190,7 @@ function Project (parentContext) {
 
           // force reload of entries, just in case watchers are glitching
           obs.entries.refresh()
+          obs.recordingEntries.refresh()
 
           var item = findItemByPath(obs.items, filePath)
           if (item){
