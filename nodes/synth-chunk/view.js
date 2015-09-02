@@ -80,7 +80,9 @@ module.exports = function renderSlicerChunk (node) {
         ModRange(node.offset, {
           title: 'offset',
           format: 'semitone',
-          flex: 'small'
+          flex: 'small',
+          allowSpawn: true,
+          node: node
         })
       ]),
 
