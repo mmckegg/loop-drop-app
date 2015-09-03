@@ -65,6 +65,7 @@ function SlicerChunk (parentContext) {
           node: 'slot',
           id: String(i),
           output: 'output',
+          volume: volume,
           sources: [
             extend(sample, {
               node: 'source/granular',
