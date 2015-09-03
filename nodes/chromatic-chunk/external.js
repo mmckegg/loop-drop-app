@@ -16,52 +16,56 @@ function renderExternalChromaticChunk (node) {
   var flags = QueryParam(node, 'flags')
   var shape = QueryParam(node, 'shape')
   var offset = QueryParam(node, 'offset')
-  
+
   return renderChunk(node, {
     volume: true,
     external: true,
     main: [
-      h('ParamList', [
-        h('div -block -flexSmall', [
-          h('div', Range(IndexParam(shape, 0), { 
-            title: 'rows',
-            format: 'bit',
-            defaultValue: 1
-          }))
-        ]),
-        h('div -block -flexSmall', [
-          h('div', Range(IndexParam(shape, 1), { 
-            title: 'cols',
-            format: 'bit',
-            defaultValue: 1
-          }))
-        ])
-      ]),
-      h('ParamList', [
-        ModRange(offset, {
-          title: 'offset',
-          format: 'semitone', 
-          flex: true
-        })
-      ]),
-      renderParams(node),
-      h('ParamList', [
-        h('div -block', [
-          h('div.extTitle', 'Use Global'),
-          h('ParamList -compact', [
-            ToggleButton(FlagParam(flags, 'noRepeat'), {
-              title: 'Repeat', 
-              onValue: false,
-              offValue: true 
-            }),
-            ToggleButton(QueryParam(node, 'scale'), {
-              title: 'Scale', 
-              offValue: undefined,
-              onValue: '$global'
-            })
+      h('section', [
+        h('ParamList', [
+          h('div -block -flexSmall', [
+            h('div', Range(IndexParam(shape, 0), {
+              title: 'rows',
+              format: 'bit',
+              defaultValue: 1
+            }))
+          ]),
+          h('div -block -flexSmall', [
+            h('div', Range(IndexParam(shape, 1), {
+              title: 'cols',
+              format: 'bit',
+              defaultValue: 1
+            }))
           ])
         ]),
-        renderRouting(node)
+        h('ParamList', [
+          ModRange(offset, {
+            title: 'offset',
+            format: 'semitone',
+            flex: true,
+            allowSpawn: true,
+            node: node
+          })
+        ]),
+        renderParams(node),
+        h('ParamList', [
+          h('div -block', [
+            h('div.extTitle', 'Use Global'),
+            h('ParamList -compact', [
+              ToggleButton(FlagParam(flags, 'noRepeat'), {
+                title: 'Repeat',
+                onValue: false,
+                offValue: true
+              }),
+              ToggleButton(QueryParam(node, 'scale'), {
+                title: 'Scale',
+                offValue: undefined,
+                onValue: '$global'
+              })
+            ])
+          ]),
+          renderRouting(node)
+        ])
       ])
     ]
   })

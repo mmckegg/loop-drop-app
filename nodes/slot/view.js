@@ -36,6 +36,9 @@ module.exports = function renderSlot (node) {
 }
 
 function checkIsTrigger(node){
+  if (node.context.slotProcessorsOnly) {
+    return false
+  }
   var data = node()
   var id = data && data.id
   return isFinite(id) || !id || id.$param

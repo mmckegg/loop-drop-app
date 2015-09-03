@@ -19,19 +19,29 @@ module.exports = renderSetup
 
 function renderSetup(setup){
 
+  var chunkSpawners = [].concat(
+    setup.context.nodeInfo.groupLookup.chunks,
+    setup.context.nodeInfo.groupLookup.modifierChunks
+  )
+
   return h('SetupNode', [
     h('div.main', [
 
       h('.controllers NodeCollection -across', [
         h('h1', 'Controllers'),
         Collection(setup.controllers),
-        Spawner(setup.controllers, {nodes: controllerSpawners})
+        Spawner(setup.controllers, {
+          nodes: controllerSpawners
+        })
       ]),
 
       h('.chunks NodeCollection', [
         h('h1', 'Chunks'),
         Collection(setup.chunks),
-        ChunkSpawner(setup)
+        Spawner(setup.chunks, {
+          nodes: chunkSpawners,
+          onSpawn: handleChunkSpawn
+        })
       ])
 
     ]),
@@ -66,9 +76,9 @@ function renderScaleChooser(scale){
     ]),
     h('div.param', [
       Range(QueryParam(scale, 'offset', {}), {
-        title: 'offset', 
-        format: 'semitone', 
-        defaultValue: 0, 
+        title: 'offset',
+        format: 'semitone',
+        defaultValue: 0,
         flex: true,
         width: 200
       })
@@ -76,74 +86,9 @@ function renderScaleChooser(scale){
   ])
 }
 
-
-function ChunkSpawner(setup){
-  var buttons = []
-
-  return h('NodeSpawner', [
-    h('button Button -main -spawn', {
-      'ev-click': send(spawnTriggers, setup)
-    }, '+ Triggers'),
-
-    h('button Button -main -spawn', {
-      'ev-click': send(spawnChromatic, setup)
-    }, '+ Chromatic'),
-
-    h('button Button -main -spawn', {
-      'ev-click': send(spawnModulator, setup)
-    }, '+ Modulator')
-  ])
-}
-
-function spawnTriggers(setup, descriptor, additionalOverrides){
-  var context = setup.context
-  var actions = context.actions
-  var project = context.project
-  var fileObject = context.fileObject
-
-  var path = fileObject.resolvePath('New Chunk.json')
-  actions.newChunk(path, descriptor, function(err, path){
-    var id = setup.chunks.resolveAvailable(getBaseName(path, '.json'))
-    var chunk = setup.chunks.push(extend({
-      node: 'external',
-      src: fileObject.relative(path),
-      id: id,
-      minimised: true,
-      scale: '$global',
-      routes: {output: '$default'}
-    }, additionalOverrides))
-    setup.selectedChunkId.set(id)
+function handleChunkSpawn (chunk) {
+  setTimeout(function () {
     rename(chunk)
-  })
-}
-
-function spawnChromatic(setup){
-  spawnTriggers(setup, {
-    node: 'chunk/scale',
-    templateSlot: {
-      id: { $param: 'id' },
-      noteOffset: {
-        node: 'modulator/scale', 
-        value: { $param: 'value'}, 
-        offset: { $param: 'offset' },  
-        scale: { $param: 'scale' }
-      },
-      node: 'slot', 
-      output: 'output'
-    },
-    selectedSlotId: '$template'
-  }, {
-    minimised: false
-  })
-}
-
-function spawnModulator(setup){
-  var id = setup.chunks.resolveAvailable('modulator')
-  var chunk = setup.chunks.push({
-    node: 'modulatorChunk',
-    id: id,
-    minimised: false
-  })
-  setup.selectedChunkId.set(id)
-  rename(chunk)
+  }, 100)
+  chunk.context.setup.selectedChunkId.set(chunk().id)
 }

@@ -15,6 +15,7 @@ var merge = require('observ-node-array/merge')
 
 var Property = require('observ-default')
 var YankSilence = require('lib/yank-silence')
+var setRoute = require('lib/set-route')
 
 module.exports = Setup
 
@@ -30,7 +31,7 @@ function Setup(parentContext){
     selectedChunkId: Observ(),
     volume: Property(1),
     globalScale: Property({
-      offset: 0, 
+      offset: 0,
       notes: [0,2,4,5,7,9,11]
     })
   })
@@ -99,10 +100,10 @@ function Setup(parentContext){
     return descriptor && descriptor.id || undefined
   })
 
-  context.chunkLookup = lookup(node.chunks, function(x){ 
+  context.chunkLookup = lookup(node.chunks, function(x){
     if (x){
       var data = x.resolved ? x.resolved() : x()
-      return data && data.id || undefined 
+      return data && data.id || undefined
     }
   }, resolve, resolveInner)
 
@@ -161,12 +162,19 @@ function Setup(parentContext){
         var value = controller.chunkPositions()[oldId]
         if (value && controller.chunkPositions.put){
           controller.chunkPositions.delete(oldId)
-          controller.chunkPositions.put(newId, value)
+          if (newId) {
+            controller.chunkPositions.put(newId, value)
+          }
         }
       }
     })
 
     updateParamReferences(node.chunks, oldId, newId)
+
+    // check for routes matching chunk id
+    node.chunks.forEach(function (chunk) {
+      updateRouteReferences(chunk, oldId, newId)
+    })
 
     if (node.selectedChunkId() === oldId){
       node.selectedChunkId.set(newId)
@@ -205,12 +213,34 @@ function resolveInner(node){
   return node && node.node || node
 }
 
+function updateRouteReferences (chunk, oldId, newId) {
+  var routes = chunk.routes || (chunk.node && chunk.node.routes)
+  if (routes) {
+    routes = routes()
+    Object.keys(routes).forEach(function (key) {
+      var value = routes[key]
+      var match = typeof value == 'string' && value.match(/^(.+)#(.+)$/)
+      if (match && match[1] === oldId){
+        if (newId) {
+          setRoute(chunk, key, newId + '#' + match[2])
+        } else {
+          setRoute(chunk, key, '$default')
+        }
+      }
+    })
+  }
+}
+
 function updateParamReferences(node, oldId, newId){
   var changed = false
   var result = JSON.stringify(node(), function(key, value){
     if (value && value.node === 'linkParam' && value.param === oldId){
-      value.param = newId
       changed = true
+      if (newId) {
+        value.param = newId
+      } else {
+        return value.minValue
+      }
     }
     return value
   })

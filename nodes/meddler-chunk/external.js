@@ -9,8 +9,8 @@ var FlagParam = require('lib/flag-param')
 module.exports = function(node){
   var flags = QueryParam(node, 'flags')
   return renderChunk(node, {
-    volume: true,
     external: true,
+    extraHeader: h('span.type', ['meddler']),
     main: [
       h('section', [
         renderParams(node),

@@ -15,7 +15,7 @@ var JsonFile = require('lib/json-file')
 
 module.exports = External
 
-function External(parentContext){  
+function External(parentContext){
 
   var context = Object.create(parentContext)
 
@@ -30,6 +30,7 @@ function External(parentContext){
 
   var release = null
   var releaseCC = null
+  var releaseResolved = null
 
   var nodeContext = Object.create(context)
 
@@ -113,8 +114,12 @@ function External(parentContext){
 
     if (obs.node && descriptor && obs && lastDescriptor && descriptor.node == lastDescriptor.node){
       obs.node.set(descriptor)
-      obs.resolved.set(descriptor)
     } else {
+
+      if (releaseResolved) {
+        releaseResolved()
+        releaseResolved = null
+      }
 
       if (obs.node && obs.node.destroy){
         obs.node.destroy()
@@ -134,16 +139,16 @@ function External(parentContext){
         obs.node = ctor(context)
         obs.node.nodeName = descriptor.node
         obs.node.set(descriptor)
+        releaseResolved = watch(obs.node, obs.resolved.set)
 
         if (obs.node.controllerContext){
           releaseCC = watch(obs.node.controllerContext, obs.controllerContext.set)
         }
 
-        obs.resolved.set(descriptor)
       }
     }
 
-    lastDescriptor = descriptor 
+    lastDescriptor = descriptor
   }
 
   return obs

@@ -76,7 +76,8 @@ ipc.on('load-project', function (path) {
   var projectFile = FileObject(rootContext)
 
   projectFile.onLoad(function () {
-    document.body.appendChild(createRootElement(projectFile.node)) 
+    document.body.appendChild(createRootElement(projectFile.node))
+    window.currentProject = projectFile.node
   })
 
   ensureProject(projectPath, function (err) {
@@ -87,14 +88,14 @@ ipc.on('load-project', function (path) {
 
 function createRootElement(project) {
   var renderer = MainLoop(project, renderNode, VirtualDom)
-  
+
   project(update)
   project.resolved(update)
   applyKeyboardTempo(project)
-  
+
   return renderer.target
 
-  // scoped 
+  // scoped
 
   function update () {
     // HACK: schedule 100 ms ahead to avoid audio interuption

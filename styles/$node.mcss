@@ -6,6 +6,10 @@ $node {
   color: #EEE;
   border-radius: 4px;
 
+  -selected {
+    box-shadow: 0 0 8px #000;
+  }
+
   -minimised {
     section {
       display: none
@@ -25,6 +29,14 @@ $node {
 
     span {
       flex: 1
+    }
+
+    span.type {
+      flex: inherit
+      font-size: 80%
+      line-height: 1.5
+      margin: 0 4px
+      font-weight: bold
     }
 
     button.twirl {
@@ -70,6 +82,13 @@ $node {
     padding: 3px 10px;
     background-color: #555;
     margin-top: 6px;
+    display: flex
+
+    span {
+      margin-top: 2px
+      margin-bottom: 2px
+      flex: 1
+    }
   }
 
   section {

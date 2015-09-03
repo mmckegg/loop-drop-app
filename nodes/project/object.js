@@ -15,7 +15,6 @@ var AudioRMS = require('audio-rms')
 var ObservDirectory = require('observ-fs/directory')
 var FileObject = require('lib/file-object')
 var QueryParam = require('lib/query-param')
-var randomColor = require('lib/random-color')
 var findItemByPath = require('lib/find-item-by-path')
 var SessionRecorder = require('lib/session-recorder')
 var StreamObserv = require('lib/stream-observ')
@@ -30,6 +29,8 @@ var resolveAvailable = require('lib/resolve-available')
 
 var copyFile = require('lib/copy-file')
 var rimraf = require('rimraf')
+
+var scrollIntoView = require('scroll-into-view')
 
 module.exports = Project
 
@@ -95,8 +96,8 @@ function Project (parentContext) {
 
   var broadcastItemLoaded = null
   obs.items = ObservArray([])
-  obs.items.onLoad = Event(function(broadcast) { 
-    broadcastItemLoaded = broadcast 
+  obs.items.onLoad = Event(function(broadcast) {
+    broadcastItemLoaded = broadcast
   })
 
   obs.resolved = ObservStruct({
@@ -115,6 +116,7 @@ function Project (parentContext) {
     obs.tempo.set(Math.round(value))
   })
 
+  var chunkScroller = null
   var actions = obs.actions = {
     open: function (path) {
       var ext = getExt(path)
@@ -160,6 +162,10 @@ function Project (parentContext) {
           var setupPath = join(path, 'index.json')
           context.fs.writeFile(setupPath, JSON.stringify({node: 'setup'}), function (err) {
             if (err) throw err
+
+            // force reload of entries, just in case watchers are glitching
+            obs.entries.refresh()
+
             var setup = actions.addFileObject(setupPath)
             obs.selected.set(setupPath)
             obs.renaming.set(true)
@@ -181,6 +187,11 @@ function Project (parentContext) {
         if (err) return cb&&cb(err)
         context.fs.rename(path, newPath, function (err) {
           if (err) return cb&&cb(err)
+
+          // force reload of entries, just in case watchers are glitching
+          obs.entries.refresh()
+          obs.recordingEntries.refresh()
+
           var item = findItemByPath(obs.items, filePath)
           if (item){
             item.load(newFilePath)
@@ -195,33 +206,8 @@ function Project (parentContext) {
     },
 
     deleteEntry: function (path, cb) {
-      rimraf(path, context.fs, cb || function(err) { 
+      rimraf(path, context.fs, cb || function(err) {
         if (err) throw err
-      })
-    },
-
-    newChunk: function (path, descriptor, cb) {
-      // ensure expanded
-
-      resolveAvailable(path, context.fs, function(err, path){
-        if (typeof descriptor === 'function'){
-          cb = descriptor
-          descriptor = null
-        }
-
-        descriptor = descriptor || {}
-        descriptor = extend({
-          node: 'chunk', 
-          color: randomColor([255,255,255]),
-          slots: [{id: 'output', node: 'slot'}], 
-          shape: [2,4],
-          outputs: ['output'],
-        }, descriptor)
-
-        context.fs.writeFile(path, JSON.stringify(descriptor), function(err){
-          if (err) return cb&&cb(err)
-          cb(null, path)
-        })
       })
     },
 
@@ -270,10 +256,13 @@ function Project (parentContext) {
     },
 
     scrollToSelectedChunk: function() {
-      setTimeout(function(){
+      clearTimeout(chunkScroller)
+      chunkScroller = setTimeout(function(){
         var el = document.querySelector('.ExternalNode.-selected')
-        el && el.scrollIntoViewIfNeeded()
-      }, 10)
+        if (el) {
+          scrollIntoView(el, { time: 200 })
+        }
+      }, 200)
     },
 
     grabInputForSelected: function(){
@@ -305,10 +294,6 @@ function Project (parentContext) {
 
         if (object.node && object.node.grabInput) {
           object.node.grabInput()
-        }
-
-        if (object.node && object.node.selectedChunkId) {
-          object.node.selectedChunkId(actions.scrollToSelectedChunk)
         }
 
       })
