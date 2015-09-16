@@ -22,7 +22,6 @@
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "audio-buffer-range-decoder": "~1.1.1",
-    "audio-meddle": "~0.2.1",
     "audio-rms": "^1.1.0",
     "audio-slot": "~4.3.2",
     "audio-slot-param": "~1.1",

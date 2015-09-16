@@ -5,8 +5,7 @@ var applyParams = require('lib/apply-params')
 var BaseChunk = require('lib/base-chunk')
 var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
-var RoutableSlot = require('audio-slot/routable')
-var Meddler = require('audio-meddle')
+var ChainScheduler = require('lib/chain-scheduler')
 var Varhash = require('observ-varhash')
 var Struct = require('observ-struct')
 var lookup =  require('observ-node-array/lookup')
@@ -28,48 +27,45 @@ function MeddlerChunk (parentContext) {
     extraSlots
   ])
 
+  var volume = Property(1)
   var obs = BaseChunk(context, {
     slots: slots,
     inputs: Property(['input']),
     outputs: Property(['output']),
-    routes: ExternalRouter(context, {output: '$default'}),
+    routes: ExternalRouter(context, {output: '$default'}, volume),
     params: Property([]),
-    volume: Property(1),
+    volume: volume,
     color: Property([255,255,0]),
     paramValues: NodeVarhash(parentContext),
     selectedSlotId: Property()
   })
 
-  var meddler = Meddler(context.audio)
-  extraSlots.put('input', RoutableSlot(context, {
-    id: Property('input'),
-    output: Property('output')
-  }, meddler))
+  var chainScheduler = ChainScheduler(context, 'input')
+  extraSlots.put('input', chainScheduler)
 
-  slots(function () {
-    slots.forEach(function (slot) {
-      if (isFinite(slot.id())) {
-        meddler.add(slot.id(), slot)
-      }
-    })
-  })
-
+  var lastTime = 0
+  var currentChain = []
   var triggerOn = obs.triggerOn
   var triggerOff = obs.triggerOff
 
   obs.triggerOn = function (id, at) {
-    meddler.start(id, at)
+    at = Math.max(lastTime, at, context.audio.currentTime)
+    lastTime = at
+
+    currentChain = currentChain.filter(not, { value: id })
+    currentChain.push(id)
+    chainScheduler.schedule(currentChain, at)
     triggerOn(id, at)
   }
 
   obs.triggerOff = function (id, at) {
-    meddler.stop(id, at)
+    at = Math.max(lastTime, at, context.audio.currentTime)
+    lastTime = at
+
+    currentChain = currentChain.filter(not, { value: id })
+    chainScheduler.schedule(currentChain, at)
     triggerOff(id, at)
   }
-
-  obs.volume(function(value){
-    output.gain.value = value
-  })
 
   context.chunk = obs
 
@@ -83,4 +79,8 @@ function MeddlerChunk (parentContext) {
   applyParams(obs)
 
   return obs
+}
+
+function not (value) {
+  return this.value !== value
 }
