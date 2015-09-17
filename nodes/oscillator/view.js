@@ -33,7 +33,8 @@ module.exports = function renderOscillator (node) {
       ModRange(node.detune, {
         title: 'detune',
         format: 'cents',
-        flex: true
+        flex: true,
+        defaultValue: 0
       }),
 
       ModRange(node.noteOffset, {

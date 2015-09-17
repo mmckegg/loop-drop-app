@@ -43,7 +43,8 @@ module.exports = function renderGranular (node) {
       ModRange(node.transpose, {
         title: 'transpose',
         format: 'semitone',
-        flex: true
+        flex: true,
+        defaultValue: 0
       }),
 
     ]),
@@ -61,27 +62,31 @@ module.exports = function renderGranular (node) {
         Range(node.sync.tempo, {
           title: 'bpm',
           format: 'bpm',
-          flex: true
+          flex: true,
+          defaultValue: 100
         }),
 
         Range(node.sync.trim, {
           title: 'start',
           format: 'ratio1',
           width: 100,
-          flex: true
+          flex: true,
+          defaultValue: 0
         }),
 
         Range(node.sync.beatOffset, {
           title: 'beat offset',
           format: 'beatOffset',
           width: 100,
-          flex: true
+          flex: true,
+          defaultValue: 0
         }),
 
         Range(node.sync.beats, {
           title: 'beats',
           format: 'beats2',
-          flex: true
+          flex: true,
+          defaultValue: 0
         })
 
       ] : [

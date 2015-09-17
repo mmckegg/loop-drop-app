@@ -16,13 +16,13 @@ module.exports = function renderModulatorChunk (node) {
   var shape = node.shape()
   var length = shape[0] * shape[1]
 
-  for (var i=0;i<length;i++){
+  for (var i=0;i<length;i++) {
     var id = String(i)
     var slot = slotLookup.get(id)
     if (slot){
       elements.push(h('div.slot -trigger', [
         h('strong', id + ': '),
-        ModRange(slot.value, { flex: true, format: 'offset' }),
+        ModRange(slot.value, { flex: true, format: 'offset', defaultValue: 0 }),
         h('button.remove Button -warn', {
           'ev-click': send(node.slots.remove, slot),
         }, 'X')

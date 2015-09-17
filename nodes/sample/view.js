@@ -41,13 +41,15 @@ module.exports = function renderSample (node) {
       ModRange(node.transpose, {
         title: 'transpose',
         format: 'semitone',
-        flex: true
+        flex: true,
+        defaultValue: 0
       }),
 
       ModRange(node.tune, {
         title: 'tune',
         format: 'cents',
-        flex: true
+        flex: true,
+        defaultValue: 0
       })
 
     ]),

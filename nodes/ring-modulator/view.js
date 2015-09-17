@@ -32,7 +32,8 @@ module.exports = function renderOscillator (node) {
       ModRange(node.carrier.frequency, {
         title: 'frequency',
         format: 'arfo',
-        flex: true
+        flex: true,
+        defaultValue: 440
       })
 
     ])

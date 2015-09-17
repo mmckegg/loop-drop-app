@@ -59,7 +59,8 @@ module.exports = function renderSlicerChunk (node) {
           ModRange(node.sample.amp, {
             title: 'amp',
             format: 'dB',
-            flex: 'small'
+            flex: 'small',
+            defaultValue: 1
           }),
 
           ModRange(node.sample.transpose, {
@@ -67,7 +68,8 @@ module.exports = function renderSlicerChunk (node) {
             format: 'semitone',
             flex: 'small',
             allowSpawn: true,
-            node: node
+            node: node,
+            defaultValue: 0
           })
         ]),
 
@@ -87,7 +89,8 @@ module.exports = function renderSlicerChunk (node) {
           node.stretch() ? Range(node.tempo, {
             title: 'original bpm',
             format: 'bpm',
-            flex: 'small'
+            flex: 'small',
+            defaultValue: 100
           }) : null
         ])
       ]),

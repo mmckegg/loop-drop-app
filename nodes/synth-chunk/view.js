@@ -75,14 +75,16 @@ module.exports = function renderSlicerChunk (node) {
         ModRange(node.amp, {
           title: 'amp',
           format: 'dB',
-          flex: 'small'
+          flex: 'small',
+          defaultValue: 0.4
         }),
         ModRange(node.offset, {
           title: 'offset',
           format: 'semitone',
           flex: 'small',
           allowSpawn: true,
-          node: node
+          node: node,
+          defaultValue: 0
         })
       ]),
 

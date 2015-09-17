@@ -25,13 +25,15 @@ module.exports = function eqParams(node) {
     ModRange(node.lowcut, {
       title: 'lowcut',
       format: 'arfo',
-      flex: 'small'
+      flex: 'small',
+      defaultValue: 0
     }),
 
     ModRange(node.highcut, {
       title: 'highcut',
       format: 'arfo',
-      flex: 'small'
+      flex: 'small',
+      defaultValue: 20000
     })
 
   ])

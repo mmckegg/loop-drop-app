@@ -22,7 +22,12 @@ module.exports = function(project) {
         AudioMeter(project.outputRms, audioMeterOptions),
         h('ModParam -value -flex', [
           h('div.param -noDrop', [
-            Range(project.tempo, {large: true, format: 'bpm', flex: true}),
+            Range(project.tempo, {
+              large: true, 
+              format: 'bpm', 
+              flex: true,
+              defaultValue: 120
+            }),
           ]),
           h('div.sub', [
             h('div', [
