@@ -3,6 +3,7 @@ var Looper = require('loop-grid/looper')
 var Holder = require('loop-grid/transforms/holder')
 var Repeater = require('loop-grid/transforms/repeater')
 var Suppressor = require('loop-grid/transforms/suppressor')
+var holdActive = require('lib/hold-active-transform')
 
 var ArrayGrid = require('array-grid')
 var Observ = require('observ')
@@ -15,6 +16,7 @@ var ObservKeys = require('lib/observ-keys.js')
 var computeTargets = require('loop-grid/compute-targets')
 var computeFlags = require('loop-grid/compute-flags')
 var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')
+var computeActiveIndexes = require('lib/active-indexes')
 
 var watch = require('observ/watch')
 var watchStruct = require('lib/watch-struct')
@@ -81,7 +83,11 @@ function LoopQwerty (context) {
   //HACK: all inputs share repeatLength
   obs.repeatLength = repeatLength
 
-  var output = DittyGridStream(inputGrabber, loopGrid.grid, context.scheduler)
+  var inputGrid = Observ()
+  inputGrabber(inputGrid.set)
+  var activeIndexes = computeActiveIndexes(inputGrid)
+
+  var output = DittyGridStream(inputGrid, loopGrid.grid, context.scheduler)
   output.on('data', loopGrid.triggerEvent)
 
   var noRepeat = computeIndexesWhereContains(flags, 'noRepeat')
@@ -114,7 +120,11 @@ function LoopQwerty (context) {
   
     flatten: function(value){
       if (value){
+        var active = activeIndexes()
         if (looper.isTransforming()){
+          looper.flatten()
+        } else if (active.length) {
+          looper.transform(holdActive, active)
           looper.flatten()
         } else {
           transforms.suppressor.start()

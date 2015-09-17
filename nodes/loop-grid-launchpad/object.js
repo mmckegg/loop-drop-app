@@ -2,6 +2,8 @@ var LoopGrid = require('loop-grid')
 var Looper = require('loop-grid/looper')
 var computeTargets = require('loop-grid/compute-targets')
 var computeFlags = require('loop-grid/compute-flags')
+var holdActive = require('lib/hold-active-transform')
+var computeActiveIndexes = require('lib/active-indexes')
 
 var Selector = require('loop-grid/selector')
 var Holder = require('loop-grid/transforms/holder')
@@ -23,6 +25,7 @@ var ArrayGrid = require('array-grid')
 
 var DittyGridStream = require('lib/ditty-grid-stream')
 
+var computed = require('observ/computed')
 var computedPortNames = require('midi-port-holder/computed-port-names')
 
 var watch = require('observ/watch')
@@ -120,8 +123,12 @@ module.exports = function(context){
   var noRepeat = computeIndexesWhereContains(flags, 'noRepeat')
   var grabInputExcludeNoRepeat = inputGrabber.bind(this, {exclude: noRepeat})
 
+  var inputGrid = Observ()
+  inputGrabber(inputGrid.set)
+  var activeIndexes = computeActiveIndexes(inputGrid)
+
   // trigger notes at bottom of input stack
-  var output = DittyGridStream(inputGrabber, loopGrid.grid, context.scheduler)
+  var output = DittyGridStream(inputGrid, loopGrid.grid, context.scheduler)
   output.on('data', loopGrid.triggerEvent)
 
   // midi button mapping
@@ -149,9 +156,14 @@ module.exports = function(context){
  
     flatten: function(value){
       if (value){
+        var active = activeIndexes()
         if (looper.isTransforming()){
           looper.flatten()
           transforms.selector.stop()
+          this.flash(stateLights.green, 100)
+        } else if (active.length) {
+          looper.transform(holdActive, active)
+          looper.flatten()
           this.flash(stateLights.green, 100)
         } else {
           this.flash(stateLights.red, 100)
@@ -259,12 +271,17 @@ module.exports = function(context){
   buttons.store.light(stateLights.amberLow)
 
 
+  var willFlatten = computed([activeIndexes, looper.transforms], function (indexes, transforms) {
+    return !!indexes.length || !!transforms.length
+  })
+
   // light up store button when transforming (flatten mode)
   var releaseFlattenLight = null
-  watch(looper.transforms, function(values){
-    if (values.length && !releaseFlattenLight){
+  watch(willFlatten, function(value){
+    console.log(value)
+    if (value && !releaseFlattenLight){
       releaseFlattenLight = buttons.flatten.light(stateLights.greenLow)
-    } else if (releaseFlattenLight){
+    } else if (!value && releaseFlattenLight){
       releaseFlattenLight()
       releaseFlattenLight = null
     }
