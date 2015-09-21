@@ -32,6 +32,9 @@ watchKeyboardLayout(keyboardLayout.set)
 // midi ports
 var midiPorts = Observ()
 midiPorts.open = MidiStream
+midiPorts.openInput = MidiStream.openInput
+midiPorts.openOutput = MidiStream.openOutput
+
 MidiStream.watchPortNames(function (ports) {
   midiPorts.set(ports)
 })
