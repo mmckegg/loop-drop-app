@@ -278,7 +278,6 @@ module.exports = function(context){
   // light up store button when transforming (flatten mode)
   var releaseFlattenLight = null
   watch(willFlatten, function(value){
-    console.log(value)
     if (value && !releaseFlattenLight){
       releaseFlattenLight = buttons.flatten.light(stateLights.greenLow)
     } else if (!value && releaseFlattenLight){
