@@ -51,7 +51,7 @@ module.exports = function(context){
   // controller midi port
   var portHolder = ObservMidiPort()
   var duplexPort = portHolder.stream
-  
+
   duplexPort.on('switch', turnOffAllLights)
   duplexPort.on('switching', turnOffAllLights)
 
@@ -76,7 +76,7 @@ module.exports = function(context){
   obs.looper = looper
   obs.portChoices = computedPortNames()
   obs.repeatLength = Observ(2)
-  
+
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)
 
   watch( // compute targets from chunks
@@ -155,7 +155,7 @@ module.exports = function(context){
         looper.store()
       }
     },
- 
+
     flatten: function(value){
       if (value){
         var active = activeIndexes()
@@ -176,7 +176,7 @@ module.exports = function(context){
         }
       }
     },
- 
+
     undo: function(value){
       if (value){
         if (shiftHeld){ // halve loopLength
@@ -190,7 +190,7 @@ module.exports = function(context){
         }
       }
     },
- 
+
     redo: function(value){
       if (value){
         if (shiftHeld){ // double loopLength
@@ -204,13 +204,13 @@ module.exports = function(context){
         }
       }
     },
- 
+
     hold: function(value){
       if (value){
         var turnOffLight = this.light(stateLights.yellow)
         transforms.holder.start(
-          scheduler.getCurrentPosition(), 
-          transforms.selector.selectedIndexes(), 
+          scheduler.getCurrentPosition(),
+          transforms.selector.selectedIndexes(),
           turnOffLight
         )
       } else {
@@ -226,7 +226,7 @@ module.exports = function(context){
         transforms.suppressor.stop()
       }
     },
- 
+
     select: function(value){
       if (value){
         var turnOffLight = this.light(stateLights.green)

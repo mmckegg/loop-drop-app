@@ -36,7 +36,7 @@ var getInput = document[cacheKey] = document[cacheKey] || InputStack()
 var repeatLength = Observ(2)
 
 function LoopQwerty (context) {
-  
+
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
 
@@ -119,7 +119,7 @@ function LoopQwerty (context) {
         looper.store()
       }
     },
-  
+
     flatten: function(value){
       if (value){
         var active = activeIndexes()
@@ -135,19 +135,19 @@ function LoopQwerty (context) {
         }
       }
     },
-  
+
     undo: function(value){
       if (value){
         looper.undo()
       }
     },
-  
+
     redo: function(value){
       if (value){
         looper.redo()
       }
     },
-  
+
     hold: function(value){
       if (value){
         transforms.holder.start(context.scheduler.getCurrentPosition())
