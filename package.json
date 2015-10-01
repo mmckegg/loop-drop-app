@@ -41,7 +41,7 @@
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
     "keycode": "~2.1.0",
-    "loop-grid": "~5.0.2",
+    "loop-grid": "~5.0.3",
     "main-loop": "~3.1.0",
     "micro-css": "~0.6.1",
     "midi-port-holder": "~2.1.0",
