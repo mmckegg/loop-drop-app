@@ -94,7 +94,7 @@ module.exports = function(context){
     selector: Selector(gridMapping.shape, gridMapping.stride),
     holder: Holder(looper.transform),
     mover: Mover(looper.transform),
-    repeater: Repeater(looper.transform),
+    repeater: Repeater(looper.transformTop),
     suppressor: Suppressor(looper.transform, gridMapping.shape, gridMapping.stride)
   }
 

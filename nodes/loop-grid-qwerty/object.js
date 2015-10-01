@@ -98,7 +98,7 @@ function LoopQwerty (context) {
   // loop transforms
   var transforms = {
     holder: Holder(looper.transform),
-    repeater: Repeater(looper.transform),
+    repeater: Repeater(looper.transformTop),
     suppressor: Suppressor(looper.transform, gridMapping.shape, gridMapping.stride)
   }
 
