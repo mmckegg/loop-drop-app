@@ -10,7 +10,7 @@ var Observ = require('observ')
 var ObservVarhash = require('observ-varhash')
 var ObservStruct = require('observ-struct')
 var ObservGrid = require('observ-grid')
-var ObservGridGrabber = require('observ-grid/grabber')
+var GrabGrid = require('lib/grab-grid')
 var ObservKeys = require('lib/observ-keys.js')
 
 var computeTargets = require('loop-grid/compute-targets')
@@ -64,14 +64,14 @@ function LoopQwerty (context) {
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)
 
   watch( // compute targets from chunks
-    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape), 
+    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape),
     loopGrid.targets.set
   )
 
   // bind to qwerty keyboard
   var keysDown = getInput()
   var controllerGrid = KeyboardGrid(keysDown, gridMapping)
-  var inputGrabber = ObservGridGrabber(controllerGrid)
+  var inputGrabber = GrabGrid(controllerGrid)
 
   // grab the midi for the current port
   obs.grabInput = function(){
@@ -84,14 +84,16 @@ function LoopQwerty (context) {
   obs.repeatLength = repeatLength
 
   var inputGrid = Observ()
-  inputGrabber(inputGrid.set)
+  watch(inputGrabber, inputGrid.set)
   var activeIndexes = computeActiveIndexes(inputGrid)
 
   var output = DittyGridStream(inputGrid, loopGrid.grid, context.scheduler)
   output.on('data', loopGrid.triggerEvent)
 
   var noRepeat = computeIndexesWhereContains(flags, 'noRepeat')
-  var grabInputExcludeNoRepeat = inputGrabber.bind(this, {exclude: noRepeat})
+  var grabInputExcludeNoRepeat = function (listener) {
+    return inputGrabber(listener, { exclude: noRepeat })
+  }
 
   // loop transforms
   var transforms = {

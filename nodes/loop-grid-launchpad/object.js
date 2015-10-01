@@ -15,7 +15,7 @@ var ObservVarhash = require('observ-varhash')
 var ObservStruct = require('observ-struct')
 var ObservMidi = require('observ-midi')
 var ObservGridStack = require('observ-grid-stack')
-var ObservGridGrabber = require('observ-grid/grabber')
+var GrabGrid = require('lib/grab-grid')
 var ObservMidiPort = require('midi-port-holder')
 var MidiButtons = require('observ-midi/light-stack')
 var watchButtons = require('lib/watch-buttons')
@@ -80,7 +80,7 @@ module.exports = function(context){
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)
 
   watch( // compute targets from chunks
-    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape), 
+    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape),
     loopGrid.targets.set
   )
 
@@ -118,13 +118,15 @@ module.exports = function(context){
   ])
 
   var controllerGrid = ObservMidi(duplexPort, gridMapping, outputLayers)
-  var inputGrabber = ObservGridGrabber(controllerGrid)
+  var inputGrabber = GrabGrid(controllerGrid)
 
   var noRepeat = computeIndexesWhereContains(flags, 'noRepeat')
-  var grabInputExcludeNoRepeat = inputGrabber.bind(this, {exclude: noRepeat})
+  var grabInputExcludeNoRepeat = function (listener) {
+    return inputGrabber(listener, { exclude: noRepeat })
+  }
 
   var inputGrid = Observ()
-  inputGrabber(inputGrid.set)
+  watch(inputGrabber, inputGrid.set)
   var activeIndexes = computeActiveIndexes(inputGrid)
 
   // trigger notes at bottom of input stack
