@@ -1,8 +1,8 @@
 html, body {
   background: #444;
   margin: 0;
-  font-family: Helvetica, Arial;
   overflow: hidden;
+  font-family: '.SFNSText-Regular', sans-serif
   height: 100%
   font-size: 12px
   -webkit-user-select: none
@@ -90,4 +90,7 @@ a {
  
 * {
   box-sizing:border-box;
+}
+input, textarea, keygen, select, button {
+  font-family: '.SFNSText-Regular', sans-serif
 }
