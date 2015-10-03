@@ -1,7 +1,7 @@
 TabbedEditor {
   display: flex
   flex-direction: column
-  
+
   header {
     position: relative
     display: flex
@@ -75,6 +75,7 @@ TabbedEditor {
 
   div {
     flex: 1
+    overflow: hidden
     min-width: 0
     background: #333;
     border: 1px solid #AAA
