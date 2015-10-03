@@ -1,8 +1,8 @@
 html, body {
-  background: #444;
-  margin: 0;
-  overflow: hidden;
+  background: #444
+  margin: 0
   font-family: '.SFNSText-Regular', sans-serif
+  overflow: hidden
   height: 100%
   font-size: 12px
   -webkit-user-select: none
@@ -10,36 +10,36 @@ html, body {
 }
 
 body {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
+  display: flex
+  flex-direction: column
+  line-height: 1.2
 }
 
 h1 {
-  color: #C0C0C0;
-  font-size: 130%;
-  margin: 4px 0;
-  font-weight: normal;
-  text-shadow: 0px 0px 2px black;
-  flex: 1;
+  color: #C0C0C0
+  font-size: 130%
+  margin: 4px 0
+  font-weight: normal
+  text-shadow: 0px 0px 2px black
+  flex: 1
 }
 
 select {
-  font-size: 80%;
-  display: inline-block;
-  padding: 2px 4px;
-  height: 18px;
-  border: 1px solid #A9A9A9;
+  font-size: 80%
+  display: inline-block
+  padding: 2px 4px
+  height: 18px
+  border: 1px solid #A9A9A9
   background: #666 svg(dropArrow) no-repeat right
-  -webkit-appearance: none;
-  color: #FFF;
-  padding-right: 12px;
-  border-radius: 0;
+  -webkit-appearance: none
+  color: #FFF
+  padding-right: 12px
+  border-radius: 0
 
   :hover {
     background-image: svg(dropArrow -active)
   }
-  
+
   @svg dropArrow {
     width: 12px
     height: 6px
@@ -59,15 +59,15 @@ select {
 
 input {
   [type='text'] {
-    font-size: 80%;
-    display: inline-block;
-    padding: 2px 4px;
-    height: 18px;
-    border: 1px solid #A9A9A9;
-    background: #333;
-    color: #FFF;
-    padding-right: 12px;
-    border-radius: 0;
+    font-size: 80%
+    display: inline-block
+    padding: 2px 4px
+    height: 18px
+    border: 1px solid #A9A9A9
+    background: #333
+    color: #FFF
+    padding-right: 12px
+    border-radius: 0
   }
 }
 
@@ -87,10 +87,11 @@ a {
 * + h1 {
   margin-top: 16px
 }
- 
+
 * {
-  box-sizing:border-box;
+  box-sizing:border-box
 }
+
 input, textarea, keygen, select, button {
   font-family: '.SFNSText-Regular', sans-serif
 }
