@@ -44,7 +44,7 @@ RawEditor.prototype.init = function(){
   var self = this
 
   var currentTransaction = NO_TRANSACTION
-  var currentSaveTransaction = NO_TRANSACTION
+  var lastSave = NO_TRANSACTION
 
   textEditor.setFile = function(fileObject){
     clearTimeout(saveTimer)
@@ -66,16 +66,15 @@ RawEditor.prototype.init = function(){
     if (currentFile){
       try {
         var object = JSMN.parse(value)
-        currentSaveTransaction = object
+        lastSave = object
         currentFile.set(object)
-        currentSaveTransaction = NO_TRANSACTION
       } catch (ex) {}
     }
   }
 
   function update(){
     var data = currentFile ? currentFile() : null
-    if (data && currentSaveTransaction !== data._diff && !deepEqual(currentSaveTransaction,data)){
+    if (data && !deepEqual(lastSave, data)) {
       var newValue = JSMN.stringify(data || {})
       currentTransaction = newValue
       textEditor.session.setValue(newValue, -1)
