@@ -29,6 +29,7 @@
     "bopper": "~2.9.2",
     "bplist-parser": "^0.1.0",
     "brace": "~0.5.0",
+    "bulk-require": "^0.2.1",
     "cuid": "~1.2.4",
     "data-set": "~3.1.0",
     "decibels": "^1.0.0",
