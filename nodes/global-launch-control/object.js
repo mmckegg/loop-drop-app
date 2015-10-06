@@ -1,6 +1,7 @@
 var ObservStruct = require('observ-struct')
 var ObservMidi = require('observ-midi')
 var Observ = require('observ')
+var ObservArray = require('observ-array')
 var computed = require('observ/computed')
 
 var ArrayStack = require('lib/array-stack')
@@ -25,8 +26,23 @@ function LaunchControl (context) {
   port.on('error', function (err) {
     // can't connect
   })
-  
-  var onTrigger = AnyTrigger(project.items)
+
+  var setups = ObservArray([])
+  project.items.onLoad(function (item) {
+    if (item.node._type === 'LoopDropSetup') {
+      for (var i = 0; i <= setups._list.length; i++) {
+        if (!setups._list[i]) {
+          setups.put(i, item)
+          item.onClose(function () {
+            setups.put(i, null)
+          })
+          break
+        }
+      }
+    }
+  })
+
+  var onTrigger = AnyTrigger(setups)
 
   // FIRST ROW OF KNOBS:
   var knobs = ObservMidi(port, {
@@ -71,7 +87,7 @@ function LaunchControl (context) {
 
   // SECOND ROW OF KNOBS:
   var volumes = ObservMidi(port, [
-    '184/41', 
+    '184/41',
     '184/42',
     '184/43',
     '184/44',
@@ -82,7 +98,7 @@ function LaunchControl (context) {
 
   volumes(function (values) {
     values.forEach(function (val, i) {
-      var item = project.items.get(i)
+      var item = setups.get(i)
       if (item && item.node.output) {
 
         if (val == null) {
@@ -91,15 +107,13 @@ function LaunchControl (context) {
 
         item.node.output.gain.value = (val / 64)
       }
-      
+
     })
   })
   ////////
 
 
   // CONTROL BUTTONS:
-  var offset = Observ(0)
-
   var controlButtons = LightStack(port, {
     clearOthers: '184/115',
     suppressOthers: '184/114',
@@ -162,10 +176,10 @@ function LaunchControl (context) {
 
   // SELECT BUTTONS:
   var selectedButton = null
-  var buttonBase = computed([offset, project.items, project.selected], function(offset, items, selected) {
+  var buttonBase = computed([setups, project.selected], function(items, selected) {
     var result = []
     for (var i=0;i<8;i++) {
-      var item = project.items.get(i)
+      var item = setups.get(i)
       if (item) {
         if (item.path === selected) {
           result.push(light(2, 3))
@@ -200,7 +214,7 @@ function LaunchControl (context) {
     '152/26',
     '152/27',
   ], ArrayStack([
-    buttonBase, 
+    buttonBase,
     buttonFlash
   ]))
 
@@ -215,7 +229,7 @@ function LaunchControl (context) {
     })
 
     if (result != null) {
-      var item = project.items.get(result)
+      var item = setups.get(result)
       if (item) {
         project.selected.set(item.path)
       }
@@ -236,7 +250,7 @@ function LaunchControl (context) {
   function suppressOthers (flatten) {
     var releases = []
 
-    project.items.forEach(function (item) {
+    setups.forEach(function (item) {
       if (item.path !== project.selected()) {
         if (item.node && item.node.controllers) {
           item.node.controllers.forEach(function (controller) {
@@ -277,6 +291,6 @@ function light(r, g, flag){
   } else {
     flag = 12
   }
-  
+
   return ((16 * g) + r) + flag
 }
