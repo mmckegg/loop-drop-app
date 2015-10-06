@@ -159,13 +159,10 @@ module.exports = function(context){
     flatten: function(value){
       if (value){
         var active = activeIndexes()
-        if (looper.isTransforming()){
-          looper.flatten()
-          transforms.selector.stop()
-          this.flash(stateLights.green, 100)
-        } else if (active.length) {
+        if (looper.isTransforming() || active.length){
           looper.transform(holdActive, active)
           looper.flatten()
+          transforms.selector.stop()
           this.flash(stateLights.green, 100)
         } else {
           this.flash(stateLights.red, 100)

@@ -123,9 +123,7 @@ function LoopQwerty (context) {
     flatten: function(value){
       if (value){
         var active = activeIndexes()
-        if (looper.isTransforming()){
-          looper.flatten()
-        } else if (active.length) {
+        if (looper.isTransforming() || active.length){
           looper.transform(holdActive, active)
           looper.flatten()
         } else {
