@@ -1,8 +1,6 @@
 var Property = require('observ-default')
 var Event = require('geval')
 var NodeArray = require('observ-node-array')
-var ArrayGrid = require('array-grid')
-var computed = require('observ/computed')
 var lookup = require('observ-node-array/lookup')
 var Transform = require('audio-slot-param/transform')
 var BaseChunk = require('lib/base-chunk')
@@ -17,14 +15,13 @@ function ModulatorChunk (parentContext) {
   var obs = BaseChunk(context, {
     slots: slots,
     minimised: Property(false),
-    color: Property([0,0,0])
+    color: Property([0, 0, 0])
   })
 
   obs._type = 'ModulatorChunk'
 
   obs.context = context
   context.chunk = obs
-
 
   var broadcastSchedule = null
   obs.onSchedule = Event(function (b) {

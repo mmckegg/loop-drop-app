@@ -4,7 +4,6 @@ var send = require('value-event/event')
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 var ToggleButton = require('lib/params/toggle-button')
-var RenameHook = require('lib/rename-hook')
 
 var IndexParam = require('lib/index-param')
 var FlagParam = require('lib/flag-param')
@@ -16,21 +15,21 @@ module.exports = function renderModulatorChunk (node) {
   var shape = node.shape()
   var length = shape[0] * shape[1]
 
-  for (var i=0;i<length;i++) {
+  for (var i = 0; i < length; i++) {
     var id = String(i)
     var slot = slotLookup.get(id)
-    if (slot){
+    if (slot) {
       elements.push(h('div.slot -trigger', [
         h('strong', id + ': '),
         ModRange(slot.value, { flex: true, format: 'offset', defaultValue: 0 }),
         h('button.remove Button -warn', {
-          'ev-click': send(node.slots.remove, slot),
+          'ev-click': send(node.slots.remove, slot)
         }, 'X')
       ]))
     } else {
       elements.push(h('div.slot -spawn', {
         'ev-click': send(spawnSlot, { id: id, collection: node.slots })
-      }, [ '+ trigger']))
+      }, ['+ trigger']))
     }
   }
 
@@ -51,7 +50,7 @@ module.exports = function renderModulatorChunk (node) {
   })
 }
 
-function shapeParams(param){
+function shapeParams (param) {
   return [
     h('div -block -flexSmall', [
       h('div', Range(IndexParam(param, 0), {
@@ -71,23 +70,11 @@ function shapeParams(param){
   ]
 }
 
-function spawnSlot(ev){
-  var id = ev.id
+function spawnSlot (ev) {
   var collection = ev.collection
   collection.push({
     node: 'slot/value',
     id: ev.id,
     value: 0
   })
-}
-
-function toggleParam(param){
-  param.set(!param())
-}
-
-function color(rgb, a){
-  if (!Array.isArray(rgb)){
-    rgb = [100,100,100]
-  }
-  return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
 }
