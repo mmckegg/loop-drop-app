@@ -12,11 +12,12 @@ var getClosestPoint = require('lib/get-closest-point')
 var extend = require('xtend')
 var animateProp = require('animate-prop')
 
-module.exports = Recording 
+module.exports = Recording
 
 function Recording (parentContext) {
 
   var context = Object.create(parentContext)
+  context.output = parentContext.masterOutput
 
   var obs = Struct({
     timeline: Timeline(context),
@@ -80,10 +81,10 @@ function Recording (parentContext) {
   obs.splice = function (snapToCue) {
     var info = getPositionInfo(obs.position())
     if (info) {
-      var pos = snapToCue ? 
+      var pos = snapToCue ?
         getClosestPoint(info.clip.cuePoints(), info.clip.startOffset() + info.clipOffset) - info.clip.startOffset() :
         info.clipOffset
-      
+
       if (pos > 0 && pos < info.clip.duration()) {
         var newClip = extend(info.clip(), {
           startOffset: info.clip.startOffset() + pos,
@@ -196,7 +197,7 @@ function Recording (parentContext) {
       }
     })
   }
-  
+
   return obs
 
   // scoped
@@ -209,7 +210,7 @@ function Recording (parentContext) {
       if (pos >= current && pos < endTime) {
         return {
           clipIndex: i,
-          clip: clip, 
+          clip: clip,
           clipOffset: pos - current
         }
       }

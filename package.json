@@ -22,6 +22,7 @@
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "audio-buffer-range-decoder": "~1.1.1",
+    "audio-buffer-stream": "^1.1.0",
     "audio-rms": "^1.1.0",
     "audio-slot": "~4.3.2",
     "audio-slot-param": "~1.1",
@@ -46,6 +47,7 @@
     "main-loop": "~3.1.0",
     "micro-css": "~0.6.1",
     "midi-port-holder": "~2.1.0",
+    "mkdirp": "^0.5.0",
     "next-tick": "^0.2.2",
     "notevil": "^1.0.0",
     "observ": "^0.2.0",
@@ -68,12 +70,10 @@
     "value-event": "~5.1.0",
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",
-    "wave-recorder": "~2.2.2",
     "web-midi": "~1.0.1",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
-    "async-each": "^0.1.6",
-    "mkdirp": "^0.5.0"
+    "async-each": "^0.1.6"
   }
 }

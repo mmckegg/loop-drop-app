@@ -37,15 +37,19 @@ module.exports = Project
 function Project (parentContext) {
 
   var context = Object.create(parentContext)
-  var recorder = SessionRecorder(context)
 
   // main output and monitoring
+  var masterOutput = context.audio.createGain()
+  masterOutput.connect(context.audio.destination)
+  masterOutput.rms = AudioRMS(context.audio)
+  masterOutput.connect(masterOutput.rms.input)
+  context.masterOutput = masterOutput
+
+  // recording output and limiter
   var output = context.audio.createDynamicsCompressor()
   output.ratio.value = 20
   output.threshold.value = -1
-  output.rms = AudioRMS(context.audio)
-  output.connect(output.rms.input)
-  output.connect(context.audio.destination)
+  output.connect(masterOutput)
   context.output = output
 
   // main clock
@@ -64,15 +68,18 @@ function Project (parentContext) {
   })
 
   obs.context = context
-
   obs.speed = Observ(1)
   obs.selected = Observ()
   obs.renaming = Observ(false)
   obs.entries = ObservDirectory(context.cwd, context.fs)
-  obs.recording = recorder.recording
   obs.recordingEntries = ObservDirectory(resolve(context.cwd, '~recordings'), context.fs)
   obs.subEntries = ObservVarhash({})
-  obs.outputRms = StreamObserv(output.rms)
+  obs.outputRms = StreamObserv(masterOutput.rms)
+
+  // recording
+  var recorder = SessionRecorder(context)
+  obs.recording = recorder.recording
+  output.connect(recorder.input)
 
   obs.availableGlobalControllers = computed([context.midiPorts], function (portNames) {
     var result = []

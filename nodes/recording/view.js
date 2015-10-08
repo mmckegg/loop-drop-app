@@ -17,14 +17,14 @@ module.exports = RecordingView
 
 function RecordingView (recording) {
   return h('RecordingNode', [
-    
+
     h('div.main', {
       tabIndex: 0,
       'ev-keydown': ev(handleTimelineKeyEvent, recording)
     }, [
       ArrangementTimeline(recording)
     ]),
-    
+
     h('div.options', [
 
       recording.rendering() ? h('progress', {
@@ -69,7 +69,7 @@ function RecordingView (recording) {
         }, 'Export Wave')
       ])
     ])
-  
+
   ])
 }
 
@@ -88,13 +88,13 @@ function ArrangementTimeline (recording) {
     }, [
       renderSvgTimeline(duration, widthMultiplier),
       h('input', {
-        type: 'range', 
-        min: 0, 
-        max: duration, 
+        type: 'range',
+        min: 0,
+        max: duration,
         style: {
-          width: finalWidth + 'px' 
+          width: finalWidth + 'px'
         },
-        step: 0.01, 
+        step: 0.01,
         value: ObservValueHook(recording.position)
       }),
       h('div.cursor', {
@@ -113,6 +113,7 @@ function ArrangementTimeline (recording) {
             var waveScaler = (40 / widthMultiplier) * widthMultiplier
             return h('div.clip', {
               tabIndex: 0,
+              className: flagClass(clip.flags()),
               'ev-keydown': ev(handleClipKeyEvent, clip), //bcksp
               style: {
                 width: clip.duration.resolved() * widthMultiplier + 'px'
@@ -123,7 +124,7 @@ function ArrangementTimeline (recording) {
                 height: 100,
                 viewBox: viewBox(
                   clip.startOffset() * waveScaler, 0,
-                  clip.duration.resolved() * waveScaler, 
+                  clip.duration.resolved() * waveScaler,
                   100
                 ),
                 preserveAspectRatio: 'none',
@@ -282,4 +283,14 @@ function getPaddedFraction (value) {
 
 function padded(val) {
   return ('0'+Math.round(val)).slice(-2)
+}
+
+function flagClass (value) {
+  if (Array.isArray(value)) {
+    var classes = []
+    if (~value.indexOf('preroll')) {
+      classes.push('-preroll')
+    }
+    return classes.join(' ')
+  }
 }

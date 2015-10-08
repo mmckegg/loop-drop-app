@@ -39,7 +39,7 @@ ArrangementTimeline {
       cursor: col-resize;
 
       background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0.7)), color-stop(100%,rgba(34,34,34,0)))
-      
+
       ::-webkit-slider-thumb {
 
         -webkit-appearance: none;
@@ -85,6 +85,10 @@ ArrangementTimeline {
           border-right: none
           overflow: hidden
 
+          -preroll {
+            background-color: rgba(253, 248, 39, 0.35)
+          }
+
           svg {
             opacity: 0.4
           }
@@ -120,6 +124,12 @@ ArrangementTimeline {
             border-color: rgba(142, 255, 126, 0.4)
             background-color: rgba(142, 255, 126, 0.6)
             box-shadow: 0 0 3px #5EFF00
+
+            -preroll {
+              border-color: rgba(255, 249, 126, 0.4)
+              box-shadow: 0 0 3px #F7FF00
+              background-color: rgba(253, 248, 39, 0.6)
+            }
 
             svg {
               opacity: 1
