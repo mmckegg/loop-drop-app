@@ -1,7 +1,7 @@
 Loop Drop
 ===
 
-MIDI looper, modular synth and sampler app built around Novation Launchpad controller. 
+MIDI looper, modular synth and sampler app built around Novation Launchpad controller.
 
 Written in **JavaScript** and powered by [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), [Web MIDI](https://webaudio.github.io/web-midi-api/), and [electron](http://electron.atom.io/).
 
@@ -19,7 +19,7 @@ Drop them where you want on your controllers then start jamming!
 Hit the loop button at any time. Whatever you just played will start to loop!
 
 #### Play to the beat.
-            
+
 Use beat repeat and hold down buttons to trigger at different rates relative to tempo.
 
 #### Transform your loops while they play.
@@ -27,7 +27,7 @@ Use beat repeat and hold down buttons to trigger at different rates relative to 
 Select, move, repeat, suppress. All using your hardware controller.
 
 
-## Download the app and get help at [loopjs.com](http://loopjs.com)
+## Buy the app and get help at [loopjs.com](http://loopjs.com)
 
 [![](http://loopjs.com/loop-drop-with-launchpads.jpg)](http://loopjs.com)
 
@@ -53,11 +53,11 @@ $ npm start
 ### You can also install via [npm](https://www.npmjs.com/package/loop-drop)
 
 ```bash
-$ npm install -g loop-drop 
+$ npm install -g loop-drop
 $ loop-drop
 
 # install update
-$ npm update -g loop-drop 
+$ npm update -g loop-drop
 ```
 
 ## Supported Controllers
