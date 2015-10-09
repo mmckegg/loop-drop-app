@@ -85,10 +85,10 @@ function Recording (parentContext) {
         getClosestPoint(info.clip.cuePoints(), info.clip.startOffset() + info.clipOffset) - info.clip.startOffset() :
         info.clipOffset
 
-      if (pos > 0 && pos < info.clip.duration()) {
+      if (pos > 0 && pos < info.clip.resolved.duration()) {
         var newClip = extend(info.clip(), {
           startOffset: info.clip.startOffset() + pos,
-          duration: info.clip.duration() - pos
+          duration: info.clip.resolved.duration() - pos
         })
         obs.timeline.primary.insert(newClip, info.clipIndex + 1)
         info.clip.duration.set(pos)
