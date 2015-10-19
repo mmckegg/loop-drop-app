@@ -13,7 +13,7 @@ var renderEqParams = require('../eq/params')
 
 var sliceOptions = [
   ['Equal Slices', 'divide'],
-  ['Use Transients', 'transient']
+  ['Use Peaks', 'peak']
 ]
 
 var triggerOptions = [

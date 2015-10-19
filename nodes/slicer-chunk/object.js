@@ -9,7 +9,7 @@ var lookup = require('observ-node-array/lookup')
 var computed = require('observ/computed')
 var computedNextTick = require('lib/computed-next-tick')
 var ResolvedValue = require('observ-node-array/resolved-value')
-var detectTransients = require('lib/detect-transients')
+var detectPeaks = require('lib/detect-peaks')
 var throttle = require('throttle-observ')
 var throttleWatch = require('throttle-observ/watch')
 var extend = require('xtend')
@@ -41,11 +41,11 @@ function SlicerChunk (parentContext) {
   obs.sample.slices = computedNextTick([obs.shape, obs.sample.resolvedBuffer, throttle(obs.sample.offset, 1000), obs.sliceMode, obs.sample.mode], function (shape, buffer, offset, sliceMode, triggerMode) {
     var count = shape[0] * shape[1]
     var playToEnd = triggerMode === 'full'
-    if (sliceMode === 'transient') {
+    if (sliceMode === 'peak' || sliceMode === 'transient') {
       if (buffer) {
         var data = buffer.getChannelData(0)
-        var transients = detectTransients(data, count, offset)
-        return sliceOffsets(transients, offset, playToEnd)
+        var peaks = detectPeaks(data, count, offset)
+        return sliceOffsets(peaks, offset, playToEnd)
       }
     }
     return divideSlices(count, offset, playToEnd)
