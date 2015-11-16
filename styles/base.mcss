@@ -71,6 +71,10 @@ input {
   }
 }
 
+::-webkit-file-upload-button {
+  font-family: inherit
+}
+
 a {
   color: #8EC1FC
   text-decoration: none
