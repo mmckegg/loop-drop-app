@@ -36,7 +36,7 @@ function midiMessageReceived(ev) {
   var noteNumber = ev.data[1];
   var velocity = 0;
 
-  console.log(ev);
+  // console.log(ev);
 
   if (ev.data.length > 2) velocity = ev.data[2];
 

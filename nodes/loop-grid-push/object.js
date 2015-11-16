@@ -43,7 +43,7 @@ module.exports = function(context){
   var looper = Looper(loopGrid)
 
   var scheduler = context.scheduler
-  var gridMapping = getLaunchpadGridMapping()
+  var gridMapping = getPushGridMapping()
   loopGrid.shape.set(gridMapping.shape)
 
   var shiftHeld = false
@@ -135,14 +135,14 @@ module.exports = function(context){
 
   // midi button mapping
   var buttons = MidiButtons(duplexPort, {
-    store: '176/104',
-    flatten: '176/105',
-    undo: '176/106',
-    redo: '176/107',
-    hold: '176/108',
-    suppress: '176/109',
-    snap2: '176/110',
-    select: '176/111'
+    store: '176/102',
+    flatten: '176/103',
+    undo: '176/104',
+    redo: '176/105',
+    hold: '176/106',
+    suppress: '176/107',
+    snap2: '176/108',
+    select: '176/109'
   })
 
   var releaseLoopLengthLights = []
@@ -287,14 +287,14 @@ module.exports = function(context){
 
 
   var repeatButtons = MidiButtons(duplexPort, {
-    0: '144/8',
-    1: '144/24',
-    2: '144/40',
-    3: '144/56',
-    4: '144/72',
-    5: '144/88',
-    6: '144/104',
-    7: '144/120'
+    0: '176/43',
+    1: '176/42',
+    2: '176/41',
+    3: '176/40',
+    4: '176/39',
+    5: '176/38',
+    6: '176/37',
+    7: '176/36'
   })
 
   // repeater
@@ -363,13 +363,14 @@ function round(value, dp){
   return Math.round(value * pow) / pow
 }
 
-function getLaunchpadGridMapping(){
-  var result = []
-  for (var r=0;r<8;r++){
-    for (var c=0;c<8;c++){
-      var noteId = (r*16) + (c % 8)
-      result.push('144/' + noteId)
-    }
+// FIXME: Grid is flipped horizontally
+function getPushGridMapping() {
+  var LOW_PAD = 36, // Bottom left
+      HI_PAD = 99,  // Top Right
+      result = [];
+
+  for (var noteId = HI_PAD; noteId >= LOW_PAD; noteId--) {
+    result.push('144/' + noteId);
   }
-  return ArrayGrid(result, [8, 8])
+  return ArrayGrid(result, [8, 8]);
 }

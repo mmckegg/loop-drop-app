@@ -9,15 +9,16 @@ var QueryParam = require('lib/query-param')
 var renderGrid = require('./grid.js')
 
 var controllerOptions = [
-  ['Qwerty Keyboard', 'controller/qwerty'], 
-  ['Novation Launchpad', 'controller/launchpad']
+  ['Qwerty Keyboard', 'controller/qwerty'],
+  ['Novation Launchpad', 'controller/launchpad'],
+  ['Ableton Push', 'controller/push']
 ]
 
 module.exports = function(node){
   if (node){
     var context = node.context
     var collection = context.collection
-    
+
     var state = {node: node}
     var nameSuffix = node().port ? ' (' + node().port + ')' : ''
     return h('div ControllerNode', {
