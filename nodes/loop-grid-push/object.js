@@ -363,14 +363,19 @@ function round(value, dp){
   return Math.round(value * pow) / pow
 }
 
-// FIXME: Grid is flipped horizontally
+
 function getPushGridMapping() {
   var LOW_PAD = 36, // Bottom left
       HI_PAD = 99,  // Top Right
       result = [];
 
-  for (var noteId = HI_PAD; noteId >= LOW_PAD; noteId--) {
-    result.push('144/' + noteId);
+  // Top down, left to right
+  for (var row = 1; row <= 8; row++) {
+    var row_start = (HI_PAD + 1) - row * 8;
+    var row_end = row_start + 8;
+    for (var noteId = row_start; noteId < row_end; noteId++) {
+      result.push('144/' + noteId);
+    }
   }
   return ArrayGrid(result, [8, 8]);
 }

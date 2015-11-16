@@ -13,7 +13,7 @@ var extend = require('xtend')
 var controllerSpawners = [
   { name: 'MIDI Controller', node: 'controller/launchpad' },
   { name: 'Qwerty Keys', node: 'controller/qwerty' },
-  { name: 'Push Controller', node: 'controller/push' },
+  { name: 'MIDI Controller', node: 'controller/push' },
 ]
 
 module.exports = renderSetup
