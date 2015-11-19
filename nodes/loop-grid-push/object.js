@@ -133,7 +133,8 @@ module.exports = function(context){
   var output = DittyGridStream(inputGrid, loopGrid.grid, context.scheduler)
   output.on('data', loopGrid.triggerEvent)
 
-  // midi button mapping
+  // midi command button mapping
+  // On Push this is the row right above the pads
   var buttons = MidiButtons(duplexPort, {
     store: '176/102',
     flatten: '176/103',
@@ -285,16 +286,28 @@ module.exports = function(context){
     }
   })
 
+  // Push side buttons - labels don't match, left here for reference
+  // var repeatButtons = MidiButtons(duplexPort, {
+  //   0: '176/43',
+  //   1: '176/42',
+  //   2: '176/41',
+  //   3: '176/40',
+  //   4: '176/39',
+  //   5: '176/38',
+  //   6: '176/37',
+  //   7: '176/36'
+  // })
 
+  // Push top row buttons
   var repeatButtons = MidiButtons(duplexPort, {
-    0: '176/43',
-    1: '176/42',
-    2: '176/41',
-    3: '176/40',
-    4: '176/39',
-    5: '176/38',
-    6: '176/37',
-    7: '176/36'
+    0: '176/20',
+    1: '176/21',
+    2: '176/22',
+    3: '176/23',
+    4: '176/24',
+    5: '176/25',
+    6: '176/26',
+    7: '176/27'
   })
 
   // repeater
@@ -353,7 +366,27 @@ module.exports = function(context){
   // scoped
 
   function turnOffAllLights(){
-    duplexPort.write([176, 0, 0])
+    var LOW_PAD = 36, // Bottom left
+        HI_PAD = 99,  // Top Right
+        LOW_REPEAT = 10,
+        HI_REPEAT = 27,
+        LOW_BUTTON = 102,
+        HI_BUTTON = 109;
+
+    // Clear notes
+    for (var pad = LOW_PAD; pad <= HI_PAD; pad++) {
+      duplexPort.write([128, pad, 0]);
+    }
+
+    // Clear repeat buttons
+    for (var button = LOW_REPEAT; button <= HI_REPEAT; button++) {
+      duplexPort.write([176, button, 0]);
+    }
+
+    // Clear buttons
+    for (var button = LOW_BUTTON; button <= HI_BUTTON; button++) {
+      duplexPort.write([176, button, 0]);
+    }
   }
 
 }
