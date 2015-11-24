@@ -34,6 +34,7 @@ var mapGridValue = require('observ-grid/map-values')
 var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')
 
 var stateLights = require('./state-lights.js')
+var PushDisplay = require('./push-display.js')
 var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8]
 
 
@@ -51,6 +52,10 @@ module.exports = function(context){
   // controller midi port
   var portHolder = ObservMidiPort()
   var duplexPort = portHolder.stream
+
+  // Push display
+  var display = new PushDisplay(duplexPort);
+  turnOffAllLights();
 
   duplexPort.on('switch', turnOffAllLights)
   duplexPort.on('switching', turnOffAllLights)
@@ -254,6 +259,12 @@ module.exports = function(context){
         buttons.redo.light(stateLights.greenLow)
       )
 
+      // Update display
+      display
+      .setCell(3, 2, "Halve")
+      .setCell(3, 3, "Double")
+      .update();
+
     } else {
       shiftHeld = false
 
@@ -261,6 +272,12 @@ module.exports = function(context){
       while (releaseLoopLengthLights.length){
         releaseLoopLengthLights.pop()()
       }
+
+      // Update display
+      display
+      .setCell(3, 2, "Undo")
+      .setCell(3, 3, "Redo")
+      .update();
     }
   })
 
@@ -356,6 +373,7 @@ module.exports = function(context){
 
   obs.destroy = function(){
     turnOffAllLights()
+    display.init()
     portHolder.destroy()
     output.destroy()
     loopGrid.destroy()
@@ -364,6 +382,40 @@ module.exports = function(context){
   return obs
 
   // scoped
+
+  function initDisplay() {
+    // Clear screen
+    display.init();
+
+    // Top line
+    display
+    .setCell(0, 3, "    Loop")
+    .setCell(0, 4, "Drop");
+
+    // Repeats
+    display
+    .setCell(2, 0, "Trigger")
+    .setCell(2, 1, "   1")
+    .setCell(2, 2, "  2/3")
+    .setCell(2, 3, "  1/2")
+    .setCell(2, 4, "  1/3")
+    .setCell(2, 5, "  1/4")
+    .setCell(2, 6, "  1/6")
+    .setCell(2, 7, "  1/8");
+
+    // Buttons
+    display
+    .setCell(3, 0, "Loop")
+    .setCell(3, 1, "Clr/Flat")
+    .setCell(3, 2, "Undo")
+    .setCell(3, 3, "Redo")
+    .setCell(3, 4, "HoldBeat")
+    .setCell(3, 5, "Suppress")
+    .setCell(3, 6, "SwapTrgt")
+    .setCell(3, 7, "Select");
+
+    display.update();
+  }
 
   function turnOffAllLights(){
     var LOW_PAD = 36, // Bottom left
@@ -387,6 +439,8 @@ module.exports = function(context){
     for (var button = LOW_BUTTON; button <= HI_BUTTON; button++) {
       duplexPort.write([176, button, 0]);
     }
+
+    initDisplay();
   }
 
 }
