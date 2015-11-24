@@ -31,7 +31,7 @@ watchKeyboardLayout(keyboardLayout.set)
 
 // midi ports
 var midiPorts = Observ()
-midiPorts.open = MidiStream
+midiPorts.open = MidiStream(null, {sysex: true})
 midiPorts.openInput = MidiStream.openInput
 midiPorts.openOutput = MidiStream.openOutput
 
