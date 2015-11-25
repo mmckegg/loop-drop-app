@@ -49,3 +49,10 @@ To select buttons, hold down top button **Select**, and press some buttons on th
 ### Loop Length
 
 Hold **Select** and press the **Undo/Halve** button to halve loop length or **Redo/Double** to double.
+
+## TODO
+
+* Better use of pad colours
+* Use native Push buttons for some functions (Undo/Redo, Shift...)
+* Map Tempo knob to BPM
+* Free mapping of knobs and touch strip to synth parameters
