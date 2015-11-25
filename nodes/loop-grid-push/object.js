@@ -405,11 +405,11 @@ module.exports = function(context){
 
     // Buttons
     display
-    .setCell(3, 0, "Loop")
+    .setCell(3, 0, "RecLoop")
     .setCell(3, 1, "Clr/Flat")
     .setCell(3, 2, "Undo")
     .setCell(3, 3, "Redo")
-    .setCell(3, 4, "HoldBeat")
+    .setCell(3, 4, "BeatHold")
     .setCell(3, 5, "Suppress")
     .setCell(3, 6, "SwapTrgt")
     .setCell(3, 7, "Select");

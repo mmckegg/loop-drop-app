@@ -1,15 +1,15 @@
-loop-launchpad
+loop-grid-push
 ===
 
-Novation Launchpad bindings for [loop-grid](https://github.com/mmckegg/loop-grid).
+Ableton Push (v1) bindings for [loop-grid](https://github.com/mmckegg/loop-grid). The mapping follows how Launchpad works pretty closely. The only difference is the side buttons are mapped to the button group right on top of the pads.
 
 ## Controller Mapping
 
-Trigger sounds using the **main grid** on the Launchpad hardware that corresponds to the interface grid that you have added chunks to.
+Trigger sounds using the **pads** on the Push hardware that corresponds to the interface grid that you have added chunks to.
 
 ### Beat Repeat
 
-The side buttons (A-H) on the Launchpad enable **beat repeat** mode as follows:
+The top buttons on Push enable **beat repeat** mode as follows:
   
   - None (free play), 
   - 1
@@ -24,28 +24,28 @@ When beat repeat is enabled, **hold down** a trigger on the main grid, and it wi
 
 ### Store Loop
 
-By default the last 2 bars of everything you play is being recorded. The top buttons (1-8) control the current loop. Press **1**/**learn** to start looping the events you just played.
+By default the last 2 bars of everything you play is being recorded. The top buttons control the current loop. Press the **RecLoop** button to start looping the events you just played.
 
 ### Clear / Flatten
 
-When no transformations are currently active (no beat repeat held or active suppression), **2**/**view** clears the currently playing loop, otherwise it locks in the current transform.
+When no transformations are currently active (no beat repeat held or active suppression), **Clr/Flat** clears the currently playing loop, otherwise it locks in the current transform.
 
 ### Undo / Redo
 
-Top buttons **3** and **4** (the page buttons) trigger undo or redo of stored loop on press.
+These buttons trigger undo or redo of stored loop on press.
 
 ### Beat Hold
 
-Top button **5**/**inst** will loop the currently playing beat at the rate specified by the Beat Repeat buttons (A-H) when held down. You can lock in the loop by pressing the Flatten button (2/view) at the same time.
+Top button **BeatHold** will loop the currently playing beat at the rate specified by the Beat Repeat buttons (A-H) when held down. You can lock in the loop by pressing the Flatten button (2/view) at the same time.
 
 ### Suppress
 
-Top button **6**/**fx** will suppress all current playback when held down. You can lock that in by pressing the Flatten button (2/view) at the same time.
+Top button **Suppress** will suppress all current playback when held down. You can lock that in by pressing the **Clr/Flat** button at the same time.
 
 ### Select / Move
 
-To select buttons, hold down top button **8**/**mixer**, and press some buttons on the grid and release. You can now hold **Suppress** to mute the selected slots, or hold another button on the grid to move/offset the loop events. 
+To select buttons, hold down top button **Select**, and press some buttons on the grid and release. You can now hold **Suppress** to mute the selected slots, or hold another button on the grid to move/offset the loop events. 
 
 ### Loop Length
 
-Hold `select` (8/mixer) and press the `undo` (3/prevpage) button to halve loop length or `redo` (4/nextpage) to double.
+Hold **Select** and press the **Undo/Halve** button to halve loop length or **Redo/Double** to double.
