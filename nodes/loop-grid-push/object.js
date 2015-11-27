@@ -258,8 +258,8 @@ module.exports = function(context){
 
       // turn on loop length lights
       releaseLoopLengthLights.push(
-        buttons.undo.light(pushColors.pads.greenLow),
-        buttons.redo.light(pushColors.pads.greenLow)
+        buttons.undo.light(pushColors.pads.pink),
+        buttons.redo.light(pushColors.pads.pink)
       )
 
       // Update display
@@ -285,8 +285,8 @@ module.exports = function(context){
   })
 
   // light up undo buttons by default
-  buttons.undo.light(pushColors.pads.redLow)
-  buttons.redo.light(pushColors.pads.redLow)
+  buttons.undo.light(pushColors.pads.cyan)
+  buttons.redo.light(pushColors.pads.cyan)
 
   buttons.store.light(pushColors.pads.amberLow)
 
