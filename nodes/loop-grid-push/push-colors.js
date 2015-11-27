@@ -1,0 +1,102 @@
+// Ableton Push colors
+// Written by Fabio Neves - fzero.ca / nostep.ca / github.com/fzero
+//
+// Adapted from Push4Bitwig
+// https://github.com/git-moss/Push4Bitwig
+// Written by Jürgen Moßgraber - mossgrabers.de
+//            Michael Schmalle - teotigraphix.com
+// (c) 2014-2015
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
+// Buttons including row below the display
+module.exports.buttons = {
+  off: 0,
+  redLow: 1,
+  redLowSlowBlink: 2,
+  redLowFastBlink: 3,
+  redHi: 4,
+  redHiSlowBlink: 5,
+  redHiFastBlink: 6,
+  amberLow: 7,
+  amberLowSlowBlink: 8,
+  amberLowFastBlink: 9,
+  amberHi: 10,
+  amberHiSlowBlink: 11,
+  amberHiFastBlink: 12,
+  yellowLow: 13,
+  yellowLowSlowBlink: 14,
+  yellowLowFastBlink: 15,
+  yellowHi: 16,
+  yellowHiSlowBlink: 17,
+  yellowHiFastBlink: 18,
+  greenLow: 19,
+  greenLowSlowBlink: 20,
+  greenLowFastBlink: 21,
+  greenHi: 22,
+  greenHiSlowBlink: 23,
+  greenHiFastBlink: 24
+};
+
+// Pads including row above the pads
+module.exports.pads = {
+  off: 0,
+  greyLow: 1,
+  grey: 2,
+  white: 3,
+  rose: 4,
+  redHi: 5,
+  red: 6,
+  redLow: 7,
+  redAmber: 8,
+  amberHi: 9,
+  amber: 10,
+  amberLow: 11,
+  amberYellow: 12,
+  yellowHi: 13,
+  yellow: 14,
+  yellowLow: 15,
+  yellowLime: 16,
+  limeHi: 17,
+  lime: 18,
+  limeLow: 19,
+  limeGreen: 20,
+  greenHi: 21,
+  green: 22,
+  greenLow: 23,
+  greenSpring: 24,
+  springHi: 25,
+  spring: 26,
+  springLow: 27,
+  springTurquoise: 28,
+  turquoiseLow: 29,
+  turquoise: 30,
+  turquoiseHi: 31,
+  turquoiseCyan: 32,
+  cyanHi: 33,
+  cyan: 34,
+  cyanLow: 35,
+  cyanSky: 36,
+  skyHi: 37,
+  sky: 38,
+  skyLow: 39,
+  skyOcean: 40,
+  oceanHi: 41,
+  ocean: 42,
+  oceanLow: 43,
+  oceanBlue: 44,
+  blueHi: 45,
+  blue: 46,
+  blueLow: 47,
+  blueOrchid: 48,
+  orchidHi: 49,
+  orchid: 50,
+  orchidLow: 51,
+  orchidMagenta: 52,
+  magentaHi: 53,
+  magenta: 54,
+  magentaLow: 55,
+  magentaPink: 56,
+  pinkHi: 57,
+  pink: 58,
+  pinkLow: 59
+};

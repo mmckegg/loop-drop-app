@@ -1,4 +1,7 @@
-function PushDisplay(duplexPort) {
+// Ableton Push controller support
+// Written by Fabio Neves - fzero.ca / nostep.ca / github.com/fzero
+
+module.exports = function(duplexPort) {
 
   // We need a MIDI duplexPort, or else nothing happens!
   if (!duplexPort) {
@@ -8,12 +11,11 @@ function PushDisplay(duplexPort) {
   this.duplexPort = duplexPort;
 
 
-  /*
-   Instance methods:
-
-   They should all return `this` to allow chaining, as in:
-   display.setCell(0, 0, "OHAI").setCell(0, 1, "THERE").update();
-  */
+  /////////////////////////////////////////////////////////////////
+  // Instance methods:
+  // They should all return `this` to allow chaining, as in:
+  // display.setCell(0, 0, "OHAI").setCell(0, 1, "THERE").update();
+  /////////////////////////////////////////////////////////////////
 
   // init()
   //
@@ -22,6 +24,7 @@ function PushDisplay(duplexPort) {
     this.clear().update();
     return this;
   }
+
 
   // clear()
   //
@@ -40,6 +43,7 @@ function PushDisplay(duplexPort) {
     ];
     return this;
   }
+
 
   // setCell(Number row, Number col, String string)
   //
@@ -97,8 +101,7 @@ function PushDisplay(duplexPort) {
     return this;
   }
 
+
   // First init
   this.init();
 }
-
-module.exports = PushDisplay;

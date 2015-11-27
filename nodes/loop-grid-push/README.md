@@ -52,7 +52,7 @@ Hold **Select** and press the **Undo/Halve** button to halve loop length or **Re
 
 ## TODO
 
-* Better use of pad colours
 * Use native Push buttons for some functions (Undo/Redo, Shift...)
 * Map Tempo knob to BPM
 * Free mapping of knobs and touch strip to synth parameters
+* Show active chunks on pads using dimmed colours

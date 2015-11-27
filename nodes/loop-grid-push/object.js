@@ -1,3 +1,6 @@
+// Ableton Push controller support
+// Written by Fabio Neves - fzero.ca / nostep.ca / github.com/fzero
+
 var LoopGrid = require('loop-grid')
 var Looper = require('loop-grid/looper')
 var computeTargets = require('loop-grid/compute-targets')
@@ -33,7 +36,7 @@ var mapWatchDiff = require('lib/map-watch-diff-stack')
 var mapGridValue = require('observ-grid/map-values')
 var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')
 
-var stateLights = require('./state-lights.js')
+var pushColors = require('./push-colors.js')
 var PushDisplay = require('./push-display.js')
 var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8]
 
@@ -106,19 +109,19 @@ module.exports = function(context){
   var outputLayers = ObservGridStack([
 
     // recording
-    mapGridValue(looper.recording, stateLights.redLow),
+    mapGridValue(looper.recording, pushColors.pads.redLow),
 
     // active
-    mapGridValue(loopGrid.active, stateLights.greenLow),
+    mapGridValue(loopGrid.active, pushColors.pads.greenLow),
 
     // selected
-    mapGridValue(transforms.selector, stateLights.green),
+    mapGridValue(transforms.selector, pushColors.pads.blue),
 
     // suppressing
-    mapGridValue(transforms.suppressor, stateLights.red),
+    mapGridValue(transforms.suppressor, pushColors.pads.red),
 
     // playing
-    mapGridValue(loopGrid.playing, stateLights.amber)
+    mapGridValue(loopGrid.playing, pushColors.pads.limeHi)
 
   ])
 
@@ -157,7 +160,7 @@ module.exports = function(context){
 
     store: function(value){
       if (value){
-        this.flash(stateLights.green)
+        this.flash(pushColors.pads.green)
         looper.store()
       }
     },
@@ -169,9 +172,9 @@ module.exports = function(context){
           looper.transform(holdActive, active)
           looper.flatten()
           transforms.selector.stop()
-          this.flash(stateLights.green, 100)
+          this.flash(pushColors.pads.green, 100)
         } else {
-          this.flash(stateLights.red, 100)
+          this.flash(pushColors.pads.red, 100)
           transforms.suppressor.start(transforms.selector.selectedIndexes())
           looper.flatten()
           transforms.suppressor.stop()
@@ -185,11 +188,11 @@ module.exports = function(context){
         if (shiftHeld){ // halve loopLength
           var current = obs.loopLength() || 1
           obs.loopLength.set(current/2)
-          this.flash(stateLights.green, 100)
+          this.flash(pushColors.pads.green, 100)
         } else {
           looper.undo()
-          this.flash(stateLights.red, 100)
-          buttons.store.flash(stateLights.red)
+          this.flash(pushColors.pads.red, 100)
+          buttons.store.flash(pushColors.pads.red)
         }
       }
     },
@@ -199,18 +202,18 @@ module.exports = function(context){
         if (shiftHeld){ // double loopLength
           var current = obs.loopLength() || 1
           obs.loopLength.set(current*2)
-          this.flash(stateLights.green, 100)
+          this.flash(pushColors.pads.green, 100)
         } else {
           looper.redo()
-          this.flash(stateLights.red, 100)
-          buttons.store.flash(stateLights.red)
+          this.flash(pushColors.pads.red, 100)
+          buttons.store.flash(pushColors.pads.red)
         }
       }
     },
 
     hold: function(value){
       if (value){
-        var turnOffLight = this.light(stateLights.yellow)
+        var turnOffLight = this.light(pushColors.pads.yellow)
         transforms.holder.start(
           scheduler.getCurrentPosition(),
           transforms.selector.selectedIndexes(),
@@ -223,7 +226,7 @@ module.exports = function(context){
 
     suppress: function(value){
       if (value){
-        var turnOffLight = this.light(stateLights.red)
+        var turnOffLight = this.light(pushColors.pads.red)
         transforms.suppressor.start(transforms.selector.selectedIndexes(), turnOffLight)
       } else {
         transforms.suppressor.stop()
@@ -232,7 +235,7 @@ module.exports = function(context){
 
     select: function(value){
       if (value){
-        var turnOffLight = this.light(stateLights.green)
+        var turnOffLight = this.light(pushColors.pads.green)
         transforms.selector.start(inputGrabber, function done(){
           transforms.mover.stop()
           transforms.selector.clear()
@@ -255,8 +258,8 @@ module.exports = function(context){
 
       // turn on loop length lights
       releaseLoopLengthLights.push(
-        buttons.undo.light(stateLights.greenLow),
-        buttons.redo.light(stateLights.greenLow)
+        buttons.undo.light(pushColors.pads.greenLow),
+        buttons.redo.light(pushColors.pads.greenLow)
       )
 
       // Update display
@@ -282,10 +285,10 @@ module.exports = function(context){
   })
 
   // light up undo buttons by default
-  buttons.undo.light(stateLights.redLow)
-  buttons.redo.light(stateLights.redLow)
+  buttons.undo.light(pushColors.pads.redLow)
+  buttons.redo.light(pushColors.pads.redLow)
 
-  buttons.store.light(stateLights.amberLow)
+  buttons.store.light(pushColors.pads.amberLow)
 
 
   var willFlatten = computed([activeIndexes, looper.transforms], function (indexes, transforms) {
@@ -296,7 +299,7 @@ module.exports = function(context){
   var releaseFlattenLight = null
   watch(willFlatten, function(value){
     if (value && !releaseFlattenLight){
-      releaseFlattenLight = buttons.flatten.light(stateLights.greenLow)
+      releaseFlattenLight = buttons.flatten.light(pushColors.pads.greenLow)
     } else if (!value && releaseFlattenLight){
       releaseFlattenLight()
       releaseFlattenLight = null
@@ -334,7 +337,7 @@ module.exports = function(context){
     var button = repeatButtons[repeatStates.indexOf(value)]
     if (button){
       if (releaseRepeatLight) releaseRepeatLight()
-      releaseRepeatLight = button.light(stateLights.amberLow)
+      releaseRepeatLight = button.light(pushColors.buttons.amberLow)
     }
     transforms.holder.setLength(value)
     if (value < 2){
@@ -358,13 +361,13 @@ module.exports = function(context){
     if (index != currentBeatLight){
       if (button){
         releaseBeatLight&&releaseBeatLight()
-        releaseBeatLight = button.light(stateLights.greenLow, 0)
+        releaseBeatLight = button.light(pushColors.buttons.greenLow, 0)
       }
       currentBeatLight = index
     }
 
     if (beat != currentBeat){
-      button.flash(stateLights.green)
+      button.flash(pushColors.buttons.greenHi)
       currentBeat = beat
     }
   })
