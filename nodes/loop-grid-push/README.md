@@ -56,3 +56,7 @@ Hold **Select** and press the **Undo/Halve** button to halve loop length or **Re
 * Map Tempo knob to BPM
 * Free mapping of knobs and touch strip to synth parameters
 * Show active chunks on pads using dimmed colours
+
+## Credits
+
+Written by [Fabio Neves](http://github.com/fzero), with bits and pieces adapted from [Push4Bitwig](https://github.com/git-moss/Push4Bitwig) by [Jürgen Moßgraber](http://mossgrabers.de).
