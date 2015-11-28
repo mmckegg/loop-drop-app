@@ -46,7 +46,7 @@
     "loop-grid": "~5.1.0",
     "main-loop": "~3.1.0",
     "micro-css": "~0.6.1",
-    "midi-port-holder": "~2.2.0",
+    "midi-port-holder": "~2.2.1",
     "mkdirp": "^0.5.0",
     "next-tick": "^0.2.2",
     "notevil": "^1.0.0",
@@ -71,7 +71,7 @@
     "vdom-to-html": "^2.1.1",
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",
-    "web-midi": "^1.1.0",
+    "web-midi": "^2.0.0",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
