@@ -52,6 +52,10 @@ function SlicerChunk (parentContext) {
         obs.sliceMode(queueRefreshSlices)
         obs.sample.mode(queueRefreshSlices)
         throttle(obs.sample.offset, 1000)(queueRefreshSlices)
+
+        if (!obs.sample.slices()) { // ensure slices have been generated
+          queueRefreshSlices()
+        }
       })
     }
   })
@@ -171,7 +175,7 @@ function Sample (context) {
     amp: Param(context, 1),
     transpose: Param(context, 0),
     buffer: Node(context),
-    slices: Property([]),
+    slices: Property(),
     mode: Property('slice')
   })
 
