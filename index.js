@@ -1,4 +1,4 @@
-var ipc = require('ipc')
+var ipc = require('electron').ipcRenderer
 var frame = require('web-frame')
 var insertCss = require('insert-css')
 
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   ipc.send('loaded')
 })
 
-ipc.on('load-project', function (path) {
+ipc.on('load-project', function (e, path) {
   // load project and initialize view
 
   var projectPath = join(path, 'project.json')

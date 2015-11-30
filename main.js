@@ -1,7 +1,7 @@
 var app = require('app')
 var BrowserWindow = require('browser-window')
 var dialog = require('dialog')
-var ipc = require('ipc')
+var ipc = require('electron').ipcMain
 var fs = require('fs')
 var Shell = require('shell')
 var Menu = require('menu')
@@ -29,7 +29,7 @@ ipc.on('choose-project', function(event, arg) {
   } else if (arg === 'demo') {
     loadProject(getDemoProjectPath())
   } else if (arg === 'browse') {
-    dialog.showOpenDialog({ 
+    dialog.showOpenDialog({
       title: 'Browse for Project Folder',
       properties: [ 'openDirectory' ]
     }, function(paths) {
@@ -72,7 +72,7 @@ function chooseProject() {
   welcomeWindow = new BrowserWindow({
     title: 'Choose Project',
     'accept-first-mouse': true,
-    width: 500, 
+    width: 500,
     height: 550,
     show: false
   })
@@ -86,7 +86,7 @@ function chooseProject() {
     Shell.openExternal(url)
   })
 
-  welcomeWindow.loadUrl('file://' + __dirname + '/views/welcome.html')
+  welcomeWindow.loadURL('file://' + __dirname + '/views/welcome.html')
 
   welcomeWindow.on('closed', function() {
     welcomeWindow = null
@@ -129,7 +129,7 @@ function loadProject(path) {
   currentProject = path
 
   mainWindow = new BrowserWindow({
-    width: 1400, 
+    width: 1400,
     height: 900,
     title: path + ' — Loop Drop',
     'accept-first-mouse': true,
@@ -149,7 +149,7 @@ function loadProject(path) {
     Shell.openExternal(url)
   })
 
-  mainWindow.loadUrl('file://' + __dirname + '/views/window.html')
+  mainWindow.loadURL('file://' + __dirname + '/views/window.html')
   mainWindow.on('close', function() {
     mainWindow = null
     if (!quiting) {
