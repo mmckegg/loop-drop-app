@@ -149,7 +149,7 @@ function SlicerChunk (parentContext) {
       }
     } else {
       obs.sample.slices.set(divideSlices(count, offset, playToEnd))
-      cb && cb()
+      cb && setImmediate(cb)
     }
   }
 
