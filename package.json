@@ -54,7 +54,7 @@
     "observ": "^0.2.0",
     "observ-array": "^3.2.1",
     "observ-default": "^1.0.0",
-    "observ-fs": "~1.7.0",
+    "observ-fs": "~1.7.1",
     "observ-fs-audio-buffer": "~1.0.0",
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
