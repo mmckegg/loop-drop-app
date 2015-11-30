@@ -10,9 +10,12 @@ var computed = require('observ/computed')
 var computedNextTick = require('lib/computed-next-tick')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var detectPeaks = require('lib/detect-peaks')
+var gridSlicePeaks = require('lib/grid-slice-peaks')
 var throttle = require('throttle-observ')
 var throttleWatch = require('throttle-observ/watch')
+var watch = require('observ/watch')
 var extend = require('xtend')
+var debounce = require('async-debounce')
 
 module.exports = SlicerChunk
 
@@ -21,6 +24,8 @@ function SlicerChunk (parentContext) {
   var context = Object.create(parentContext)
   var output = context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
+
+  var queueRefreshSlices = noargs(debounce(refreshSlices, 200))
 
   var slots = NodeArray(context)
   context.slotLookup = lookup(slots, 'id')
@@ -38,24 +43,24 @@ function SlicerChunk (parentContext) {
     volume: Property(1)
   })
 
-  obs.sample.slices = computedNextTick([obs.shape, obs.sample.resolvedBuffer, throttle(obs.sample.offset, 1000), obs.sliceMode, obs.sample.mode], function (shape, buffer, offset, sliceMode, triggerMode) {
-    var count = shape[0] * shape[1]
-    var playToEnd = triggerMode === 'full'
-    if (sliceMode === 'peak' || sliceMode === 'transient') {
-      if (buffer) {
-        var data = buffer.getChannelData(0)
-        var peaks = detectPeaks(data, count, offset)
-        return sliceOffsets(peaks, offset, playToEnd)
-      }
+  var watchApplied = obs.sample.resolvedBuffer(function (value) {
+    if (value) {
+      watchApplied()
+      setImmediate(function () {
+        obs.shape(queueRefreshSlices)
+        obs.sample.resolvedBuffer(queueRefreshSlices)
+        obs.sliceMode(queueRefreshSlices)
+        obs.sample.mode(queueRefreshSlices)
+        throttle(obs.sample.offset, 1000)(queueRefreshSlices)
+      })
     }
-    return divideSlices(count, offset, playToEnd)
   })
 
   var computedSlots = computed([
-    obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.sample.slices, obs.sample.resolvedBuffer
-  ], function (sample, stretch, tempo, eq, volume, slices, buffer) {
+    obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.sample.resolvedBuffer
+  ], function (sample, stretch, tempo, eq, volume, buffer) {
 
-    var result = slices.map(function (offset, i) {
+    var result = (sample.slices || []).map(function (offset, i) {
       if (stretch && buffer) {
 
         var originalDuration = getOffsetDuration(buffer.duration, offset)
@@ -105,20 +110,49 @@ function SlicerChunk (parentContext) {
     return result
   })
 
-  throttleWatch(computedSlots, 500, function (value) {
-    slots.set(value)
-
-    // HACK: bump shape to trigger update of slot mapping
-    obs.shape.set(obs.shape())
-  })
-
+  watch(computedSlots, slots.set)
   slots.onUpdate(obs.routes.reconnect)
 
   obs.destroy = function(){
     obs.routes.destroy()
   }
 
+  obs.resolved = withResolved(obs, ['triggers'])
   return obs
+
+  // scoped
+  function refreshSlices (cb) {
+    var shape = obs.shape()
+    var buffer = obs.sample.resolvedBuffer()
+    var sliceMode = obs.sliceMode()
+    var triggerMode = obs.sample.mode()
+    var offset = obs.sample.offset()
+    var count = shape[0] * shape[1]
+    var playToEnd = triggerMode === 'full'
+    if (sliceMode === 'peak' || sliceMode === 'transient') {
+      if (buffer) {
+        detectPeaks(buffer.getChannelData(0), count, offset, function (peaks) {
+          obs.sample.slices.set(sliceOffsets(peaks, offset, playToEnd))
+          cb && cb()
+        })
+      } else {
+        cb && cb()
+      }
+    } else if (sliceMode === 'snap') {
+      if (buffer) {
+        gridSlicePeaks(buffer.getChannelData(0), count, offset, function (peaks) {
+          obs.sample.slices.set(sliceOffsets(peaks, offset, playToEnd))
+          cb && cb()
+        })
+      } else {
+        cb && cb()
+      }
+    } else {
+      obs.sample.slices.set(divideSlices(count, offset, playToEnd))
+      cb && cb()
+    }
+  }
+
 }
 
 function EQ (context) {
@@ -137,6 +171,7 @@ function Sample (context) {
     amp: Param(context, 1),
     transpose: Param(context, 0),
     buffer: Node(context),
+    slices: Property([]),
     mode: Property('slice')
   })
 
@@ -179,4 +214,29 @@ function subOffset(main, sub) {
 
 function getOffsetDuration (duration, offset) {
   return (offset[1] * duration) - (offset[0] * duration)
+}
+
+function noargs (fn) {
+  return function () {
+    fn()
+  }
+}
+
+function withResolved (obj, keys) {
+  var result = computed(keys.map(function (k) { return obj[k] }).concat(obj), function (args) {
+    var value = extend(arguments[arguments.length - 1])
+    keys.forEach(function (key, i) {
+      value[key] = arguments[i]
+    })
+    return value
+  })
+
+  for (var k in obj) {
+    if (k !== 'set') {
+      result[k] = obj[k]
+    }
+  }
+
+  result.node = obj
+  return result
 }

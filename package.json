@@ -21,6 +21,7 @@
   "dependencies": {
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
+    "async-debounce": "0.0.0",
     "audio-buffer-range-decoder": "~1.1.1",
     "audio-buffer-stream": "^1.1.0",
     "audio-rms": "^1.1.0",

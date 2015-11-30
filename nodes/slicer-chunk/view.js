@@ -13,6 +13,7 @@ var renderEqParams = require('../eq/params')
 
 var sliceOptions = [
   ['Equal Slices', 'divide'],
+  ['Snap to Peaks', 'snap'],
   ['Use Peaks', 'peak']
 ]
 
