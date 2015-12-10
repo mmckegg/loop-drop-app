@@ -34,7 +34,7 @@ Select, move, repeat, suppress. All using your hardware controller.
 ## ...or Build and Install from source
 
 ```bash
-$ git clone https://github.com/mmckegg/loop-drop-app
+$ git clone https://github.com/mmckegg/loop-drop-app.git
 $ cd loop-drop-app
 $ npm install
 $ npm start
