@@ -24,8 +24,6 @@ ParamList {
 
   select {
     flex: 1
-    flex-basis: auto;
-    flex-grow: 0.1;
     cursor: pointer
     margin: 4px;
   }
