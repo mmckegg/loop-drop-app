@@ -61,6 +61,12 @@ function ChromaticChunk (parentContext) {
     selectedSlotId: Observ()
   })
 
+  if (context.setup) {
+    obs.selected = computed([obs.id, context.setup.selectedChunkId], function (id, selectedId) {
+      return id === selectedId
+    })
+  }
+
   context.offset = obs.offset
 
   var globalScale = Property(defaultScale)

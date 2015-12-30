@@ -69,6 +69,7 @@
     "throttle-observ": "^1.1.0",
     "through": "^2.3.4",
     "value-event": "~5.1.0",
+    "vdom-thunk": "^3.0.0",
     "vdom-to-html": "^2.1.1",
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",

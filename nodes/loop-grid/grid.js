@@ -7,6 +7,7 @@ var getBaseName = require('path').basename
 var GridStateHook = require('./grid-state-hook.js')
 var read = require('lib/read')
 var extend = require('xtend')
+var Thunk = require('vdom-thunk')
 
 var QueryParam = require('lib/query-param')
 
@@ -17,31 +18,33 @@ module.exports = function renderGrid (controller) {
   var playback = controller.playback
   var shape = playback.shape()
 
-  var rows = []
-  for (var r=0;r<shape[0];r++){
-    var buttons = []
-    for (var c=0;c<shape[1];c++){
-      buttons.push(h('div.button', {
-        'ev-dragenter': MPE(enterButton, controller),
-        'ev-dragleave': MPE(leaveButton, controller)
-      }))
-    }
-    rows.push(h('div.row', buttons))
-  }
-
   return h('LoopGrid', {
     className: shape[1] > 16 ? '-min' : '',
     'ev-dragover': MPE(dragOver, controller),
     'ev-drop': MPE(drop, controller),
     'ev-dragleave': MPE(dragLeave, controller),
-    'ev-dragenter': MPE(dragEnter, controller),
+    'ev-dragenter': MPE(dragEnter, controller)
   }, [
-    h('div.rows', {'ev-state': GridStateHook(controller.gridState)}, rows),
-    h('div.chunks', chunks.map(function(chunk){
+    Thunk(renderRows, controller, shape[0], shape[1]),
+    h('div.chunks', chunks.map(function (chunk) {
       return renderChunkBlock(chunk, controller)
     }))
   ])
+}
 
+function renderRows (controller, rows, cols) {
+  var children = []
+  for (var r = 0; r < rows; r++) {
+    var buttons = []
+    for (var c = 0; c < cols; c++) {
+      buttons.push(h('div.button', {
+        'ev-dragenter': MPE(enterButton, controller),
+        'ev-dragleave': MPE(leaveButton, controller)
+      }))
+    }
+    children.push(h('div.row', buttons))
+  }
+  return h('div.rows', {'ev-state': GridStateHook(controller.gridState)}, children)
 }
 
 function renderChunkBlock(chunk, controller){

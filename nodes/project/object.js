@@ -107,8 +107,10 @@ function Project (parentContext) {
     broadcastItemLoaded = broadcast
   })
 
+  obs.openFiles = Observ([])
+
   obs.resolved = ObservStruct({
-    items: obs.items,
+    openFiles: obs.openFiles,
     renaming: obs.renaming,
     entries: obs.entries,
     recording: obs.recording,
@@ -284,7 +286,7 @@ function Project (parentContext) {
       var object = FileObject(context)
 
       // HACK: avoid audio glitches by scheduling 1 second ahead
-      scheduler.schedule(1)
+      //scheduler.schedule(0.3)
 
       object.onLoad(function () {
 
@@ -303,6 +305,7 @@ function Project (parentContext) {
           object.node.grabInput()
         }
 
+        refreshOpenFiles()
       })
 
       object.onClose(function () {
@@ -315,6 +318,7 @@ function Project (parentContext) {
           var lastSelectedSetup = obs.items.get(index) || obs.items.get(0)
           obs.selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
         }
+        refreshOpenFiles()
       })
 
       object.load(path)
@@ -339,6 +343,14 @@ function Project (parentContext) {
   context.project = obs
 
   return obs
+
+  // scoped
+
+  function refreshOpenFiles () {
+    obs.openFiles.set(obs.items.map(function (item) {
+      return item.path
+    }))
+  }
 }
 
 function copyExternalFilesTo (fs, path, target) {

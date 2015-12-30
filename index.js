@@ -96,7 +96,7 @@ function createRootElement(project) {
 
   function update () {
     // HACK: schedule 100 ms ahead to avoid audio interuption
-    project.context.scheduler.schedule(0.1)
+    //project.context.scheduler.schedule(0.1)
 
     // render!
     renderer.update(project)

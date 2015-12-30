@@ -27,7 +27,7 @@ module.exports = function(node){
       h('header', [
         h('span', 'Loop Grid' + nameSuffix),
         h('button.remove Button -warn', {
-          'ev-click': send(collection.remove, node),
+          'ev-click': send(collection.remove, node)
         }, 'X')
       ]),
       h('section', [
@@ -39,6 +39,10 @@ module.exports = function(node){
   } else {
     return h('div')
   }
+}
+
+module.exports.getInvalidationArgs = function (node) {
+  return [node.context.chunkLookup(), node.context.setup.selectedChunkId()]
 }
 
 function invoke(func){
