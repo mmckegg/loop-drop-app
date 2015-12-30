@@ -23,6 +23,7 @@ var watchKeyboardLayout = require('lib/watch-keyboard-layout')
 
 // apply css styles
 insertCss(require('./styles'))
+frame.setZoomLevelLimits(1, 1)
 
 // keyboard layout
 var keyboardLayout = Observ()
@@ -53,20 +54,13 @@ var rootContext = window.rootContext = {
   zoom: Property(1.1)
 }
 
-watch(rootContext.zoom, function(value) {
+watch(rootContext.zoom, function (value) {
   frame.setZoomFactor(value || 1)
 })
 
 noDrop(document)
 require('lib/context-menu')
 
-// disable pinch-zoom
-// see http://stackoverflow.com/questions/15416851/catching-mac-trackpad-zoom
-document.addEventListener('mousewheel', function (e) {
-  if (e.ctrlKey) {
-    e.preventDefault()
-  }
-})
 
 document.addEventListener("DOMContentLoaded", function (event) {
   ipc.send('loaded')
