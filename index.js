@@ -3,7 +3,6 @@ var frame = require('web-frame')
 var insertCss = require('insert-css')
 
 var fs = require('fs')
-var getDirectory = require('path').dirname
 var join = require('path').join
 
 var Observ = require('observ')
@@ -27,7 +26,7 @@ frame.setZoomLevelLimits(1, 1)
 
 // keyboard layout
 var keyboardLayout = Observ()
-keyboardLayout(function(value) { console.log('Keyboard: ' + value) })
+keyboardLayout(function (value) { console.log('Keyboard: ' + value) })
 watchKeyboardLayout(keyboardLayout.set)
 
 // midi ports
@@ -41,7 +40,7 @@ MidiStream.watchPortNames(function (ports) {
 })
 
 // create root context
-var audioContext = new AudioContext()
+var audioContext = new global.AudioContext()
 var nodes = require('./nodes')
 var rootContext = window.rootContext = {
   fs: fs,
@@ -61,8 +60,7 @@ watch(rootContext.zoom, function (value) {
 noDrop(document)
 require('lib/context-menu')
 
-
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener('DOMContentLoaded', function (event) {
   ipc.send('loaded')
 })
 
@@ -83,7 +81,7 @@ ipc.on('load-project', function (e, path) {
   })
 })
 
-function createRootElement(project) {
+function createRootElement (project) {
   var renderer = MainLoop(project, renderNode, VirtualDom)
 
   project(update)
@@ -95,16 +93,12 @@ function createRootElement(project) {
   // scoped
 
   function update () {
-    // HACK: schedule 100 ms ahead to avoid audio interuption
-    //project.context.scheduler.schedule(0.1)
-
     // render!
     renderer.update(project)
   }
-
 }
 
-function ensureProject(path, cb) {
+function ensureProject (path, cb) {
   rootContext.fs.exists(path, function (exists) {
     if (exists) {
       cb()
