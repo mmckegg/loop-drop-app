@@ -3,6 +3,7 @@ var Header = require('lib/widgets/header')
 var ModRange = require('lib/params/mod-range')
 var ToggleButton = require('lib/params/toggle-button')
 var Select = require('lib/params/select')
+var QueryParam = require('lib/query-param')
 
 var filterChoices = [
   ['Lowpass', 'lowpass'],
@@ -10,8 +11,6 @@ var filterChoices = [
 ]
 
 module.exports = function renderDelay (node) {
-  var data = node()
-
   var isSyncing = node.sync()
 
   return h('ProcessorNode -delay', [
@@ -22,6 +21,12 @@ module.exports = function renderDelay (node) {
 
       ToggleButton(node.sync, {
         title: 'BPM Sync'
+      }),
+
+      ToggleButton(QueryParam(node, 'node'), {
+        title: 'Ping Pong',
+        onValue: 'processor/ping-pong-delay',
+        offValue: 'processor/delay'
       }),
 
       ModRange(node.time, {
@@ -40,7 +45,7 @@ module.exports = function renderDelay (node) {
 
       Select(node.filterType, {
         defaultValue: 'lowpass',
-        options: filterChoices 
+        options: filterChoices
       }),
 
       ModRange(node.cutoff, {
