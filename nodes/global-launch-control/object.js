@@ -167,8 +167,8 @@ function LaunchControl (context) {
       turnOffSuppressLight = this.light(127)
     } else if (lastSuppress) {
       lastSuppress()
-      turnOffSuppressLight()
-      lastSuppress = null
+      turnOffSuppressLight && turnOffSuppressLight()
+      turnOffSuppressLight = lastSuppress = null
     }
   })
   ///
