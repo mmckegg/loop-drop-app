@@ -56,16 +56,18 @@ function Setup(parentContext){
     context.triggerEvent = b
   })
 
-  node.onTrigger(function(event){
-    node.output.trigger()
-    var split = event.id.split('/')
-    var chunk = context.chunkLookup.get(split[0])
-    var slotId = split[1]
-    if (chunk){
-      if (event.event === 'start'){
-        chunk.triggerOn(slotId, event.time)
-      } else if (event.event === 'stop'){
-        chunk.triggerOff(slotId, event.time)
+  node.onTrigger(function (event) {
+    if (event.id) {
+      node.output.trigger()
+      var split = event.id.split('/')
+      var chunk = context.chunkLookup.get(split[0])
+      var slotId = split[1]
+      if (chunk){
+        if (event.event === 'start'){
+          chunk.triggerOn(slotId, event.time)
+        } else if (event.event === 'stop'){
+          chunk.triggerOff(slotId, event.time)
+        }
       }
     }
   })
