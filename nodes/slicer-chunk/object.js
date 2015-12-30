@@ -60,10 +60,13 @@ function SlicerChunk (parentContext) {
     }
   })
 
-  var computedSlots = computed([
+   obs.sample.resolvedBuffer(function (value) {
+     // without this everything breaks :( no idea why :(
+   })
+
+  var computedSlots = computedNextTick([
     obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.sample.resolvedBuffer
   ], function (sample, stretch, tempo, eq, volume, buffer) {
-
     var result = (sample.slices || []).map(function (offset, i) {
       if (stretch && buffer) {
 
