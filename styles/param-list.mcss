@@ -23,9 +23,11 @@ ParamList {
   }
 
   select {
-    flex: 1
     cursor: pointer
-    margin: 4px;
+    margin: 4px
+    -flex {
+      flex: 1
+    }
   }
 
   input {
