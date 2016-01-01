@@ -72,8 +72,9 @@ function renderParams(controller){
   return h('ParamList', params)
 }
 
-function renderLoopPosition(data){
+function renderLoopPosition (loopPosition) {
   var positionElements = []
+  var data = loopPosition()
 
   if (Array.isArray(data)){
     for (var i=0;i<data[1];i++){
