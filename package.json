@@ -57,7 +57,7 @@
     "observ-fs-audio-buffer": "~1.0.0",
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
-    "observ-midi": "~2.1.0",
+    "observ-midi": "~2.2.0",
     "observ-node-array": "~1.10.1",
     "observ-struct": "^6.0.0",
     "observ-varhash": "^1.0.6",
