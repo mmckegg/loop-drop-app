@@ -15,7 +15,7 @@ var controllerOptions = [
 ]
 
 module.exports = function(node){
-  if (node){
+  if (node) {
     var context = node.context
     var collection = context.collection
 
@@ -45,7 +45,7 @@ module.exports.getInvalidationArgs = function (node) {
   return [node.context.chunkLookup(), node.context.setup.selectedChunkId()]
 }
 
-function invoke(func){
+function invoke (func) {
   return func()
 }
 
@@ -58,18 +58,22 @@ function renderParams(controller){
     })
   ]
 
-  if (controller.port && controller.portChoices){
+  if (controller.port) {
     params.push(
-      Select(controller.port, {
-        options: controller.portChoices,
-        flex: true,
-        missingPrefix: ' (disconnected)',
-        includeBlank: "No Midi Device"
-      })
+      SubLoop([controller.port, controller.context.midiPorts], renderPortChoices)
     )
   }
 
   return h('ParamList', params)
+}
+
+function renderPortChoices (port, choices) {
+  return Select(port, {
+    options: choices,
+    flex: true,
+    missingPrefix: ' (disconnected)',
+    includeBlank: "No Midi Device"
+  })
 }
 
 function renderLoopPosition (loopPosition) {

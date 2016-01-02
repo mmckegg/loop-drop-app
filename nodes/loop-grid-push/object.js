@@ -19,7 +19,7 @@ var ObservStruct = require('observ-struct')
 var ObservMidi = require('observ-midi')
 var ObservGridStack = require('observ-grid-stack')
 var GrabGrid = require('lib/grab-grid')
-var ObservMidiPort = require('midi-port-holder')
+var MidiPort = require('lib/midi-port')
 var MidiButtons = require('observ-midi/light-stack')
 var watchButtons = require('lib/watch-buttons')
 
@@ -29,7 +29,6 @@ var ArrayGrid = require('array-grid')
 var DittyGridStream = require('lib/ditty-grid-stream')
 
 var computed = require('observ/computed')
-var computedPortNames = require('midi-port-holder/computed-port-names')
 
 var watch = require('observ/watch')
 var mapWatchDiff = require('lib/map-watch-diff-stack')
@@ -53,19 +52,20 @@ module.exports = function(context){
   var shiftHeld = false
 
   // controller midi port
-  var portHolder = ObservMidiPort()
-  var duplexPort = portHolder.stream
+  var midiPort = MidiPort(context, function (stream, lastStream) {
+    if (lastStream) turnOffAllLights(lastStream)
+    if (stream) {
+      turnOffAllLights(stream)
+      initDisplay()
+    }
+  })
 
   // Push display
-  var display = new PushDisplay(duplexPort);
-  turnOffAllLights();
-
-  duplexPort.on('switch', turnOffAllLights)
-  duplexPort.on('switching', turnOffAllLights)
+  var display = new PushDisplay(midiPort.stream)
 
   // extend loop-grid instance
   var obs = ObservStruct({
-    port: portHolder,
+    port: midiPort,
     loopLength: loopGrid.loopLength,
     chunkPositions: ObservVarhash({})
   })
@@ -82,7 +82,6 @@ module.exports = function(context){
   obs.context = context
   obs.playback = loopGrid
   obs.looper = looper
-  obs.portChoices = computedPortNames()
   obs.repeatLength = Observ(2)
 
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)
@@ -94,7 +93,7 @@ module.exports = function(context){
 
   // grab the midi for the current port
   obs.grabInput = function(){
-    portHolder.grab()
+    midiPort.grab()
   }
 
   // loop transforms
@@ -125,7 +124,7 @@ module.exports = function(context){
 
   ])
 
-  var controllerGrid = ObservMidi(duplexPort, gridMapping, outputLayers)
+  var controllerGrid = ObservMidi(midiPort.stream, gridMapping, outputLayers)
   var inputGrabber = GrabGrid(controllerGrid)
 
   var noRepeat = computeIndexesWhereContains(flags, 'noRepeat')
@@ -143,7 +142,7 @@ module.exports = function(context){
 
   // midi command button mapping
   // On Push this is the row right above the pads
-  var buttons = MidiButtons(duplexPort, {
+  var buttons = MidiButtons(midiPort.stream, {
     store: '176/102',
     flatten: '176/103',
     undo: '176/104',
@@ -319,7 +318,7 @@ module.exports = function(context){
   // })
 
   // Push top row buttons
-  var repeatButtons = MidiButtons(duplexPort, {
+  var repeatButtons = MidiButtons(midiPort.stream, {
     0: '176/20',
     1: '176/21',
     2: '176/22',
@@ -375,9 +374,8 @@ module.exports = function(context){
   // cleanup / disconnect from keyboard on destroy
 
   obs.destroy = function(){
-    turnOffAllLights()
+    midiPort.destroy()
     display.init()
-    portHolder.destroy()
     output.destroy()
     loopGrid.destroy()
   }
@@ -420,7 +418,7 @@ module.exports = function(context){
     display.update();
   }
 
-  function turnOffAllLights(){
+  function turnOffAllLights (port) {
     var LOW_PAD = 36, // Bottom left
         HI_PAD = 99,  // Top Right
         LOW_REPEAT = 10,
@@ -430,22 +428,19 @@ module.exports = function(context){
 
     // Clear notes
     for (var pad = LOW_PAD; pad <= HI_PAD; pad++) {
-      duplexPort.write([128, pad, 0]);
+      port.write([128, pad, 0]);
     }
 
     // Clear repeat buttons
     for (var button = LOW_REPEAT; button <= HI_REPEAT; button++) {
-      duplexPort.write([176, button, 0]);
+      port.write([176, button, 0]);
     }
 
     // Clear buttons
     for (var button = LOW_BUTTON; button <= HI_BUTTON; button++) {
-      duplexPort.write([176, button, 0]);
+      port.write([176, button, 0]);
     }
-
-    initDisplay();
   }
-
 }
 
 function round(value, dp){
