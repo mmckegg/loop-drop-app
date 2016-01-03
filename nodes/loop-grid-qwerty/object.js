@@ -23,7 +23,6 @@ var watchStruct = require('lib/watch-struct')
 var setMappedValue = require('lib/set-mapped-value')
 
 var DittyGridStream = require('lib/ditty-grid-stream')
-var convertKeyCode = require('keycode')
 
 var InputStack = require('./input-stack.js')
 var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8, 3/4, 0]
@@ -103,13 +102,13 @@ function LoopQwerty (context) {
   }
 
   var buttons = ObservKeys(keysDown, {
-    store: 'space',
-    flatten: 'backspace',
-    undo: '-',
-    redo: '=',
-    hold: 'shift',
-    halve: '[',
-    double: ']'
+    store: 'Space',
+    flatten: ['Backquote', 'Backspace'],
+    undo: 'Minus',
+    redo: 'Equal',
+    hold: ['ShiftLeft', 'ShiftRight'],
+    halve: 'BracketLeft',
+    double: 'BracketRight'
   })
 
   watchStruct(buttons, {
@@ -171,8 +170,8 @@ function LoopQwerty (context) {
   })
 
   var repeatButtons = ObservKeys(keysDown, {
-    0: '1', 1: '2', 2: '3', 3: '4', 4: '5',
-    5: '6', 6: '7', 7: '8', 8: '9', 9: '0'
+    0: 'Digit1', 1: 'Digit2', 2: 'Digit3', 3: 'Digit4', 4: 'Digit5',
+    5: 'Digit6', 6: 'Digit7', 7: 'Digit8', 8: 'Digit9', 9: 'Digit0'
   })
 
   // repeater
@@ -197,7 +196,7 @@ function LoopQwerty (context) {
   return obs
 }
 
-function KeyboardGrid(obs, mapping){
+function KeyboardGrid (obs, mapping) {
   var result = ObservGrid([], mapping.shape)
 
   watch(obs, function(value){
@@ -213,8 +212,12 @@ function KeyboardGrid(obs, mapping){
   return result
 }
 
-function getGridMapping(){
-  var result = "qwertyuiopasdfghjkl;zxcvbnm,./".split('').map(convertKeyCode)
+function getGridMapping () {
+  var result = [
+    'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP',
+    'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon',
+    'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash'
+  ]
   return ArrayGrid(result, [3, 10])
 }
 

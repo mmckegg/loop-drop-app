@@ -18,16 +18,10 @@ var renderNode = require('lib/render-node')
 
 var MidiStream = require('web-midi')
 var PeriodicWaves = require('lib/periodic-waves')
-var watchKeyboardLayout = require('lib/watch-keyboard-layout')
 
 // apply css styles
 insertCss(require('./styles'))
 frame.setZoomLevelLimits(1, 1)
-
-// keyboard layout
-var keyboardLayout = Observ()
-keyboardLayout(function (value) { console.log('Keyboard: ' + value) })
-watchKeyboardLayout(keyboardLayout.set)
 
 // midi ports
 var midiPorts = Observ()
@@ -46,7 +40,6 @@ var rootContext = window.rootContext = {
   fs: fs,
   audio: audioContext,
   periodicWaves: PeriodicWaves(audioContext),
-  keyboardLayout: keyboardLayout,
   midiPorts: midiPorts,
   nodes: nodes.objectLookup,
   nodeInfo: nodes,

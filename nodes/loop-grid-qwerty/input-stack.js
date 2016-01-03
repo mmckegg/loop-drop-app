@@ -13,7 +13,7 @@ function InputStack(){
     var input = this
     var index = stack.indexOf(input)
     if (!stack.length || index < stack.length - 1){
-      
+
       release&&release()
 
       if (stack.length){
@@ -86,10 +86,10 @@ function InputStack(){
     var el = document.activeElement
     if (stack.length) {
       if (!el || (!shouldIgnore(el) && el.contentEditable !== 'true')){
-        if ((e.keyCode === 9 || e.keyCode === 13) && e.type === 'keydown') { // tab or enter
+        if ((e.code === 'Tab' || e.code === 'Enter') && e.type === 'keydown') { // tab or enter
           e.preventDefault()
           next()
-        } else if (e.keyCode === 18) { // alt
+        } else if (e.code === 'AltLeft' || e.code === 'AltRight') { // alt
           e.preventDefault()
           swap()
         }
@@ -113,22 +113,22 @@ function InputStack(){
 
 
 function shouldIgnore(el){
-  return (el.nodeName === 'INPUT' && el.type !== 'range' && el.type !== 'checkbox') || 
+  return (el.nodeName === 'INPUT' && el.type !== 'range' && el.type !== 'checkbox') ||
           el.nodeName === 'TEXTAREA'
 }
 
-function KeysDown(){
+function KeysDown () {
 
   var obs = Observ([])
 
-  function handleEvent(e){
+  function handleEvent (e) {
     var el = document.activeElement
     if (!el || (!shouldIgnore(el) && el.contentEditable !== 'true')){
-      var index = obs().indexOf(e.keyCode)
+      var index = obs().indexOf(e.code)
       if (e.type === 'keydown'){
         if (!~index){
           var val = obs().concat()
-          val.push(e.keyCode)
+          val.push(e.code)
           obs.set(val)
           e.preventDefault()
         }

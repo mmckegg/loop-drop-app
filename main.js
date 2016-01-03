@@ -135,6 +135,7 @@ function loadProject(path) {
     acceptFirstMouse: true,
     show: false,
     webPreferences: {
+      experimentalFeatures: true,
       pageVisibility: true
     }
   })
