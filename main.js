@@ -132,8 +132,11 @@ function loadProject(path) {
     width: 1400,
     height: 900,
     title: path + ' — Loop Drop',
-    'accept-first-mouse': true,
-    show: false
+    acceptFirstMouse: true,
+    show: false,
+    webPreferences: {
+      pageVisibility: true
+    }
   })
 
   mainWindow.webContents.on('did-finish-load', function() {
