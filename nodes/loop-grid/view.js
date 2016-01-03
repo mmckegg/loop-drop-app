@@ -8,12 +8,6 @@ var QueryParam = require('lib/query-param')
 
 var renderGrid = require('./grid.js')
 
-var controllerOptions = [
-  ['Qwerty Keyboard', 'controller/qwerty'],
-  ['Novation Launchpad', 'controller/launchpad'],
-  ['Ableton Push', 'controller/push']
-]
-
 module.exports = function(node){
   if (node) {
     var context = node.context
@@ -49,7 +43,11 @@ function invoke (func) {
   return func()
 }
 
-function renderParams(controller){
+function renderParams (controller) {
+  var spawners = controller.context.nodeInfo.groupLookup['loop-grids']
+  var controllerOptions = spawners.map(function (info) {
+    return [info.name, info.node]
+  })
   var params = [
     Select(QueryParam(controller, 'node'), {
       options: controllerOptions,

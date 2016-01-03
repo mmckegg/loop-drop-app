@@ -10,16 +10,9 @@ var Range = require('lib/params/range')
 var rename = require('lib/rename-hook').rename
 var extend = require('xtend')
 
-var controllerSpawners = [
-  { name: 'Launchpad', node: 'controller/launchpad' },
-  { name: 'Qwerty Keys', node: 'controller/qwerty' },
-  { name: 'Ableton Push', node: 'controller/push' },
-]
-
 module.exports = renderSetup
 
-function renderSetup(setup){
-
+function renderSetup (setup) {
   var chunkSpawners = [].concat(
     setup.context.nodeInfo.groupLookup.chunks,
     setup.context.nodeInfo.groupLookup.modifierChunks
@@ -32,7 +25,8 @@ function renderSetup(setup){
         h('h1', 'Controllers'),
         Collection(setup.controllers),
         Spawner(setup.controllers, {
-          nodes: controllerSpawners
+          nodes: setup.context.nodeInfo.groupLookup['loop-grids'],
+          onSpawn: handleControllerSpawn
         })
       ]),
 
@@ -87,9 +81,42 @@ function renderScaleChooser(scale){
   ])
 }
 
+function handleControllerSpawn (node) {
+  assignAvailablePort(node)
+}
+
 function handleChunkSpawn (chunk) {
   setTimeout(function () {
     rename(chunk)
   }, 100)
   chunk.context.setup.selectedChunkId.set(chunk().id)
+}
+
+function assignAvailablePort (node) {
+  var nodeInfo = node.context.nodeInfo.lookup[node().node]
+  if (nodeInfo && node.port && nodeInfo.portMatch) {
+    var availablePorts = node.context.midiPorts().filter(function (name) {
+      return nodeInfo.portMatch.exec(name)
+    })
+
+    var usedPorts = node.context.collection.map(function (controller) {
+      return controller.port && controller.port()
+    }).filter(function (name) {
+      return availablePorts.includes(name)
+    })
+
+    var portName = getRarest(availablePorts.concat(usedPorts))
+    node.port.set(portName)
+  }
+}
+
+function getRarest (array) {
+  var ranked = array.reduce(function (result, item) {
+    result[item] = (result[item] || 0) + 1
+    return result
+  }, {})
+
+  return Object.keys(ranked).sort(function (a, b) {
+    return ranked[a] - ranked[b]
+  })[0]
 }
