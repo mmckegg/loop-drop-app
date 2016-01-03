@@ -17,11 +17,15 @@ function TabbedEditor(project){
   var data = project()
   var fileObject = getItem(project)
 
-  var editor = (data.rawMode && fileObject) ?
-    rawEditor(fileObject) :
-    fileObject ? 
-      renderEditor(fileObject) :
-      renderHelper()
+  var tabs = project.items._list.map(function (item) {
+    var tab = (data.rawMode && item)
+      ? rawEditor(item)
+      : renderEditor(item)
+    return h('div.tab', {
+      key: item.path,
+      className: fileObject === item ? '-active' : ''
+    }, tab)
+  })
 
   var controls = h('span.controls', [
     ToggleButton(project.rawMode, {
@@ -38,11 +42,11 @@ function TabbedEditor(project){
         ['150%', 1.5]
       ]
     })
-  ]) 
+  ])
 
   return h('TabbedEditor', [
     h('header', [project.items._list.map(renderTab, project), controls]),
-    editor
+    tabs.length ? tabs : renderHelper()
   ])
 }
 
@@ -53,11 +57,11 @@ function renderTab(item){
   var data = item&&item()
   if (data){
     var selected = project.selected() == item.path
-    return h('div.tab', { 
+    return h('div.tab', {
       'ev-click': send(project.selected.set, item.path),
       'className': selected ? '-selected' : null
     }, [
-      h('span', [getName(item.path)]), 
+      h('span', [getName(item.path)]),
       h('button.close', {'ev-click': send(actions.closeFile, item.path)})
     ])
   } else {

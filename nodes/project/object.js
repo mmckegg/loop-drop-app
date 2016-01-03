@@ -267,7 +267,7 @@ function Project (parentContext) {
     scrollToSelectedChunk: function() {
       clearTimeout(chunkScroller)
       chunkScroller = setTimeout(function(){
-        var el = document.querySelector('.ExternalNode.-selected')
+        var el = document.querySelector('.-active .ExternalNode.-selected')
         if (el) {
           scrollIntoView(el, { time: 200 })
         }

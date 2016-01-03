@@ -73,6 +73,16 @@ TabbedEditor {
     }
   }
 
+  div.tab {
+    display: none
+    -active {
+      display: flex
+    }
+    div {
+      flex: 1
+    }
+  }
+
   div {
     flex: 1
     overflow: hidden
@@ -83,6 +93,7 @@ TabbedEditor {
     border-bottom-left-radius: 3px
     border-bottom-right-radius: 3px
   }
+
 
   @svg close {
     content: "<path d='M0,0 8,8 M0,8 8,0 '/>"
