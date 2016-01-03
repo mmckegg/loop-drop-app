@@ -3,6 +3,7 @@ var ObservMidi = require('observ-midi')
 var Observ = require('observ')
 var ObservArray = require('observ-array')
 var computed = require('observ/computed')
+var MidiPort = require('lib/midi-port')
 
 var ArrayStack = require('lib/array-stack')
 var FlashArray = require('lib/flash-array')
@@ -16,19 +17,24 @@ var throttle = require('throttle-observ')
 module.exports = LaunchControl
 
 function LaunchControl (context) {
-  var obs = ObservStruct({})
+  var midiPort = MidiPort(context)
+  midiPort.set('Launch Control')
+
+  var obs = ObservStruct({
+    //port: midiPort
+  })
+
+  var releases = []
 
   var project = context.project
-  var port = context.midiPorts.open('Launch Control', {
-    normalizeNotes: true
-  })
-
-  port.on('error', function (err) {
-    // can't connect
-  })
-
   var setups = ObservArray([])
-  project.items.onLoad(function (item) {
+
+  releases.push(project.items.onLoad(addItem))
+  setImmediate(function () {
+    project.items.forEach(addItem)
+  })
+
+  function addItem (item) {
     if (item.node._type === 'LoopDropSetup') {
       for (var i = 0; i <= setups._list.length; i++) {
         if (!setups._list[i]) {
@@ -40,12 +46,12 @@ function LaunchControl (context) {
         }
       }
     }
-  })
+  }
 
   var onTrigger = AnyTrigger(setups)
 
   // FIRST ROW OF KNOBS:
-  var knobs = ObservMidi(port, {
+  var knobs = ObservMidi(midiPort.stream, {
     tempo: '184/21',
     swing: '184/22',
     param3: '184/23',
@@ -86,7 +92,7 @@ function LaunchControl (context) {
 
 
   // SECOND ROW OF KNOBS:
-  var volumes = ObservMidi(port, [
+  var volumes = ObservMidi(midiPort.stream, [
     '184/41',
     '184/42',
     '184/43',
@@ -114,7 +120,7 @@ function LaunchControl (context) {
 
 
   // CONTROL BUTTONS:
-  var controlButtons = LightStack(port, {
+  var controlButtons = LightStack(midiPort.stream, {
     clearOthers: '184/115',
     suppressOthers: '184/114',
     tap: '152/28',
@@ -137,7 +143,7 @@ function LaunchControl (context) {
       controlButtons.nudgeLeft.turnOff = controlButtons.nudgeLeft.light(127)
       project.speed.set(0.95)
     } else {
-      controlButtons.nudgeLeft.turnOff()
+      controlButtons.nudgeLeft.turnOff && controlButtons.nudgeLeft.turnOff()
       project.speed.set(1)
     }
   })
@@ -147,7 +153,7 @@ function LaunchControl (context) {
       controlButtons.nudgeRight.turnOff = controlButtons.nudgeRight.light(127)
       project.speed.set(1.05)
     } else {
-      controlButtons.nudgeRight.turnOff()
+      controlButtons.nudgeRight.turnOff && controlButtons.nudgeRight.turnOff()
       project.speed.set(1)
     }
   })
@@ -205,7 +211,7 @@ function LaunchControl (context) {
     }
   })
 
-  var buttons = ObservMidi(port, [
+  var buttons = ObservMidi(midiPort.stream, [
     '152/9',
     '152/10',
     '152/11',
@@ -237,7 +243,11 @@ function LaunchControl (context) {
   })
 
   obs.destroy = function () {
-    port.close()
+    setups.set([])
+    while (releases.length) {
+      releases.pop()()
+    }
+    midiPort.destroy()
     params.forEach(function(param) {
       context.paramLookup.delete(param.id())
     })
