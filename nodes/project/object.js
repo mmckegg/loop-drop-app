@@ -291,7 +291,7 @@ function Project (parentContext) {
       var object = FileObject(context)
 
       // HACK: avoid audio glitches by scheduling 1 second ahead
-      //scheduler.schedule(0.3)
+      scheduler.schedule(1)
 
       object.onLoad(function () {
 
