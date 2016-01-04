@@ -8,6 +8,7 @@ var getDirName = require('path').dirname
 var getBaseName = require('path').basename
 var join = require('path').join
 var relative = require('path').relative
+var updateParamReferences = require('lib/update-param-references')
 
 var map = require('observ-node-array/map')
 var lookup = require('observ-node-array/lookup')
@@ -230,24 +231,5 @@ function updateRouteReferences (chunk, oldId, newId) {
         }
       }
     })
-  }
-}
-
-function updateParamReferences(node, oldId, newId){
-  var changed = false
-  var result = JSON.stringify(node(), function(key, value){
-    if (value && value.node === 'linkParam' && value.param === oldId){
-      changed = true
-      if (newId) {
-        value.param = newId
-      } else {
-        return value.minValue
-      }
-    }
-    return value
-  })
-
-  if (changed){
-    node.set(JSON.parse(result))
   }
 }
