@@ -26,6 +26,7 @@ var join = require('path').join
 var extend = require('xtend')
 var resolve = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
+var gainToDecibels = require('decibels/from-gain')
 
 var copyFile = require('lib/copy-file')
 var rimraf = require('rimraf')
@@ -74,7 +75,11 @@ function Project (parentContext) {
   obs.entries = ObservDirectory(context.cwd, context.fs)
   obs.recordingEntries = ObservDirectory(resolve(context.cwd, '~recordings'), context.fs)
   obs.subEntries = ObservVarhash({})
-  obs.outputRms = StreamObserv(masterOutput.rms)
+
+  obs.outputRms = Observ()
+  masterOutput.rms.on('data', function (value) {
+    obs.outputRms.set(value.map(gainToDecibels))
+  })
 
   // recording
   var recorder = SessionRecorder(context)

@@ -24,7 +24,7 @@
     "async-debounce": "0.0.0",
     "audio-buffer-range-decoder": "~1.1.1",
     "audio-buffer-stream": "^1.1.0",
-    "audio-rms": "^1.1.0",
+    "audio-rms": "~2.0.0",
     "audio-slot": "~4.8.0",
     "audio-slot-param": "~1.1",
     "audio-timeline": "~1.2.0",

@@ -5,7 +5,7 @@ var AudioMeter = require('lib/widgets/audio-meter')
 var Range = require('lib/params/range')
 var ToggleButton = require('lib/params/toggle-button')
 
-var audioMeterOptions = {red: 1, amber: 0.9, min: 0, max: 1.3, steps: 60}
+var audioMeterOptions = {red: 0, amber: -10, min: -40, max: 5, steps: 60}
 
 var renderBrowser = require('./browser')
 var renderEditor = require('./tabbed-editor')
@@ -23,8 +23,8 @@ module.exports = function(project) {
         h('ModParam -value -flex', [
           h('div.param -noDrop', [
             Range(project.tempo, {
-              large: true, 
-              format: 'bpm', 
+              large: true,
+              format: 'bpm',
               flex: true,
               defaultValue: 120
             }),
