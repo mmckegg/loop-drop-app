@@ -5,12 +5,13 @@ var applyParams = require('lib/apply-params')
 var BaseChunk = require('lib/base-chunk')
 var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
+var ObservStruct = require('observ-struct')
 
 module.exports = TriggersChunk
 
 function TriggersChunk (parentContext) {
   var context = Object.create(parentContext)
-  var output = context.output = context.audio.createGain()
+  context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
   var slots = NodeArray(context)
@@ -33,7 +34,11 @@ function TriggersChunk (parentContext) {
   obs.output = context.output
   slots.onUpdate(obs.routes.reconnect)
 
-  obs.destroy = function(){
+  obs.resolved = ObservStruct({
+    slotLookup: context.slotLookup
+  })
+
+  obs.destroy = function () {
     obs.routes.destroy()
   }
 

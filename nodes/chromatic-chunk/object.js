@@ -13,8 +13,6 @@ var computed = require('observ/computed')
 var lookup = require('observ-node-array/lookup')
 var merge = require('observ-node-array/merge')
 var watch = require('observ/watch')
-var nextTick = require('next-tick')
-var deepEqual = require('deep-equal')
 var ExternalRouter = require('lib/external-router')
 
 var Param = require('audio-slot-param')
@@ -23,7 +21,6 @@ var applyParams = require('lib/apply-params')
 module.exports = ChromaticChunk
 
 function ChromaticChunk (parentContext) {
-
   var context = Object.create(parentContext)
 
   var output = context.output = context.audio.createGain()
@@ -119,6 +116,7 @@ function ChromaticChunk (parentContext) {
 
   computedSlots(scaleSlots.set)
 
+
   obs.triggerOn = function(id, at){
     var slot = context.slotLookup.get(id)
 
@@ -151,6 +149,10 @@ function ChromaticChunk (parentContext) {
       result.push(String(i))
     }
     return result
+  })
+
+  obs.resolved = ObservStruct({
+    slotLookup: context.slotLookup
   })
 
   obs.grid = computed([obs.triggers, obs.shape], ArrayGrid)
