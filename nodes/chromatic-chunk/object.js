@@ -61,6 +61,8 @@ function ChromaticChunk (parentContext) {
     selectedSlotId: Observ()
   })
 
+  obs.params.context = context
+
   if (context.setup) {
     obs.selected = computed([obs.id, context.setup.selectedChunkId], function (id, selectedId) {
       return id === selectedId
