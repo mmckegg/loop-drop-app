@@ -40,6 +40,10 @@ function MeddlerChunk (parentContext) {
     selectedSlotId: Property()
   })
 
+  obs.resolved = Struct({
+    slotLookup: context.slotLookup
+  })
+
   var chainScheduler = ChainScheduler(context, 'input')
   extraSlots.put('input', chainScheduler)
 
