@@ -9,6 +9,7 @@ Written in **JavaScript** and powered by [Web Audio](https://developer.mozilla.o
 
 - [Watch a video of Loop Drop in action](https://www.youtube.com/watch?v=EBkmdNDIR6E)
 - [Visit the website](http://loopjs.com)
+- [Listen to music created with Loop Drop!](https://soundcloud.com/destroy-with-science)
 
 #### Create sounds and load samples
 
