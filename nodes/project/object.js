@@ -91,7 +91,7 @@ function Project (parentContext) {
     var controllers = context.nodeInfo.groupLookup['global-controllers']
     if (controllers) {
       controllers.forEach(function (info) {
-        if (info.portMatch && matchAny(portNames, info.portMatch)) {
+        if (!info.portMatch || matchAny(portNames, info.portMatch)) {
           result.push({
             name: info.name,
             node: info.node
