@@ -41,6 +41,17 @@ $ npm install
 $ npm start
 ```
 
+### When running on Windows
+
+If you receive an error on start up about missing `lib/*`, you may have to [run the following as administrator](http://www.howtogeek.com/howto/windows-vista/run-a-command-as-administrator-from-the-windows-vista-run-box/):
+
+```bash
+# run admin
+$ node scripts/link-lib.js
+```
+
+If it still doesn't work, try copying the `/lib` folder into `/node_modules`.
+
 ### Installing updates
 
 New versions are being pushed out all the time. To update:
