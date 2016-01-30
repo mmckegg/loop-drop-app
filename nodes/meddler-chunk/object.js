@@ -40,6 +40,8 @@ function MeddlerChunk (parentContext) {
     selectedSlotId: Property()
   })
 
+  obs.params.context = context
+
   obs.resolved = Struct({
     slotLookup: context.slotLookup
   })

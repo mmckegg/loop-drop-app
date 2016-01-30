@@ -30,6 +30,7 @@ function TriggersChunk (parentContext) {
   })
 
   context.chunk = obs
+  obs.params.context = context
 
   obs.output = context.output
   slots.onUpdate(obs.routes.reconnect)
