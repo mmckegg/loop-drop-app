@@ -82,6 +82,9 @@ function SlicerChunk (parentContext) {
             extend(sample, {
               node: 'source/granular',
               mode: 'oneshot',
+              attack: 0.1,
+              hold: 1,
+              release: 0.1,
               duration: stretchedDuration,
               sync: true,
               offset: offset
