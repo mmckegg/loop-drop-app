@@ -91,10 +91,12 @@ function Project (parentContext) {
     var controllers = context.nodeInfo.groupLookup['global-controllers']
     if (controllers) {
       controllers.forEach(function (info) {
-        if (!info.portMatch || matchAny(portNames, info.portMatch)) {
+        var port = findMatch(portNames, info.portMatch)
+        if (!info.portMatch || port) {
           result.push({
             name: info.name,
-            node: info.node
+            node: info.node,
+            port: port
           })
         }
       })
@@ -382,8 +384,8 @@ function copyExternalFilesTo (fs, path, target) {
   })
 }
 
-function matchAny (array, match) {
-  return Array.isArray(array) && match && array.some(function (value) {
+function findMatch (array, match) {
+  return Array.isArray(array) && match && array.filter(function (value) {
     return match.exec(value)
-  })
+  })[0]
 }

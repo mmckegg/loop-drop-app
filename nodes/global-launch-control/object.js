@@ -18,10 +18,9 @@ module.exports = LaunchControl
 
 function LaunchControl (context) {
   var midiPort = MidiPort(context)
-  midiPort.set('Launch Control')
 
   var obs = ObservStruct({
-    //port: midiPort
+    port: midiPort
   })
 
   var releases = []
