@@ -167,7 +167,7 @@ function SlicerChunk (parentContext) {
 
 function EQ (context) {
   return Struct({
-    lowcut: Param(context, 0),
+    lowcut: Param(context, 20),
     highcut: Param(context, 20000),
     low: Param(context, 0),
     mid: Param(context, 0),
