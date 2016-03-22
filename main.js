@@ -65,32 +65,31 @@ function chooseProject() {
   }
 
   if (welcomeWindow) {
-    welcomeWindow.close()
-  }
-
-
-  welcomeWindow = new BrowserWindow({
-    title: 'Choose Project',
-    'accept-first-mouse': true,
-    width: 500,
-    height: 550,
-    show: false
-  })
-
-  welcomeWindow.webContents.on('did-finish-load', function() {
     welcomeWindow.show()
-  })
+  } else {
+    welcomeWindow = new BrowserWindow({
+      title: 'Choose Project',
+      'accept-first-mouse': true,
+      width: 500,
+      height: 550,
+      show: false
+    })
 
-  welcomeWindow.webContents.on('will-navigate', function(e, url) {
-    e.preventDefault()
-    Shell.openExternal(url)
-  })
+    welcomeWindow.webContents.on('did-finish-load', function () {
+      welcomeWindow.show()
+    })
 
-  welcomeWindow.loadURL('file://' + __dirname + '/views/welcome.html')
+    welcomeWindow.webContents.on('will-navigate', function (e, url) {
+      e.preventDefault()
+      Shell.openExternal(url)
+    })
 
-  welcomeWindow.on('closed', function() {
-    welcomeWindow = null
-  })
+    welcomeWindow.loadURL('file://' + __dirname + '/views/welcome.html')
+
+    welcomeWindow.on('closed', function () {
+      welcomeWindow = null
+    })
+  }
 }
 
 function createProject(path) {
@@ -123,7 +122,7 @@ function loadProject(path) {
   }
 
   if (welcomeWindow) {
-    welcomeWindow.close()
+    welcomeWindow.hide()
   }
 
   currentProject = path
