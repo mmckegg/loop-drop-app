@@ -23,13 +23,14 @@ var getDirectory = require('path').dirname
 var getExt = require('path').extname
 var getBaseName = require('path').basename
 var join = require('path').join
+var pathSep = require('path').sep
 var extend = require('xtend')
 var resolve = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
 var gainToDecibels = require('decibels/from-gain')
 
 var copyFile = require('lib/copy-file')
-var rimraf = require('rimraf')
+var moveItemToTrash = require('electron').shell.moveItemToTrash
 
 var scrollIntoView = require('scroll-into-view')
 
@@ -221,9 +222,12 @@ function Project (parentContext) {
 
     },
 
-    deleteEntry: function (path, cb) {
-      rimraf(path, context.fs, cb || function(err) {
-        if (err) throw err
+    deleteEntry: function (path) {
+      moveItemToTrash(path)
+      obs.items.filter(function (item) {
+        return item.path && (item.path === path || item.path.startsWith(path + pathSep))
+      }).forEach(function (item) {
+        item.close()
       })
     },
 
