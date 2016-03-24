@@ -42,7 +42,7 @@
     "hyperscript": "^1.4.6",
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
-    "loop-grid": "~5.1.1",
+    "loop-grid": "~6.0.0",
     "main-loop": "~3.1.0",
     "micro-css": "~0.6.1",
     "mkdirp": "^0.5.0",
