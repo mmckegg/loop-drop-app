@@ -260,7 +260,7 @@ function LaunchControl (context) {
     var releases = []
 
     setups.forEach(function (item) {
-      if (item.path !== project.selected()) {
+      if (item && item.path !== project.selected()) {
         if (item.node && item.node.controllers) {
           item.node.controllers.forEach(function (controller) {
             if (controller.looper) {
