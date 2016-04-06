@@ -111,3 +111,7 @@ https://www.youtube.com/watch?v=2oVcNaDpPz0
 - [observ-fs](https://github.com/mmckegg/observ-fs)
 - [observ-midi](https://github.com/mmckegg/observ-midi)
 - [electron](https://github.com/atom/electron)
+
+## License
+
+[AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)

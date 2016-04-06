@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/mmckegg/loop-drop-app.git"
   },
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "scripts": {
     "start": "node scripts/start",
     "postinstall": "node scripts/link-lib"
