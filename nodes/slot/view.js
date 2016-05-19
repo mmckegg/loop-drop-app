@@ -5,12 +5,14 @@ var Range = require('lib/params/range')
 
 module.exports = function renderSlot (node) {
   return h('AudioSlot', [
-    
+
     checkIsTrigger(node) ? h('section', [
       h('h1', 'Sources'),
       Collection(node.sources),
       Spawner(node.sources, {
-        nodes: node.context.nodeInfo.groupLookup.sources
+        nodes: node.context.nodeInfo.groupLookup.sources.concat(
+          node.context.nodeInfo.groupLookup.drumSources
+        )
       }),
     ]) : null,
 
@@ -25,9 +27,9 @@ module.exports = function renderSlot (node) {
     h('section.options', [
       h('h1', 'Output'),
       Range(node.volume, {
-        title: 'volume', 
-        flex: true, 
-        defaultValue: 1, 
+        title: 'volume',
+        flex: true,
+        defaultValue: 1,
         format: 'dB'
       })
     ]),
