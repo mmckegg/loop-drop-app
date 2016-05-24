@@ -10,6 +10,7 @@ Written in **JavaScript** and powered by [Web Audio](https://developer.mozilla.o
 - [Watch a video of Loop Drop in action](https://www.youtube.com/watch?v=EBkmdNDIR6E)
 - [Visit the website](http://loopjs.com)
 - [Listen to music created with Loop Drop!](https://soundcloud.com/destroy-with-science)
+- [Support this project on Patreon](https://www.patreon.com/MattMcKegg) 💖
 
 #### Create sounds and load samples
 
@@ -28,7 +29,7 @@ Use beat repeat and hold down buttons to trigger at different rates relative to 
 Select, move, repeat, suppress. All using your hardware controller.
 
 
-## Buy the app and get help at [loopjs.com](http://loopjs.com)
+## Download the app and get help at [loopjs.com](http://loopjs.com)
 
 [![](http://loopjs.com/loop-drop-with-launchpads.jpg)](http://loopjs.com)
 
