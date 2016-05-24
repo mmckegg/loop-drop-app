@@ -1,8 +1,8 @@
 module.exports = {
-  name: 'Launchpad Mini',
+  name: 'Launchpad',
   group: 'loop-grids',
-  portMatch: /^Launchpad(?! (Pro|MK2))/,
-  node: 'controller/launchpad',
+  portMatch: /^Launchpad (MK2|Pro)/,
+  node: 'controller/launchpad-mk2',
   render: require('../loop-grid/view'),
   object: require('./object')
 }
