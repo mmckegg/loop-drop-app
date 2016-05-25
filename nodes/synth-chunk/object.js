@@ -41,6 +41,12 @@ function SynthChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'})
   })
 
+  obs.overrideVolume = Property(1)
+
+  var volume = computed([volume, obs.overrideVolume], function (a, b) {
+    return a * b
+  })
+
   context.offset = obs.offset
 
   obs.amp.triggerable = true
@@ -55,7 +61,7 @@ function SynthChunk (parentContext) {
   }
 
   var computedSlots = computed([
-    obs.shape, obs.osc1, obs.osc2, obs.osc3, obs.filter, obs.amp, obs.eq, obs.volume, scale
+    obs.shape, obs.osc1, obs.osc2, obs.osc3, obs.filter, obs.amp, obs.eq, volume, scale
   ], function (shape, osc1, osc2, osc3, filter, amp, eq, volume, scale) {
     var length = shape[0] * shape[1]
 

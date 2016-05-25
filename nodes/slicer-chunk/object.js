@@ -43,6 +43,12 @@ function SlicerChunk (parentContext) {
     volume: Property(1)
   })
 
+  obs.overrideVolume = Property(1)
+
+  var volume = computed([volume, obs.overrideVolume], function (a, b) {
+    return a * b
+  })
+
   var watchApplied = obs.sample.resolvedBuffer(function (value) {
     if (value) {
       watchApplied()
@@ -65,7 +71,7 @@ function SlicerChunk (parentContext) {
    })
 
   var computedSlots = computedNextTick([
-    obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.sample.resolvedBuffer
+    obs.sample, obs.stretch, obs.tempo, obs.eq, volume, obs.sample.resolvedBuffer
   ], function (sample, stretch, tempo, eq, volume, buffer) {
     var result = (sample.slices || []).map(function (offset, i) {
       if (stretch && buffer) {

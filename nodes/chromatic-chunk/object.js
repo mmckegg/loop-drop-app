@@ -34,6 +34,8 @@ function ChromaticChunk (parentContext) {
   }
 
   var volume = Property(1)
+  var overrideVolume = Property(1)
+
   var obs = ObservStruct({
     id: Observ(),
     shape: Property([1,4]),
@@ -51,13 +53,14 @@ function ChromaticChunk (parentContext) {
     params: Property([]),
     paramValues: NodeVarhash(parentContext),
 
-    routes: ExternalRouter(context, {output: '$default'}, volume),
+    routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply)),
     flags: Property([]),
     chokeAll: Property(false),
     color: Property([255,255,255]),
     selectedSlotId: Observ()
   })
 
+  obs.overrideVolume = overrideVolume
   obs.params.context = context
 
   if (context.setup) {
@@ -221,4 +224,8 @@ function getNote (scale, offset) {
   var position = mod(offset, scale.length)
   var multiplier = Math.floor(offset/scale.length)
   return scale[position] + multiplier * 12
+}
+
+function multiply (a, b) {
+  return a * b
 }

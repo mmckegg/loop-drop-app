@@ -28,11 +28,13 @@ function MeddlerChunk (parentContext) {
   ])
 
   var volume = Property(1)
+  var overrideVolume = Property(1)
+
   var obs = BaseChunk(context, {
     slots: slots,
     inputs: Property(['input']),
     outputs: Property(['output']),
-    routes: ExternalRouter(context, {output: '$default'}, volume),
+    routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply)),
     params: Property([]),
     volume: volume,
     color: Property([255,255,0]),
@@ -40,6 +42,7 @@ function MeddlerChunk (parentContext) {
     selectedSlotId: Property()
   })
 
+  obs.overrideVolume = overrideVolume
   obs.params.context = context
 
   obs.resolved = Struct({
@@ -89,4 +92,8 @@ function MeddlerChunk (parentContext) {
 
 function not (value) {
   return this.value !== value
+}
+
+function multiply (a, b) {
+  return a * b
 }
