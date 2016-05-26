@@ -43,7 +43,7 @@ function SynthChunk (parentContext) {
 
   obs.overrideVolume = Property(1)
 
-  var volume = computed([volume, obs.overrideVolume], function (a, b) {
+  var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
     return a * b
   })
 
@@ -134,7 +134,7 @@ function SynthChunk (parentContext) {
   //  obs.shape.set(obs.shape())
   //})
 
-  slots.onUpdate(obs.routes.reconnect)
+  slots.onUpdate(obs.routes.refresh)
 
   obs.destroy = function(){
     obs.routes.destroy()
