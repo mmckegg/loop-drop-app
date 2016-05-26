@@ -37,6 +37,10 @@ function Setup(parentContext){
     })
   })
 
+  node.overrideVolume = Property(1)
+  node.overrideLowPass = Property(0)
+  node.overrideHighPass = Property(0)
+
   node._type = 'LoopDropSetup'
 
   context.setup = node
@@ -44,13 +48,31 @@ function Setup(parentContext){
 
   // main output
   context.output = audioContext.createGain()
-  node.output = YankSilence(audioContext, context.output)
+
+  // mixer FX
+  var outputLowPass = audioContext.createBiquadFilter()
+  outputLowPass.Q.value = 0
+  var outputHighPass = audioContext.createBiquadFilter()
+  outputHighPass.Q.value = 0
+  outputHighPass.type = 'highpass'
+
+  context.output.connect(outputLowPass)
+  outputLowPass.connect(outputHighPass)
+  node.output = YankSilence(audioContext, outputHighPass)
   node.output.connect(parentContext.output)
 
   context.active = node.output.active
 
-  watch(node.volume, function(value){
+  watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
     node.output.gain.value = value
+  })
+
+  watch(node.overrideLowPass, function (value) {
+    outputLowPass.frequency.setTargetAtTime(interpolate(value, 20000, 20, 'exp'), audioContext.currentTime, 0.01)
+  })
+
+  watch(node.overrideHighPass, function (value) {
+    outputHighPass.frequency.setTargetAtTime(interpolate(value, 20, 15000, 'exp'), audioContext.currentTime, 0.01)
   })
 
   node.onTrigger = Event(function (b) {
@@ -231,5 +253,22 @@ function updateRouteReferences (chunk, oldId, newId) {
         }
       }
     })
+  }
+}
+
+function interpolate (pos, min, max, mode) {
+  if (mode === 'exp') {
+    if (min < max) {
+      return min + (pos * pos) * (max - min)
+    } else {
+      var i = 1 - pos
+      return max + (i * i) * (min - max)
+    }
+  } else { // linear
+    if (min < max) {
+      return min + pos * (max - min)
+    } else {
+      return max + (1 - pos) * (min - max)
+    }
   }
 }

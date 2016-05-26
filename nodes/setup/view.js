@@ -13,6 +13,7 @@ var extend = require('xtend')
 module.exports = renderSetup
 
 function renderSetup (setup) {
+  var groupLookup = setup.context.nodeInfo.groupLookup
   var chunkSpawners = [].concat(
     setup.context.nodeInfo.groupLookup.chunks,
     setup.context.nodeInfo.groupLookup.modifierChunks
@@ -25,7 +26,7 @@ function renderSetup (setup) {
         h('h1', 'Controllers'),
         Collection(setup.controllers),
         Spawner(setup.controllers, {
-          nodes: setup.context.nodeInfo.groupLookup['loop-grids'],
+          nodes: groupLookup['loop-grids'].concat(groupLookup['mixers']),
           onSpawn: handleControllerSpawn
         })
       ]),
@@ -83,6 +84,9 @@ function renderScaleChooser(scale){
 
 function handleControllerSpawn (node) {
   assignAvailablePort(node)
+  if (node.grabInput) {
+    node.grabInput()
+  }
 }
 
 function handleChunkSpawn (chunk) {
