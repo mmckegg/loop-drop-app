@@ -3,6 +3,7 @@ var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('observ-struct')
 var deepEqual = require('deep-equal')
+var ObservVarhash = require('observ-varhash')
 
 var QueryParam = require('lib/query-param')
 var ArrayStack = require('lib/array-stack')
@@ -13,6 +14,7 @@ var watch = require('observ/watch')
 var computed = require('observ/computed')
 var watchKnobs = require('lib/watch-knobs')
 var scaleInterpolate = require('lib/scale-interpolate')
+var watchNodeArray = require('observ-node-array/watch')
 
 var turnOffAll = [176 + 8, 0, 0]
 var mappings = {
@@ -60,12 +62,12 @@ module.exports = function (context) {
       if (params) {
         var paramId = params()[index]
         if (chunk.paramValues) {
-          var currentValue = getValue(chunk.paramValues()[paramId])
+          var currentValue = resolveValue(chunk.paramValues()[paramId])
           var newValue = scaleInterpolate(currentValue * 128, data, paramState[id] = paramState[id] || {}) / 128
           chunk.paramValues.put(paramId, setValue(currentValue, newValue))
         } else {
-          var param = QueryParam(chunk, ['paramValues[?]', paramId])
-          var currentValue = getValue(param.read())
+          var param = QueryParam(chunk, ['paramValues[?]', paramId], {})
+          var currentValue = resolveValue(param.read())
           var newValue = scaleInterpolate(currentValue * 128, data, paramState[id] = paramState[id] || {}) / 128
           param.set(setValue(param.read(), setValue(param.read(), newValue)))
         }
@@ -86,13 +88,17 @@ module.exports = function (context) {
     }
   }, 108)
 
-  var buttonBase = computed([setup.selectedChunkId, chunkIds], function (selected, chunkIds) {
+  var pressed = PressedChunks(setup.controllers)
+
+  var buttonBase = computed([setup.selectedChunkId, chunkIds, pressed], function (selected, chunkIds, pressed) {
     var result = []
     for (var i = 0; i < 8; i++) {
       var chunkId = chunkIds[i]
       if (chunkId) {
         if (chunkId === selected) {
           result.push(light(2, 3))
+        } else if (pressed[chunkId]) {
+          result.push(light(0, 1))
         } else {
           result.push(light(1, 0))
         }
@@ -156,6 +162,8 @@ module.exports = function (context) {
     }
   })
 
+
+
   obs.destroy = function () {
     midiPort.destroy()
   }
@@ -210,9 +218,13 @@ function setValue (object, value) {
   if (object instanceof Object) {
     var result = JSON.parse(JSON.stringify(object))
     while (result != null) {
-      if (result.maxValue != null) {
-        result.maxValue = value
-        break
+      if (result.minValue != null) {
+        if (result.minValue instanceof Object) {
+          result = result.minValue
+        } else {
+          result.minValue = value
+          break
+        }
       } else if (result.value instanceof Object) {
         result = result.value
       } else {
@@ -226,13 +238,36 @@ function setValue (object, value) {
   }
 }
 
-function getValue (value) {
+function PressedChunks (controllers) {
+  var pressed = ObservVarhash({})
+  pressed.destroy = watchNodeArray(controllers, function (controller) {
+    if (controller.currentlyPressed) {
+      var lastPressed = []
+      return controller.currentlyPressed(function (values) {
+        var current = values.map(x => x && x.split('/')[0]).reduce(addIfUnique, [])
+        current.filter(x => !lastPressed.includes(x)).forEach(x => pressed.put(x, true))
+        lastPressed.filter(x => !current.includes(x)).forEach(x => pressed.delete(x))
+        lastPressed = current
+      })
+    }
+  })
+  return pressed
+}
+
+function resolveValue (value) {
   while (value instanceof Object) {
-    if (value.maxValue != null) {
-      value = value.maxValue
+    if (value.minValue != null) {
+      value = value.minValue
     } else {
       value = value.value
     }
   }
   return value
+}
+
+function addIfUnique (result, item) {
+  if (!result.includes(item)) {
+    result.push(item)
+  }
+  return result
 }

@@ -158,6 +158,14 @@ module.exports = function(context){
   var output = DittyGridStream(inputGrid, loopGrid.grid, context.scheduler)
   output.on('data', loopGrid.triggerEvent)
 
+  obs.currentlyPressed = computed([controllerGrid, loopGrid.grid], function (value, grid) {
+    return grid.data.filter(function (name, index) {
+      if (value.data[index]) {
+        return true
+      }
+    })
+  })
+
   // midi button mapping
   var buttons = MidiButtons(midiPort.stream, {
     store: '176/104',
