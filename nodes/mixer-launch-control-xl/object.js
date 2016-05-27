@@ -71,7 +71,7 @@ module.exports = function (context) {
           var param = QueryParam(chunk, ['paramValues[?]', paramId], {})
           var currentValue = resolveValue(param.read())
           var newValue = scaleInterpolate(currentValue * 128, data, paramState[id] = paramState[id] || {}) / 128
-          param.set(setValue(param.read(), setValue(param.read(), newValue)))
+          param.set(setValue(param.read(), newValue))
         }
       }
     }
