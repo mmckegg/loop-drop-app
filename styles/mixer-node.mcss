@@ -1,0 +1,126 @@
+MixerNode {
+  position: relative
+  margin-top: 6px
+  background: #464545;
+  border: 1px #444 solid;
+  color: #EEE;
+  border-radius: 4px;
+  width: 528px;
+  overflow: hidden
+
+  header {
+    display: flex
+    padding: 5px 5px
+    background: #564444
+
+    span {
+      flex: 1
+    }
+
+    button.remove {
+      opacity: 0.2
+      margin: -1px 0
+    }
+
+    :hover {
+      button.remove {
+        opacity: 1
+      }
+    }
+  }
+
+  -input {
+    border-color: #6D9466
+    header {
+      background-color: #4B5645
+    }
+  }
+
+  section {
+
+    display: flex
+    flex-direction: column
+
+    div.channels {
+      display: flex
+      padding: 4px
+
+      div {
+        pointer-events: auto
+        position: relative
+        flex: 1 1
+        height: 40px
+        padding: 3px
+        border-radius: 3px
+        margin: 2px
+
+        div.title {
+          overflow: hidden
+        }
+
+        -dragOver {
+          background: #222 !important
+          border-color: #111 !important
+          div.title {
+            display: none
+          }
+        }
+
+        -channel {
+          border: 1px solid #378
+          opacity: 0.4
+          cursor: pointer
+
+          -selected {
+            opacity: 1 !important
+            border-width: 2px
+            cursor: default
+            padding: 2px
+          }
+
+          :hover {
+            opacity: 0.7
+          }
+        }
+
+        -placeholder {
+          background: #555
+        }
+
+        button.remove {
+          border-radius: 7px;
+          position: absolute;
+          top: -3px;
+          right: -3px;
+          visibility: hidden;
+          font-size: 10px;
+          padding: 1px 3px;
+          border: 1px solid silver;
+          background: #333;
+          color: silver;
+          box-shadow: 0 0 4px black;
+          z-index: 1
+
+          :hover {
+            background: #A00
+            color: white
+          }
+        }
+
+        :hover {
+          border-color: #666
+
+          -selected {
+            button.remove {
+              visibility: visible
+            }
+          }
+        }
+      }
+    }
+
+    div.controls {
+      flex: 1
+    }
+  }
+}

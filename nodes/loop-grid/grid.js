@@ -159,7 +159,9 @@ function leaveButton(ev) {
   ev.currentTarget.classList.remove('-dragOver')
 }
 
-function startDrag(ev){
+function startDrag (ev) {
+  var node = (ev.data.resolved || ev.data)()
+  ev.dataTransfer.setData('loop-drop/' + node.node.split('/')[0], JSON.stringify(node))
   window.currentDrag = ev
 }
 
@@ -173,7 +175,7 @@ function dragLeave(ev){
   var controller = ev.data
   if (window.currentDrag && (!entering || entering !== controller)){
     var chunkId = getId(currentDrag.data)
-    if (chunkId && !ev.altKey){
+    if (chunkId && !ev.altKey && !ev.shiftKey){
       controller.chunkPositions.delete(chunkId)
     }
   }
@@ -202,7 +204,7 @@ function dragOver(ev){
 
   if (currentDrag){
 
-    if (ev.altKey) {
+    if (ev.altKey || ev.shiftKey) {
       cloneDrag = currentDrag
       ev.dataTransfer.dropEffect = 'copy'
     } else {

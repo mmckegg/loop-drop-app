@@ -4,6 +4,7 @@ var ObservMidi = require('observ-midi')
 var ObservStruct = require('observ-struct')
 var deepEqual = require('deep-equal')
 var ObservVarhash = require('observ-varhash')
+var Property = require('observ-default')
 
 var QueryParam = require('lib/query-param')
 var ArrayStack = require('lib/array-stack')
@@ -15,6 +16,7 @@ var computed = require('observ/computed')
 var watchKnobs = require('lib/watch-knobs')
 var scaleInterpolate = require('lib/scale-interpolate')
 var watchNodeArray = require('observ-node-array/watch')
+var setLights = require('./set-lights')
 
 var turnOffAll = [176 + 8, 0, 0]
 var mappings = {
@@ -40,7 +42,8 @@ module.exports = function (context) {
   })
 
   var obs = ObservStruct({
-    port: midiPort
+    port: midiPort,
+    chunkIds: Property([])
   })
 
   // grab the midi for the current port
@@ -51,12 +54,11 @@ module.exports = function (context) {
   obs.context = context
 
   var setup = context.setup
-  var chunkIds = ChunkIds(setup.chunks)
 
   var paramState = []
   watchKnobs(midiPort.stream, mappings.row1.concat(mappings.row2, mappings.row3), function (id, data) {
     var index = Math.floor(id / 8)
-    var chunk = setup.chunks.lookup.get(chunkIds()[id % 8])
+    var chunk = setup.chunks.lookup.get(obs.chunkIds()[id % 8])
     if (chunk) {
       var params = chunk.params || chunk.node && chunk.node.params
       if (params) {
@@ -77,7 +79,7 @@ module.exports = function (context) {
 
   var sliderState = []
   watchKnobs(midiPort.stream, mappings.sliders, function (id, data) {
-    var chunk = setup.chunks.lookup.get(chunkIds()[id])
+    var chunk = setup.chunks.lookup.get(obs.chunkIds()[id])
     if (chunk) {
       var volume = chunk.overrideVolume || chunk.node && chunk.node.overrideVolume
       if (volume) {
@@ -90,7 +92,27 @@ module.exports = function (context) {
 
   var pressed = PressedChunks(setup.controllers)
 
-  var buttonBase = computed([setup.selectedChunkId, chunkIds, pressed], function (selected, chunkIds, pressed) {
+  var knobLights = computed([obs.chunkIds, setup.context.chunkLookup, pressed, setup.selectedChunkId], function (chunkIds, lookup, pressed, selected) {
+    var result = []
+    for (var i = 0; i < 8; i++) {
+      var chunk = lookup[chunkIds[i]]
+      if (chunk && chunk.params) {
+        var onValue = pressed[chunkIds[i]]
+          ? light(0, 2)
+          : selected === chunkIds[i]
+            ? light(1, 1)
+            : light(2, 0)
+        result[0 + i] = chunk.params[0] ? onValue : 0
+        result[8 + i] = chunk.params[1] ? onValue : 0
+        result[16 + i] = chunk.params[2] ? onValue : 0
+      }
+    }
+    return result
+  })
+
+  setLights(knobLights, midiPort.stream)
+
+  var buttonBase = computed([setup.selectedChunkId, obs.chunkIds, pressed], function (selected, chunkIds, pressed) {
     var result = []
     for (var i = 0; i < 8; i++) {
       var chunkId = chunkIds[i]
@@ -113,7 +135,7 @@ module.exports = function (context) {
   setup.onTrigger(function (event) {
     if (event.id) {
       var chunkId = event.id.split('/')[0]
-      var index = chunkIds().indexOf(chunkId)
+      var index = obs.chunkIds().indexOf(chunkId)
       if (event.event === 'start') {
         if (chunkId === setup.selectedChunkId()) {
           buttonFlash.flash(index, light(3, 3), 40)
@@ -139,9 +161,10 @@ module.exports = function (context) {
     })
 
     if (result != null) {
-      var id = chunkIds()[result]
+      var id = obs.chunkIds()[result]
       if (id) {
         setup.selectedChunkId.set(id)
+        setup.context.actions.scrollToSelectedChunk()
       }
     }
   })
@@ -162,40 +185,11 @@ module.exports = function (context) {
     }
   })
 
-
-
   obs.destroy = function () {
     midiPort.destroy()
   }
 
   return obs
-}
-
-function ChunkIds (chunks) {
-  var chunkIds = Observ([])
-  var refreshing = false
-
-  watch(chunks.resolved, function (chunks) {
-    if (!refreshing) {
-      refreshing = true
-      setImmediate(refresh)
-    }
-  })
-
-  return chunkIds
-
-  function refresh () {
-    refreshing = false
-    var value = chunks.resolved().reduce(function (result, chunk) {
-      if (chunk && chunk.id && chunk.node !== 'modulatorChunk') {
-        result.push(chunk.id)
-      }
-      return result
-    }, [])
-    if (!deepEqual(value, chunkIds())) {
-      chunkIds.set(value)
-    }
-  }
 }
 
 function light(r, g, flag){
