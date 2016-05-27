@@ -68,7 +68,7 @@ module.exports = function renderSlicerChunk (node) {
             title: 'transpose',
             format: 'semitone',
             flex: 'small',
-            allowSpawn: true,
+            allowSpawnModulator: true,
             node: node,
             defaultValue: 0
           })

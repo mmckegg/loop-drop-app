@@ -43,7 +43,7 @@ function renderExternalChromaticChunk (node) {
             title: 'offset',
             format: 'semitone',
             flex: true,
-            allowSpawn: true,
+            allowSpawnModulator: true,
             node: node,
             defaultValue: 0
           })
