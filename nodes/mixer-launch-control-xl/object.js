@@ -209,7 +209,7 @@ function light(r, g, flag){
 }
 
 function setValue (object, value) {
-  if (object instanceof Object) {
+  if (object instanceof Object && Object.keys(object).length) {
     var result = JSON.parse(JSON.stringify(object))
     while (result != null) {
       if (result.minValue != null) {
