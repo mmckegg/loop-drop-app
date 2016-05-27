@@ -1,6 +1,47 @@
 NodeCollection {
   padding: 4px
 
+  h1 {
+    button.condense {
+      float: right
+      margin-top: 3px
+      cursor: pointer
+      opacity: 0.4
+      height: 18px
+      width: 18px
+      border-radius: 3px
+      margin-right: 3px
+      border: none
+      background: transparent
+      background-repeat: no-repeat
+      background-position: center
+      background-image: svg(condense)
+
+      :hover {
+        opacity: 0.8
+        background-color: #888
+      }
+
+      :focus {
+        outline: none
+        opacity: 0.8
+      }
+
+      :active {
+        opacity: 1
+      }
+
+      @svg condense {
+        width: 8px
+        height: 10px
+        content: "<path d='M0,0 L8,0 L4,5 Z' /><path d='M0,10 L8,10 L4,5 Z' /><path d='M0,4 L8,4 L8,6 L0,6 Z' />"
+        path {
+          fill: #FFF
+        }
+      }
+    }
+  }
+
   -wrap {
     display: flex
     flex-wrap: wrap

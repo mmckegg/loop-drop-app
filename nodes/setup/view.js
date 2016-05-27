@@ -32,7 +32,12 @@ function renderSetup (setup) {
       ]),
 
       h('.chunks NodeCollection', [
-        h('h1', 'Chunks'),
+        h('h1', [
+          'Chunks',
+          h('button.condense', {
+            'ev-click': send(minimiseAll, setup.chunks)
+          })
+        ]),
         Collection(setup.chunks),
         Spawner(setup.chunks, {
           nodes: chunkSpawners,
@@ -80,6 +85,13 @@ function renderScaleChooser(scale){
       })
     ])
   ])
+}
+
+function minimiseAll (items) {
+  items.forEach(function (item) {
+    var minimised = item.minimised || QueryParam(item, 'minimised')
+    minimised.set(true)
+  })
 }
 
 function handleControllerSpawn (node) {
