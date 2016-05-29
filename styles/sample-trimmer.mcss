@@ -50,45 +50,40 @@ SampleTrimmer {
   }
 
 
-  input.start { 
+  input.start {
     $trimmerSlider
-    
+
     cursor: e-resize;
 
     top:0; left:0; right:0
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0.7)), color-stop(100%,rgba(34,34,34,0)))
-    
+
+    ::-webkit-slider-runnable-track {
+      margin-right: -20px
+    }
+
     ::-webkit-slider-thumb {
-      :after {
-        top: -3px
-        content: 'start'
-        background: rgba(142, 255, 126, 0.3)
-        border-bottom-right-radius: 40px
-        padding: 3px 15px 7px 5px
-      }
+      background: rgba(142, 255, 126, 0.3)
+      border-bottom-right-radius: 40px
     }
 
   }
 
-  input.end { 
+  input.end {
     $trimmerSlider
 
     cursor: w-resize;
 
     bottom:0; left:0; right:0
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(34,34,34,0)), color-stop(100%,rgba(34,34,34,0.7)))
-    
+
+    ::-webkit-slider-runnable-track {
+      margin-left: -20px
+    }
+
     ::-webkit-slider-thumb {
-
-      :after {
-        bottom: -3px
-        background: rgba(142, 255, 126, 0.4)
-        content: 'end'
-        margin-left:-40px;
-        border-top-left-radius: 40px
-        padding: 7px 5px 3px 15px 
-      }
-
+      background: rgba(142, 255, 126, 0.4)
+      border-top-left-radius: 40px
     }
 
   }
@@ -107,22 +102,14 @@ SampleTrimmer {
 
     ::-webkit-slider-thumb {
       -webkit-appearance: none;
-      position: relative;
+      display:block;
       top: 0px;
       z-index: 1;
       width: 0px;
       height: 20px;
-    }
-
-    ::-webkit-slider-thumb {
-      :after {
-        pointer-events: none
-        display:block;
-        position: absolute;
-        padding: 5px 10px
-        margin: 3px 0
-        color: #EEE
-      }
+      padding: 5px 10px
+      margin: 3px 0
+      color: #EEE
     }
   }
 }
