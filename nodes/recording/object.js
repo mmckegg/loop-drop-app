@@ -1,9 +1,7 @@
 var Struct = require('observ-struct')
 var Property = require('observ-default')
 var WaveWriter = require('wav/lib/writer')
-
-var remote = require('remote')
-var Dialog = remote.require('dialog')
+var electron = require('electron')
 var Timeline = require('audio-timeline')
 var RenderStream = require('audio-timeline/render-stream')
 var throttledWatch = require('throttle-observ/watch')
@@ -169,7 +167,7 @@ function Recording (parentContext) {
   }
 
   obs.exportFile = function (format) {
-    Dialog.showSaveDialog({
+    electron.remote.dialog.showSaveDialog({
       title: 'Export Recording (PCM Wave)',
       filters: [
         { name: 'PCM Wave', extensions: ['wav']}

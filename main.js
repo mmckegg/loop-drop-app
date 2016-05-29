@@ -1,10 +1,7 @@
-var app = require('app')
-var BrowserWindow = require('browser-window')
-var dialog = require('dialog')
-var ipc = require('electron').ipcMain
+var electron = require('electron')
+var BrowserWindow = electron.BrowserWindow
 var fs = require('fs')
-var Shell = require('shell')
-var Menu = require('menu')
+var Menu = electron.Menu
 var menu = Menu.buildFromTemplate(require('lib/menu'))
 var join = require('path').join
 
@@ -13,13 +10,13 @@ var mainWindow = null
 var currentProject = null
 var quiting = false
 
-app.on('before-quit', function() {
+electron.app.on('before-quit', function() {
   quiting = true
 })
 
-ipc.on('choose-project', function(event, arg) {
+electron.ipcMain.on('choose-project', function(event, arg) {
   if (arg === 'new') {
-    dialog.showSaveDialog({
+    electron.dialog.showSaveDialog({
       title: 'Create New Project'
     }, function(path){
       if (path) {
@@ -29,7 +26,7 @@ ipc.on('choose-project', function(event, arg) {
   } else if (arg === 'demo') {
     loadProject(getDemoProjectPath())
   } else if (arg === 'browse') {
-    dialog.showOpenDialog({
+    electron.dialog.showOpenDialog({
       title: 'Browse for Project Folder',
       properties: [ 'openDirectory' ]
     }, function(paths) {
@@ -42,16 +39,16 @@ ipc.on('choose-project', function(event, arg) {
   }
 })
 
-ipc.on('loaded', function(event, arg) {
+electron.ipcMain.on('loaded', function(event, arg) {
   event.sender.send('load-project', currentProject)
 })
 
-app.on('window-all-closed', function() {
+electron.app.on('window-all-closed', function() {
   //if (process.platform != 'darwin')
-  app.quit()
+  electron.app.quit()
 })
 
-app.on('ready', function() {
+electron.app.on('ready', function() {
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(menu)
   }
@@ -69,7 +66,7 @@ function chooseProject() {
   } else {
     welcomeWindow = new BrowserWindow({
       title: 'Choose Project',
-      'accept-first-mouse': true,
+      acceptFirstMouse: true,
       width: 500,
       height: 550,
       show: false
@@ -81,7 +78,7 @@ function chooseProject() {
 
     welcomeWindow.webContents.on('will-navigate', function (e, url) {
       e.preventDefault()
-      Shell.openExternal(url)
+      electron.shell.openExternal(url)
     })
 
     welcomeWindow.loadURL('file://' + __dirname + '/views/welcome.html')
@@ -149,7 +146,7 @@ function loadProject(path) {
 
   mainWindow.webContents.on('will-navigate', function(e, url) {
     e.preventDefault()
-    Shell.openExternal(url)
+    electron.shell.openExternal(url)
   })
 
   mainWindow.loadURL('file://' + __dirname + '/views/window.html')

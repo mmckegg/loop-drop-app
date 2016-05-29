@@ -2,7 +2,7 @@
 <html>
 <head>
   <script>
-    var shell = require('shell')
+    var electron = require('electron')
     var insertCss = require('insert-css')
     var version = require('../package.json').version
     var ipc = require('electron').ipcRenderer
@@ -41,7 +41,7 @@
       <div>
         <p>
           visit
-          <a href='javascript:shell.openExternal("http://loopjs.com")'>loopjs.com</a>
+          <a href='javascript:electron.shell.openExternal("http://loopjs.com")'>loopjs.com</a>
           for help
         </p>
       </div>

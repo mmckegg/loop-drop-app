@@ -1,5 +1,4 @@
-var ipc = require('electron').ipcRenderer
-var frame = require('web-frame')
+var electron = require('electron')
 var insertCss = require('insert-css')
 
 var fs = require('fs')
@@ -21,7 +20,7 @@ var PeriodicWaves = require('lib/periodic-waves')
 
 // apply css styles
 insertCss(require('./styles'))
-frame.setZoomLevelLimits(1, 1)
+electron.webFrame.setZoomLevelLimits(1, 1)
 
 // midi ports
 var midiPorts = Observ()
@@ -47,17 +46,17 @@ var rootContext = window.rootContext = {
 }
 
 watch(rootContext.zoom, function (value) {
-  frame.setZoomFactor(value || 1)
+  electron.webFrame.setZoomFactor(value || 1)
 })
 
 noDrop(document)
 require('lib/context-menu')
 
 document.addEventListener('DOMContentLoaded', function (event) {
-  ipc.send('loaded')
+  electron.ipcRenderer.send('loaded')
 })
 
-ipc.on('load-project', function (e, path) {
+electron.ipcRenderer.on('load-project', function (e, path) {
   // load project and initialize view
 
   var projectPath = join(path, 'project.json')
