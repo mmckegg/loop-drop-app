@@ -178,19 +178,27 @@ function renderParams (controller) {
   ]
 
   if (controller.port) {
+    var info = controller.context.nodeInfo.lookup[controller().node]
+    var portMatch = info && info.portMatch
     params.push(
-      SubLoop([controller.port, controller.context.midiPorts], renderPortChoices)
+      SubLoop([controller.port, controller.context.midiPorts, portMatch], renderPortChoices)
     )
   }
 
   return h('ParamList', params)
 }
 
-function renderPortChoices (port, choices) {
+function renderPortChoices (port, choices, portMatch) {
+  if (typeof choices === 'function') choices = choices()
+  if (portMatch && choices) {
+    choices = choices.filter(function (choice) {
+      return choice.match(portMatch)
+    })
+  }
   return Select(port, {
     options: choices,
     flex: true,
     missingPrefix: ' (disconnected)',
-    includeBlank: 'No Midi Device'
+    includeBlank: "No Midi Device"
   })
 }

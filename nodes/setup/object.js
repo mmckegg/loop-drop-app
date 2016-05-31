@@ -17,6 +17,7 @@ var merge = require('observ-node-array/merge')
 var Property = require('observ-default')
 var YankSilence = require('lib/yank-silence')
 var setRoute = require('lib/set-route')
+var assignAvailablePort = require('lib/assign-available-port')
 
 module.exports = Setup
 
@@ -123,6 +124,15 @@ function Setup(parentContext){
   node.chunks.lookup = lookup(node.chunks, function(x){
     var descriptor = get(x)
     return descriptor && descriptor.id || undefined
+  })
+
+  // enforce controller types
+  node.controllers.onUpdate(function (update) {
+    update.slice(2).forEach(function (controller) {
+      if (controller.port) {
+        assignAvailablePort(controller)
+      }
+    })
   })
 
   context.chunkLookup = lookup(node.chunks, function(x){

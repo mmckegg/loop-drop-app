@@ -2,13 +2,12 @@ var h = require('lib/h')
 var send = require('value-event/event')
 var Collection = require('lib/widgets/collection')
 var Spawner = require('lib/widgets/spawner')
-var getBaseName = require('path').basename
 
 var QueryParam = require('lib/query-param')
 var ScaleChooser = require('lib/params/scale-chooser')
 var Range = require('lib/params/range')
 var rename = require('lib/rename-hook').rename
-var extend = require('xtend')
+var assignAvailablePort = require('lib/assign-available-port')
 
 module.exports = renderSetup
 
@@ -55,7 +54,7 @@ function renderSetup (setup) {
   ])
 }
 
-function renderMasterVolume(volume){
+function renderMasterVolume (volume) {
   return h('section.volume', [
 
     h('h1', 'Master Volume'),
@@ -69,7 +68,7 @@ function renderMasterVolume(volume){
   ])
 }
 
-function renderScaleChooser(scale){
+function renderScaleChooser (scale) {
   return h('section.scale', [
     h('h1', 'Global Scale'),
     h('div.chooser', [
@@ -106,33 +105,4 @@ function handleChunkSpawn (chunk) {
     rename(chunk)
   }, 100)
   chunk.context.setup.selectedChunkId.set(chunk().id)
-}
-
-function assignAvailablePort (node) {
-  var nodeInfo = node.context.nodeInfo.lookup[node().node]
-  if (nodeInfo && node.port && nodeInfo.portMatch) {
-    var availablePorts = node.context.midiPorts().filter(function (name) {
-      return nodeInfo.portMatch.exec(name)
-    })
-
-    var usedPorts = node.context.collection.map(function (controller) {
-      return controller.port && controller.port()
-    }).filter(function (name) {
-      return availablePorts.includes(name)
-    })
-
-    var portName = getRarest(availablePorts.concat(usedPorts))
-    node.port.set(portName)
-  }
-}
-
-function getRarest (array) {
-  var ranked = array.reduce(function (result, item) {
-    result[item] = (result[item] || 0) + 1
-    return result
-  }, {})
-
-  return Object.keys(ranked).sort(function (a, b) {
-    return ranked[a] - ranked[b]
-  })[0]
 }
