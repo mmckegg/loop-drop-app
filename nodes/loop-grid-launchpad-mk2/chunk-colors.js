@@ -25,13 +25,9 @@ function ChunkColors (chunkLookup, selected, targets, shape) {
         var id = getChunkId(targets[result.index(r, c)])
         var chunk = chunkLookup[id]
         if (chunk) {
-          var color = saturate(chunk.color, 2)
-          if (highlighted) {
-            if (highlighted === id) {
-              color = normalize(color, 1)
-            } else {
-              color = normalize(color, 0.2)
-            }
+          var color = saturate(notBlack(chunk.color, [5, 5, 5]), 2)
+          if (highlighted === id) {
+            color = normalize(color, 1)
           } else {
             color = normalize(color, 0.2)
           }
@@ -74,4 +70,12 @@ function clamp (value) {
   if (value > 255) return 255
   if (value < 0) return 0
   return value
+}
+
+function notBlack (color, fallback) {
+  if (!color || (color[0] === 0 && color[1] === 0 && color[2] === 0)) {
+    return fallback
+  } else {
+    return color
+  }
 }
