@@ -70,7 +70,7 @@
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",
     "web-midi": "^2.0.0",
-    "xtend": "^4.0.0"
+    "xtend": "^4.0.1"
   },
   "devDependencies": {
     "async-each": "^0.1.6"
