@@ -1,6 +1,5 @@
 var Property = require('observ-default')
 var Param = require('audio-slot-param')
-var Node = require('observ-node-array/single')
 var NodeArray = require('observ-node-array')
 var Struct = require('observ-struct')
 var BaseChunk = require('lib/base-chunk')
@@ -8,16 +7,14 @@ var ExternalRouter = require('lib/external-router')
 var lookup = require('observ-node-array/lookup')
 var computed = require('observ/computed')
 var watch = require('observ/watch')
-var throttle = require('throttle-observ')
-var throttleWatch = require('throttle-observ/watch')
 var extend = require('xtend')
-var applyScale = require('lib/apply-scale')
+var applyMixerParams = require('lib/apply-mixer-params')
 
 module.exports = SynthChunk
 
 function SynthChunk (parentContext) {
   var context = Object.create(parentContext)
-  var output = context.output = context.audio.createGain()
+  context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
   var slots = NodeArray(context)
@@ -41,6 +38,7 @@ function SynthChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'})
   })
 
+  applyMixerParams(obs)
   obs.overrideVolume = Property(1)
 
   var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
@@ -56,7 +54,7 @@ function SynthChunk (parentContext) {
     notes: [0,2,4,5,7,9,11]
   })
 
-  if (context.globalScale){
+  if (context.globalScale) {
     var releaseGlobalScale = watch(context.globalScale, scale.set)
   }
 
@@ -111,8 +109,7 @@ function SynthChunk (parentContext) {
         }
       }
 
-
-      result.push({
+      result.unshift({
         node: 'slot',
         id: String(i),
         output: 'output',

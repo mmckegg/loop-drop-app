@@ -16,6 +16,7 @@ var throttleWatch = require('throttle-observ/watch')
 var watch = require('observ/watch')
 var extend = require('xtend')
 var debounce = require('async-debounce')
+var applyMixerParams = require('lib/apply-mixer-params')
 
 module.exports = SlicerChunk
 
@@ -43,6 +44,7 @@ function SlicerChunk (parentContext) {
     volume: Property(1)
   })
 
+  applyMixerParams(obs)
   obs.overrideVolume = Property(1)
 
   var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
@@ -115,7 +117,7 @@ function SlicerChunk (parentContext) {
 
     })
 
-    result.push({
+    result.unshift({
       node: 'slot',
       id: 'output',
       processors: [
