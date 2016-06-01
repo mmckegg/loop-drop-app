@@ -2,10 +2,6 @@ var Observ = require('observ')
 var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('observ-struct')
-var deepEqual = require('deep-equal')
-var ObservArray = require('observ-array')
-
-var QueryParam = require('lib/query-param')
 var ArrayStack = require('lib/array-stack')
 var FlashArray = require('lib/flash-array')
 var AnyTrigger = require('lib/on-trigger')
@@ -257,9 +253,4 @@ function getValue (value) {
     }
   }
   return value
-}
-
-function messageFor (key, value) {
-  var parts = key.split('/')
-  return [+parts[0], +parts[1], value]
 }
