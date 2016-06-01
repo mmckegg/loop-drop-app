@@ -111,6 +111,9 @@ module.exports = function(context){
     // active
     mapGridValue(loopGrid.active, stateLights.greenLow),
 
+    // flash selected chunk
+    mapGridValue(Highlighting(loopGrid.grid, context.setup.selectedChunkId), stateLights.amberLow),
+
     // selected
     mapGridValue(transforms.selector, stateLights.green),
 
@@ -137,6 +140,14 @@ module.exports = function(context){
   // trigger notes at bottom of input stack
   var output = DittyGridStream(inputGrid, loopGrid.grid, context.scheduler)
   output.on('data', loopGrid.triggerEvent)
+
+  obs.currentlyPressed = computed([controllerGrid, loopGrid.grid], function (value, grid) {
+    return grid.data.filter(function (name, index) {
+      if (value.data[index]) {
+        return true
+      }
+    })
+  })
 
   // midi button mapping
   var buttons = MidiButtons(midiPort.stream, {
@@ -377,4 +388,34 @@ function getLaunchpadGridMapping(){
     }
   }
   return ArrayGrid(result, [8, 8])
+}
+
+function Highlighting (grid, selected) {
+  var highlighted = Observ()
+  var timer = null
+
+  highlighted.clear = function () {
+    highlighted.set(null)
+  }
+
+  selected(function (id) {
+    clearTimeout(timer)
+    highlighted.set(id)
+    timer = setTimeout(highlighted.clear, 400)
+  })
+
+  return computed([grid, highlighted], function (grid, highlighted) {
+    return ArrayGrid(grid.data.map(function (val) {
+      var id = getChunkId(val)
+      if (id === highlighted) {
+        return true
+      }
+    }), grid.shape)
+  })
+}
+
+function getChunkId (id) {
+  if (id && id.split) {
+    return id.split('/')[0]
+  }
 }
