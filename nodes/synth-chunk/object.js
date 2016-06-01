@@ -9,6 +9,7 @@ var computed = require('observ/computed')
 var watch = require('observ/watch')
 var extend = require('xtend')
 var applyMixerParams = require('lib/apply-mixer-params')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = SynthChunk
 
@@ -38,7 +39,7 @@ function SynthChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'})
   })
 
-  applyMixerParams(obs)
+  var releaseMixerParams = applyMixerParams(obs)
   obs.overrideVolume = Property(1)
 
   var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
@@ -133,8 +134,10 @@ function SynthChunk (parentContext) {
 
   slots.onUpdate(obs.routes.refresh)
 
-  obs.destroy = function(){
-    obs.routes.destroy()
+  obs.destroy = function () {
+    releaseMixerParams()
+    destroyAll(obs)
+    slots.destroy()
     releaseGlobalScale && releaseGlobalScale()
     releaseGlobalScale = null
   }

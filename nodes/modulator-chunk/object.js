@@ -4,6 +4,7 @@ var NodeArray = require('observ-node-array')
 var lookup = require('observ-node-array/lookup')
 var Transform = require('audio-slot-param/transform')
 var BaseChunk = require('lib/base-chunk')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = ModulatorChunk
 
@@ -49,6 +50,7 @@ function ModulatorChunk (parentContext) {
   })
 
   obs.destroy = function () {
+    destroyAll(obs)
     if (currentTransform) {
       currentTransform.destroy()
       currentTransform = null

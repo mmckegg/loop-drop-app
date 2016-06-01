@@ -17,6 +17,7 @@ var ExternalRouter = require('lib/external-router')
 
 var Param = require('audio-slot-param')
 var applyParams = require('lib/apply-params')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = ChromaticChunk
 
@@ -165,7 +166,8 @@ function ChromaticChunk (parentContext) {
   })
 
   obs.destroy = function () {
-    obs.routes.destroy()
+    scaleSlots.destroy()
+    destroyAll(obs)
     releaseGlobalScale && releaseGlobalScale()
     releaseGlobalScale = null
   }

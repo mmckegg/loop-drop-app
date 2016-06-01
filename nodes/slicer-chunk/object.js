@@ -17,6 +17,7 @@ var watch = require('observ/watch')
 var extend = require('xtend')
 var debounce = require('async-debounce')
 var applyMixerParams = require('lib/apply-mixer-params')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = SlicerChunk
 
@@ -44,7 +45,7 @@ function SlicerChunk (parentContext) {
     volume: Property(1)
   })
 
-  applyMixerParams(obs)
+  var releaseMixerParams = applyMixerParams(obs)
   obs.overrideVolume = Property(1)
 
   var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
@@ -132,7 +133,8 @@ function SlicerChunk (parentContext) {
   slots.onUpdate(obs.routes.refresh)
 
   obs.destroy = function(){
-    obs.routes.destroy()
+    releaseMixerParams()
+    destroyAll(obs)
   }
 
   obs.resolved = withResolved(obs, ['triggers'])

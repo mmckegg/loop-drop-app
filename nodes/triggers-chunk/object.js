@@ -7,6 +7,7 @@ var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
 var ObservStruct = require('observ-struct')
 var computed = require('observ/computed')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = TriggersChunk
 
@@ -45,7 +46,7 @@ function TriggersChunk (parentContext) {
   })
 
   obs.destroy = function () {
-    obs.routes.destroy()
+    destroyAll(obs)
   }
 
   applyParams(obs)

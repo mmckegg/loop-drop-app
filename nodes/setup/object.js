@@ -18,6 +18,7 @@ var Property = require('observ-default')
 var YankSilence = require('lib/yank-silence')
 var setRoute = require('lib/set-route')
 var assignAvailablePort = require('lib/assign-available-port')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = Setup
 
@@ -113,8 +114,7 @@ function Setup(parentContext){
   node.resolveAvailableChunk = node.chunks.resolveAvailable
 
   node.destroy = function(){
-    node.chunks.destroy()
-    node.controllers.destroy()
+    destroyAll(node)
     context.paramLookup.destroy()
   }
 

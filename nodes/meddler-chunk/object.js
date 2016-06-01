@@ -10,6 +10,7 @@ var Varhash = require('observ-varhash')
 var Struct = require('observ-struct')
 var merge = require('observ-node-array/merge')
 var computed = require('observ/computed')
+var destroyAll = require('lib/destroy-all')
 
 module.exports = MeddlerChunk
 
@@ -82,7 +83,7 @@ function MeddlerChunk (parentContext) {
   slots.onUpdate(obs.routes.refresh)
 
   obs.destroy = function(){
-    obs.routes.destroy()
+    destroyAll(obs)
   }
 
   applyParams(obs)
