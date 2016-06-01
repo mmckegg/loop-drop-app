@@ -33,6 +33,7 @@ var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')
 
 var ChunkColors = require('./chunk-colors')
 var applyColorFilter = require('./apply-color-filter')
+var getPortSiblings = require('lib/get-port-siblings')
 
 var setLights = require('./set-lights.js')
 
@@ -59,12 +60,16 @@ module.exports = function(context){
   var gridMapping = getLaunchpadGridMapping()
   loopGrid.shape.set(gridMapping.shape)
 
+  var activatedAt = 0
   var shiftHeld = false
 
   var midiPort = MidiPort(context, function (port, lastPort) {
     // turn off on switch
     lastPort && lastPort.write(turnOffAll)
-    port && port.write(turnOffAll)
+    if (port) {
+      port.write(turnOffAll)
+      activatedAt = Date.now()
+    }
   })
 
   // extend loop-grid instance
@@ -79,6 +84,10 @@ module.exports = function(context){
     playing: loopGrid.playing,
     recording: looper.recording,
     triggers: loopGrid.grid
+  })
+
+  obs.activeInput = computed([midiPort.stream], function (value) {
+    return !!value
   })
 
   watch(looper, loopGrid.loops.set)
@@ -174,7 +183,7 @@ module.exports = function(context){
     redo: '176/107',
     hold: '176/108',
     suppress: '176/109',
-    snap2: '176/110',
+    swapTarget: '176/110',
     select: '176/111'
   })
 
@@ -248,7 +257,7 @@ module.exports = function(context){
       }
     },
 
-    suppress: function(value){
+    suppress: function (value) {
       if (value){
         var turnOffLight = this.light(stateLights.red)
         transforms.suppressor.start(transforms.selector.selectedIndexes(), turnOffLight)
@@ -257,8 +266,16 @@ module.exports = function(context){
       }
     },
 
-    select: function(value){
-      if (value){
+    swapTarget: function (value) {
+      if (value) {
+        getPortSiblings(obs, context.setup.controllers)[1].grabInput()
+      } else if (Date.now() - activatedAt > 500) {
+        getPortSiblings(obs, context.setup.controllers)[0].grabInput()
+      }
+    },
+
+    select: function (value) {
+      if (value) {
         var turnOffLight = this.light(stateLights.green)
         transforms.selector.start(inputGrabber, function done(){
           transforms.mover.stop()

@@ -16,7 +16,8 @@ module.exports = function(node){
     var state = {node: node}
     var nameSuffix = node().port ? ' (' + node().port + ')' : ''
     return h('div ControllerNode', {
-      'ev-class': ObservClassHook(node.activeInput, '-input')
+      'ev-class': ObservClassHook(node.activeInput, '-input'),
+      'ev-click': send(node.grabInput)
     }, [
       h('header', [
         h('span', 'Loop Grid' + nameSuffix),

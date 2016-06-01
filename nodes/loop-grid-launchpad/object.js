@@ -30,6 +30,7 @@ var watch = require('observ/watch')
 var mapWatchDiff = require('lib/map-watch-diff-stack')
 var mapGridValue = require('observ-grid/map-values')
 var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')
+var getPortSiblings = require('lib/get-port-siblings')
 
 var stateLights = require('./state-lights.js')
 var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8]
@@ -45,11 +46,15 @@ module.exports = function(context){
   loopGrid.shape.set(gridMapping.shape)
 
   var shiftHeld = false
+  var activatedAt = 0
 
   var midiPort = MidiPort(context, function (port, lastPort) {
     // turn off on switch
     lastPort && lastPort.write([176, 0, 0])
-    port && port.write([176, 0, 0])
+    if (port) {
+      port.write([176, 0, 0])
+      activatedAt = Date.now()
+    }
   })
 
   // extend loop-grid instance
@@ -64,6 +69,10 @@ module.exports = function(context){
     playing: loopGrid.playing,
     recording: looper.recording,
     triggers: loopGrid.grid
+  })
+
+  obs.activeInput = computed([midiPort.stream], function (value) {
+    return !!value
   })
 
   watch(looper, loopGrid.loops.set)
@@ -217,6 +226,14 @@ module.exports = function(context){
         transforms.suppressor.start(transforms.selector.selectedIndexes(), turnOffLight)
       } else {
         transforms.suppressor.stop()
+      }
+    },
+
+    swapTarget: function (value) {
+      if (value) {
+        getPortSiblings(obs, context.setup.controllers)[1].grabInput()
+      } else if (Date.now() - activatedAt > 500) {
+        getPortSiblings(obs, context.setup.controllers)[0].grabInput()
       }
     },
 
