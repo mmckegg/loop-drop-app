@@ -84,7 +84,7 @@ module.exports = function (context) {
   var params = []
 
   Object.keys(knobs).forEach(function (key) {
-    var id = 'Launch Control > ' + key
+    var id = 'Launch Control XL > ' + key
     params.push(id)
     context.paramLookup.put(id, MidiParam(context, id, knobs[key]))
   })
