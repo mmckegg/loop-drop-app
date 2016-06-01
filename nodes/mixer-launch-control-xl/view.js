@@ -104,7 +104,6 @@ function dragEnd (ev) {
 
 function dragOver (ev) {
   var types = ev.dataTransfer.types
-  console.log(ev)
   if (ev.currentTarget !== draggedElement && (types.includes('loop-drop/chunk-id') || types.includes('loop-drop/chunk'))) {
     ev.currentTarget.classList.add('-dragOver')
     ev.dataTransfer.dropEffect = 'move'
