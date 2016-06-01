@@ -252,7 +252,7 @@ function withResolved (obj, keys) {
   })
 
   for (var k in obj) {
-    if (k !== 'set') {
+    if (k !== 'set' && k !== 'destroy') {
       result[k] = obj[k]
     }
   }
