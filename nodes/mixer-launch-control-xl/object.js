@@ -105,6 +105,8 @@ module.exports = function (context) {
         result[0 + i] = chunk.params()[0] ? onValue : 0
         result[8 + i] = chunk.params()[1] ? onValue : 0
         result[16 + i] = chunk.params()[2] ? onValue : 0
+      } else {
+        result[0 + 0] = result[8 + i] = result[16 + i] = 0
       }
     }
     return result
