@@ -43,6 +43,8 @@ function SlicerChunk (parentContext) {
     outputs: Property(['output']),
     routes: ExternalRouter(context, {output: '$default'}),
     volume: Property(1)
+  }, {
+    includedAllTriggers: true
   })
 
   var releaseMixerParams = applyMixerParams(obs)
