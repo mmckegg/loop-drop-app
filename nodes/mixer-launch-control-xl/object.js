@@ -1,4 +1,5 @@
 var Observ = require('observ')
+var Param = require('audio-slot-param')
 var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('observ-struct')
@@ -46,6 +47,30 @@ module.exports = function (context) {
     chunkIds: Property([])
   })
 
+  var params = []
+  for (var i = 0; i < 8; i++) {
+    params[i] = [
+      Param(context, 0),
+      Param(context, 0),
+      Param(context, 0)
+    ]
+  }
+
+  var paramReleases = []
+  obs.chunkIds(refreshParamLinks)
+  context.chunkLookup(refreshParamLinks)
+  function refreshParamLinks () {
+    while (paramReleases.length) {
+      paramReleases.pop()()
+    }
+    obs.chunkIds().forEach(function (id, i) {
+      var chunk = context.chunkLookup.get(id)
+      if (chunk && chunk.overrideParams) {
+        paramReleases.push(chunk.overrideParams(params[i]))
+      }
+    })
+  }
+
   // grab the midi for the current port
   obs.grabInput = function () {
     midiPort.grab()
@@ -57,23 +82,10 @@ module.exports = function (context) {
 
   var paramState = []
   watchKnobs(midiPort.stream, mappings.row1.concat(mappings.row2, mappings.row3), function (id, data) {
-    var index = Math.floor(id / 8)
-    var chunk = setup.chunks.lookup.get(obs.chunkIds()[id % 8])
-    if (chunk) {
-      var params = chunk.params || chunk.node && chunk.node.params
-      if (params) {
-        var paramId = params()[index]
-        if (chunk.paramValues) {
-          var currentValue = resolveValue(chunk.paramValues()[paramId])
-          var newValue = scaleInterpolate(currentValue * 128, data, paramState[id] = paramState[id] || {}) / 128
-          chunk.paramValues.put(paramId, setValue(currentValue, newValue))
-        } else {
-          var param = QueryParam(chunk, ['paramValues[?]', paramId], {})
-          var currentValue = resolveValue(param.read())
-          var newValue = scaleInterpolate(currentValue * 128, data, paramState[id] = paramState[id] || {}) / 128
-          param.set(setValue(param.read(), newValue))
-        }
-      }
+    var param = params[id % 8][Math.floor(id / 8)]
+    var chunk = setup.context.chunkLookup.get(obs.chunkIds()[id % 8])
+    if (chunk && chunk.overrideParams && chunk.params) {
+      param.set(scaleInterpolate(param() * 128, data, paramState[id] = paramState[id] || {}) / 128)
     }
   })
 
