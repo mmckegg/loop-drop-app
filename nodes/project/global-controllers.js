@@ -4,7 +4,7 @@ var Select = require('lib/widgets/select')
 
 module.exports = function (collection) {
   var spawners = collection.context.project.availableGlobalControllers()
-  var options = [] 
+  var options = []
 
   spawners.forEach(function (descriptor) {
     if (!hasNode(collection, descriptor.node)) {
@@ -14,16 +14,18 @@ module.exports = function (collection) {
 
   return h('div.controllers', [
     collection.map(function (controller) {
-      return h('GlobalControllerNode', [
-        h('header', [
-          h('span.name', [
-            h('strong', ['Global: ']), controller().name
-          ]),
-          h('button.remove Button -warn', {
-            'ev-click': send(collection.remove, controller),
-          }, 'X')
+      if (controller) {
+        return h('GlobalControllerNode', [
+          h('header', [
+            h('span.name', [
+              h('strong', ['Global: ']), controller().name
+            ]),
+            h('button.remove Button -warn', {
+              'ev-click': send(collection.remove, controller),
+            }, 'X')
+          ])
         ])
-      ])
+      }
     }),
 
     options.length ? h('div.spawn', [
