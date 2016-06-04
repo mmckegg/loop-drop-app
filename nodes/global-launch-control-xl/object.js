@@ -140,6 +140,7 @@ module.exports = function (context) {
     return result
   })
 
+  var stopButtonBase = Observ([light(1,0),light(1,0),light(1,0),light(1,0),light(1,0),light(1,0),light(1,0),light(1,0)])
   var buttonFlash = FlashArray()
   onTrigger(function (index) {
     if (index === selectedId) {
@@ -167,6 +168,28 @@ module.exports = function (context) {
       var item = project.items.get(result)
       if (item) {
         project.selected.set(item.path)
+      }
+    }
+  })
+
+  var stopAllButtons = ObservMidi(midiPort.stream, mappings.trackControl, ArrayStack([
+    stopButtonBase,
+    buttonFlash
+  ]))
+
+  stopAllButtons(function (values) {
+    var result = null
+
+    values.forEach(function (val, i) {
+      if (val) {
+        result = i
+      }
+    })
+
+    if (result != null) {
+      var item = project.items.get(result)
+      if (item && item.node) {
+        suppressNode(item.node, true)
       }
     }
   })
@@ -202,6 +225,27 @@ module.exports = function (context) {
   }
 
   return obs
+
+  // scoped
+
+  function suppressNode (node, flatten) {
+    if (node && node.controllers) {
+      node.controllers.forEach(function (controller) {
+        if (controller.looper) {
+          var release = controller.looper.transform(function (grid) {
+            grid.data = []
+            return grid
+          })
+
+          if (flatten) {
+            controller.looper.flatten()
+          } else {
+            return release
+          }
+        }
+      })
+    }
+  }
 }
 
 function light (r, g, flag) {
