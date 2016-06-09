@@ -44,9 +44,13 @@ function renderEntry(entry, project){
 
   var actions = project.actions
   var selected = project.selected() == entry.path
-    
+
   var classList = []
   var expander = ''
+
+  if (project.recordingPath() === entry.path) {
+    classList.push('-recording')
+  }
 
   if (entry.type === 'directory'){
     classList.push('-directory')
@@ -94,10 +98,10 @@ function renderEntry(entry, project){
     )
   }
 
-  var nameElement = renaming ? 
+  var nameElement = renaming ?
     currentRename : h('span', getBaseName(entry.fileName, '.json'))
 
-  return h('BrowserFile', { 
+  return h('BrowserFile', {
     'data-entry': entry,
     'draggable': true,
     'ev-dragstart': DragEvent(dragStart, entry),
@@ -116,7 +120,7 @@ function saveRename(){
   var project = this.data.project
   var entry = this.data.entry
   var actions = project.actions
-  
+
   if (currentRename){
     actions.rename(entry.path, currentRename.getValue())
   }

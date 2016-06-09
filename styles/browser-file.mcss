@@ -108,6 +108,15 @@ BrowserFile {
     }
   }
 
+  -recording {
+    background-color: #CA7777
+    color: #CCC
+
+    :hover {
+      background-color: #B66
+    }
+  }
+
   -renaming {
     background-color: #232 !important
 

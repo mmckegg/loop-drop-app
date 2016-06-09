@@ -85,6 +85,7 @@ function Project (parentContext) {
   // recording
   var recorder = SessionRecorder(context)
   obs.recording = recorder.recording
+  obs.recordingPath = recorder.recordingPath
   output.connect(recorder.input)
 
   obs.availableGlobalControllers = computed([context.midiPorts], function (portNames) {
@@ -122,6 +123,7 @@ function Project (parentContext) {
     renaming: obs.renaming,
     entries: obs.entries,
     recording: obs.recording,
+    recordingPath: obs.recordingPath,
     recordingEntries: obs.recordingEntries,
     subEntries: obs.subEntries,
     availableGlobalControllers: obs.availableGlobalControllers,
@@ -275,6 +277,13 @@ function Project (parentContext) {
       }, 10)
     },
 
+    scrollToRecording: function(){
+      setTimeout(function(){
+        var el = document.querySelector('.BrowserFile.-recording')
+        el && el.scrollIntoViewIfNeeded()
+      }, 100)
+    },
+
     scrollToSelectedChunk: function() {
       clearTimeout(chunkScroller)
       chunkScroller = setTimeout(function(){
@@ -346,6 +355,8 @@ function Project (parentContext) {
       process.nextTick(actions.grabInputForSelected)
     }
   })
+
+  obs.recordingPath(actions.scrollToRecording)
 
   context.tempo = obs.tempo
   context.swing = obs.swing
