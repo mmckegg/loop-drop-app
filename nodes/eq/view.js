@@ -10,19 +10,19 @@ module.exports = function renderFilter(node) {
       h('ParamList', [
         ModRange(node.low, {
           title: 'low',
-          defaultValue: 1,
+          defaultValue: 0,
           format: 'dBn',
           flex: 'small'
         }),
         ModRange(node.mid, {
           title: 'mid',
-          defaultValue: 1,
+          defaultValue: 0,
           format: 'dBn',
           flex: 'small'
         }),
         ModRange(node.high, {
           title: 'high',
-          defaultValue: 1,
+          defaultValue: 0,
           format: 'dBn',
           flex: 'small'
         }),
