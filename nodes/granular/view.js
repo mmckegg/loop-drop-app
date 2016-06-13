@@ -6,6 +6,7 @@ var Select = require('lib/params/select')
 var ToggleButton = require('lib/params/toggle-button')
 var SampleTrimmer = require('lib/params/sample-trimmer')
 var SampleChooser = require('lib/params/sample-chooser')
+var SampleRecorder = require('lib/params/sample-recorder')
 
 var modeChoices = [
   ['Loop', 'loop'],
@@ -26,9 +27,10 @@ module.exports = function renderGranular (node) {
 
     h('ParamList', [
 
+      SampleRecorder(node),
       SampleChooser(node),
 
-      Select(node.mode, { 
+      Select(node.mode, {
         options: modeChoices,
         defaultValue: 'loop'
       }),

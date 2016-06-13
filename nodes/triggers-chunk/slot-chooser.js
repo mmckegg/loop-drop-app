@@ -56,12 +56,12 @@ function SlotChooser(chunk, spawnSlot){
         }, '+ trigger')
       )
     }
-    
+
 
   }
 
   return h('SlotChooser', [
-    triggers, 
+    triggers,
     h('div.spacer'),
     h('div.slot -output', {
       'className': selectedSlotId === 'output' ? '-selected' : '',
@@ -113,7 +113,7 @@ function drop(ev){
       ]
     })
 
-    importSample(targetCollection.context, file, function(err, descriptor){
+    importSample(targetCollection.context, file.path, function (err, descriptor) {
       var player = node.sources.get(0)
       player.set(extend(player(), descriptor))
       ev.data.select(ev.data.id)
@@ -142,7 +142,7 @@ function drop(ev){
         }
 
         targetCollection.push(descriptor)
-      
+
       } else {
         source.id.set(ev.data.id)
       }

@@ -29,6 +29,33 @@ ToggleButton {
     }
   }
 
+  -record {
+    border: #4A4A4A 1px solid
+
+    :after {
+      background: #AEAEAE;
+    }
+
+    :focus {
+      box-shadow: rgb(232, 109, 101) 0 0 2px;
+    }
+
+    :hover {
+      border-color: #BD8489;
+      color: #FFEEEE;
+    }
+
+    -active {
+      background: #573236;
+      -webkit-animation: redBorderPulse 4s infinite
+
+      :after {
+        background: #D18282;
+        -webkit-animation: redPulse 1s infinite
+      }
+    }
+  }
+
   :focus {
     outline-style: none;
     color: white;

@@ -5,6 +5,7 @@ var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
 var SampleTrimmer = require('lib/params/sample-trimmer')
 var SampleChooser = require('lib/params/sample-chooser')
+var SampleRecorder = require('lib/params/sample-recorder')
 
 var modeChoices = [
   ['Oneshot', 'oneshot'],
@@ -25,10 +26,11 @@ module.exports = function renderSample (node) {
 
     h('ParamList', [
 
+      SampleRecorder(node),
       SampleChooser(node),
 
-      Select(node.mode, { 
-        options: modeChoices 
+      Select(node.mode, {
+        options: modeChoices
       }),
 
       ModRange(node.amp, {
