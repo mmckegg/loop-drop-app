@@ -87,10 +87,10 @@ function Setup(parentContext){
       var split = event.id.split('/')
       var chunk = context.chunkLookup.get(split[0])
       var slotId = split[1]
-      if (chunk){
-        if (event.event === 'start'){
+      if (chunk) {
+        if (event.event === 'start' && event.time >= context.audio.currentTime) {
           chunk.triggerOn(slotId, event.time)
-        } else if (event.event === 'stop'){
+        } else if (event.event === 'stop') {
           chunk.triggerOff(slotId, event.time)
         }
       }
