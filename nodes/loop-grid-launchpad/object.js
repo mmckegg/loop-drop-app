@@ -157,7 +157,7 @@ module.exports = function(context){
     redo: '176/107',
     hold: '176/108',
     suppress: '176/109',
-    snap2: '176/110',
+    swapTarget: '176/110',
     select: '176/111'
   })
 
