@@ -10,8 +10,8 @@ Trigger sounds using the **main grid** on the Launchpad hardware that correspond
 ### Beat Repeat
 
 The side buttons (A-H) on the Launchpad enable **beat repeat** mode as follows:
-  
-  - None (free play), 
+
+  - None (free play),
   - 1
   - 2/3
   - 1/2
@@ -21,6 +21,8 @@ The side buttons (A-H) on the Launchpad enable **beat repeat** mode as follows:
   - 1/8
 
 When beat repeat is enabled, **hold down** a trigger on the main grid, and it will be **continuously triggered** at the selected rate to the project tempo specified. This allows you to play in perfect time with the tempo.
+
+If `Select / Move` is held whilst selecting repeat rate, the **off-beat** will be repeated instead.
 
 ### Store Loop
 
@@ -44,7 +46,7 @@ Top button **6**/**fx** will suppress all current playback when held down. You c
 
 ### Select / Move
 
-To select buttons, hold down top button **8**/**mixer**, and press some buttons on the grid and release. You can now hold **Suppress** to mute the selected slots, or hold another button on the grid to move/offset the loop events. 
+To select buttons, hold down top button **8**/**mixer**, and press some buttons on the grid and release. You can now hold **Suppress** to mute the selected slots, or hold another button on the grid to move/offset the loop events.
 
 ### Loop Length
 

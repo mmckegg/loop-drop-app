@@ -22,6 +22,8 @@ The side buttons on the Launchpad enable **beat repeat** mode as follows:
 
 When beat repeat is enabled, **hold down** a trigger on the main grid, and it will be **continuously triggered** at the selected rate to the project tempo specified. This allows you to play in perfect time with the tempo.
 
+If `Select / Move` is held whilst selecting repeat rate, the **off-beat** will be repeated instead.
+
 ### Store Loop
 
 By default the last 2 bars of everything you play is being recorded. The top buttons (1-8) control the current loop. Press `🔼` to start looping the events you just played.

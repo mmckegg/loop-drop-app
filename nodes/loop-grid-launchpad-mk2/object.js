@@ -350,15 +350,15 @@ module.exports = function(context){
   // repeater
   var releaseRepeatLight = null
   mapWatchDiff(repeatStates, repeatButtons, obs.repeatLength.set)
-  watch(obs.repeatLength, function(value){
+  watch(obs.repeatLength, function (value) {
     var button = repeatButtons[repeatStates.indexOf(value)]
-    if (button){
+    if (button) {
       if (releaseRepeatLight) releaseRepeatLight()
-      releaseRepeatLight = button.light(stateLights.grey)
+      releaseRepeatLight = button.light(shiftHeld ? stateLights.red : stateLights.grey)
     }
     transforms.holder.setLength(value)
-    if (value < 2){
-      transforms.repeater.start(grabInputExcludeNoRepeat, value)
+    if (value < 2) {
+      transforms.repeater.start(grabInputExcludeNoRepeat, value, shiftHeld)
     } else {
       transforms.repeater.stop()
     }
