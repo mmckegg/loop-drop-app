@@ -2,6 +2,19 @@ RangeParam {
   flex-basis: 80px
   display: flex
 
+  div.link {
+    span.title {
+      font-weight: bold
+    }
+    flex: 1;
+    font-size: 90%
+    overflow: hidden
+    border: 1px solid #688c65
+    background: #384e3c
+    padding: 2px 3px 0;
+    max-height: 18px;
+  }
+
   -flex {
     flex: 1
   }
