@@ -3,6 +3,9 @@ module.exports = {
   group: 'modifierChunks',
   node: 'modulatorChunk',
   description: 'Modulate parameters on other chunks.',
+  spawn: {
+    flags: ['freezeSuppress']
+  },
   object: require('./object'),
   render: require('./view')
 }
