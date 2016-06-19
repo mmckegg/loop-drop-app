@@ -20,7 +20,7 @@ function SlotChooser(chunk, spawnSlot){
     var id = String(i)
     var slot = slots.get(id)
     var width = (100 / shape[1]) + '%'
-    var dragInfo = { collection: chunk.slots, id: id, select: chunk.selectedSlotId.set }
+    var dragInfo = { collection: chunk.slots, id: id, select: chunk.selectedSlotId.set, spawnSlot: spawnSlot, chunk: chunk }
 
     if (slot){
       triggers.push(
@@ -98,8 +98,11 @@ function drop(ev){
   var targetLookup = targetCollection.context.slotLookup
   var target = targetLookup.get(ev.data.id)
 
-  if (containsFiles(ev.dataTransfer)) {
-    var file = ev.dataTransfer.items[0].getAsFile()
+  if (containsFiles(ev.dataTransfer) || ev.dataTransfer.types.includes('loop-drop/sample-path')) {
+    var path = ev.dataTransfer.items[0].kind === 'file'
+      ? ev.dataTransfer.items[0].getAsFile().path
+      : ev.dataTransfer.getData('loop-drop/sample-path')
+
     if (target){
       targetCollection.remove(target)
     }
@@ -113,12 +116,23 @@ function drop(ev){
       ]
     })
 
-    importSample(targetCollection.context, file.path, function (err, descriptor) {
+    importSample(targetCollection.context, path, function (err, descriptor) {
       var player = node.sources.get(0)
       player.set(extend(player(), descriptor))
       ev.data.select(ev.data.id)
     })
-
+  } else if (ev.dataTransfer.types.includes('loop-drop/source')) {
+    var data = JSON.parse(ev.dataTransfer.getData('loop-drop/source'))
+    if (!target) {
+      target = ev.data.spawnSlot({id: ev.data.id, chunk: ev.data.chunk})
+    }
+    target.sources.push(data)
+  } else if (ev.dataTransfer.types.includes('loop-drop/processor')) {
+    var data = JSON.parse(ev.dataTransfer.getData('loop-drop/processor'))
+    if (!target) {
+      target = ev.data.spawnSlot({id: ev.data.id, chunk: ev.data.chunk})
+    }
+    target.processors.push(data)
   } else {
     var sourceCollection = currentDrag.collection
     var sourceLookup = sourceCollection.context.slotLookup

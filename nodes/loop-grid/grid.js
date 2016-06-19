@@ -228,7 +228,13 @@ function dragOver(ev){
         }
       }
 
-      ev.dataTransfer.dropEffect = 'move'
+      if (ev.dataTransfer.types.length) {
+        // HACK: detect when dragging from chunks - prevent remove
+        // need to rewrite all the drag and drop to be native, without currentDrag hacks
+        ev.dataTransfer.dropEffect = 'link'
+      } else {
+        ev.dataTransfer.dropEffect = 'move'
+      }
       cloneDrag = null
     }
 
