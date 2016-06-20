@@ -28,7 +28,7 @@
     "audio-slot": "~5.0.3",
     "audio-slot-param": "~2.2.0",
     "audio-timeline": "~1.2.0",
-    "bopper": "~2.10.0",
+    "bopper": "~2.11.0",
     "brace": "~0.5.0",
     "bulk-require": "^0.2.1",
     "cuid": "~1.2.4",
