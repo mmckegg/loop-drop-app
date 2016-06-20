@@ -88,7 +88,7 @@ function Setup(parentContext){
       var chunk = context.chunkLookup.get(split[0])
       var slotId = split[1]
       if (chunk) {
-        if (event.event === 'start' && event.time >= context.audio.currentTime) {
+        if (event.event === 'start' && event.time >= context.audio.currentTime - 0.001) {
           chunk.triggerOn(slotId, event.time)
         } else if (event.event === 'stop') {
           chunk.triggerOff(slotId, event.time)
