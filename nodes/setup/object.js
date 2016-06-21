@@ -191,16 +191,20 @@ function Setup(parentContext){
     }
   }
 
-  node.updateChunkReferences = function(oldId, newId){
-    node.controllers.forEach(function(controller){
-      if (controller.chunkPositions && controller.chunkPositions()){
+  node.updateChunkReferences = function (oldId, newId) {
+    node.controllers.forEach(function (controller) {
+      if (controller.chunkPositions && controller.chunkPositions()) {
         var value = controller.chunkPositions()[oldId]
-        if (value && controller.chunkPositions.put){
+        if (value && controller.chunkPositions.put) {
           controller.chunkPositions.delete(oldId)
           if (newId) {
             controller.chunkPositions.put(newId, value)
           }
         }
+      }
+
+      if (controller.chunkIds && controller.chunkIds()) {
+        controller.chunkIds.set(controller.chunkIds().map(x => x === oldId ? newId : x))
       }
     })
 
