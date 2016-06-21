@@ -106,7 +106,7 @@ function dragOver (ev) {
   var types = ev.dataTransfer.types
   if (ev.currentTarget !== draggedElement && (types.includes('loop-drop/chunk-id') || types.includes('loop-drop/chunk'))) {
     ev.currentTarget.classList.add('-dragOver')
-    ev.dataTransfer.dropEffect = 'move'
+    ev.dataTransfer.dropEffect = 'link'
     ev.event.preventDefault()
   }
 }
