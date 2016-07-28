@@ -1,4 +1,5 @@
 var h = require('lib/h')
+var when = require('@mmckegg/mutant/when')
 var renderRouting = require('lib/widgets/routing')
 var FlagParam = require('lib/flag-param')
 var renderChunk = require('lib/widgets/chunk')
@@ -56,9 +57,10 @@ module.exports = function renderSlicerChunk (node) {
           title: 'Enable'
         })
       ]),
-      node.osc2.enabled() ? h('section', [
+
+      when(node.osc2.enabled, h('section', [
         oscillatorParams(node.osc2)
-      ]) : null,
+      ])),
 
       h('h1.withOptions', [
         h('span', 'Oscillator 3'),
@@ -66,9 +68,10 @@ module.exports = function renderSlicerChunk (node) {
           title: 'Enable'
         })
       ]),
-      node.osc3.enabled() ? h('section', [
+
+      when(node.osc3.enabled, h('section', [
         oscillatorParams(node.osc3)
-      ]) : null,
+      ])),
 
       h('h1', 'Master'),
       h('ParamList', [
@@ -104,12 +107,11 @@ module.exports = function renderSlicerChunk (node) {
           renderRouting(node)
         ])
       ])
-
     ]
   })
 }
 
-function filterParams(node) {
+function filterParams (node) {
   return h('ParamList', [
     Select(node.type, {
       defaultValue: 'lowpass',
@@ -132,7 +134,7 @@ function filterParams(node) {
   ])
 }
 
-function oscillatorParams(node) {
+function oscillatorParams (node) {
   return h('ParamList', [
 
     Select(node.shape, {

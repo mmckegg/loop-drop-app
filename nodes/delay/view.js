@@ -1,4 +1,5 @@
 var h = require('lib/h')
+var when = require('@mmckegg/mutant/when')
 var Header = require('lib/widgets/header')
 var ModRange = require('lib/params/mod-range')
 var ToggleButton = require('lib/params/toggle-button')
@@ -11,8 +12,6 @@ var filterChoices = [
 ]
 
 module.exports = function renderDelay (node) {
-  var isSyncing = node.sync()
-
   return h('ProcessorNode -delay', [
 
     Header(node, h('span', 'Delay')),
@@ -29,12 +28,20 @@ module.exports = function renderDelay (node) {
         offValue: 'processor/delay'
       }),
 
-      ModRange(node.time, {
-        title: 'time',
-        defaultValue: 0.25,
-        format: isSyncing ? 'beat' : 'ms',
-        flex: true
-      }),
+      when(node.sync,
+        ModRange(node.time, {
+          title: 'time',
+          defaultValue: 0.25,
+          format: 'beat',
+          flex: true
+        }),
+        ModRange(node.time, {
+          title: 'time',
+          defaultValue: 0.25,
+          format: 'ms',
+          flex: true
+        })
+      ),
 
       ModRange(node.feedback, {
         title: 'feedback',

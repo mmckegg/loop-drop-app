@@ -1,47 +1,35 @@
-var h = require('micro-css/h')(require('virtual-dom/h'))
-var send = require('value-event/event')
+var h = require('lib/h')
+var send = require('@mmckegg/mutant/send')
+var when = require('@mmckegg/mutant/when')
+var computed = require('@mmckegg/mutant/computed')
 
-var SubLoop = require('lib/sub-loop')
-var ObservClassHook = require('lib/observ-class-hook')
 var Select = require('lib/params/select')
 var QueryParam = require('lib/query-param')
-
 var renderGrid = require('./grid.js')
 
-module.exports = function(node){
-  if (node) {
-    var context = node.context
-    var collection = context.collection
+module.exports = function (node) {
+  var context = node.context
+  var collection = context.collection
 
-    var state = {node: node}
-    var nameSuffix = node().port ? ' (' + node().port + ')' : ''
-    return h('div ControllerNode', {
-      'ev-class': ObservClassHook(node.activeInput, '-input'),
-      'ev-click': send(node.grabInput)
-    }, [
-      h('header', [
-        h('span', 'Loop Grid' + nameSuffix),
-        h('button.remove Button -warn', {
-          'ev-click': send(collection.remove, node)
-        }, 'X')
-      ]),
-      h('section', [
-        renderGrid(node),
-        SubLoop(node.playback.loopPosition, renderLoopPosition),
-        h('div.controls', renderParams(state.node))
-      ])
+  var nameSuffix = node().port ? ' (' + node().port + ')' : ''
+  return h('div ControllerNode', {
+    classList: [
+      when(node.activeInput, '-input')
+    ],
+    'ev-click': send(node.grabInput)
+  }, [
+    h('header', [
+      h('span', 'Loop Grid' + nameSuffix),
+      h('button.remove Button -warn', {
+        'ev-click': send(collection.remove, node)
+      }, 'X')
+    ]),
+    h('section', [
+      renderGrid(node),
+      renderLoopPosition(node.playback.loopPosition),
+      h('div.controls', renderParams(node))
     ])
-  } else {
-    return h('div')
-  }
-}
-
-module.exports.getInvalidationArgs = function (node) {
-  return [node.context.chunkLookup(), node.context.setup.selectedChunkId()]
-}
-
-function invoke (func) {
-  return func()
+  ])
 }
 
 function renderParams (controller) {
@@ -61,7 +49,7 @@ function renderParams (controller) {
     var info = controller.context.nodeInfo.lookup[controller().node]
     var portMatch = info && info.portMatch
     params.push(
-      SubLoop([controller.port, controller.context.midiPorts, portMatch], renderPortChoices)
+      renderPortChoices(controller.port, controller.context.midiPorts, portMatch)
     )
   }
 
@@ -69,30 +57,42 @@ function renderParams (controller) {
 }
 
 function renderPortChoices (port, choices, portMatch) {
-  if (typeof choices === 'function') choices = choices()
-  if (portMatch && choices) {
-    choices = choices.filter(function (choice) {
-      return choice.match(portMatch)
-    })
-  }
+  var matchingChoices = computed([portMatch, choices], function (portMatch, choices) {
+    if (portMatch && choices) {
+      return choices.filter(function (choice) {
+        return choice.match(portMatch)
+      })
+    } else {
+      return choices
+    }
+  })
+
   return Select(port, {
-    options: choices,
+    options: matchingChoices,
     flex: true,
     missingPrefix: ' (disconnected)',
-    includeBlank: "No Midi Device"
+    includeBlank: 'No Midi Device'
   })
 }
 
-function renderLoopPosition (loopPosition) {
-  var positionElements = []
-  var data = loopPosition()
+function renderLoopPosition (obs) {
+  var loopPosition = computed([obs], x => x[0])
+  var loopLength = computed([obs], x => x[1])
 
-  if (Array.isArray(data)){
-    for (var i=0;i<data[1];i++){
-      var active = Math.floor(data[0]) == i
-      positionElements.push(h('div', {className: active ? '-active' : ''}))
+  return computed([loopLength], function (loopLength) {
+    var positionElements = []
+    for (var i = 0; i < loopLength; i++) {
+      var active = computed([loopPosition, i], floorEq)
+      positionElements.push(
+        h('div', {
+          classList: when(active, '-active')
+        })
+      )
     }
-  }
+    return h('LoopPosition', positionElements)
+  })
+}
 
-  return h('LoopPosition', positionElements)
+function floorEq (a, b) {
+  return Math.floor(a) === Math.floor(b)
 }

@@ -1,7 +1,6 @@
 var h = require('lib/h')
 var Header = require('lib/widgets/header')
-
-var Range = require('lib/params/range')
+var computed = require('@mmckegg/mutant/computed')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
 
@@ -10,13 +9,11 @@ var types = [
   ['909', '909']
 ]
 
-module.exports = function renderDrumSynth (node){
-  var data = node()
-
+module.exports = function renderDrumSynth (node) {
   return h('SourceNode -drumSynth', [
     Header(node, h('span', [
       h('strong', 'Drum Synth:'), ' Kick ',
-      h('span', data.type)
+      h('span', computed(node, d => d.node))
     ])),
     h('ParamList', [
       Select(node.type, {

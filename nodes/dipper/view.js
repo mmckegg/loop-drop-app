@@ -8,18 +8,13 @@ var modeChoices = [
   ['Source', 'source']
 ]
 
-module.exports = function renderDipper(node){
-  var data = node()
-
+module.exports = function renderDipper (node) {
   return h('ProcessorNode -dipper', [
-
     Header(node, h('span', 'Dipper')),
-
     h('ParamList', [
-
       Select(node.mode, {
         defaultValue: 'modulate',
-        options: modeChoices 
+        options: modeChoices
       }),
 
       ModRange(node.ratio, {
@@ -28,8 +23,6 @@ module.exports = function renderDipper(node){
         format: 'ratio',
         flex: true
       })
-
     ])
-
   ])
 }

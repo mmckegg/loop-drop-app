@@ -10,15 +10,18 @@ var mainWindow = null
 var currentProject = null
 var quiting = false
 
-electron.app.on('before-quit', function() {
+// expose manual gc()
+electron.app.commandLine.appendSwitch('js-flags', '--expose_gc')
+
+electron.app.on('before-quit', function () {
   quiting = true
 })
 
-electron.ipcMain.on('choose-project', function(event, arg) {
+electron.ipcMain.on('choose-project', function (event, arg) {
   if (arg === 'new') {
     electron.dialog.showSaveDialog({
       title: 'Create New Project'
-    }, function(path){
+    }, function (path) {
       if (path) {
         createProject(path)
       }
@@ -29,7 +32,7 @@ electron.ipcMain.on('choose-project', function(event, arg) {
     electron.dialog.showOpenDialog({
       title: 'Browse for Project Folder',
       properties: [ 'openDirectory' ]
-    }, function(paths) {
+    }, function (paths) {
       if (paths && paths.length) {
         loadProject(paths[0])
       }
@@ -39,24 +42,22 @@ electron.ipcMain.on('choose-project', function(event, arg) {
   }
 })
 
-electron.ipcMain.on('loaded', function(event, arg) {
+electron.ipcMain.on('loaded', function (event, arg) {
   event.sender.send('load-project', currentProject)
 })
 
-electron.app.on('window-all-closed', function() {
-  //if (process.platform != 'darwin')
+electron.app.on('window-all-closed', function () {
   electron.app.quit()
 })
 
-electron.app.on('ready', function() {
+electron.app.on('ready', function () {
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(menu)
   }
   chooseProject()
-});
+})
 
-function chooseProject() {
-
+function chooseProject () {
   if (mainWindow) {
     mainWindow.close()
   }
@@ -89,18 +90,18 @@ function chooseProject() {
   }
 }
 
-function createProject(path) {
-  fs.mkdir(path, function(err) {
+function createProject (path) {
+  fs.mkdir(path, function (err) {
     if (err) throw err
     loadProject(path)
   })
 }
 
-function getDemoProjectPath() {
+function getDemoProjectPath () {
   // find demo-project by looking upwards
   var searchLevels = 2
   var lookUp = []
-  for (var i=0;i<searchLevels;i++) {
+  for (var i = 0; i < searchLevels; i++) {
     lookUp.push('..')
     var current = join.apply(this, [__dirname].concat(lookUp, 'demo-project'))
     if (fs.existsSync(current)) {
@@ -112,8 +113,7 @@ function getDemoProjectPath() {
   return join(__dirname, 'demo-project')
 }
 
-function loadProject(path) {
-
+function loadProject (path) {
   if (mainWindow) {
     mainWindow.close()
   }
@@ -136,21 +136,21 @@ function loadProject(path) {
     }
   })
 
-  mainWindow.webContents.on('did-finish-load', function() {
+  mainWindow.webContents.on('did-finish-load', function () {
     mainWindow.show()
   })
 
-  mainWindow.webContents.on('will-navigate', function(e) {
+  mainWindow.webContents.on('will-navigate', function (e) {
     e.preventDefault()
   })
 
-  mainWindow.webContents.on('will-navigate', function(e, url) {
+  mainWindow.webContents.on('will-navigate', function (e, url) {
     e.preventDefault()
     electron.shell.openExternal(url)
   })
 
   mainWindow.loadURL('file://' + __dirname + '/views/window.html')
-  mainWindow.on('close', function() {
+  mainWindow.on('close', function () {
     mainWindow = null
     if (!quiting) {
       chooseProject()
