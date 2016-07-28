@@ -6,6 +6,7 @@ var Range = require('lib/params/range')
 module.exports = function renderSlot (node) {
   return h('AudioSlot', [
 
+    // NOTE: this check could be error prone - consider revising?
     checkIsTrigger(node) ? h('section', [
       h('h1', 'Sources'),
       Collection(node.sources),

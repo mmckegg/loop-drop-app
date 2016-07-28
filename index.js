@@ -1,7 +1,8 @@
 var electron = require('electron')
 var insertCss = require('insert-css')
+var h = require('lib/h')
 
-var fs = require('fs')
+var fs = require('lib/fs-with-watchers')
 var join = require('path').join
 
 var Observ = require('observ')
@@ -9,8 +10,6 @@ var Property = require('observ-default')
 var watch = require('observ/watch')
 var FileObject = require('lib/file-object')
 
-var VirtualDom = require('virtual-dom')
-var MainLoop = require('main-loop')
 var noDrop = require('lib/no-drop')
 var applyKeyboardTempo = require('lib/keyboard-tempo')
 var renderNode = require('lib/render-node')
@@ -63,7 +62,12 @@ electron.ipcRenderer.on('load-project', function (e, path) {
   var projectFile = FileObject(rootContext)
 
   projectFile.onLoad(function () {
-    document.body.appendChild(createRootElement(projectFile.node))
+    applyKeyboardTempo(projectFile.node)
+
+    document.documentElement.replaceChild(h('body', [
+      renderNode(projectFile.node)
+    ]), document.body)
+
     window.currentProject = projectFile.node
   })
 
@@ -72,23 +76,6 @@ electron.ipcRenderer.on('load-project', function (e, path) {
     projectFile.load(projectPath)
   })
 })
-
-function createRootElement (project) {
-  var renderer = MainLoop(project, renderNode, VirtualDom)
-
-  project(update)
-  project.resolved(update)
-  applyKeyboardTempo(project)
-
-  return renderer.target
-
-  // scoped
-
-  function update () {
-    // render!
-    renderer.update(project)
-  }
-}
 
 function ensureProject (path, cb) {
   rootContext.fs.exists(path, function (exists) {

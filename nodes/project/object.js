@@ -152,13 +152,19 @@ function Project (parentContext) {
       obs.selected.set(path)
     },
 
+    select: function (pathOrItem) {
+      if (pathOrItem) {
+        obs.selected.set(pathOrItem.path || pathOrItem)
+      }
+    },
+
     tapTempo: function () {
       tapTempo.tap()
     },
 
     closeFile: function (path) {
       var object = findItemByPath(obs.items, path)
-      if (object){
+      if (object) {
         object.close()
       }
     },
@@ -212,9 +218,9 @@ function Project (parentContext) {
           obs.recordingEntries.refresh()
 
           var item = findItemByPath(obs.items, filePath)
-          if (item){
+          if (item) {
             item.load(newFilePath)
-            if (isSelected){
+            if (isSelected) {
               obs.selected.set(item.path)
             }
           }

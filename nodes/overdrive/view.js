@@ -1,9 +1,8 @@
 var h = require('lib/h')
 var Header = require('lib/widgets/header')
-var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 
-module.exports = function renderOverdrive (node){
+module.exports = function renderOverdrive (node) {
   return h('ProcessorNode -overdrive', [
     Header(node, h('span', 'Overdrive')),
     h('ParamList', [

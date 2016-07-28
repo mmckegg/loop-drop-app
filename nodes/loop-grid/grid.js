@@ -1,161 +1,166 @@
-var h = require('micro-css/h')(require('virtual-dom/h'))
-var send = require('value-event/event')
+var h = require('lib/h')
+var send = require('@mmckegg/mutant/send')
+var when = require('@mmckegg/mutant/when')
+var watch = require('@mmckegg/mutant/watch')
 var MPE = require('lib/mouse-position-event')
 var MouseDragEvent = require('lib/mouse-drag-event')
-var nextTick = require('next-tick')
 var getBaseName = require('path').basename
-var GridStateHook = require('./grid-state-hook.js')
 var read = require('lib/read')
 var extend = require('xtend')
-var Thunk = require('vdom-thunk')
+var computed = require('@mmckegg/mutant/computed')
 
 var QueryParam = require('lib/query-param')
 
 module.exports = function renderGrid (controller) {
-  var context = controller.context
-  var setup = context.setup
-  var chunks = getChunks(controller)
   var playback = controller.playback
-  var shape = playback.shape()
+  var rows = computed(playback.shape, s => s[0])
+  var cols = computed(playback.shape, s => s[1])
 
   return h('LoopGrid', {
-    className: shape[1] > 16 ? '-min' : '',
+    classList: computed(cols, c => c > 16 ? '-min' : ''),
     'ev-dragover': MPE(dragOver, controller),
     'ev-drop': MPE(drop, controller),
     'ev-dragleave': MPE(dragLeave, controller),
     'ev-dragenter': MPE(dragEnter, controller)
   }, [
-    Thunk(renderRows, controller, shape[0], shape[1]),
-    h('div.chunks', chunks.map(function (chunk) {
-      return renderChunkBlock(chunk, controller)
-    }))
+    renderRows(controller, rows, cols),
+    h('div.chunks', MapChunkPositions(controller, renderChunkBlock))
   ])
 }
 
 function renderRows (controller, rows, cols) {
-  var children = []
-  for (var r = 0; r < rows; r++) {
-    var buttons = []
-    for (var c = 0; c < cols; c++) {
-      buttons.push(h('div.button', {
-        'ev-dragenter': MPE(enterButton, controller),
-        'ev-dragleave': MPE(leaveButton, controller)
-      }))
+  return computed([rows, cols], function (rows, cols) {
+    var children = []
+    for (var r = 0; r < rows; r++) {
+      var buttons = []
+      for (var c = 0; c < cols; c++) {
+        buttons.push(h('div.button', {
+          'ev-dragenter': MPE(enterButton, controller),
+          'ev-dragleave': MPE(leaveButton, controller)
+        }))
+      }
+      children.push(h('div.row', buttons))
     }
-    children.push(h('div.row', buttons))
-  }
-  return h('div.rows', {'ev-state': GridStateHook(controller.gridState)}, children)
+
+    return h('div.rows', {
+      hooks: [
+        GridStateHook(controller.gridState)
+      ]
+    }, children)
+  })
 }
 
-function renderChunkBlock(chunk, controller){
+function GridStateHook (gridState) {
+  return function (element) {
+    return watch(gridState, function (data) {
+      // TODO: this could be a lot more efficient if it was event based
+      var playing = data.playing
+      var active = data.active
+      var triggers = data.triggers
+      var recording = data.recording
+
+      for (var r = 0; r < triggers.shape[0]; r++) {
+        for (var c = 0; c < triggers.shape[1]; c++) {
+          var button = element.childNodes[r].childNodes[c]
+          var classes = '.button'
+
+          if (triggers.get(r, c)) classes += ' -present'
+          if (playing.get(r, c)) classes += ' -playing'
+          if (recording.get(r, c)) classes += ' -recording'
+          if (active.get(r, c)) classes += ' -active'
+
+          if (button.className !== classes) {
+            button.className = classes
+          }
+        }
+      }
+    })
+  }
+}
+
+function renderChunkBlock (controller, chunk, origin) {
   var setup = controller.context.setup
-  var shape = controller.playback.shape()
+  var bounds = controller.playback.shape
 
-  var selectedChunkId = setup.selectedChunkId()
-  var box = {
-    top: chunk.origin[0] / shape[0],
-    bottom: (chunk.origin[0] + chunk.shape[0]) / shape[0],
-    left: chunk.origin[1] / shape[1],
-    right: (chunk.origin[1] + chunk.shape[1]) / shape[1]
+  if (chunk) {
+    var node = setup.chunks.lookup.get(chunk.id())
+    var selected = computed([setup.selectedChunkId, chunk.id], eq)
+    var resizable = !!chunk.templateSlot || !chunk.slots
+
+    return h('div.chunk', {
+      classList: [
+        when(selected, '-selected')
+      ],
+      style: {
+        'top': computed([origin, bounds], (o, b) => percent(o[0] / b[0])),
+        'height': computed([origin, chunk.shape, bounds], (o, s, b) => percent(((o[0] + s[0]) / b[0]) - (o[0] / b[0]))),
+        'left': computed([origin, bounds], (o, b) => percent(o[1] / b[1])),
+        'width': computed([origin, chunk.shape, bounds], (o, s, b) => percent(((o[1] + s[1]) / b[1]) - (o[1] / b[1]))),
+        'border-color': color(chunk.color, 1),
+        'background-color': color(chunk.color, 0.1),
+        'color': color(mixColor(chunk.color, [255, 255, 255]), 1)
+      },
+      draggable: true,
+      'ev-click': send(selectChunk, { chunk: chunk, controller: controller }),
+      'ev-dblclick': send(toggleChunk, node),
+      'ev-dragstart': MPE(startDrag, node),
+      'ev-dragend': MPE(endDrag, node)
+    }, [
+      h('span.label', chunk.id),
+      resizable ? [
+        h('div.handle -bottom', {
+          draggable: true,
+          'ev-mousedown': MouseDragEvent(resize, { edge: 'bottom', node: node, shape: bounds })
+        }),
+        h('div.handle -right', {
+          draggable: true,
+          'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: node, shape: bounds })
+        })
+      ] : null
+    ])
   }
-
-  var style = {
-    'top': percent(box.top),
-    'height': percent(box.bottom - box.top),
-    'left': percent(box.left),
-    'width': percent(box.right - box.left),
-    'border-color': color(chunk.color, 1),
-    'background-color': color(chunk.color, 0.1),
-    'color': color(mixColor(chunk.color, [255,255,255]),1)
-  }
-
-  var node = setup.chunks.lookup.get(chunk.id)
-
-  return h('div.chunk', {
-    className: selectedChunkId == chunk.id ? '-selected' : null,
-    style: style,
-    draggable: true,
-    'ev-click': send(selectChunk, { chunkId: chunk.id, controller: controller }),
-    'ev-dblclick': send(toggleChunk, node),
-    'ev-dragstart': MPE(startDrag, node),
-    'ev-dragend': MPE(endDrag, node)
-  },[
-    h('span.label', chunk.id),
-    chunk.resizable ? [
-      h('div.handle -bottom', {
-        draggable: true,
-        'ev-mousedown': MouseDragEvent(resize, { edge: 'bottom', node: node, shape: shape })
-      }),
-      h('div.handle -right', {
-        draggable: true,
-        'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: node, shape: shape })
-      })
-    ] : null
-  ])
 }
 
-function resize(ev){
+function resize (ev) {
   var edge = this.data.edge
   var node = this.data.node
-  var shape = this.data.shape
+  var shape = this.data.shape()
+  var param = node.shape || QueryParam(node, 'shape')
 
-  if (ev.type === 'mousedown'){
+  if (ev.type === 'mousedown') {
     this.lastOffset = 0
-    this.startValue = QueryParam(node, 'shape').read()
+    this.startValue = param()
     this.start = ev
   } else if (this.start) {
-    if (edge === 'bottom'){
+    if (edge === 'bottom') {
       var offset = Math.round((ev.y - this.start.y) / 30)
-      if (this.lastOffset !== offset){
-        QueryParam(node, 'shape').set([ clamp1(this.startValue[0]+offset), this.startValue[1] ])
+      if (this.lastOffset !== offset) {
+        param.set([ clamp1(this.startValue[0] + offset), this.startValue[1] ])
         this.lastOffset = offset
       }
-    } else if (edge === 'right'){
+    } else if (edge === 'right') {
       var offset = Math.round((ev.x - this.start.x) / (248 / shape[1]))
-      if (this.lastOffset !== offset){
-        QueryParam(node, 'shape').set([ this.startValue[0], clamp1(this.startValue[1]+offset) ])
+      if (this.lastOffset !== offset) {
+        param.set([ this.startValue[0], clamp1(this.startValue[1] + offset) ])
         this.lastOffset = offset
       }
     }
   }
-
 }
 
-function clamp1(val){
+function clamp1 (val) {
   return Math.max(val, 1)
 }
 
-function getChunks(controller){
-  var context = controller.context
-  var chunkPositions = controller.chunkPositions ? controller.chunkPositions() : {}
-  var chunks = []
-  for (var k in chunkPositions){
-
-    var chunk = context.chunkLookup.get(k)
-
-    if (chunk){
-      var data = chunk()
-      chunks.push({
-        id: data.id,
-        color: data.color,
-        shape: data.shape,
-        origin: chunkPositions[k],
-
-        // HACK: find a better way to detect/set this
-        resizable: !!chunk.templateSlot || !chunk.slots
-
-      })
-    }
-
-  }
-  return chunks
+function eq (a, b) {
+  return a === b
 }
 
-function enterButton(ev) {
+function enterButton (ev) {
   ev.currentTarget.classList.add('-dragOver')
 }
 
-function leaveButton(ev) {
+function leaveButton (ev) {
   ev.currentTarget.classList.remove('-dragOver')
 }
 
@@ -165,52 +170,51 @@ function startDrag (ev) {
   window.currentDrag = ev
 }
 
-function endDrag(ev){
+function endDrag (ev) {
   window.currentDrag = null
 }
 
 var cloneDrag = null
 var entering = null
-function dragLeave(ev){
+function dragLeave (ev) {
   var controller = ev.data
-  if (window.currentDrag && (!entering || entering !== controller)){
-    var chunkId = getId(currentDrag.data)
-    if (chunkId && !ev.altKey && !ev.shiftKey){
+  if (window.currentDrag && (!entering || entering !== controller)) {
+    var chunkId = getId(window.currentDrag.data)
+    if (chunkId && !ev.altKey && !ev.shiftKey) {
       controller.chunkPositions.delete(chunkId)
     }
   }
 }
-function dragEnter(ev){
+function dragEnter (ev) {
   entering = ev.data
 
-  setTimeout(function(){
+  setTimeout(function () {
     entering = null
   }, 1)
 }
 
-function getId(chunk){
-  if (typeof chunk== 'function'){
+function getId (chunk) {
+  if (typeof chunk === 'function') {
     chunk = chunk()
   }
 
-  if (chunk){
+  if (chunk) {
     return chunk.id
   }
 }
 
-function dragOver(ev){
+function dragOver (ev) {
   var controller = ev.data
   var currentDrag = window.currentDrag
 
-  if (currentDrag){
-
+  if (currentDrag) {
     if (ev.altKey || ev.shiftKey) {
       cloneDrag = currentDrag
       ev.dataTransfer.dropEffect = 'copy'
     } else {
       var chunkId = getId(currentDrag.data)
 
-      if (chunkId){
+      if (chunkId) {
         var shape = controller.playback.shape()
         var height = ev.offsetHeight / shape[0]
         var width = ev.offsetWidth / shape[1]
@@ -218,13 +222,13 @@ function dragOver(ev){
         var x = ev.offsetX - currentDrag.offsetX
         var y = ev.offsetY - currentDrag.offsetY
 
-        var r = Math.round(y/width)
-        var c = Math.round(x/width)
+        var r = Math.round(y / height)
+        var c = Math.round(x / width)
 
         var currentValue = controller.chunkPositions.get(chunkId)
 
-        if (!currentValue || currentValue[0] !== r || currentValue[1] !== c){
-          controller.chunkPositions.put(chunkId, [r,c])
+        if (!currentValue || currentValue[0] !== r || currentValue[1] !== c) {
+          controller.chunkPositions.put(chunkId, [r, c])
         }
       }
 
@@ -239,13 +243,13 @@ function dragOver(ev){
     }
 
     ev.event.preventDefault()
-  } else if (~ev.dataTransfer.types.indexOf('filepath')){
+  } else if (~ev.dataTransfer.types.indexOf('filepath')) {
     ev.dataTransfer.dropEffect = 'copy'
     ev.event.preventDefault()
   }
 }
 
-function drop(ev){
+function drop (ev) {
   var path = ev.dataTransfer.getData('filepath')
   var controller = ev.data
   var actions = controller.context.actions
@@ -255,8 +259,8 @@ function drop(ev){
   var shape = controller.playback.shape()
   var height = ev.offsetHeight / shape[0]
   var width = ev.offsetWidth / shape[1]
-  var r = Math.floor(ev.offsetY/height)
-  var c = Math.floor(ev.offsetX/width)
+  var r = Math.floor(ev.offsetY / height)
+  var c = Math.floor(ev.offsetX / width)
 
   var currentDrag = cloneDrag
   cloneDrag = null
@@ -270,18 +274,17 @@ function drop(ev){
       } else {
         // duplicate local chunk
         var id = setup.chunks.resolveAvailable(data.id)
-        var chunk = setup.chunks.push(extend(data, {
+        setup.chunks.push(extend(data, {
           id: id
         }))
-        controller.chunkPositions.put(id, [r,c])
+        controller.chunkPositions.put(id, [r, c])
         return
       }
     }
   }
 
-  if (path && setup && setup.chunks){
-
-    actions.importChunk(path, setup.context.cwd, function(err, newPath) {
+  if (path && setup && setup.chunks) {
+    actions.importChunk(path, setup.context.cwd, function (err, newPath) {
       if (err) throw err
 
       var id = getBaseName(newPath, '.json')
@@ -294,53 +297,76 @@ function drop(ev){
         'scale': '$global'
       })
 
-      controller.chunkPositions.put(id, [r,c])
+      controller.chunkPositions.put(id, [r, c])
     })
-
   }
 }
 
-function getElementMouseOffset(offsetX, offsetY, clientX, clientY){
-  return [clientX - offsetX, clientY - offsetY]
-}
-
-function getOffset(start, end, size){
-  var difference = (end - start) / size
-  return Math.round(difference)
-}
-
-function percent(decimal){
+function percent (decimal) {
   return (decimal * 100) + '%'
 }
 
-function color(rgb, a){
-  if (!Array.isArray(rgb)){
-    rgb = [100,100,100]
-  }
-  return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
+function color (rgb, a) {
+  return computed([rgb, a], function (rgb, a) {
+    if (!Array.isArray(rgb)) {
+      rgb = [100, 100, 100]
+    }
+    return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'
+  })
 }
 
-function mixColor(a, b){
-  if (!Array.isArray(a)){
-    return b
-  }
-  return [
-    (a[0] + a[0] + b[0]) / 3,
-    (a[1] + a[0] + b[1]) / 3,
-    (a[2] + a[0] + b[2]) / 3
-  ]
+function mixColor (a, b) {
+  return computed([a, b], function (a, b) {
+    if (!Array.isArray(a)) {
+      return b
+    }
+    return [
+      (a[0] + a[0] + b[0]) / 3,
+      (a[1] + a[0] + b[1]) / 3,
+      (a[2] + a[0] + b[2]) / 3
+    ]
+  })
 }
 
-function toggleChunk(chunk){
+function toggleChunk (chunk) {
   var minimised = chunk.minimised || QueryParam(chunk, 'minimised')
   minimised.set(!read(minimised))
 }
 
-function selectChunk(target){
+function selectChunk (target) {
   var controller = target.controller
   var setup = controller.context.setup
   var actions = controller.context.actions
   controller.grabInput && controller.grabInput()
-  setup.selectedChunkId.set(target.chunkId)
+  setup.selectedChunkId.set(target.chunk.id())
   actions.scrollToSelectedChunk()
+}
+
+function MapChunkPositions (controller, lambda) {
+  var positions = {}
+  var chunks = {}
+  var mapped = {}
+  var result = []
+
+  return computed([controller.chunkPositions, controller.context.chunkLookup], function (chunkPositions, _) {
+    var i = 0
+    for (var k in chunkPositions) {
+      var chunk = controller.context.chunkLookup.get(k)
+      if (!positions[k] || chunkPositions[k][0] !== positions[k][0] || chunkPositions[k][1] !== positions[k][1] || chunks[k] !== chunk) {
+        if (chunk) {
+          chunks[k] = chunk
+          mapped[k] = lambda(controller, chunk, chunkPositions[k])
+          if (!positions[k]) {
+            positions[k] = [0, 0]
+          }
+          positions[k][0] = chunkPositions[k][0]
+          positions[k][1] = chunkPositions[k][1]
+        }
+      }
+      result[i] = mapped[k]
+      i += 1
+    }
+    result.length = i
+    return result
+  })
 }

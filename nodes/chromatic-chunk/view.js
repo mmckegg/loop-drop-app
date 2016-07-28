@@ -1,25 +1,31 @@
-var h = require('micro-css/h')(require('virtual-dom/h'))
-var send = require('value-event/event')
-
-var renderCollection = require('lib/widgets/collection')
+var h = require('lib/h')
+var send = require('@mmckegg/mutant/send')
+var when = require('@mmckegg/mutant/when')
+var computed = require('@mmckegg/mutant/computed')
 var ParamEditor = require('lib/widgets/param-editor')
-
 var Range = require('lib/params/range')
 var ToggleButton = require('lib/params/toggle-button')
 var ScaleChooser = require('lib/params/scale-chooser')
-var IndexParam = require('lib/index-param')
 var QueryParam = require('lib/query-param')
-var EditableHook = require('lib/editable-hook')
 var renderNode = require('lib/render-node')
 
 module.exports = renderChromaticChunk
 
-function renderChromaticChunk(chunk){
+function renderChromaticChunk (chunk) {
   return h('ChunkNode', [
     h('div.options', [
-      
       h('h1', 'Slots'),
-      TemplateSlotChooser(chunk),
+      h('SlotChooser', [
+        h('div.slot', {
+          'classList': computed(chunk.selectedSlotId, s => s === '$template' ? '-selected' : ''),
+          'ev-click': send(selectTemplateSlot, chunk)
+        }, 'template trigger'),
+        h('div.spacer'),
+        h('div.slot -output', {
+          'classList': computed(chunk.selectedSlotId, s => s === 'output' ? '-selected' : ''),
+          'ev-click': send(chunk.selectedSlotId.set, 'output')
+        }, 'output')
+      ]),
 
       h('h1', 'Chunk Options'),
       h('section.options', [
@@ -44,71 +50,54 @@ function renderChromaticChunk(chunk){
   ])
 }
 
-function renderScaleChooser(node){
+function renderScaleChooser (node) {
   return h('ParamList -compact', [
     ScaleChooser(QueryParam(node.scale, 'notes', {})),
     Range(QueryParam(node.scale, 'offset', {}), {
-      title: 'offset', 
-      format: 'semitone', 
-      defaultValue: 0, 
-      width: 200, 
+      title: 'offset',
+      format: 'semitone',
+      defaultValue: 0,
+      width: 200,
       flex: true
     })
   ])
 }
 
-
-function currentSlotEditor(chunk){
-  var slotId = chunk.selectedSlotId()
-  if (slotId === '$template'){
-    return renderNode(chunk.templateSlot.node)
-  } else {
-    var slots = chunk.context.slotLookup
-    var slot = slots.get(slotId)
-    if (slot){
-      return renderNode(slot)
-    }
-  }
-}
-
-function TemplateSlotChooser(chunk){
-
-  var triggers = []
-
-  var shape = chunk.shape() || [1,1]
-  var selectedSlotId = chunk.selectedSlotId()
+function currentSlotEditor (chunk) {
   var slots = chunk.context.slotLookup
-
-  triggers.push(
-    h('div.slot', {
-      'className': selectedSlotId === '$template' ? '-selected' : '',
-      'ev-click': send(selectTemplateSlot, chunk)
-    }, 'template trigger')
-  )
-
-  return h('SlotChooser', [
-    triggers, 
-    h('div.spacer'),
-    h('div.slot -output', {
-      'className': selectedSlotId === 'output' ? '-selected' : '',
-      'ev-click': send(chunk.selectedSlotId.set, 'output')
-    }, 'output')
-  ])
+  var slotId = computed([chunk.selectedSlotId, slots], function (selected, slots) {
+    // wait until slot has loaded, and smooth out changes
+    if (selected === '$template') {
+      return selected
+    } else {
+      return slots[selected] && slots[selected].id
+    }
+  })
+  return computed(slotId, function (slotId) {
+    if (slotId === '$template') {
+      return renderNode(chunk.templateSlot.node)
+    } else {
+      var slot = slots.get(slotId)
+      if (slot) {
+        return renderNode(slot)
+      }
+    }
+  })
 }
 
 function selectTemplateSlot (chunk) {
   var data = chunk.templateSlot()
-  if (!data || !data.node){
+  if (!data || !data.node) {
     chunk.templateSlot.set({
       id: { $param: 'id' },
       noteOffset: {
-        node: 'modulator/scale', 
-        value: { $param: 'value'}, 
-        offset: { $param: 'offset' },  
+        node: 'modulator/scale',
+        value: { $param: 'value' },
+        offset: { $param: 'offset' },
         scale: { $param: 'scale' }
       },
-      node: 'slot', 
-      output: 'output' 
+      node: 'slot',
+      output: 'output'
     })
   }
   chunk.selectedSlotId.set('$template')

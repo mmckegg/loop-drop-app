@@ -1,12 +1,12 @@
 var h = require('lib/h')
-var send = require('value-event/event')
+var send = require('@mmckegg/mutant/send')
 var Collection = require('lib/widgets/collection')
 var Spawner = require('lib/widgets/spawner')
 
 var QueryParam = require('lib/query-param')
 var ScaleChooser = require('lib/params/scale-chooser')
 var Range = require('lib/params/range')
-var rename = require('lib/rename-hook').rename
+var Editable = require('lib/params/editable')
 var assignAvailablePort = require('lib/assign-available-port')
 
 module.exports = renderSetup
@@ -61,7 +61,8 @@ function renderMasterVolume (volume) {
     h('div.param', [
       Range(volume, {
         format: 'dB',
-        flex: true
+        flex: true,
+        defaultValue: 1
       })
     ])
 
@@ -101,8 +102,6 @@ function handleControllerSpawn (node) {
 }
 
 function handleChunkSpawn (chunk) {
-  setTimeout(function () {
-    rename(chunk)
-  }, 100)
+  Editable.edit(chunk.id)
   chunk.context.setup.selectedChunkId.set(chunk().id)
 }

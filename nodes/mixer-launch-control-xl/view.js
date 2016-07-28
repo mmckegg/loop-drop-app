@@ -1,94 +1,108 @@
-var h = require('micro-css/h')(require('virtual-dom/h'))
-var send = require('value-event/event')
+var h = require('lib/h')
+var send = require('@mmckegg/mutant/send')
+var when = require('@mmckegg/mutant/when')
+var computed = require('@mmckegg/mutant/computed')
+var resolve = require('@mmckegg/mutant/resolve')
 
-var SubLoop = require('lib/sub-loop')
-var ObservClassHook = require('lib/observ-class-hook')
 var Select = require('lib/params/select')
 var QueryParam = require('lib/query-param')
 var MPE = require('lib/mouse-position-event.js')
-var read = require('lib/read')
 
 module.exports = function (node) {
-  if (node) {
-    var context = node.context
-    var collection = context.collection
-
-    var nameSuffix = node().port ? ' (' + node().port + ')' : ''
-    return h('div MixerNode', {
-      'ev-class': ObservClassHook(node.activeInput, '-input')
-    }, [
-      h('header', [
-        h('span', 'Mixer' + nameSuffix),
-        h('button.remove Button -warn', {
-          'ev-click': send(collection.remove, node)
-        }, 'X')
-      ]),
-      h('section', [
-        h('div.channels', renderChannels(node)),
-        h('div.controls', renderParams(node))
-      ])
+  var context = node.context
+  var collection = context.collection
+  var nameSuffix = computed(node.port, p => p ? ' (' + p + ')' : '')
+  return h('div MixerNode', {
+    classList: when(node.activeInput, '-input')
+  }, [
+    h('header', [
+      h('span', ['Mixer', nameSuffix]),
+      h('button.remove Button -warn', {
+        'ev-click': send(collection.remove, node)
+      }, 'X')
+    ]),
+    h('section', [
+      h('div.channels', renderChannels(node)),
+      h('div.controls', renderParams(node))
     ])
-  } else {
-    return h('div')
-  }
-}
-
-module.exports.getInvalidationArgs = function (node) {
-  return [node.context.chunkLookup(), node.context.setup.selectedChunkId()]
+  ])
 }
 
 function renderChannels (controller) {
-  var result = []
-  var chunkIds = controller.chunkIds()
-  var selectedChunkId = controller.context.setup.selectedChunkId()
-  for (var i = 0; i < 8; i++) {
-    var id = chunkIds[i]
-    var chunk = controller.context.chunkLookup.get(id)
-    var chunkObject = controller.context.setup.chunks.lookup.get(id)
-    var dragInfo = { collection: controller.chunkIds, chunkId: id, index: i, select: controller.context.setup.selectedChunkId.set }
-    if (chunk) {
-      var color = chunk().color || [50, 50, 50]
-      result.push(h('div -channel', {
-        className: selectedChunkId === chunk.id() ? '-selected' : null,
-        style: {
-          'border-color': cssColor(color, 1),
-          'background-color': cssColor(multiply(color, 0.3), 1),
-          'color': cssColor(multiply(color, 20), 1)
-        },
-        'draggable': true,
-        'ev-dragstart': MPE(dragStart, dragInfo),
-        'ev-dragend': MPE(dragEnd, dragInfo),
-        'ev-dragover': MPE(dragOver, dragInfo),
-        'ev-dragleave': MPE(dragLeave, dragInfo),
-        'ev-drop': MPE(drop, dragInfo),
-        'ev-click': send(selectChunk, chunk),
-        'ev-dblclick': send(toggleChunk, chunkObject)
+  var selectedChunkId = controller.context.setup.selectedChunkId
+  return computed(controller.chunkIds, function (chunkIds) {
+    var result = []
+    for (var i = 0; i < 8; i++) {
+      var id = chunkIds[i]
+      var dragInfo = { collection: controller.chunkIds, chunkId: id, index: i, select: controller.context.setup.selectedChunkId.set }
+      if (id) {
+        var color = chunkColor(controller.context, id)
+        result.push(h('div -channel', {
+          classList: computed([id, selectedChunkId], selectedClassWhenEq),
+          style: {
+            'border-color': computed(color, c => cssColor(c, 1)),
+            'background-color': computed(color, c => cssColor(multiply(c, 0.3), 1)),
+            'color': computed(color, c => cssColor(multiply(c, 20), 1))
+          },
+          'draggable': true,
+          'ev-dragstart': MPE(dragStart, dragInfo),
+          'ev-dragend': MPE(dragEnd, dragInfo),
+          'ev-dragover': MPE(dragOver, dragInfo),
+          'ev-dragleave': MPE(dragLeave, dragInfo),
+          'ev-drop': MPE(drop, dragInfo),
+          'ev-click': send(selectChunk, { context: controller.context, id: id }),
+          'ev-dblclick': send(toggleChunk, { context: controller.context, id: id })
 
-      }, [
-        h('div.title', chunk().id),
-        h('button.remove', {
-          'ev-click': send(remove, { value: id, obj: controller.chunkIds })
-        }, 'X')
-      ]))
-    } else {
-      result.push(h('div -placeholder', {
-        'ev-dragover': MPE(dragOver, dragInfo),
-        'ev-dragleave': MPE(dragLeave, dragInfo),
-        'ev-drop': MPE(drop, dragInfo)
-      }))
+        }, [
+          h('div.title', id),
+          h('button.remove', {
+            'ev-click': send(remove, { value: id, obj: controller.chunkIds })
+          }, 'X')
+        ]))
+      } else {
+        result.push(h('div -placeholder', {
+          'ev-dragover': MPE(dragOver, dragInfo),
+          'ev-dragleave': MPE(dragLeave, dragInfo),
+          'ev-drop': MPE(drop, dragInfo)
+        }))
+      }
     }
-  }
-  return result
+    return result
+  })
 }
 
-function selectChunk (chunk) {
-  chunk.context.setup.selectedChunkId.set(chunk().id)
-  chunk.context.actions.scrollToSelectedChunk()
+function chunkColor (context, id) {
+  var lastColor = []
+  return computed([context.chunkLookup, id], function (lookup, id) {
+    var color = valueOrDefaultColor(lookup[id] && lookup[id].color)
+    if (colorEq(color, lastColor)) {
+      return computed.NO_CHANGE
+    } else {
+      lastColor[0] = color[0] || 0
+      lastColor[1] = color[1] || 0
+      lastColor[2] = color[2] || 0
+      return lastColor
+    }
+  })
 }
 
-function toggleChunk (chunk) {
-  var minimised = chunk.minimised || QueryParam(chunk, 'minimised')
-  minimised.set(!read(minimised))
+function colorEq (a, b) {
+  return a === b || (a && b && a.length === b.length && a[0] === b[0] && a[1] === b[1] && a[2] === b[2])
+}
+
+function selectedClassWhenEq (a, b) {
+  return a === b ? '-selected' : null
+}
+
+function selectChunk (info) {
+  info.context.setup.selectedChunkId.set(info.id)
+  info.context.actions.scrollToSelectedChunk()
+}
+
+function toggleChunk (info) {
+  var chunkObject = info.context.setup.chunks.lookup.get(info.id)
+  var minimised = chunkObject.minimised || QueryParam(chunkObject, 'minimised')
+  minimised.set(!resolve(minimised))
 }
 
 var draggedElement = null
@@ -145,6 +159,10 @@ function remove (opts) {
   }))
 }
 
+function valueOrDefaultColor (color) {
+  return color || [50, 50, 50]
+}
+
 function cssColor (rgb, a) {
   if (!Array.isArray(rgb)) {
     rgb = [100, 100, 100]
@@ -180,7 +198,7 @@ function renderParams (controller) {
     var info = controller.context.nodeInfo.lookup[controller().node]
     var portMatch = info && info.portMatch
     params.push(
-      SubLoop([controller.port, controller.context.midiPorts, portMatch], renderPortChoices)
+      renderPortChoices(controller.port, controller.context.midiPorts, portMatch)
     )
   }
 
@@ -188,16 +206,20 @@ function renderParams (controller) {
 }
 
 function renderPortChoices (port, choices, portMatch) {
-  if (typeof choices === 'function') choices = choices()
-  if (portMatch && choices) {
-    choices = choices.filter(function (choice) {
-      return choice.match(portMatch)
-    })
-  }
+  var matchingChoices = computed([portMatch, choices], function (portMatch, choices) {
+    if (portMatch && choices) {
+      return choices.filter(function (choice) {
+        return choice.match(portMatch)
+      })
+    } else {
+      return choices
+    }
+  })
+
   return Select(port, {
-    options: choices,
+    options: matchingChoices,
     flex: true,
     missingPrefix: ' (disconnected)',
-    includeBlank: "No Midi Device"
+    includeBlank: 'No Midi Device'
   })
 }

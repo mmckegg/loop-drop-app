@@ -41,7 +41,7 @@ module.exports = function renderReverb (node) {
       }),
       Select(node.filterType, {
         defaultValue: 'lowpass',
-        options: filterChoices 
+        options: filterChoices
       }),
       ModRange(node.cutoff, {
         title: 'cutoff',

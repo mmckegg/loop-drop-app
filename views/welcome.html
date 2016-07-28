@@ -6,7 +6,7 @@
     var insertCss = require('insert-css')
     var version = require('../package.json').version
     var ipc = require('electron').ipcRenderer
-    var h = require('hyperscript')
+    var h = require('@mmckegg/mutant/html-element')
 
     function newProject() {
       ipc.send('choose-project', 'new')
