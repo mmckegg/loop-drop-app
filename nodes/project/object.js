@@ -232,6 +232,8 @@ function Project (parentContext) {
 
     deleteEntry: function (path) {
       moveItemToTrash(path)
+      obs.entries.refresh()
+      obs.recordingEntries.refresh()
       obs.items.filter(function (item) {
         return item.path && (item.path === path || item.path.startsWith(path + pathSep))
       }).forEach(function (item) {
