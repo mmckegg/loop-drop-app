@@ -33,6 +33,7 @@ TabbedEditor {
       border-top-right-radius: 3px
 
       span {
+        white-space: nowrap
         flex: 1
       }
 
