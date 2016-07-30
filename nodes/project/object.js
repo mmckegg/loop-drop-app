@@ -193,7 +193,7 @@ function Project (parentContext) {
 
             var setup = actions.addFileObject(setupPath)
             obs.selected.set(setupPath)
-            obs.renaming.set(true)
+            obs.renaming.set(path)
           })
         })
       })
