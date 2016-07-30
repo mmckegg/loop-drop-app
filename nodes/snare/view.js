@@ -1,4 +1,5 @@
 var h = require('lib/h')
+var when = require('@mmckegg/mutant/when')
 var Header = require('lib/widgets/header')
 var computed = require('@mmckegg/mutant/computed')
 var ModRange = require('lib/params/mod-range')
@@ -10,6 +11,7 @@ var types = [
 ]
 
 module.exports = function renderDrumSynth (node) {
+  var isSnare = computed(node.type, t => t === 'snare')
   return h('SourceNode -drumSynth', [
     Header(node, h('span', [
       h('strong', 'Drum Synth:'), ' ',
@@ -37,24 +39,20 @@ module.exports = function renderDrumSynth (node) {
         format: 'ms',
         flex: true
       }),
-      computed(node.type, function (type) {
-        if (type === 'snare') {
-          return [
-            ModRange(node.tone, {
-              title: 'tone',
-              defaultValue: 0.5,
-              format: 'ratio',
-              flex: true
-            }),
-            ModRange(node.snappy, {
-              title: 'snappy',
-              defaultValue: 0.5,
-              format: 'ratio',
-              flex: true
-            })
-          ]
-        }
-      })
+      when(isSnare, [
+        ModRange(node.tone, {
+          title: 'tone',
+          defaultValue: 0.5,
+          format: 'ratio',
+          flex: true
+        }),
+        ModRange(node.snappy, {
+          title: 'snappy',
+          defaultValue: 0.5,
+          format: 'ratio',
+          flex: true
+        })
+      ])
     ])
   ])
 }
