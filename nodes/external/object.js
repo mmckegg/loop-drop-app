@@ -37,6 +37,7 @@ function External (parentContext) {
 
   // hookable id param for rename, and dup checking
   obs.id = computed(obs, v => v.id)
+  obs.id.context = context
   obs.id.set = function (value) {
     var data = obs()
     if (context && context.collection && context.collection.resolveAvailable) {
