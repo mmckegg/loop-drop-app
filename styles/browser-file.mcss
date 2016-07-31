@@ -9,6 +9,9 @@ BrowserFile {
   -directory {
     font-weight: bold
     margin-left: 0
+    button.twirl {
+      display: block
+    }
   }
 
   -open {
@@ -18,6 +21,7 @@ BrowserFile {
   }
 
   button.twirl {
+    display: none
     opacity: 0.6
     height: 12px
     width: 12px

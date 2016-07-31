@@ -139,7 +139,6 @@ function SlicerChunk (parentContext) {
     destroyAll(obs)
   }
 
-  obs.resolved = withResolved(obs, ['triggers'])
   return obs
 
   // scoped
@@ -242,23 +241,4 @@ function noargs (fn) {
   return function () {
     fn()
   }
-}
-
-function withResolved (obj, keys) {
-  var result = computed(keys.map(function (k) { return obj[k] }).concat(obj), function (args) {
-    var value = extend(arguments[arguments.length - 1])
-    keys.forEach(function (key, i) {
-      value[key] = arguments[i]
-    })
-    return value
-  })
-
-  for (var k in obj) {
-    if (k !== 'set' && k !== 'destroy') {
-      result[k] = obj[k]
-    }
-  }
-
-  result.node = obj
-  return result
 }

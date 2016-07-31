@@ -1,5 +1,5 @@
 var h = require('lib/h')
-var send = require('value-event/event')
+var send = require('@mmckegg/mutant/send')
 
 var AudioMeter = require('lib/widgets/audio-meter')
 var Range = require('lib/params/range')
@@ -11,7 +11,7 @@ var renderBrowser = require('./browser')
 var renderEditor = require('./tabbed-editor')
 var renderControllers = require('./global-controllers')
 
-module.exports = function(project) {
+module.exports = function (project) {
 
   var context = project.context
   var actions = project.actions
@@ -27,7 +27,7 @@ module.exports = function(project) {
               format: 'bpm',
               flex: true,
               defaultValue: 120
-            }),
+            })
           ]),
           h('div.sub', [
             h('div', [
@@ -45,7 +45,7 @@ module.exports = function(project) {
               }, ['||>'])
             ])
           ])
-        ]),
+        ])
       ]),
       h('div.browser', [
 

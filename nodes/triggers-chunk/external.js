@@ -6,7 +6,7 @@ var ToggleButton = require('lib/params/toggle-button')
 var QueryParam = require('lib/query-param')
 var FlagParam = require('lib/flag-param')
 
-module.exports = function(node){
+module.exports = function (node) {
   var flags = QueryParam(node, 'flags')
   return renderChunk(node, {
     volume: true,
@@ -19,9 +19,9 @@ module.exports = function(node){
             h('div.extTitle', 'Use Global'),
             h('ParamList -compact', [
               ToggleButton(FlagParam(flags, 'noRepeat'), {
-                title: 'Repeat', 
+                title: 'Repeat',
                 onValue: false,
-                offValue: true 
+                offValue: true
               })
             ])
           ]),

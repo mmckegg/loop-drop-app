@@ -40,6 +40,7 @@ ParamList {
 
   button {
     margin: 4px
+    height: 18px
   }
 
   div {

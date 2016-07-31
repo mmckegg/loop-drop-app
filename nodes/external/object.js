@@ -1,9 +1,7 @@
 var Observ = require('observ')
 var extend = require('xtend')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var watch = require('observ/watch')
-var Event = require('geval')
-var nextTick = require('next-tick')
 var resolveNode = require('observ-node-array/resolve')
 var getDirectory = require('path').dirname
 
@@ -15,8 +13,7 @@ var JsonFile = require('lib/json-file')
 
 module.exports = External
 
-function External(parentContext){
-
+function External (parentContext) {
   var context = Object.create(parentContext)
 
   var obs = Observ({})
@@ -32,29 +29,40 @@ function External(parentContext){
   var releaseCC = null
   var releaseResolved = null
 
-  var nodeContext = Object.create(context)
-
   var lastDescriptor = null
   obs.node = null
   obs.file = null
   obs.controllerContext = Observ()
   obs.resolved = Observ()
 
-  obs.resolvePath = function(src){
+  // hookable id param for rename, and dup checking
+  obs.id = computed(obs, v => v.id)
+  obs.id.context = context
+  obs.id.set = function (value) {
+    var data = obs()
+    if (context && context.collection && context.collection.resolveAvailable) {
+      value = context.collection.resolveAvailable(value)
+    }
+    if (value !== data.id) {
+      obs.set(extend(data, { id: value }))
+    }
+  }
+
+  obs.resolvePath = function (src) {
     return resolve(context.cwd, src)
   }
 
-  obs.relative = function(path){
+  obs.relative = function (path) {
     var value = relative(context.cwd, path)
-    if (/^\./.exec(value)){
+    if (/^\./.exec(value)) {
       return value
     } else {
       return './' + value
     }
   }
 
-  obs.destroy = function(){
-    if (obs.node && obs.node.destroy){
+  obs.destroy = function () {
+    if (obs.node && obs.node.destroy) {
       obs.node.destroy()
       obs.node = null
     }
@@ -89,12 +97,12 @@ function External(parentContext){
       }
     }
 
-    if (!externalParams){
-      if (descriptor.src){
+    if (!externalParams) {
+      if (descriptor.src) {
         var path = resolve(parentContext.cwd, descriptor.src)
-        context.fs.exists(path, function(exists){
-          if (exists){
-            release&&release()
+        context.fs.exists(path, function (exists) {
+          if (exists) {
+            release && release()
             obs.file = ObservFile(path, context.fs)
             externalParams = JsonFile(obs.file)
             externalParams.src = descriptor.src
@@ -107,24 +115,23 @@ function External(parentContext){
     }
   })
 
-  function update(){
+  function update () {
     var descriptor = extend(externalParams(), additionalParams())
     var ctor = descriptor && resolveNode(context.nodes, descriptor.node)
 
 
-    if (obs.node && descriptor && obs && lastDescriptor && descriptor.node == lastDescriptor.node){
+    if (obs.node && descriptor && obs && lastDescriptor && descriptor.node === lastDescriptor.node) {
       obs.node.set(descriptor)
     } else {
-
       if (releaseResolved) {
         releaseResolved()
         releaseResolved = null
       }
 
-      if (obs.node && obs.node.destroy){
+      if (obs.node && obs.node.destroy) {
         obs.node.destroy()
 
-        if (releaseCC){
+        if (releaseCC) {
           releaseCC()
           releaseCC = null
           obs.controllerContext.set(null)
@@ -134,52 +141,32 @@ function External(parentContext){
 
       obs.node = null
 
-      if (descriptor && ctor){
+      if (descriptor && ctor) {
         context.cwd = getDirectory(obs.file.path)
         obs.node = ctor(context)
-        obs.node.nodeName = descriptor.node
         obs.node.set(descriptor)
         releaseResolved = watch(obs.node, obs.resolved.set)
 
-        if (obs.node.controllerContext){
+        if (obs.node.controllerContext) {
           releaseCC = watch(obs.node.controllerContext, obs.controllerContext.set)
         }
-
       }
     }
 
     lastDescriptor = descriptor
   }
 
+  obs.nodeName = computed(obs.resolved, r => r && r.node || null)
   return obs
 }
 
-function getAdditional(obs){
-  return computed([obs], function(a){
-    return Object.keys(a).reduce(function(res, key){
-      if (key !== 'node' && key !== 'src'){
+function getAdditional (obs) {
+  return computed([obs], function (a) {
+    return Object.keys(a).reduce(function (res, key) {
+      if (key !== 'node' && key !== 'src') {
         res[key] = a[key]
       }
       return res
     }, {})
   })
-}
-
-function resolveNode(nodes, nodeName){
-  if (!nodeName){
-    return null
-  }
-  var node = nodes || {}
-  while (nodeName && node){
-    var index = nodeName.indexOf('/')
-    if (index < 0){
-      node = node[nodeName]
-      nodeName = null
-    } else {
-      var key = nodeName.slice(0, index)
-      nodeName = nodeName.slice(index+1)
-      node = node[key]
-    }
-  }
-  return node
 }

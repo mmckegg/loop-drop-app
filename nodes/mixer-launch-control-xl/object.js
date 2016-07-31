@@ -191,7 +191,7 @@ module.exports = function (context) {
   controlButtons.mode(function (value) {
     if (value) {
       context.project.globalControllers.forEach(function (controller) {
-        if (controller.port && controller.port() === obs.port() && controller.grabInput) {
+        if (controller && controller.port && controller.port() === obs.port() && controller.grabInput) {
           controller.grabInput()
           controller.port.override.set(true)
         }

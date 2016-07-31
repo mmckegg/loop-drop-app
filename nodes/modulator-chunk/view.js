@@ -1,5 +1,7 @@
-var h = require('micro-css/h')(require('virtual-dom/h'))
-var send = require('value-event/event')
+var h = require('lib/h')
+var send = require('@mmckegg/mutant/send')
+var computed = require('@mmckegg/mutant/computed')
+var Keys = require('@mmckegg/mutant/keys')
 
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
@@ -11,27 +13,30 @@ var renderChunk = require('lib/widgets/chunk')
 
 module.exports = function renderModulatorChunk (node) {
   var slotLookup = node.context.slotLookup
-  var elements = []
-  var shape = node.shape()
-  var length = shape[0] * shape[1]
+  var length = computed([node.shape], x => x[0] * x[1])
+  var slotIds = Keys(slotLookup)
 
-  for (var i = 0; i < length; i++) {
-    var id = String(i)
-    var slot = slotLookup.get(id)
-    if (slot) {
-      elements.push(h('div.slot -trigger', [
-        h('strong', id + ': '),
-        ModRange(slot.value, { flex: true, format: 'offset', defaultValue: 0 }),
-        h('button.remove Button -warn', {
-          'ev-click': send(node.slots.remove, slot)
-        }, 'X')
-      ]))
-    } else {
-      elements.push(h('div.slot -spawn', {
-        'ev-click': send(spawnSlot, { id: id, collection: node.slots })
-      }, ['+ trigger']))
+  var elements = computed([length, slotIds], function (length, slotIds) {
+    var result = []
+    for (var i = 0; i < length; i++) {
+      var id = String(i)
+      var slot = slotLookup.get(id)
+      if (slotIds.includes(id)) {
+        result.push(h('div.slot -trigger', [
+          h('strong', id + ': '),
+          ModRange(slot.value, { flex: true, format: 'offset', defaultValue: 0 }),
+          h('button.remove Button -warn', {
+            'ev-click': send(node.slots.remove, slot)
+          }, 'X')
+        ]))
+      } else {
+        result.push(h('div.slot -spawn', {
+          'ev-click': send(spawnSlot, { id: id, collection: node.slots })
+        }, ['+ trigger']))
+      }
     }
-  }
+    return result
+  })
 
   return renderChunk(node, {
     main: [

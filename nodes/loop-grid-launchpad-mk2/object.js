@@ -9,7 +9,7 @@ var Selector = require('loop-grid/selector')
 var Holder = require('loop-grid/transforms/holder')
 var Mover = require('loop-grid/transforms/mover')
 var Repeater = require('loop-grid/transforms/repeater')
-var Suppressor = require('loop-grid/transforms/suppressor')
+var Suppressor = require('../loop-grid/suppressor')
 
 var ObservVarhash = require('observ-varhash')
 var ObservStruct = require('observ-struct')
@@ -155,6 +155,8 @@ module.exports = function(context){
   var inputGrabber = GrabGrid(controllerGrid)
 
   var noRepeat = computeIndexesWhereContains(flags, 'noRepeat')
+  var freezeSuppress = computeIndexesWhereContains(flags, 'freezeSuppress')
+
   var grabInputExcludeNoRepeat = function (listener) {
     return inputGrabber(listener, { exclude: noRepeat })
   }
@@ -208,7 +210,7 @@ module.exports = function(context){
           this.flash(stateLights.green, 100)
         } else {
           this.flash(stateLights.red, 100)
-          transforms.suppressor.start(transforms.selector.selectedIndexes())
+          transforms.suppressor.start(scheduler.getCurrentPosition(), transforms.selector.selectedIndexes())
           looper.flatten()
           transforms.suppressor.stop()
           transforms.selector.stop()
@@ -258,9 +260,9 @@ module.exports = function(context){
     },
 
     suppress: function (value) {
-      if (value){
+      if (value) {
         var turnOffLight = this.light(stateLights.red)
-        transforms.suppressor.start(transforms.selector.selectedIndexes(), turnOffLight)
+        transforms.suppressor.start(scheduler.getCurrentPosition(), transforms.selector.selectedIndexes(), freezeSuppress(), turnOffLight)
       } else {
         transforms.suppressor.stop()
       }

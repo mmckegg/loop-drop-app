@@ -1,4 +1,6 @@
 var h = require('lib/h')
+var computed = require('@mmckegg/mutant/computed')
+var when = require('@mmckegg/mutant/when')
 var Header = require('lib/widgets/header')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
@@ -17,13 +19,14 @@ var typeChoices = [
 var gainTypes = ['lowshelf', 'highshelf', 'peaking']
 var qTypes = ['lowpass', 'highpass', 'bandpass', 'peaking', 'notch', 'allpass']
 
-module.exports = function renderFilter(node){
-  var data = node()
+module.exports = function renderFilter (node) {
+  var hasGain = computed(node.type, t => ~gainTypes.indexOf(t))
+  var hasQ = computed(node.type, t => ~qTypes.indexOf(t))
 
   var params = [
     Select(node.type, {
       defaultValue: 'lowpass',
-      options: typeChoices 
+      options: typeChoices
     }),
 
     ModRange(node.frequency, {
@@ -31,30 +34,22 @@ module.exports = function renderFilter(node){
       defaultValue: 300,
       format: 'arfo',
       flex: true
-    })
+    }),
+
+    when(hasQ, ModRange(node.Q, {
+      title: 'Q',
+      defaultValue: 1,
+      format: 'ratio100',
+      flex: true
+    })),
+
+    when(hasGain, ModRange(node.gain, {
+      title: 'gain',
+      defaultValue: 1,
+      format: 'dBn',
+      flex: true
+    }))
   ]
-
-  if (~qTypes.indexOf(data.type || 'lowpass')){
-    params.push(
-      ModRange(node.Q, {
-        title: 'Q',
-        defaultValue: 1,
-        format: 'ratio100',
-        flex: true
-      })
-    )
-  }
-
-  if (~gainTypes.indexOf(data.type || 'lowpass')){
-    params.push(
-      ModRange(node.gain, {
-        title: 'gain',
-        defaultValue: 1,
-        format: 'dBn',
-        flex: true
-      })
-    )
-  }
 
   return h('ProcessorNode -filter', [
     Header(node, h('span', 'Filter')),

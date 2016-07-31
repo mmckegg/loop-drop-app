@@ -33,6 +33,8 @@ var mappings = {
 
 module.exports = function (context) {
   var activatedAt = Date.now()
+  var unloadState = { lastSuppressId: null, lastSuppressAt: 0 }
+
   var midiPort = MidiPort(context, function (port, lastPort) {
     // turn off on switch
     lastPort && lastPort.write(turnOffAll)
@@ -188,8 +190,16 @@ module.exports = function (context) {
 
     if (result != null) {
       var item = project.items.get(result)
+
       if (item && item.node) {
-        suppressNode(item.node, true)
+        if (unloadState.lastSuppressId === result && unloadState.lastSuppressAt > Date.now() - 500) {
+          unloadState.lastSuppressAt = 0
+          item.close()
+        } else {
+          unloadState.lastSuppressId = result
+          unloadState.lastSuppressAt = Date.now()
+          suppressNode(item.node, true)
+        }
       }
     }
   })

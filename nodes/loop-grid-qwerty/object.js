@@ -35,7 +35,6 @@ var getInput = document[cacheKey] = document[cacheKey] || InputStack()
 var repeatLength = Observ(2)
 
 function LoopQwerty (context) {
-
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
 

@@ -88,7 +88,7 @@ function Setup(parentContext){
       var chunk = context.chunkLookup.get(split[0])
       var slotId = split[1]
       if (chunk) {
-        if (event.event === 'start' && event.time >= context.audio.currentTime) {
+        if (event.event === 'start' && (event.triggered || event.time >= context.audio.currentTime - 0.001)) {
           chunk.triggerOn(slotId, event.time)
         } else if (event.event === 'stop') {
           chunk.triggerOff(slotId, event.time)
@@ -191,16 +191,20 @@ function Setup(parentContext){
     }
   }
 
-  node.updateChunkReferences = function(oldId, newId){
-    node.controllers.forEach(function(controller){
-      if (controller.chunkPositions && controller.chunkPositions()){
+  node.updateChunkReferences = function (oldId, newId) {
+    node.controllers.forEach(function (controller) {
+      if (controller.chunkPositions && controller.chunkPositions()) {
         var value = controller.chunkPositions()[oldId]
-        if (value && controller.chunkPositions.put){
+        if (value && controller.chunkPositions.put) {
           controller.chunkPositions.delete(oldId)
           if (newId) {
             controller.chunkPositions.put(newId, value)
           }
         }
+      }
+
+      if (controller.chunkIds && controller.chunkIds()) {
+        controller.chunkIds.set(controller.chunkIds().map(x => x === oldId ? newId : x))
       }
     })
 

@@ -4,7 +4,7 @@ ToggleButton {
   padding: 2px 5px;
   border-radius: 4px;
   display: inline-block;
-  border: #6B806B 1px solid;
+  border: #949a94 1px solid;
   background: #6F6F6F;
   color: #D0D0D0;
   cursor: pointer;
@@ -30,7 +30,7 @@ ToggleButton {
   }
 
   -record {
-    border: #4A4A4A 1px solid
+    border: #888888 1px solid
 
     :after {
       background: #AEAEAE;

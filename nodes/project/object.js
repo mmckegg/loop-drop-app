@@ -152,13 +152,19 @@ function Project (parentContext) {
       obs.selected.set(path)
     },
 
+    select: function (pathOrItem) {
+      if (pathOrItem) {
+        obs.selected.set(pathOrItem.path || pathOrItem)
+      }
+    },
+
     tapTempo: function () {
       tapTempo.tap()
     },
 
     closeFile: function (path) {
       var object = findItemByPath(obs.items, path)
-      if (object){
+      if (object) {
         object.close()
       }
     },
@@ -187,7 +193,7 @@ function Project (parentContext) {
 
             var setup = actions.addFileObject(setupPath)
             obs.selected.set(setupPath)
-            obs.renaming.set(true)
+            obs.renaming.set(path)
           })
         })
       })
@@ -212,9 +218,9 @@ function Project (parentContext) {
           obs.recordingEntries.refresh()
 
           var item = findItemByPath(obs.items, filePath)
-          if (item){
+          if (item) {
             item.load(newFilePath)
-            if (isSelected){
+            if (isSelected) {
               obs.selected.set(item.path)
             }
           }
@@ -226,6 +232,8 @@ function Project (parentContext) {
 
     deleteEntry: function (path) {
       moveItemToTrash(path)
+      obs.entries.refresh()
+      obs.recordingEntries.refresh()
       obs.items.filter(function (item) {
         return item.path && (item.path === path || item.path.startsWith(path + pathSep))
       }).forEach(function (item) {

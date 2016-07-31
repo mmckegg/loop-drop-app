@@ -110,7 +110,7 @@ function SynthChunk (parentContext) {
         }
       }
 
-      result.unshift({
+      result.push({
         node: 'slot',
         id: String(i),
         output: 'output',
@@ -141,7 +141,7 @@ function SynthChunk (parentContext) {
     releaseGlobalScale && releaseGlobalScale()
     releaseGlobalScale = null
   }
-
+  
   return obs
 }
 
