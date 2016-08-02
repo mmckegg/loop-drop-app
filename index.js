@@ -31,6 +31,18 @@ MidiStream.watchPortNames(function (ports) {
   midiPorts.set(ports)
 })
 
+var closing = false
+window.onbeforeunload = function (e) {
+  // ensure recording is saved on close
+  if (!closing && window.currentProject && window.currentProject.actions.prepareToClose) {
+    window.currentProject.actions.prepareToClose(function () {
+      closing = true
+      electron.remote.getCurrentWindow().close()
+    })
+    return false
+  }
+}
+
 // create root context
 var audioContext = new global.AudioContext()
 var nodes = require('./nodes')

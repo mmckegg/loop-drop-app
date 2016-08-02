@@ -5,8 +5,9 @@ var ObservArray = require('observ-array')
 var ObservStruct = require('observ-struct')
 var ObservVarhash = require('observ-varhash')
 var watch = require('observ/watch')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var Event = require('geval')
+var map = require('@mmckegg/mutant/map')
 
 var TapTempo = require('tap-tempo')
 var Bopper = require('bopper')
@@ -82,12 +83,6 @@ function Project (parentContext) {
     obs.outputRms.set(value.map(gainToDecibels))
   })
 
-  // recording
-  var recorder = SessionRecorder(context)
-  obs.recording = recorder.recording
-  obs.recordingPath = recorder.recordingPath
-  output.connect(recorder.input)
-
   obs.availableGlobalControllers = computed([context.midiPorts], function (portNames) {
     var result = []
     var controllers = context.nodeInfo.groupLookup['global-controllers']
@@ -116,6 +111,29 @@ function Project (parentContext) {
     broadcastItemLoaded = broadcast
   })
 
+  var activeItems = map(obs.items, function (item) {
+    return computed(item.nodeName, function (nodeName) {
+      if (item.node && item.node.output && item.node.output.active) {
+        return item.node.output.active
+      } else {
+        return false
+      }
+    })
+  })
+
+  var active = computed(activeItems, function (values) {
+    return values.some(x => x)
+  })
+
+  // recording
+  var recorder = SessionRecorder(context, active)
+  obs.recording = recorder.recording
+  obs.recordingPath = recorder.recordingPath
+  output.connect(recorder.input)
+
+  // clean up old preroll recordings
+  recorder.cleanUpOldClips(10)
+
   obs.openFiles = Observ([])
 
   obs.resolved = ObservStruct({
@@ -137,6 +155,9 @@ function Project (parentContext) {
 
   var chunkScroller = null
   var actions = obs.actions = {
+    prepareToClose: function (cb) {
+      return recorder.stop(cb)
+    },
     open: function (path) {
       var ext = getExt(path)
       if (!ext){

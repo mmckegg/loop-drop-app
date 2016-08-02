@@ -1,9 +1,10 @@
 var Struct = require('observ-struct')
 var Property = require('observ-default')
 var WaveWriter = require('wav/lib/writer')
+var Scheduler = require('lib/timeline-scheduler')
 var electron = require('electron')
-var Timeline = require('audio-timeline')
-var RenderStream = require('audio-timeline/render-stream')
+var Timeline = require('./timeline')
+var RenderStream = require('./render-stream')
 var throttledWatch = require('throttle-observ/watch')
 var writeHeader = require('lib/write-header')
 var getClosestPoint = require('lib/get-closest-point')
@@ -13,8 +14,8 @@ var animateProp = require('animate-prop')
 module.exports = Recording
 
 function Recording (parentContext) {
-
   var context = Object.create(parentContext)
+  context.scheduler = Scheduler(context.audio)
   context.output = parentContext.masterOutput
 
   var obs = Struct({
@@ -39,7 +40,7 @@ function Recording (parentContext) {
           obs.position.set(0)
         }
         start()
-        releasePositionIncrement = obs.timeline.context.scheduler(onSchedule)
+        releasePositionIncrement = context.scheduler(onSchedule)
       } else {
         stop()
         releasePositionIncrement && releasePositionIncrement()
@@ -54,7 +55,7 @@ function Recording (parentContext) {
   var userPosition = Property(0)
   obs.position = Property(0)
   obs.position(function (value) {
-    if (value != lastBroadcastPosition) {
+    if (value !== lastBroadcastPosition) {
       userPosition.set(value)
     }
   })
@@ -72,7 +73,6 @@ function Recording (parentContext) {
     playing: obs.playing,
     rendering: obs.rendering
   })
-
 
   obs.destroy = obs.timeline.destroy
 
@@ -132,7 +132,6 @@ function Recording (parentContext) {
     })
   }
 
-
   obs.ensureCursorVisible = function (animate) {
     var timeline = document.querySelector('.ArrangementTimeline')
     if (timeline) {
@@ -153,7 +152,7 @@ function Recording (parentContext) {
       if (markers) {
         for (var i = 0; i < markers.length; i++) {
           if (markers[i] >= time) {
-            var marker = (markers[i] === time) ? markers[i-2] : markers[i-1]
+            var marker = (markers[i] === time) ? markers[i - 2] : markers[i - 1]
             if (marker != null) {
               var offset = marker - time
               obs.position.set(pos + offset)
@@ -174,13 +173,14 @@ function Recording (parentContext) {
       ]
     }, function (path) {
       if (path) {
-        var bitDepth = 16
+        var bitDepth = 32
         obs.rendering.set(true)
         var stream = RenderStream(obs.timeline, 0, obs.timeline.duration(), bitDepth)
         stream.progress(obs.renderProgress.set)
 
         var formatter = WaveWriter({
           bitDepth: bitDepth,
+          format: bitDepth === 32 ? 3 : 1,
           sampleRate: context.audio.sampleRate,
           channels: 2
         })
@@ -200,7 +200,7 @@ function Recording (parentContext) {
 
   // scoped
 
-  function getPositionInfo(pos) {
+  function getPositionInfo (pos) {
     var current = 0
     for (var i = 0; i < obs.timeline.primary.getLength(); i++) {
       var clip = obs.timeline.primary.get(i)
@@ -218,7 +218,7 @@ function Recording (parentContext) {
 
   function start () {
     releasePositionIncrement && releasePositionIncrement()
-    obs.timeline.start(context.audio.currentTime+0.1, obs.position())
+    obs.timeline.start(context.audio.currentTime + 0.1, obs.position())
   }
 
   function stop () {
