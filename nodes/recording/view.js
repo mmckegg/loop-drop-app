@@ -6,6 +6,7 @@ var send = require('@mmckegg/mutant/send')
 var computed = require('@mmckegg/mutant/computed')
 var watch = require('@mmckegg/mutant/watch')
 var map = require('@mmckegg/mutant/map')
+var when = require('@mmckegg/mutant/when')
 
 var ToggleButton = require('lib/params/toggle-button')
 var MouseDragEvent = require('lib/mouse-drag-event')
@@ -26,12 +27,11 @@ function RecordingView (recording) {
     ]),
 
     h('div.options', [
-
-      recording.rendering() ? h('progress', {
+      when(recording.rendering, h('progress', {
         min: 0,
         max: 1,
         hooks: [ValueHook(recording.renderProgress)]
-      }) : null,
+      })),
 
       h('section Transport', [
         h('button -beginning', {
@@ -151,6 +151,7 @@ function ArrangementTimeline (recording) {
 
 function handleTimelineKeyEvent (ev) {
   var recording = this.data
+  var handled = true
   if (ev.keyCode === 83) { // S
     recording.splice(!ev.altKey)
   } else if (ev.keyCode === 32) { // space
@@ -160,6 +161,12 @@ function handleTimelineKeyEvent (ev) {
     recording.nextCue()
   } else if (ev.keyCode === 37) { // left arrow
     recording.prevCue()
+  } else {
+    handled = false
+  }
+
+  if (handled) {
+    ev.stopPropagation()
   }
 }
 
@@ -169,12 +176,12 @@ function handleClipKeyEvent (ev) {
 
   if (ev.keyCode === 8) { // backspace
     clip.context.collection.remove(clip)
+    ev.stopPropagation()
   } else if (ev.keyCode === 68) { // D
     // duplicate clip
     var index = collection.indexOf(clip)
     collection.insert(clip(), index + 1)
-  } else {
-    ev.startPropagation()
+    ev.stopPropagation()
   }
 }
 
