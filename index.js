@@ -31,13 +31,24 @@ MidiStream.watchPortNames(function (ports) {
   midiPorts.set(ports)
 })
 
-var closing = false
+var unloadAction = 'close'
+var interceptUnload = true
+
+electron.ipcRenderer.on('reload', function () {
+  unloadAction = 'reload'
+  electron.remote.getCurrentWindow().reload()
+})
+
 window.onbeforeunload = function (e) {
   // ensure recording is saved on close
-  if (!closing && window.currentProject && window.currentProject.actions.prepareToClose) {
+  if (interceptUnload && window.currentProject && window.currentProject.actions.prepareToClose) {
     window.currentProject.actions.prepareToClose(function () {
-      closing = true
-      electron.remote.getCurrentWindow().close()
+      interceptUnload = false
+      if (unloadAction === 'reload') {
+        electron.remote.getCurrentWindow().reload()
+      } else {
+        electron.remote.getCurrentWindow().close()
+      }
     })
     return false
   }

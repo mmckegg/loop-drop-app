@@ -70,10 +70,11 @@ function chooseProject () {
       acceptFirstMouse: true,
       width: 500,
       height: 550,
-      show: false
+      show: false,
+      backgroundColor: '#444'
     })
 
-    welcomeWindow.webContents.on('did-finish-load', function () {
+    welcomeWindow.once('ready-to-show', function () {
       welcomeWindow.show()
     })
 
@@ -133,10 +134,11 @@ function loadProject (path) {
     webPreferences: {
       experimentalFeatures: true,
       pageVisibility: true
-    }
+    },
+    backgroundColor: '#444'
   })
 
-  mainWindow.webContents.on('did-finish-load', function () {
+  mainWindow.once('ready-to-show', function () {
     mainWindow.show()
   })
 
@@ -150,6 +152,7 @@ function loadProject (path) {
   })
 
   mainWindow.loadURL('file://' + __dirname + '/views/window.html')
+
   mainWindow.on('closed', function () {
     mainWindow = null
     if (!quiting) {
