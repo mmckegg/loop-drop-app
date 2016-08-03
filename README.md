@@ -108,7 +108,6 @@ https://www.youtube.com/watch?v=2oVcNaDpPz0
 - [bopper](https://github.com/wavejs/bopper)
 - [micro-css](https://github.com/mmckegg/micro-css)
 - [mutant](https://github.com/mmckegg/mutant)
-- [observ-fs](https://github.com/mmckegg/observ-fs)
 - [observ-midi](https://github.com/mmckegg/observ-midi)
 - [electron](https://github.com/atom/electron)
 

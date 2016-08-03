@@ -13,7 +13,7 @@ var TapTempo = require('tap-tempo')
 var Bopper = require('bopper')
 var AudioRMS = require('audio-rms')
 
-var ObservDirectory = require('observ-fs/directory')
+var ObservDirectory = require('lib/observ-directory')
 var FileObject = require('lib/file-object')
 var QueryParam = require('lib/query-param')
 var findItemByPath = require('lib/find-item-by-path')
@@ -71,7 +71,7 @@ function Project (parentContext) {
   obs.speed = Observ(1)
   obs.selected = Observ()
   obs.renaming = Observ(false)
-  obs.entries = ObservDirectory(context.cwd, context.fs)
+  obs.entries = ObservDirectory(context.cwd)
   obs.recordingEntries = ObservDirectory(resolve(context.cwd, '~recordings'), context.fs)
   obs.subEntries = ObservVarhash({})
 

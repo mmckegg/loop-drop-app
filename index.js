@@ -2,7 +2,7 @@ var electron = require('electron')
 var insertCss = require('insert-css')
 var h = require('lib/h')
 
-var fs = require('lib/fs-with-watchers')
+var fs = require('fs')
 var join = require('path').join
 
 var Observ = require('observ')

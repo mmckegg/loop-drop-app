@@ -8,7 +8,7 @@ var getDirectory = require('path').dirname
 var relative = require('path').relative
 var resolve = require('path').resolve
 
-var ObservFile = require('observ-fs/file')
+var ObservFile = require('lib/observ-file')
 var JsonFile = require('lib/json-file')
 
 module.exports = External
@@ -103,7 +103,7 @@ function External (parentContext) {
         context.fs.exists(path, function (exists) {
           if (exists) {
             release && release()
-            obs.file = ObservFile(path, context.fs)
+            obs.file = ObservFile(path)
             externalParams = JsonFile(obs.file)
             externalParams.src = descriptor.src
             release = watch(externalParams, update)
