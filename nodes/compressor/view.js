@@ -21,11 +21,6 @@ module.exports = function renderCompressor (node){
         format: 'compressionRatio',
         flex: true
       }),
-      ModRange(node.reduction, {
-        title: 'reduction',
-        format: 'dBn',
-        flex: true
-      }),
       ModRange(node.attack, {
         title: 'attack',
         format: 'ms',
