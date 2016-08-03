@@ -155,6 +155,18 @@ function Project (parentContext) {
     prepareToClose: function (cb) {
       return recorder.stop(cb)
     },
+
+    purge: function () {
+      // avoid audio glitches by scheduling 1 second ahead
+      if (global.gc) {
+        var startAt = window.performance.now()
+        scheduler.schedule(1)
+        global.gc()
+        console.log(`purge took ${Math.round(window.performance.now() - startAt)} ms`)
+        return true
+      }
+    },
+
     open: function (path) {
       var ext = getExt(path)
       if (!ext) {
@@ -357,6 +369,7 @@ function Project (parentContext) {
           obs.selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
         }
         refreshOpenFiles()
+        actions.purge()
       })
 
       object.load(path)
