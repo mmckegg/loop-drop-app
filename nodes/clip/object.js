@@ -3,7 +3,6 @@ var Property = require('observ-default')
 var watch = require('observ/watch')
 var resolve = require('path').resolve
 var computed = require('observ/computed')
-var ObservAudioBuffer = require('observ-fs-audio-buffer/use-global')
 
 module.exports = AudioTimelineClip
 
@@ -163,7 +162,7 @@ function AudioTimelineClip (context) {
   // scoped
 
   function load (item) {
-    item.file = ObservAudioBuffer(context)
+    item.file = context.nodes.AudioBuffer(context)
     item.file.set({src: item.src})
     item.loading = true
     refreshLoading()
