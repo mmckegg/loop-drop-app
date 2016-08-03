@@ -96,11 +96,12 @@ function computeClasses (entry, renamingPath, recordingPath, selectedPath, subEn
 
     // handle index.json selected
     selected = selected || join(entry.path, 'index.json') === selectedPath
-
-    if (selected) {
-      result.push('-selected')
-    }
   }
+
+  if (selected) {
+    result.push('-selected')
+  }
+
   return result.join(' ')
 }
 
