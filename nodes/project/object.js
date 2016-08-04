@@ -160,7 +160,6 @@ function Project (parentContext) {
       // avoid audio glitches by scheduling 1 second ahead
       if (global.gc) {
         var startAt = window.performance.now()
-        scheduler.schedule(1)
         global.gc()
         console.log(`purge took ${Math.round(window.performance.now() - startAt)} ms`)
         return true
@@ -358,6 +357,11 @@ function Project (parentContext) {
         refreshOpenFiles()
       })
 
+      object.onClosing(function () {
+        scheduler.schedule(1)
+        setImmediate(actions.purge)
+      })
+
       object.onClose(function () {
         console.log('closing', object.path)
         var index = obs.items.indexOf(object)
@@ -369,7 +373,6 @@ function Project (parentContext) {
           obs.selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
         }
         refreshOpenFiles()
-        actions.purge()
       })
 
       object.load(path)
