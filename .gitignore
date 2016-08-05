@@ -1,10 +1,4 @@
 node_modules
 .DS_Store
 **/backup
-demo-project/preroll.wav
-demo-project/preroll.wav.time
 demo-project/~recordings
-
-demo-project/preroll.webm
-
-demo-project/preroll.webm.time
