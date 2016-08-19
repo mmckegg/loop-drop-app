@@ -61,9 +61,10 @@ function SlotChooser (chunk, spawnSlot) {
             'ev-dragover': MPE(dragOver, dragInfo),
             'ev-dragleave': MPE(dragLeave, dragInfo),
             'ev-drop': MPE(drop, dragInfo),
+            'title': 'Add Trigger',
 
             'ev-click': send(spawnSlot, { id: id, chunk: chunk })
-          }, '+ trigger')
+          }, '+')
         )
       }
     }
