@@ -183,11 +183,12 @@ function Project (parentContext) {
     openExternal: function (externalObject) {
       if (!~obs.items.indexOf(externalObject)) {
         obs.items.push(externalObject)
-        obs.selected.set(externalObject.path())
         externalObject.context.fileObject.onClose(function () {
           actions.closeExternal(externalObject)
         })
       }
+
+      obs.selected.set(externalObject.path())
     },
 
     closeExternal: function (externalObject) {
@@ -271,23 +272,11 @@ function Project (parentContext) {
       obs.items.filter(function (item) {
         return resolve(item.path) && (resolve(item.path) === path || resolve(item.path).startsWith(path + pathSep))
       }).forEach(function (item) {
-        item.close()
-      })
-    },
-
-    importChunk: function (path, cwd, cb) {
-      var baseName = getBaseName(path)
-      var targetPath = join(cwd, baseName)
-
-      resolveAvailable(targetPath, context.fs, function (err, toPath) {
-        if (err) return cb && cb(err)
-        copyExternalFilesTo(context.fs, path, cwd)
-        copyFile(path, toPath, context.fs, function (err) {
-          if (cb) {
-            if (err) return cb(err)
-            cb(null, toPath)
-          }
-        })
+        if (item.close) {
+          item.close()
+        } else {
+          actions.closeExternal(item)
+        }
       })
     },
 
@@ -335,8 +324,12 @@ function Project (parentContext) {
 
     grabInputForSelected: function () {
       var item = lastSelected
-      if (item && item.node && item.node.grabInput) {
-        item.node.grabInput()
+      if (item && item.node) {
+        if (item.node.grabInput) {
+          item.node.grabInput()
+        } else if (item.node.context.setup && item.node.context.setup.grabInput) {
+          item.node.context.setup.grabInput()
+        }
       }
     },
 

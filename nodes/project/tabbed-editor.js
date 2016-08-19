@@ -66,6 +66,7 @@ function TabbedEditor (project) {
       : send(item.close)
     return h('div.tab', {
       'ev-click': send(actions.select, item),
+      'ev-dragenter': send(actions.select, item),
       'classList': [
         when(selected, '-selected')
       ]

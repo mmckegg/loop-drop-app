@@ -6,6 +6,7 @@ var Keys = require('@mmckegg/mutant/keys')
 
 var MPE = require('lib/mouse-position-event.js')
 var importSample = require('lib/import-sample')
+var importAssociatedFiles = require('lib/import-associated-files')
 var extend = require('xtend/immutable')
 
 module.exports = SlotChooser
@@ -97,7 +98,7 @@ function valueWhen (activeSlots, id, value) {
 
 function dragOver (ev) {
   ev.currentTarget.classList.add('-dragOver')
-  if (ev.altKey || containsFiles(ev.dataTransfer)) {
+  if (ev.altKey || ev.shiftKey || containsFiles(ev.dataTransfer)) {
     ev.dataTransfer.dropEffect = 'copy'
   } else {
     ev.dataTransfer.dropEffect = 'move'
@@ -106,12 +107,14 @@ function dragOver (ev) {
 }
 
 function drop (ev) {
+  var dragInfo = currentDrag
   dragLeave(ev)
   ev.event.preventDefault()
 
   var targetCollection = ev.data.collection
   var targetLookup = targetCollection.context.slotLookup
   var target = targetLookup.get(ev.data.id)
+  var cwd = ev.dataTransfer.getData('cwd')
 
   if (containsFiles(ev.dataTransfer) || ev.dataTransfer.types.includes('loop-drop/sample-path')) {
     var path = ev.dataTransfer.items[0].kind === 'file'
@@ -141,7 +144,10 @@ function drop (ev) {
     if (!target) {
       target = ev.data.spawnSlot({id: ev.data.id, chunk: ev.data.chunk})
     }
-    target.sources.push(data)
+    importAssociatedFiles(descriptor, cwd, targetCollection.context.cwd, function (err) {
+      if (err) throw err
+      target.sources.push(data)
+    })
   } else if (ev.dataTransfer.types.includes('loop-drop/processor')) {
     var data = JSON.parse(ev.dataTransfer.getData('loop-drop/processor'))
     if (!target) {
@@ -149,9 +155,9 @@ function drop (ev) {
     }
     target.processors.push(data)
   } else {
-    var sourceCollection = currentDrag.collection
+    var sourceCollection = dragInfo.collection
     var sourceLookup = sourceCollection.context.slotLookup
-    var source = sourceLookup.get(currentDrag.id)
+    var source = sourceLookup.get(dragInfo.id)
     var isCopying = ev.altKey
 
     if (source && source !== target) {
@@ -168,12 +174,17 @@ function drop (ev) {
           sourceCollection.remove(source)
         }
 
-        targetCollection.push(descriptor)
+        importAssociatedFiles(descriptor, sourceCollection.context.cwd, targetCollection.context.cwd, function (err) {
+          if (err) throw err
+          targetCollection.push(descriptor)
+        })
       } else {
         source.id.set(ev.data.id)
       }
 
-      ev.data.select(ev.data.id)
+      setTimeout(function () {
+        ev.data.select(ev.data.id)
+      }, 50)
     }
   }
 }

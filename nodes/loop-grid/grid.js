@@ -167,6 +167,7 @@ function leaveButton (ev) {
 function startDrag (ev) {
   var data = resolve(ev.data)
   ev.dataTransfer.setData('loop-drop/' + data.node.split('/')[0], JSON.stringify(data))
+  ev.dataTransfer.setData('cwd', ev.data.context.cwd)
   window.currentDrag = ev
 }
 
@@ -174,7 +175,6 @@ function endDrag (ev) {
   window.currentDrag = null
 }
 
-var cloneDrag = null
 var entering = null
 function dragLeave (ev) {
   var controller = ev.data
@@ -202,99 +202,63 @@ function getId (chunk) {
 function dragOver (ev) {
   var controller = ev.data
   var currentDrag = window.currentDrag
+  var originalDirectory = ev.dataTransfer.getData('cwd')
 
-  if (currentDrag) {
-    if (ev.altKey || ev.shiftKey) {
-      cloneDrag = currentDrag
-      ev.dataTransfer.dropEffect = 'copy'
-    } else {
-      var chunkId = getId(currentDrag.data)
-
-      if (chunkId) {
-        var shape = controller.playback.shape()
-        var height = ev.offsetHeight / shape[0]
-        var width = ev.offsetWidth / shape[1]
-
-        var x = ev.offsetX - currentDrag.offsetX
-        var y = ev.offsetY - currentDrag.offsetY
-
-        var r = Math.round(y / height)
-        var c = Math.round(x / width)
-
-        var currentValue = controller.chunkPositions.get(chunkId)
-
-        if (!currentValue || currentValue[0] !== r || currentValue[1] !== c) {
-          controller.chunkPositions.put(chunkId, [r, c])
-        }
-      }
-
-      if (ev.dataTransfer.types.length) {
-        // HACK: detect when dragging from chunks - prevent remove
-        // need to rewrite all the drag and drop to be native, without currentDrag hacks
-        ev.dataTransfer.dropEffect = 'link'
-      } else {
-        ev.dataTransfer.dropEffect = 'move'
-      }
-      cloneDrag = null
-    }
-
-    ev.event.preventDefault()
-  } else if (~ev.dataTransfer.types.indexOf('filepath')) {
+  if (ev.altKey || ev.shiftKey) {
     ev.dataTransfer.dropEffect = 'copy'
-    ev.event.preventDefault()
+  } else if (currentDrag && originalDirectory === controller.context.cwd) {
+    var chunkId = getId(currentDrag.data)
+    if (chunkId) {
+      var shape = controller.playback.shape()
+      var height = ev.offsetHeight / shape[0]
+      var width = ev.offsetWidth / shape[1]
+
+      var x = ev.offsetX - currentDrag.offsetX
+      var y = ev.offsetY - currentDrag.offsetY
+
+      var r = Math.round(y / height)
+      var c = Math.round(x / width)
+
+      var currentValue = controller.chunkPositions.get(chunkId)
+
+      if (!currentValue || currentValue[0] !== r || currentValue[1] !== c) {
+        controller.chunkPositions.put(chunkId, [r, c])
+      }
+    }
   }
+
+  if (ev.dataTransfer.types.length) {
+    // HACK: detect when dragging from chunks - prevent remove
+    // need to rewrite all the drag and drop to be native, without currentDrag hacks
+    ev.dataTransfer.dropEffect = 'link'
+  } else {
+    ev.dataTransfer.dropEffect = 'move'
+  }
+
+  ev.event.preventDefault()
 }
 
 function drop (ev) {
-  var path = ev.dataTransfer.getData('filepath')
-  var controller = ev.data
-  var actions = controller.context.actions
-  var setup = controller.context.setup
-  var fileObject = setup.context.fileObject
+  var data = ev.dataTransfer.getData('loop-drop/chunk')
+  var originalDirectory = ev.dataTransfer.getData('cwd')
 
-  var shape = controller.playback.shape()
-  var height = ev.offsetHeight / shape[0]
-  var width = ev.offsetWidth / shape[1]
-  var r = Math.floor(ev.offsetY / height)
-  var c = Math.floor(ev.offsetX / width)
+  if (data && originalDirectory) {
+    var controller = ev.data
+    var setup = controller.context.setup
 
-  var currentDrag = cloneDrag
-  cloneDrag = null
+    var shape = controller.playback.shape()
+    var height = ev.offsetHeight / shape[0]
+    var width = ev.offsetWidth / shape[1]
+    var r = Math.floor(ev.offsetY / height)
+    var c = Math.floor(ev.offsetX / width)
 
-  if (ev.altKey && !path && currentDrag) {
-    var data = currentDrag.data()
-    if (data) {
-      if (data.node === 'externalChunk') {
-        // duplicate external file
-        path = fileObject.resolvePath(data.src)
-      } else {
-        // duplicate local chunk
-        var id = setup.chunks.resolveAvailable(data.id)
-        setup.chunks.push(extend(data, {
-          id: id
-        }))
+    if (ev.altKey || ev.shiftKey || originalDirectory !== controller.context.cwd) {
+      var chunk = JSON.parse(data)
+      setup.importChunk(chunk, originalDirectory, function (err, id) {
+        if (err) throw err
         controller.chunkPositions.put(id, [r, c])
-        return
-      }
-    }
-  }
-
-  if (path && setup && setup.chunks) {
-    actions.importChunk(path, setup.context.cwd, function (err, newPath) {
-      if (err) throw err
-
-      var id = getBaseName(newPath, '.json')
-      setup.chunks.push({
-        'node': 'externalChunk',
-        'id': id,
-        'src': fileObject.relative(newPath),
-        'minimised': true,
-        'routes': {output: '$default'},
-        'scale': '$global'
       })
-
-      controller.chunkPositions.put(id, [r, c])
-    })
+    }
   }
 }
 

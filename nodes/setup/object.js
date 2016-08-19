@@ -11,11 +11,15 @@ var map = require('observ-node-array/map')
 var lookup = require('observ-node-array/lookup')
 var merge = require('observ-node-array/merge')
 
+var join = require('path').join
+var extend = require('xtend')
+
 var Property = require('observ-default')
 var YankSilence = require('lib/yank-silence')
 var setRoute = require('lib/set-route')
 var assignAvailablePort = require('lib/assign-available-port')
 var destroyAll = require('lib/destroy-all')
+var importAssociatedFiles = require('lib/import-associated-files')
 
 module.exports = Setup
 
@@ -177,6 +181,35 @@ function Setup (parentContext) {
         }
       }
     }
+  }
+
+  node.importChunk = function (descriptor, originalDirectory, cb) {
+    var info = context.nodeInfo.lookup[descriptor.node]
+    var id = node.chunks.resolveAvailable(descriptor.id)
+    var targetPath = join(context.cwd, id + '.json')
+
+    descriptor = extend(descriptor, { id: id })
+
+    importAssociatedFiles(descriptor, originalDirectory, context.cwd, function (err) {
+      if (err) return cb && cb(err)
+      if (info.external) {
+        // duplicate external file
+        context.fs.writeFile(targetPath, JSON.stringify(descriptor), function (err) {
+          if (err) return cb && cb(err)
+          node.chunks.push({
+            node: 'externalChunk',
+            src: context.fileObject.relative(targetPath)
+          })
+          cb && cb(null, id)
+        })
+      } else {
+        // duplicate local chunk
+        node.chunks.push(descriptor)
+        cb && cb(null, id)
+      }
+    })
+
+    return id
   }
 
   node.updateChunkReferences = function (oldId, newId) {
