@@ -4,11 +4,8 @@ var Observ = require('observ')
 var watch = require('observ/watch')
 var computed = require('observ/computed')
 var Event = require('geval')
-var getDirName = require('path').dirname
-var getBaseName = require('path').basename
-var join = require('path').join
-var relative = require('path').relative
 var updateParamReferences = require('lib/update-param-references')
+var resolve = require('@mmckegg/mutant/resolve')
 
 var map = require('observ-node-array/map')
 var lookup = require('observ-node-array/lookup')
@@ -22,8 +19,7 @@ var destroyAll = require('lib/destroy-all')
 
 module.exports = Setup
 
-function Setup(parentContext){
-
+function Setup (parentContext) {
   var context = Object.create(parentContext)
   var audioContext = context.audio
   var refreshingParamCount = false
@@ -35,7 +31,7 @@ function Setup(parentContext){
     volume: Property(1),
     globalScale: Property({
       offset: 0,
-      notes: [0,2,4,5,7,9,11]
+      notes: [0, 2, 4, 5, 7, 9, 11]
     })
   })
 
@@ -119,12 +115,8 @@ function Setup(parentContext){
   }
 
   // maps and lookup
-  node.controllers.resolved = map(node.controllers, resolve)
-  node.chunks.resolved = map(node.chunks, resolve)
-  node.chunks.lookup = lookup(node.chunks, function(x){
-    var descriptor = get(x)
-    return descriptor && descriptor.id || undefined
-  })
+  node.controllers.resolved = map(node.controllers, getResolved)
+  node.chunks.resolved = map(node.chunks, getResolved)
 
   // enforce controller types
   node.controllers.onUpdate(function (update) {
@@ -135,13 +127,9 @@ function Setup(parentContext){
     })
   })
 
-  context.chunkLookup = lookup(node.chunks, function(x){
-    if (x){
-      var data = x.resolved ? x.resolved() : x()
-      return data && data.id || undefined
-    }
-  }, resolve, resolveInner)
-
+  context.chunkLookup = lookup(node.chunks, function (x) {
+    return resolve(x.id)
+  }, getResolved, resolveInner)
 
   // extend param lookup
   var lookups = []
@@ -150,11 +138,11 @@ function Setup(parentContext){
   }
 
   lookups.push(
-    lookup(node.chunks, function(x){
-      if (x && x.onSchedule){
-        return x.id()
+    lookup(node.chunks, function (x) {
+      if (x && x.onSchedule) {
+        return resolve(x.id)
       }
-    }, resolve, resolveInner)
+    }, getResolved, resolveInner)
   )
 
   context.paramLookup = merge(lookups)
@@ -169,22 +157,22 @@ function Setup(parentContext){
 
   context.paramLookup(refreshParamCount)
 
-  node.grabInput = function(){
+  node.grabInput = function () {
     var length = node.controllers.getLength()
-    for (var i=0;i<length;i++){
+    for (var i = 0; i < length; i++) {
       var controller = node.controllers.get(i)
-      if (controller.grabInput){
+      if (controller.grabInput) {
         controller.grabInput()
       }
     }
 
     // now focus the selected chunk
-    if (node.selectedChunkId){
+    if (node.selectedChunkId) {
       var chunkId = node.selectedChunkId()
-      for (var i=0;i<length;i++){
+      for (var i = 0; i < length; i++) {
         var controller = node.controllers.get(i)
         var chunkPositions = controller().chunkPositions || {}
-        if (controller.grabInput && chunkPositions[chunkId]){
+        if (controller.grabInput && chunkPositions[chunkId]) {
           controller.grabInput()
         }
       }
@@ -240,11 +228,7 @@ function Setup(parentContext){
   }
 }
 
-function get(obs){
-  return typeof obs == 'function' ? obs() : obs
-}
-
-function resolve(node){
+function getResolved (node) {
   return node && node.resolved || node
 }
 

@@ -12,6 +12,7 @@ var renderNode = require('lib/render-node')
 module.exports = renderChromaticChunk
 
 function renderChromaticChunk (chunk) {
+  var customScale = computed(chunk.scale, value => value !== '$global')
   return h('ChunkNode', [
     h('div.options', [
       h('h1', 'Slots'),
@@ -37,8 +38,10 @@ function renderChromaticChunk (chunk) {
         ])
       ]),
 
-      h('h1', 'Scale'),
-      renderScaleChooser(chunk),
+      when(customScale, [
+        h('h1', 'Scale'),
+        renderScaleChooser(chunk)
+      ]),
 
       h('h1', 'Params'),
       ParamEditor(chunk)

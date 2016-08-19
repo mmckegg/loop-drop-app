@@ -5,7 +5,7 @@ module.exports = {
   node: 'chunk/scale',
   group: 'chunks',
   description: 'Describe a single audio slot that is chromatically scaled over specified shape.',
-  external: function (context) {
+  spawn: function (context) {
     return {
       templateSlot: {
         id: { $param: 'id' },
@@ -24,6 +24,7 @@ module.exports = {
       selectedSlotId: '$template'
     }
   },
+  external: true,
   renderExternal: require('./external'),
   render: require('./view'),
   object: require('./object')

@@ -5,17 +5,16 @@ module.exports = {
   node: 'chunk',
   group: 'chunks',
   description: 'A collection of triggerable audio slots.',
-  spawn: {
-    minimised: true
-  },
-  external: function (context) {
+  spawn: function (context) {
     return {
-      color: randomColor([255,255,255]),
+      color: randomColor([255, 255, 255]),
       slots: [{id: 'output', node: 'slot'}],
-      shape: [2,4],
-      outputs: ['output']
+      shape: [2, 4],
+      outputs: ['output'],
+      minimised: true
     }
   },
+  external: true,
   renderExternal: require('./external'),
   render: require('./view'),
   object: require('./object')

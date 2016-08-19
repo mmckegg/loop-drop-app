@@ -129,7 +129,7 @@ module.exports = function (context) {
     for (var i = 0; i < 8; i++) {
       var item = project.items.get(i)
       if (item) {
-        if (item.path === selected) {
+        if (item.path() === selected) {
           selectedId = i
           result.push(light(2, 3))
         } else {
@@ -169,7 +169,7 @@ module.exports = function (context) {
     if (result != null) {
       var item = project.items.get(result)
       if (item) {
-        project.selected.set(item.path)
+        project.selected.set(item.path())
       }
     }
   })

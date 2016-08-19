@@ -58,6 +58,7 @@ function ChromaticChunk (parentContext) {
     flags: Property([]),
     chokeAll: Property(false),
     color: Property([255,255,255]),
+    minimised: Property(false),
     selectedSlotId: Observ()
   })
 

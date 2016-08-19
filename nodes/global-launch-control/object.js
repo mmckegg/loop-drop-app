@@ -186,7 +186,7 @@ function LaunchControl (context) {
     for (var i=0;i<8;i++) {
       var item = setups.get(i)
       if (item) {
-        if (item.path === selected) {
+        if (item.path() === selected) {
           result.push(light(2, 3))
           selectedButton = i
         } else {
@@ -236,7 +236,7 @@ function LaunchControl (context) {
     if (result != null) {
       var item = setups.get(result)
       if (item) {
-        project.selected.set(item.path)
+        project.selected.set(item.path())
       }
     }
   })
@@ -260,7 +260,7 @@ function LaunchControl (context) {
     var releases = []
 
     setups.forEach(function (item) {
-      if (item && item.path !== project.selected()) {
+      if (item && item.path() !== project.selected()) {
         if (item.node && item.node.controllers) {
           item.node.controllers.forEach(function (controller) {
             if (controller.looper) {

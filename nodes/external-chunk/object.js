@@ -4,12 +4,14 @@ var computed = require('@mmckegg/mutant/computed')
 var watch = require('observ/watch')
 var resolveNode = require('observ-node-array/resolve')
 var getDirectory = require('path').dirname
+var Event = require('geval')
 
 var relative = require('path').relative
 var resolve = require('path').resolve
 
 var ObservFile = require('lib/observ-file')
 var JsonFile = require('lib/json-file')
+var NO_TRANSACTION = {}
 
 module.exports = External
 
@@ -22,30 +24,33 @@ function External (parentContext) {
 
   obs._type = 'ExternalNode'
 
-  var additionalParams = getAdditional(obs)
   var externalParams = null
+  var currentTransaction = NO_TRANSACTION
 
   var release = null
   var releaseCC = null
   var releaseResolved = null
+  var releaseInstance = null
+  var releaseRename = null
+  var loading = false
 
   var lastDescriptor = null
   obs.node = null
   obs.file = null
+  obs.path = Observ()
   obs.controllerContext = Observ()
   obs.resolved = Observ()
+  obs.loaded = Observ(false)
 
-  // hookable id param for rename, and dup checking
-  obs.id = computed(obs, v => v.id)
+  var broadcastClose = null
+  obs.onClose = Event(function (broadcast) {
+    broadcastClose = broadcast
+  })
+
+  obs.id = computed(obs.resolved, v => v && v.id || null)
   obs.id.context = context
   obs.id.set = function (value) {
-    var data = obs()
-    if (context && context.collection && context.collection.resolveAvailable) {
-      value = context.collection.resolveAvailable(value)
-    }
-    if (value !== data.id) {
-      obs.set(extend(data, { id: value }))
-    }
+    obs.node.id.set(value)
   }
 
   obs.resolvePath = function (src) {
@@ -72,43 +77,47 @@ function External (parentContext) {
       obs.file = null
     }
 
-    if (release){
+    if (release) {
       release()
       release = null
       externalParams = null
     }
+
+    if (releaseInstance) {
+      releaseInstance()
+      releaseInstance = null
+    }
+
+    broadcastClose()
   }
 
-  obs.getPath = function() {
+  obs.getPath = function () {
     var descriptor = obs()
     if (descriptor && descriptor.src) {
       return obs.resolvePath(descriptor.src)
     }
   }
 
-  watch(obs, function(descriptor){
-    if (externalParams && externalParams.src != descriptor.src){
+  watch(obs, function (descriptor) {
+    var path = (descriptor && descriptor.src) ? resolve(parentContext.cwd, descriptor.src) : null
+
+    if (obs.file && obs.file.path() !== path) {
+      releaseRename()
       release()
-      release = null
+      release = releaseRename = null
       externalParams = null
-      if (obs.file) {
-        obs.file.close()
-        obs.file = null
-      }
+      obs.file.close()
+      obs.file = null
     }
 
     if (!externalParams) {
-      if (descriptor.src) {
-        var path = resolve(parentContext.cwd, descriptor.src)
-        context.fs.exists(path, function (exists) {
-          if (exists) {
-            release && release()
-            obs.file = ObservFile(path)
-            externalParams = JsonFile(obs.file)
-            externalParams.src = descriptor.src
-            release = watch(externalParams, update)
-          }
-        })
+      if (path) {
+        loading = true
+        release && release()
+        obs.file = ObservFile(path)
+        externalParams = JsonFile(obs.file)
+        release = watch(externalParams, update)
+        releaseRename = watch(obs.file.path, obs.path.set)
       }
     } else {
       update()
@@ -116,16 +125,22 @@ function External (parentContext) {
   })
 
   function update () {
-    var descriptor = extend(externalParams(), additionalParams())
+    var descriptor = externalParams()
     var ctor = descriptor && resolveNode(context.nodes, descriptor.node)
 
-
     if (obs.node && descriptor && obs && lastDescriptor && descriptor.node === lastDescriptor.node) {
+      currentTransaction = descriptor
       obs.node.set(descriptor)
+      currentTransaction = NO_TRANSACTION
     } else {
       if (releaseResolved) {
         releaseResolved()
         releaseResolved = null
+      }
+
+      if (releaseInstance) {
+        releaseInstance()
+        releaseInstance = null
       }
 
       if (obs.node && obs.node.destroy) {
@@ -142,11 +157,15 @@ function External (parentContext) {
       obs.node = null
 
       if (descriptor && ctor) {
-        context.cwd = getDirectory(obs.file.path)
+        context.cwd = getDirectory(obs.file.path())
         obs.node = ctor(context)
         obs.node.set(descriptor)
         releaseResolved = watch(obs.node, obs.resolved.set)
-
+        releaseInstance = obs.node(function (data) {
+          if (currentTransaction === NO_TRANSACTION) {
+            externalParams.set(data)
+          }
+        })
         if (obs.node.controllerContext) {
           releaseCC = watch(obs.node.controllerContext, obs.controllerContext.set)
         }
@@ -154,19 +173,13 @@ function External (parentContext) {
     }
 
     lastDescriptor = descriptor
+
+    if (loading && descriptor) { // HACKS!
+      loading = false
+      obs.loaded.set(true)
+    }
   }
 
   obs.nodeName = computed(obs.resolved, r => r && r.node || null)
   return obs
-}
-
-function getAdditional (obs) {
-  return computed([obs], function (a) {
-    return Object.keys(a).reduce(function (res, key) {
-      if (key !== 'node' && key !== 'src') {
-        res[key] = a[key]
-      }
-      return res
-    }, {})
-  })
 }

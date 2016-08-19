@@ -2,6 +2,7 @@ var h = require('lib/h')
 var send = require('@mmckegg/mutant/send')
 var when = require('@mmckegg/mutant/when')
 var watch = require('@mmckegg/mutant/watch')
+var resolve = require('@mmckegg/mutant/resolve')
 var MPE = require('lib/mouse-position-event')
 var MouseDragEvent = require('lib/mouse-drag-event')
 var getBaseName = require('path').basename
@@ -83,7 +84,6 @@ function renderChunkBlock (controller, chunk, origin) {
   var bounds = controller.playback.shape
 
   if (chunk) {
-    var node = setup.chunks.lookup.get(chunk.id())
     var selected = computed([setup.selectedChunkId, chunk.id], eq)
     var resizable = !!chunk.templateSlot || !chunk.slots
 
@@ -102,19 +102,19 @@ function renderChunkBlock (controller, chunk, origin) {
       },
       draggable: true,
       'ev-click': send(selectChunk, { chunk: chunk, controller: controller }),
-      'ev-dblclick': send(toggleChunk, node),
-      'ev-dragstart': MPE(startDrag, node),
-      'ev-dragend': MPE(endDrag, node)
+      'ev-dblclick': send(toggleChunk, chunk),
+      'ev-dragstart': MPE(startDrag, chunk),
+      'ev-dragend': MPE(endDrag, chunk)
     }, [
       h('span.label', chunk.id),
       resizable ? [
         h('div.handle -bottom', {
           draggable: true,
-          'ev-mousedown': MouseDragEvent(resize, { edge: 'bottom', node: node, shape: bounds })
+          'ev-mousedown': MouseDragEvent(resize, { edge: 'bottom', node: chunk, shape: bounds })
         }),
         h('div.handle -right', {
           draggable: true,
-          'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: node, shape: bounds })
+          'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: chunk, shape: bounds })
         })
       ] : null
     ])
@@ -165,8 +165,8 @@ function leaveButton (ev) {
 }
 
 function startDrag (ev) {
-  var node = (ev.data.resolved || ev.data)()
-  ev.dataTransfer.setData('loop-drop/' + node.node.split('/')[0], JSON.stringify(node))
+  var data = resolve(ev.data)
+  ev.dataTransfer.setData('loop-drop/' + data.node.split('/')[0], JSON.stringify(data))
   window.currentDrag = ev
 }
 
@@ -194,12 +194,8 @@ function dragEnter (ev) {
 }
 
 function getId (chunk) {
-  if (typeof chunk === 'function') {
-    chunk = chunk()
-  }
-
   if (chunk) {
-    return chunk.id
+    return resolve(chunk.id)
   }
 }
 
@@ -268,7 +264,7 @@ function drop (ev) {
   if (ev.altKey && !path && currentDrag) {
     var data = currentDrag.data()
     if (data) {
-      if (data.node === 'external') {
+      if (data.node === 'externalChunk') {
         // duplicate external file
         path = fileObject.resolvePath(data.src)
       } else {
@@ -289,7 +285,7 @@ function drop (ev) {
 
       var id = getBaseName(newPath, '.json')
       setup.chunks.push({
-        'node': 'external',
+        'node': 'externalChunk',
         'id': id,
         'src': fileObject.relative(newPath),
         'minimised': true,

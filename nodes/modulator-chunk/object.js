@@ -15,7 +15,6 @@ function ModulatorChunk (parentContext) {
 
   var obs = BaseChunk(context, {
     slots: slots,
-    minimised: Property(false),
     color: Property([0, 0, 0])
   })
 

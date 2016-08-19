@@ -1,6 +1,7 @@
 var h = require('lib/h')
 var send = require('@mmckegg/mutant/send')
 var computed = require('@mmckegg/mutant/computed')
+var getBaseName = require('path').basename
 
 module.exports = function renderExternal (node) {
   var lookup = node.context.nodeInfo.lookup
@@ -15,10 +16,9 @@ module.exports = function renderExternal (node) {
         style: {
           border: '2px solid transparent'
         }
-      },
-       [
+      }, [
         h('header', [
-          h('span', data.id + ' (external)'),
+          h('span', getBaseName(data.src, '.json') + ' (external)'),
           h('button.remove Button -warn', {
             'ev-click': send(collection.remove, node)
           }, 'X')

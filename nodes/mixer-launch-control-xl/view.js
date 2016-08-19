@@ -100,9 +100,8 @@ function selectChunk (info) {
 }
 
 function toggleChunk (info) {
-  var chunkObject = info.context.setup.chunks.lookup.get(info.id)
-  var minimised = chunkObject.minimised || QueryParam(chunkObject, 'minimised')
-  minimised.set(!resolve(minimised))
+  var chunk = info.context.chunkLookup.get(info.id)
+  chunk.minimised.set(!resolve(chunk.minimised))
 }
 
 var draggedElement = null

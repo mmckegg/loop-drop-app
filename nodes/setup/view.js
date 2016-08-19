@@ -103,5 +103,5 @@ function handleControllerSpawn (node) {
 
 function handleChunkSpawn (chunk) {
   Editable.edit(chunk.id)
-  chunk.context.setup.selectedChunkId.set(chunk().id)
+  chunk.context.setup.selectedChunkId.set(chunk.id())
 }

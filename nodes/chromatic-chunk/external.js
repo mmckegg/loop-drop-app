@@ -12,26 +12,23 @@ var IndexParam = require('lib/index-param')
 
 module.exports = renderExternalChromaticChunk
 
-function renderExternalChromaticChunk (node) {
-  var flags = QueryParam(node, 'flags')
-  var shape = QueryParam(node, 'shape')
-  var offset = QueryParam(node, 'offset')
-
-  return renderChunk(node, {
+function renderExternalChromaticChunk (externalObject) {
+  var node = externalObject.node
+  return renderChunk(externalObject, {
     volume: true,
     external: true,
     main: [
       h('section', [
         h('ParamList', [
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(shape, 0), {
+            h('div', Range(IndexParam(node.shape, 0), {
               title: 'rows',
               format: 'bit',
               defaultValue: 1
             }))
           ]),
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(shape, 1), {
+            h('div', Range(IndexParam(node.shape, 1), {
               title: 'cols',
               format: 'bit',
               defaultValue: 1
@@ -39,7 +36,7 @@ function renderExternalChromaticChunk (node) {
           ])
         ]),
         h('ParamList', [
-          ModRange(offset, {
+          ModRange(node.offset, {
             title: 'offset',
             format: 'semitone',
             flex: true,
@@ -53,12 +50,12 @@ function renderExternalChromaticChunk (node) {
           h('div -block', [
             h('div.extTitle', 'Use Global'),
             h('ParamList -compact', [
-              ToggleButton(FlagParam(flags, 'noRepeat'), {
+              ToggleButton(FlagParam(node.flags, 'noRepeat'), {
                 title: 'Repeat',
                 onValue: false,
                 offValue: true
               }),
-              ToggleButton(QueryParam(node, 'scale'), {
+              ToggleButton(node.scale, {
                 title: 'Scale',
                 offValue: undefined,
                 onValue: '$global'

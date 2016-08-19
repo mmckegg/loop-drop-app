@@ -91,14 +91,11 @@ module.exports = function (context) {
 
   var sliderState = []
   watchKnobs(midiPort.stream, mappings.sliders, function (id, data) {
-    var chunk = setup.chunks.lookup.get(obs.chunkIds()[id])
-    if (chunk) {
-      var volume = chunk.overrideVolume || chunk.node && chunk.node.overrideVolume
-      if (volume) {
-        var currentPosition = Math.pow(volume(), 1 / Math.E) * 108
-        var newPosition = scaleInterpolate(currentPosition, data, sliderState[id] = sliderState[id] || {})
-        volume.set(Math.pow(newPosition / 108, Math.E))
-      }
+    var chunk = setup.context.chunkLookup.get(obs.chunkIds()[id])
+    if (chunk && chunk.overrideVolume) {
+      var currentPosition = Math.pow(chunk.overrideVolume(), 1 / Math.E) * 108
+      var newPosition = scaleInterpolate(currentPosition, data, sliderState[id] = sliderState[id] || {})
+      chunk.overrideVolume.set(Math.pow(newPosition / 108, Math.E))
     }
   }, 108)
 

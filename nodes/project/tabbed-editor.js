@@ -19,7 +19,7 @@ function TabbedEditor (project) {
   var actions = project.actions
 
   var tabs = Map(project.items, function (fileObject) {
-    return computed([fileObject.loadedPath], function (path) {
+    return computed([fileObject.path], function (path) {
       var item = fileObject.node
       if (path && item) {
         var selected = computed([project.selected], s => s === path)
@@ -59,8 +59,11 @@ function TabbedEditor (project) {
   var hasTabs = computed([tabs], tabs => !!tabs.length)
 
   var tabButtons = Map(project.items, function (item) {
-    var name = computed(item.loadedPath, getName)
-    var selected = computed([project.selected], s => s === item.path)
+    var name = computed(item.path, getName)
+    var selected = computed([project.selected, item.path], eq)
+    var close = item._type === 'ExternalNode'
+      ? send(actions.closeExternal, item)
+      : send(item.close)
     return h('div.tab', {
       'ev-click': send(actions.select, item),
       'classList': [
@@ -68,7 +71,7 @@ function TabbedEditor (project) {
       ]
     }, [
       h('span', [name]),
-      h('button.close', {'ev-click': send(item.close)})
+      h('button.close', {'ev-click': close})
     ])
   })
 
@@ -104,4 +107,8 @@ function renderHelper () {
       h('a', {href: 'http://loopjs.com/'}, 'loopjs.com')
     ])
   ])
+}
+
+function eq (a, b) {
+  return a === b
 }

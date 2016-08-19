@@ -1,5 +1,5 @@
 module.exports = {
-  node: 'external',
+  node: 'externalChunk',
   render: require('./view'),
   object: require('./object')
 }

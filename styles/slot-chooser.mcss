@@ -1,5 +1,5 @@
 SlotChooser {
-  
+
   margin-top: 5px;
   display: flex;
   background: #222;
@@ -78,11 +78,22 @@ SlotChooser {
       }
     }
 
+    -active {
+      color: #dada79;
+      background-color: #847634;
+    }
+
     -selected {
       background: #53AB53;
       color: #FFF;
       border-color: #336C20;
+      -active {
+        color: #ffff86
+        background-color: #fdd82c
+      }
     }
+
+
 
     -output {
       flex: 1

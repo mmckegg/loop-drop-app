@@ -4,7 +4,7 @@ var computed = require('@mmckegg/mutant/computed')
 var Map = require('@mmckegg/mutant/map')
 
 var getBaseName = require('path').basename
-var getExt = require('path').extname
+var getDirectory = require('path').dirname
 var join = require('path').join
 
 var RenameWidget = require('lib/rename-widget')
@@ -16,18 +16,7 @@ function renderBrowser (entries, project) {
   var elements = Map(entries, function (entry) {
     var base = getBaseName(entry.path)
     if (entry.type === 'directory' && base !== '~recordings') {
-      // TODO: optimize sub-entries!
-      var subEntries = computed(project.subEntries, x => x && x[entry.path] || [])
-      return concat([
-        renderEntry(entry, project),
-        Map(subEntries, function (subEntry) {
-          var fileName = getBaseName(subEntry.path)
-          var ext = getExt(fileName)
-          if (subEntry.type === 'file' && fileName !== 'index.json' && ext === '.json') {
-            return renderEntry(subEntry, project)
-          }
-        })
-      ])
+      return renderEntry(entry, project)
     }
   })
 
@@ -38,20 +27,15 @@ function renderEntry (entry, project) {
   var actions = project.actions
 
   var classList = computed([
-    entry, project.renaming, project.recordingPath, project.selected, project.subEntries
+    entry, project.renaming, project.recordingPath, project.selected
   ], computeClasses)
 
   return h('BrowserFile', {
     'data-entry': entry,
-    'draggable': true,
-    'ev-dragstart': DomEvent(dragStart, entry),
     'ev-click': { entry: entry, project: project, handleEvent: handleClick },
     'ev-dblclick': send(actions.open, entry.path),
     'classList': classList
   }, [
-    h('button.twirl', {
-      'ev-click': send(actions.toggleDirectory, entry.path)
-    }),
     computed(project.renaming, function (renaming) {
       if (renaming === entry.path) {
         return RenameWidget(entry.fileName, function (newName) {
@@ -77,7 +61,7 @@ function handleClick (ev) {
   }
 }
 
-function computeClasses (entry, renamingPath, recordingPath, selectedPath, subEntries) {
+function computeClasses (entry, renamingPath, recordingPath, selectedPath) {
   var selected = selectedPath === entry.path
   var result = []
   if (recordingPath === entry.path) {
@@ -90,12 +74,11 @@ function computeClasses (entry, renamingPath, recordingPath, selectedPath, subEn
 
   if (entry.type === 'directory') {
     result.push('-directory')
-    if (subEntries[entry.path]) {
-      result.push('-open')
-    }
 
-    // handle index.json selected
-    selected = selected || join(entry.path, 'index.json') === selectedPath
+    // handle sub item selected
+    if (selectedPath) {
+      selected = selected || entry.path === getDirectory(selectedPath)
+    }
   }
 
   if (selected) {
@@ -103,15 +86,4 @@ function computeClasses (entry, renamingPath, recordingPath, selectedPath, subEn
   }
 
   return result.join(' ')
-}
-
-function dragStart (ev) {
-  window.currentDrag = null
-  ev.dataTransfer.setData('filepath', ev.data.path)
-}
-
-function concat (items) {
-  return computed(items, function (args) {
-    return Array.prototype.concat.apply([], arguments)
-  })
 }

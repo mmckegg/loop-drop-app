@@ -40,7 +40,10 @@ function SlotChooser (chunk, spawnSlot) {
             'ev-drop': MPE(drop, dragInfo),
 
             'style': {width: width},
-            'classList': when(selected, '-selected'),
+            'classList': [
+              when(selected, '-selected'),
+              computed([chunk.activeSlots, id, '-active'], valueWhen)
+            ],
             'ev-click': send(chunk.selectedSlotId.set, id)
           }, [
             id,
@@ -84,6 +87,12 @@ function dragStart (ev) {
 
 function dragEnd (ev) {
   currentDrag = null
+}
+
+function valueWhen (activeSlots, id, value) {
+  if (activeSlots.includes(id)) {
+    return value
+  }
 }
 
 function dragOver (ev) {

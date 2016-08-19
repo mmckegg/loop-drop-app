@@ -8,6 +8,7 @@ var watch = require('observ/watch')
 var computed = require('@mmckegg/mutant/computed')
 var Event = require('geval')
 var map = require('@mmckegg/mutant/map')
+var resolve = require('@mmckegg/mutant/resolve')
 
 var TapTempo = require('tap-tempo')
 var Bopper = require('bopper')
@@ -24,7 +25,7 @@ var getExt = require('path').extname
 var getBaseName = require('path').basename
 var join = require('path').join
 var pathSep = require('path').sep
-var resolve = require('path').resolve
+var resolvePath = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
 var gainToDecibels = require('decibels/from-gain')
 
@@ -72,8 +73,7 @@ function Project (parentContext) {
   obs.selected = Observ()
   obs.renaming = Observ(false)
   obs.entries = ObservDirectory(context.cwd)
-  obs.recordingEntries = ObservDirectory(resolve(context.cwd, '~recordings'), context.fs)
-  obs.subEntries = ObservVarhash({})
+  obs.recordingEntries = ObservDirectory(resolvePath(context.cwd, '~recordings'), context.fs)
 
   obs.outputRms = Observ()
   masterOutput.rms.on('data', function (value) {
@@ -140,7 +140,6 @@ function Project (parentContext) {
     recording: obs.recording,
     recordingPath: obs.recordingPath,
     recordingEntries: obs.recordingEntries,
-    subEntries: obs.subEntries,
     availableGlobalControllers: obs.availableGlobalControllers,
     selected: obs.selected
   })
@@ -181,31 +180,37 @@ function Project (parentContext) {
       obs.selected.set(path)
     },
 
+    openExternal: function (externalObject) {
+      if (!~obs.items.indexOf(externalObject)) {
+        obs.items.push(externalObject)
+        obs.selected.set(externalObject.path())
+        externalObject.context.fileObject.onClose(function () {
+          actions.closeExternal(externalObject)
+        })
+      }
+    },
+
+    closeExternal: function (externalObject) {
+      var index = obs.items.indexOf(externalObject)
+      if (~index) {
+        obs.items.splice(index, 1)
+        if (externalObject.path() === obs.selected()) {
+          var lastSelectedSetup = obs.items.get(index) || obs.items.get(index - 1) || obs.items.get(0)
+          obs.selected.set(lastSelectedSetup ? lastSelectedSetup.path() : null)
+        }
+      }
+    },
+
     select: function (pathOrItem) {
-      if (pathOrItem) {
-        obs.selected.set(pathOrItem.path || pathOrItem)
+      if (typeof pathOrItem === 'string') {
+        obs.selected.set(pathOrItem)
+      } else if (pathOrItem.path) {
+        obs.selected.set(resolve(pathOrItem.path))
       }
     },
 
     tapTempo: function () {
       tapTempo.tap()
-    },
-
-    closeFile: function (path) {
-      var object = findItemByPath(obs.items, path)
-      if (object) {
-        object.close()
-      }
-    },
-
-    toggleDirectory: function (path) {
-      var directory = obs.subEntries.get(path)
-      if (directory) {
-        obs.subEntries.put(path, null)
-        directory.close()
-      } else {
-        obs.subEntries.put(path, ObservDirectory(path, context.fs))
-      }
     },
 
     newSetup: function () {
@@ -251,7 +256,7 @@ function Project (parentContext) {
           if (item) {
             item.load(newFilePath)
             if (isSelected) {
-              obs.selected.set(item.path)
+              obs.selected.set(resolve(item.path))
             }
           }
           cb && cb()
@@ -264,7 +269,7 @@ function Project (parentContext) {
       obs.entries.refresh()
       obs.recordingEntries.refresh()
       obs.items.filter(function (item) {
-        return item.path && (item.path === path || item.path.startsWith(path + pathSep))
+        return resolve(item.path) && (resolve(item.path) === path || resolve(item.path).startsWith(path + pathSep))
       }).forEach(function (item) {
         item.close()
       })
@@ -298,10 +303,8 @@ function Project (parentContext) {
         var oldSrc = chunkId + '.json'
         var newSrc = newChunkId + '.json'
         if (oldSrc === join(descriptor.src)) {
-          var path = fileObject.resolvePath(oldSrc)
-          actions.rename(path, newChunkId + '.json', function () {
-            QueryParam(chunk, 'src').set(newSrc)
-          })
+          fileObject.file.rename(newChunkId + '.json')
+          QueryParam(chunk, 'src').set(newSrc)
         }
       }
     },
@@ -363,14 +366,14 @@ function Project (parentContext) {
       })
 
       object.onClose(function () {
-        console.log('closing', object.path)
+        console.log('closing', resolve(object.path))
         var index = obs.items.indexOf(object)
         if (~index) {
           obs.items.splice(index, 1)
         }
-        if (object.path === obs.selected()) {
-          var lastSelectedSetup = obs.items.get(index) || obs.items.get(0)
-          obs.selected.set(lastSelectedSetup ? lastSelectedSetup.path : null)
+        if (resolve(object.path) === obs.selected()) {
+          var lastSelectedSetup = obs.items.get(index) || obs.items.get(index - 1) || obs.items.get(0)
+          obs.selected.set(lastSelectedSetup ? resolve(lastSelectedSetup.path) : null)
         }
         refreshOpenFiles()
       })
@@ -404,7 +407,7 @@ function Project (parentContext) {
 
   function refreshOpenFiles () {
     obs.openFiles.set(obs.items.map(function (item) {
-      return item.path
+      return resolve(item.path)
     }))
   }
 }
@@ -415,8 +418,8 @@ function copyExternalFilesTo (fs, path, target) {
     if (!err) {
       JSON.stringify(JSON.parse(data), function (key, value) {
         if (value && value.node === 'AudioBuffer') {
-          var from = resolve(fromRoot, value.src)
-          var to = resolve(target, value.src)
+          var from = resolvePath(fromRoot, value.src)
+          var to = resolvePath(target, value.src)
           fs.exists(from, function (exists) {
             if (exists) {
               fs.exists(to, function (exists) {
