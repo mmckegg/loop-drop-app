@@ -32,28 +32,33 @@ function upgradeSetup (setupPath, cb) {
   fs.readFile(setupPath, 'utf8', function (err, result) {
     if (err) return cb && cb(err)
     var data = JSON.parse(result)
-    forEach(data.chunks, function (chunk, next, i) {
-      if (chunk.node === 'external') {
-        var chunkPath = join(setupDirectory, chunk.src)
-        data.chunks[i] = { node: 'externalChunk', src: chunk.src }
-        console.log(' > ', chunk.src)
-        fs.readFile(chunkPath, 'utf8', function (err, result) {
-          if (err) return next && next(err)
-          var params = JSON.parse(result)
-          Object.keys(chunk).forEach(function (key) {
-            if (key !== 'node' && key !== 'src') {
-              params[key] = chunk[key]
-            }
+    if (data.chunks) {
+      forEach(data.chunks, function (chunk, next, i) {
+        if (chunk.node === 'external') {
+          var chunkPath = join(setupDirectory, chunk.src)
+          data.chunks[i] = { node: 'externalChunk', src: chunk.src }
+          console.log(' > ', chunk.src)
+          fs.readFile(chunkPath, 'utf8', function (err, result) {
+            if (err) return next && next(err)
+            var params = JSON.parse(result)
+            Object.keys(chunk).forEach(function (key) {
+              if (key !== 'node' && key !== 'src') {
+                params[key] = chunk[key]
+              }
+            })
+            fs.writeFile(chunkPath, JSON.stringify(params), next)
           })
-          fs.writeFile(chunkPath, JSON.stringify(params), next)
-        })
-      } else {
-        next()
-      }
-    }, function (err) {
-      if (err) return cb && cb(err)
-      fs.writeFile(setupPath, JSON.stringify(data), cb)
-    })
+        } else {
+          next()
+        }
+      }, function (err) {
+        if (err) return cb && cb(err)
+        fs.writeFile(setupPath, JSON.stringify(data), cb)
+      })
+    } else {
+      console.log('no chunk', setupPath)
+      cb()
+    }
   })
 }
 
