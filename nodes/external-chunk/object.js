@@ -160,7 +160,7 @@ function External (parentContext) {
         context.cwd = getDirectory(obs.file.path())
         obs.node = ctor(context)
         obs.node.set(descriptor)
-        releaseResolved = watch(obs.node, obs.resolved.set)
+        releaseResolved = watch(obs.node.resolved || obs.node, obs.resolved.set)
         releaseInstance = obs.node(function (data) {
           if (currentTransaction === NO_TRANSACTION) {
             externalParams.set(data)

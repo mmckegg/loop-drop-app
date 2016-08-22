@@ -46,10 +46,6 @@ function MeddlerChunk (parentContext) {
   obs.overrideVolume = overrideVolume
   obs.params.context = context
 
-  obs.resolved = Struct({
-    slotLookup: context.slotLookup
-  })
-
   var chainScheduler = ChainScheduler(context, 'input')
   extraSlots.put('input', chainScheduler)
 

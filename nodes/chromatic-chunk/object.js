@@ -18,6 +18,7 @@ var ExternalRouter = require('lib/external-router')
 var Param = require('audio-slot-param')
 var applyParams = require('lib/apply-params')
 var destroyAll = require('lib/destroy-all')
+var withResolved = require('lib/with-resolved')
 
 module.exports = ChromaticChunk
 
@@ -156,9 +157,7 @@ function ChromaticChunk (parentContext) {
     return result
   })
 
-  obs.resolved = ObservStruct({
-    slotLookup: context.slotLookup
-  })
+  obs.resolved = withResolved(obs, ['triggers'])
 
   obs.grid = computed([obs.triggers, obs.shape], ArrayGrid)
 
