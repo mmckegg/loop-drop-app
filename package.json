@@ -25,7 +25,7 @@
     "async-debounce": "0.0.0",
     "async-each": "^1.0.0",
     "audio-rms": "~2.0.0",
-    "audio-slot": "~5.2.0",
+    "audio-slot": "~5.2.1",
     "audio-slot-param": "~2.2.0",
     "bopper": "~2.11.0",
     "brace": "~0.8.0",
