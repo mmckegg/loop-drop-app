@@ -1,0 +1,33 @@
+ToggleChooser {
+
+  display: flex
+  height: 18px
+
+  span.title {
+    margin: 3px 3px 0 0
+    color: #CCC
+    font-size: 90%
+    font-weight: bold
+  }
+
+  div.choice {
+
+    border: 1px solid #2A2A2A
+    cursor: pointer
+    padding: 1px 4px
+    background: #3C493C
+    border: 1px solid #2A2A2A
+    cursor: pointer
+    color: #9A9
+
+    :hover {
+      border-color: #3f7d55
+    }
+
+    -active {
+      background: #3eb13e
+      border-color: #84f55e !important
+      color: white
+    }
+  }
+}
