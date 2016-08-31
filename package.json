@@ -48,7 +48,7 @@
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
     "observ-midi": "~2.2.0",
-    "observ-node-array": "~1.12.0",
+    "observ-node-array": "~1.13.0",
     "observ-struct": "^6.0.0",
     "observ-varhash": "^1.0.6",
     "readable-blob-stream": "^1.1.0",
