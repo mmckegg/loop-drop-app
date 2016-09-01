@@ -41,7 +41,6 @@ function renderExternalChromaticChunk (externalObject) {
             format: 'semitone',
             flex: true,
             allowSpawnModulator: true,
-            node: node,
             defaultValue: 0
           })
         ]),

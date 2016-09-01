@@ -86,7 +86,6 @@ module.exports = function renderSlicerChunk (node) {
           format: 'semitone',
           flex: 'small',
           allowSpawnModulator: true,
-          node: node,
           defaultValue: 0
         })
       ]),

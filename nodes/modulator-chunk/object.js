@@ -21,7 +21,6 @@ function ModulatorChunk (parentContext) {
   obs._type = 'ModulatorChunk'
 
   obs.context = context
-  context.chunk = obs
 
   var broadcastSchedule = null
   obs.onSchedule = Event(function (b) {

@@ -24,7 +24,12 @@ module.exports = function renderModulatorChunk (node) {
       if (slotIds.includes(id)) {
         result.push(h('div.slot -trigger', [
           h('strong', id + ': '),
-          ModRange(slot.value, { flex: true, format: 'offset', defaultValue: 0 }),
+          ModRange(slot.value, {
+            flex: true,
+            format: 'offset',
+            defaultValue: 0,
+            allowSpawnModulator: true
+          }),
           h('button.remove Button -warn', {
             'ev-click': send(node.slots.remove, slot)
           }, 'X')
