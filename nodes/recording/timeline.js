@@ -1,7 +1,7 @@
-var Struct = require('observ-struct')
+var Struct = require('@mmckegg/mutant/struct')
 var NodeArray = require('observ-node-array')
 var map = require('observ-node-array/map')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var watchArray = require('observ-node-array/watch')
 var Property = require('observ-default')
 

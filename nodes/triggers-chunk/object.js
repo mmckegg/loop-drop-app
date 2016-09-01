@@ -5,7 +5,7 @@ var extendParams = require('lib/extend-params')
 var BaseChunk = require('lib/base-chunk')
 var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var destroyAll = require('lib/destroy-all')
 
 module.exports = TriggersChunk

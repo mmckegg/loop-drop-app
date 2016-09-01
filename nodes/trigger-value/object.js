@@ -1,5 +1,5 @@
 var Observ = require('@mmckegg/mutant/value')
-var ObservStruct = require('observ-struct')
+var ObservStruct = require('@mmckegg/mutant/struct')
 var Param = require('lib/param')
 var Event = require('geval')
 

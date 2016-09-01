@@ -1,5 +1,5 @@
-var Observ = require('observ')
-var watch = require('observ/watch')
+var Observ = require('@mmckegg/mutant/value')
+var watch = require('@mmckegg/mutant/watch')
 var ObservAudioBuffer = require('lib/observ-audio-buffer')
 var resolve = require('path').resolve
 

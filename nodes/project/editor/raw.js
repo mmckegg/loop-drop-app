@@ -1,7 +1,7 @@
 var h = require('lib/h')
 var JSMN = require('lib/jsmn.js')
 var deepEqual = require('deep-equal')
-var watch = require('observ/watch')
+var watch = require('@mmckegg/mutant/watch')
 
 var ace = require('brace')
 require('brace/mode/javascript')

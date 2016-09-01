@@ -1,8 +1,8 @@
-var ObservStruct = require('observ-struct')
+var ObservStruct = require('@mmckegg/mutant/struct')
 var ObservMidi = require('observ-midi')
-var Observ = require('observ')
+var Observ = require('@mmckegg/mutant/value')
 var ObservArray = require('observ-array')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var MidiPort = require('lib/midi-port')
 
 var ArrayStack = require('lib/array-stack')

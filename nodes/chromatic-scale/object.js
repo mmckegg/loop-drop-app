@@ -1,4 +1,4 @@
-var ObservStruct = require('observ-struct')
+var ObservStruct = require('@mmckegg/mutant/struct')
 var Property = require('observ-default')
 
 var Param = require('lib/param')

@@ -1,5 +1,5 @@
-var watch = require('observ/watch')
-var Observ = require('observ')
+var watch = require('@mmckegg/mutant/watch')
+var Observ = require('@mmckegg/mutant/value')
 
 module.exports = InputStack
 

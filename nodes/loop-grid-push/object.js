@@ -15,7 +15,7 @@ var Repeater = require('../loop-grid/repeater')
 var Suppressor = require('../loop-grid/suppressor')
 
 var ObservVarhash = require('observ-varhash')
-var ObservStruct = require('observ-struct')
+var ObservStruct = require('@mmckegg/mutant/struct')
 var ObservMidi = require('observ-midi')
 var ObservGridStack = require('observ-grid-stack')
 var GrabGrid = require('lib/grab-grid')
@@ -23,14 +23,14 @@ var MidiPort = require('lib/midi-port')
 var MidiButtons = require('observ-midi/light-stack')
 var watchButtons = require('lib/watch-buttons')
 
-var Observ = require('observ')
+var Observ = require('@mmckegg/mutant/value')
 var ArrayGrid = require('array-grid')
 
 var DittyGridStream = require('lib/ditty-grid-stream')
 
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 
-var watch = require('observ/watch')
+var watch = require('@mmckegg/mutant/watch')
 var mapWatchDiff = require('lib/map-watch-diff-stack')
 var mapGridValue = require('observ-grid/map-values')
 var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')

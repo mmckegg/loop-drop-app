@@ -1,4 +1,4 @@
-var Observ = require('observ')
+var Observ = require('@mmckegg/mutant/value')
 var Property = require('observ-default')
 
 module.exports = function (duration, offset, buffer) {

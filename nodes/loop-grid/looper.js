@@ -1,6 +1,6 @@
 var Observ = require('@mmckegg/mutant/value')
 var computedNextTick = require('lib/computed-next-tick')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var Recorder = require('lib/loop-recorder')
 var ObservArray = require('observ-array')
 var ArrayGrid = require('array-grid')

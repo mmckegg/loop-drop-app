@@ -5,9 +5,9 @@ var h = require('lib/h')
 var fs = require('fs')
 var join = require('path').join
 
-var Observ = require('observ')
+var Observ = require('@mmckegg/mutant/value')
 var Property = require('observ-default')
-var watch = require('observ/watch')
+var watch = require('@mmckegg/mutant/watch')
 var FileObject = require('lib/file-object')
 
 var noDrop = require('lib/no-drop')

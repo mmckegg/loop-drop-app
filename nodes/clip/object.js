@@ -1,8 +1,8 @@
-var Struct = require('observ-struct')
+var Struct = require('@mmckegg/mutant/struct')
 var Property = require('observ-default')
-var watch = require('observ/watch')
+var watch = require('@mmckegg/mutant/watch')
 var resolve = require('path').resolve
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 
 module.exports = AudioTimelineClip
 

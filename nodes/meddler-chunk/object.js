@@ -7,9 +7,9 @@ var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
 var ChainScheduler = require('lib/chain-scheduler')
 var Varhash = require('observ-varhash')
-var Struct = require('observ-struct')
+var Struct = require('@mmckegg/mutant/struct')
 var merge = require('observ-node-array/merge')
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var destroyAll = require('lib/destroy-all')
 
 module.exports = MeddlerChunk

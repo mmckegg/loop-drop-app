@@ -1,6 +1,6 @@
 
-var ObservStruct = require('observ-struct')
-var Observ = require('observ')
+var ObservStruct = require('@mmckegg/mutant/struct')
+var Observ = require('@mmckegg/mutant/value')
 var Property = require('observ-default')
 var ObservVarhash = require('observ-varhash')
 var NodeArray = require('observ-node-array')
@@ -9,10 +9,10 @@ var SingleNode = require('observ-node-array/single')
 
 var ArrayGrid = require('array-grid')
 
-var computed = require('observ/computed')
+var computed = require('@mmckegg/mutant/computed')
 var lookup = require('observ-node-array/lookup')
 var merge = require('observ-node-array/merge')
-var watch = require('observ/watch')
+var watch = require('@mmckegg/mutant/watch')
 var ExternalRouter = require('lib/external-router')
 
 var Param = require('lib/param')
