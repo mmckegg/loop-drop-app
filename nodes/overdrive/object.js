@@ -1,8 +1,8 @@
 var Processor = require('lib/processor')
 
-var Param = require('audio-slot-param')
-var Transform = require('audio-slot-param/transform')
-var Apply = require('audio-slot-param/apply')
+var Param = require('lib/param')
+var Transform = require('lib/param-transform')
+var Apply = require('lib/apply-param')
 
 module.exports = OverdriveNode
 

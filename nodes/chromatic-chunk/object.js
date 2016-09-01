@@ -15,8 +15,8 @@ var merge = require('observ-node-array/merge')
 var watch = require('observ/watch')
 var ExternalRouter = require('lib/external-router')
 
-var Param = require('audio-slot-param')
-var applyParams = require('lib/apply-params')
+var Param = require('lib/param')
+var extendParams = require('lib/extend-params')
 var destroyAll = require('lib/destroy-all')
 var withResolved = require('lib/with-resolved')
 
@@ -172,7 +172,7 @@ function ChromaticChunk (parentContext) {
     releaseGlobalScale = null
   }
 
-  applyParams(obs)
+  extendParams(obs)
 
   return obs
 

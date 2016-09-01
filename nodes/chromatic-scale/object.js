@@ -1,8 +1,8 @@
 var ObservStruct = require('observ-struct')
 var Property = require('observ-default')
 
-var Param = require('audio-slot-param')
-var Transform = require('audio-slot-param/transform')
+var Param = require('lib/param')
+var Transform = require('lib/param-transform')
 
 module.exports = ScaleModulator
 

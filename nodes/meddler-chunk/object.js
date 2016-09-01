@@ -1,7 +1,7 @@
 var NodeArray = require('observ-node-array')
 var NodeVarhash = require('observ-node-array/varhash')
 var lookup = require('observ-node-array/lookup')
-var applyParams = require('lib/apply-params')
+var extendParams = require('lib/extend-params')
 var BaseChunk = require('lib/base-chunk')
 var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
@@ -82,7 +82,7 @@ function MeddlerChunk (parentContext) {
     destroyAll(obs)
   }
 
-  applyParams(obs)
+  extendParams(obs)
 
   return obs
 }

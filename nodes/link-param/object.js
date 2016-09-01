@@ -2,9 +2,9 @@ var Observ = require('@mmckegg/mutant/value')
 var ObservStruct = require('observ-struct')
 var Prop = require('observ-default')
 
-var Param = require('audio-slot-param')
-var ParamProxy = require('audio-slot-param/proxy')
-var Transform = require('audio-slot-param/transform')
+var Param = require('lib/param')
+var ParamProxy = require('lib/param-proxy')
+var Transform = require('lib/param-transform')
 
 module.exports = LinkParam
 

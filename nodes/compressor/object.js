@@ -1,6 +1,6 @@
 var Processor = require('lib/processor')
-var Param = require('audio-slot-param')
-var Apply = require('audio-slot-param/apply')
+var Param = require('lib/param')
+var Apply = require('lib/apply-param')
 
 module.exports = CompressorNode
 

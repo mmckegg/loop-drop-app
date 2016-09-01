@@ -1,5 +1,5 @@
 var Observ = require('observ')
-var Param = require('audio-slot-param')
+var Param = require('lib/param')
 var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('observ-struct')

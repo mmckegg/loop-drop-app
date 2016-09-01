@@ -1,7 +1,7 @@
 var Processor = require('lib/processor')
-var Param = require('audio-slot-param')
-var Apply = require('audio-slot-param/apply')
-var Transform = require('audio-slot-param/transform')
+var Param = require('lib/param')
+var Apply = require('lib/apply-param')
+var Transform = require('lib/param-transform')
 
 module.exports = EQNode
 

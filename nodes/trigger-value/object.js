@@ -1,6 +1,6 @@
 var Observ = require('@mmckegg/mutant/value')
 var ObservStruct = require('observ-struct')
-var Param = require('audio-slot-param')
+var Param = require('lib/param')
 var Event = require('geval')
 
 module.exports = ValueModulator

@@ -1,9 +1,9 @@
 var Node = require('observ-node-array/single')
 var ResolvedValue = require('observ-node-array/resolved-value')
-var Param = require('audio-slot-param')
+var Param = require('lib/param')
 var Property = require('observ-default')
-var Transform = require('audio-slot-param/transform')
-var Apply = require('audio-slot-param/apply')
+var Transform = require('lib/param-transform')
+var Apply = require('lib/apply-param')
 
 var Triggerable = require('lib/triggerable')
 var ScheduleList = require('lib/schedule-list')
