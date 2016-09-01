@@ -101,15 +101,12 @@ https://www.youtube.com/watch?v=2oVcNaDpPz0
 
 ## Module Overview
 
-- [loop-grid](https://github.com/mmckegg/loop-grid)
-- [audio-slot](https://github.com/mmckegg/audio-slot)
-- [wave-recorder](https://github.com/mmckegg/wave-recorder)
-- [web-midi](https://github.com/mmckegg/web-midi)
-- [bopper](https://github.com/wavejs/bopper)
-- [micro-css](https://github.com/mmckegg/micro-css)
-- [mutant](https://github.com/mmckegg/mutant)
-- [observ-midi](https://github.com/mmckegg/observ-midi)
 - [electron](https://github.com/atom/electron)
+- [mutant](https://github.com/mmckegg/mutant)
+- [micro-css](https://github.com/mmckegg/micro-css)
+- [web-midi](https://github.com/mmckegg/web-midi)
+- [wave-recorder](https://github.com/mmckegg/wave-recorder)
+- [bopper](https://github.com/wavejs/bopper)
 
 ## License
 
