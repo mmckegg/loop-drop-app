@@ -72,7 +72,7 @@ function Looper (loopGrid) {
   }
 
   obs.flatten = function () {
-    transformedOutput.refresh()
+    transformedOutput.update()
     undos.push(base())
     base.set(transformedOutput())
     transforms.set([])
