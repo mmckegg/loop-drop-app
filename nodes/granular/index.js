@@ -2,6 +2,6 @@ module.exports = {
   name: 'Granular',
   node: 'source/granular',
   group: 'sources',
-  object: require('audio-slot/sources/granular'),
+  object: require('./object'),
   render: require('./view')
 }

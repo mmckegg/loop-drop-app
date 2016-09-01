@@ -2,7 +2,7 @@ module.exports = {
   name: 'Sample',
   node: 'source/sample',
   group: 'sources',
-  object: require('audio-slot/sources/sample'),
+  object: require('./object'),
   spawn: {
     amp: {
       node: 'modulator/adsr',

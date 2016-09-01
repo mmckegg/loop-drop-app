@@ -2,6 +2,6 @@ module.exports = {
   name: 'Reverb',
   node: 'processor/reverb',
   group: 'processors',
-  object: require('audio-slot/processors/reverb'),
+  object: require('./object'),
   render: require('./view')
 }

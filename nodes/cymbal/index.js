@@ -2,6 +2,6 @@ module.exports = {
   name: 'Cymbal',
   node: 'source/cymbal',
   group: 'drumSources',
-  object: require('audio-slot/sources/cymbal'),
+  object: require('./object'),
   render: require('./view')
 }

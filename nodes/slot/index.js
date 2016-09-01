@@ -1,6 +1,6 @@
 module.exports = {
   name: 'Slot',
   node: 'slot',
-  object: require('audio-slot'),
+  object: require('./object'),
   render: require('./view')
 }

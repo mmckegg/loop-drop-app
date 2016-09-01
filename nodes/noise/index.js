@@ -2,6 +2,6 @@ module.exports = {
   name: 'Noise',
   node: 'source/noise',
   group: 'sources',
-  object: require('audio-slot/sources/noise'),
+  object: require('./object'),
   render: require('./view')
 }

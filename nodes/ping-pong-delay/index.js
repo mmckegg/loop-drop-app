@@ -3,6 +3,6 @@ module.exports = {
   spawn: false, // spawned from delay node
   node: 'processor/ping-pong-delay',
   group: 'processors',
-  object: require('audio-slot/processors/ping-pong-delay'),
+  object: require('./object'),
   render: require('../delay/view')
 }

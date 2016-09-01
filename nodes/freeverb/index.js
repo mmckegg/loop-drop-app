@@ -1,8 +1,8 @@
 module.exports = {
   name: 'Freeverb',
-  spawn: false,
+  spawn: false, // can be selected using "reverb" with type option
   node: 'processor/freeverb',
   group: 'processors',
-  object: require('audio-slot/processors/freeverb'),
+  object: require('./object'),
   render: require('./view')
 }
