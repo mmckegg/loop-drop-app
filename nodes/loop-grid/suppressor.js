@@ -1,6 +1,6 @@
-var Observ = require('observ')
+var Observ = require('@mmckegg/mutant/value')
 var ArrayGrid = require('array-grid')
-var getEvents = require('loop-grid/lib/get-events')
+var getEvents = require('lib/get-events')
 
 module.exports = function (transform, shape, stride) {
   var self = Observ(ArrayGrid([], resolve(shape), resolve(stride)))

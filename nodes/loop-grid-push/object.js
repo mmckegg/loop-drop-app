@@ -1,17 +1,17 @@
 // Ableton Push controller support
 // Written by Fabio Neves - fzero.ca / nostep.ca / github.com/fzero
 
-var LoopGrid = require('loop-grid')
-var Looper = require('loop-grid/looper')
-var computeTargets = require('loop-grid/compute-targets')
-var computeFlags = require('loop-grid/compute-flags')
+var LoopGrid = require('../loop-grid/object')
+var Looper = require('../loop-grid/looper')
+var computeTargets = require('../loop-grid/compute-targets')
+var computeFlags = require('../loop-grid/compute-flags')
 var holdActive = require('lib/hold-active-transform')
 var computeActiveIndexes = require('lib/active-indexes')
 
-var Selector = require('loop-grid/selector')
-var Holder = require('loop-grid/transforms/holder')
-var Mover = require('loop-grid/transforms/mover')
-var Repeater = require('loop-grid/transforms/repeater')
+var Selector = require('../loop-grid/selector')
+var Holder = require('../loop-grid/holder')
+var Mover = require('../loop-grid/mover')
+var Repeater = require('../loop-grid/repeater')
 var Suppressor = require('../loop-grid/suppressor')
 
 var ObservVarhash = require('observ-varhash')
