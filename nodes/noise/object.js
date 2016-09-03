@@ -51,9 +51,7 @@ function NoiseNode (context) {
       player.loop = true
       player.start(at, 0)
 
-      return new ScheduleEvent(at, player, choker, [
-        choker.disconnect.bind(choker)
-      ])
+      return new ScheduleEvent(at, player, choker)
     }
   }
 }

@@ -57,10 +57,7 @@ function KickNode (context) {
     choker.connect(amp)
     source.start(at)
 
-    var event = new ScheduleEvent(at, source, choker, [
-      choker.disconnect.bind(choker)
-    ])
-
+    var event = new ScheduleEvent(at, source, choker)
     event.oneshot = true
     event.to = at + obs.decay.getValueAt(at)
     return event

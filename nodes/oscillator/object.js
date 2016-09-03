@@ -59,8 +59,7 @@ function OscillatorNode (context) {
       Apply(context, oscillator.detune, obs.detune),
       Apply(context, oscillator.frequency, frequency),
       Apply(context, power.gain, powerRolloff),
-      ApplyShape(context, oscillator, obs.shape),
-      choker.disconnect.bind(choker)
+      ApplyShape(context, oscillator, obs.shape)
     ])
   }
 }

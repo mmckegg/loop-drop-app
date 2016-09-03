@@ -96,7 +96,6 @@ function GranularSample (obs, output, playbackRate, from) {
   this.nextTime = from
   this.nextOffset = 0
   this.choker = obs.context.audio.createGain()
-  this.choked = false
   this.oneshot = obs.mode() === 'oneshot'
   this.events = ScheduleList()
   this.releases = [this.events.destroy]
@@ -117,24 +116,14 @@ GranularSample.prototype.choke = function (at) {
   if (!this.to || at < this.to) {
     this.choker.gain.cancelScheduledValues(this.choker.context.currentTime)
     this.choker.gain.setTargetAtTime(0, at, 0.02)
-    this.choked = true
     this.to = at + 0.1
-  }
-}
-
-GranularSample.prototype.cancelChoke = function (at) {
-  if (this.choked && this.stopAt) {
-    this.choker.gain.cancelScheduledValues(this.to - 0.1)
-    this.stop(this.stopAt)
   }
 }
 
 GranularSample.prototype.stop = function (at) {
   at = at || this.choker.context.currentTime
-  this.events.truncateTo(this.context.audio.currentTime)
   this.choker.gain.cancelScheduledValues(this.choker.context.currentTime)
   this.choker.gain.setValueAtTime(0, at)
-  this.choked = false
   this.stopAt = at
   this.to = at
 }
@@ -143,7 +132,6 @@ function handleSchedule (schedule) {
   var obs = this.obs
   var endTime = schedule.time + schedule.duration
 
-  this.events.truncateTo(this.context.audio.currentTime)
   if (endTime >= this.from && (!this.to || schedule.time < this.to)) {
     var length = obs.duration()
     var rate = obs.rate()

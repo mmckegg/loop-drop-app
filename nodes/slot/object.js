@@ -137,12 +137,6 @@ function AudioSlot (parentContext, defaultValue) {
     })
   }
 
-  obs.cancelFrom = function (at) {
-    obs.sources.forEach(function (source) {
-      source.cancelFrom && source.cancelFrom(at)
-    })
-  }
-
   obs.choke = function (at) {
     obs.sources.forEach(function (source) {
       source.choke && source.choke(at)

@@ -84,11 +84,6 @@ function Envelope (context) {
     return at + releaseTime
   }
 
-  obs.cancelFrom = function (at) {
-    at = Math.max(at, context.audio.currentTime)
-    broadcast({ mode: 'cancel', at: at })
-  }
-
   obs.getReleaseDuration = function () {
     return obs.release.getValueAt(context.audio.currentTime)
   }
