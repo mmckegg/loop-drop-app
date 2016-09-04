@@ -1,5 +1,4 @@
 var Observ = require('@mmckegg/mutant/value')
-var extend = require('xtend')
 var computed = require('@mmckegg/mutant/computed')
 var watch = require('@mmckegg/mutant/watch')
 var resolveNode = require('observ-node-array/resolve')
@@ -11,7 +10,6 @@ var resolve = require('path').resolve
 
 var ObservFile = require('lib/observ-file')
 var JsonFile = require('lib/json-file')
-var NO_TRANSACTION = {}
 
 module.exports = External
 
@@ -24,17 +22,16 @@ function External (parentContext) {
 
   obs._type = 'ExternalNode'
 
-  var externalParams = null
-  var currentTransaction = NO_TRANSACTION
+  var updateFile = null
+  var setting = false
 
-  var release = null
   var releaseCC = null
   var releaseResolved = null
   var releaseInstance = null
   var releaseRename = null
   var loading = false
 
-  var lastDescriptor = null
+  var currentNodeName = null
   obs.node = null
   obs.file = null
   obs.path = Observ()
@@ -75,12 +72,7 @@ function External (parentContext) {
     if (obs.file) {
       obs.file.close()
       obs.file = null
-    }
-
-    if (release) {
-      release()
-      release = null
-      externalParams = null
+      updateFile = null
     }
 
     if (releaseInstance) {
@@ -103,35 +95,28 @@ function External (parentContext) {
 
     if (obs.file && obs.file.path() !== path) {
       releaseRename()
-      release()
-      release = releaseRename = null
-      externalParams = null
+      releaseRename = null
       obs.file.close()
       obs.file = null
+      updateFile = null
     }
 
-    if (!externalParams) {
+    if (!updateFile) {
       if (path) {
         loading = true
-        release && release()
         obs.file = ObservFile(path)
-        externalParams = JsonFile(obs.file)
-        release = watch(externalParams, update)
+        updateFile = JsonFile(obs.file, updateNode)
         releaseRename = watch(obs.file.path, obs.path.set)
       }
-    } else {
-      update()
     }
   })
 
-  function update () {
-    var descriptor = externalParams()
-    var ctor = descriptor && resolveNode(context.nodes, descriptor.node)
-
-    if (obs.node && descriptor && obs && lastDescriptor && descriptor.node === lastDescriptor.node) {
-      currentTransaction = descriptor
+  function updateNode (descriptor) {
+    var ctor = descriptor && resolveNode(context.nodes, getNode(descriptor))
+    if (obs.node && descriptor && obs && currentNodeName && getNode(descriptor) === currentNodeName) {
+      setting = true
       obs.node.set(descriptor)
-      currentTransaction = NO_TRANSACTION
+      setting = false
     } else {
       if (releaseResolved) {
         releaseResolved()
@@ -162,8 +147,8 @@ function External (parentContext) {
         obs.node.set(descriptor)
         releaseResolved = watch(obs.node.resolved || obs.node, obs.resolved.set)
         releaseInstance = obs.node(function (data) {
-          if (currentTransaction === NO_TRANSACTION) {
-            externalParams.set(data)
+          if (!setting) {
+            updateFile(data)
           }
         })
         if (obs.node.controllerContext) {
@@ -172,7 +157,7 @@ function External (parentContext) {
       }
     }
 
-    lastDescriptor = descriptor
+    currentNodeName = getNode(descriptor)
 
     if (loading && descriptor) { // HACKS!
       loading = false
@@ -182,4 +167,10 @@ function External (parentContext) {
 
   obs.nodeName = computed(obs.resolved, r => r && r.node || null)
   return obs
+
+  // scoped
+
+  function getNode (value) {
+    return value && value[context.nodeKey || 'node'] || null
+  }
 }
