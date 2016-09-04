@@ -5,6 +5,7 @@ var Param = require('lib/param')
 var Apply = require('lib/apply-param')
 var Triggerable = require('lib/triggerable')
 var ScheduleEvent = require('lib/schedule-event')
+var getParamValue = require('lib/get-param-value')
 
 var KickEight = require('./kick-eight')
 var KickNine = require('./kick-nine')
@@ -47,9 +48,9 @@ function KickNode (context) {
   // scoped
   function trigger (at) {
     // HACK: apply params
-    currentParams.tone = obs.tone.getValueAt(at) * 128
-    currentParams.decay = obs.decay.getValueAt(at) / 2.2 * 128
-    currentParams.tune = obs.tune.getValueAt(at) + 64
+    currentParams.tone = getParamValue(obs.tone) * 128
+    currentParams.decay = getParamValue(obs.decay) / 2.2 * 128
+    currentParams.tune = getParamValue(obs.tune) + 64
 
     var choker = context.audio.createGain()
     var source = getCtor()()
@@ -59,7 +60,7 @@ function KickNode (context) {
 
     var event = new ScheduleEvent(at, source, choker)
     event.oneshot = true
-    event.to = at + obs.decay.getValueAt(at)
+    event.to = at + getParamValue(obs.decay)
     return event
   }
 }

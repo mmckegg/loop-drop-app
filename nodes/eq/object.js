@@ -1,7 +1,7 @@
 var Processor = require('lib/processor')
 var Param = require('lib/param')
 var Apply = require('lib/apply-param')
-var Transform = require('lib/param-transform')
+var Clamp = require('lib/param-clamp')
 
 module.exports = EQNode
 
@@ -39,21 +39,11 @@ function EQNode (context) {
     high: Param(context, 0)
   })
 
-  Apply(context, lowpass.frequency, Transform(context, [
-    { param: obs.highcut, transform: clampMin20 }
-  ]))
-
-  Apply(context, highpass.frequency, Transform(context, [
-    { param: obs.lowcut, transform: clampMin20 }
-  ]))
-
+  Apply(context, lowpass.frequency, Clamp(obs.highcut, 20, 20000))
+  Apply(context, highpass.frequency, Clamp(obs.lowcut, 20, 20000))
   Apply(context, lowshelf.gain, obs.low)
   Apply(context, peaking.gain, obs.mid)
   Apply(context, highshelf.gain, obs.high)
 
   return obs
-}
-
-function clampMin20 (_, val) {
-  return Math.max(20, val)
 }

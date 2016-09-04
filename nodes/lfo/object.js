@@ -1,7 +1,8 @@
-var Observ = require('@mmckegg/mutant/value')
+var Apply = require('lib/apply-param')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Property = require('observ-default')
-var Event = require('geval')
+var computed = require('@mmckegg/mutant/computed')
+var watchAll = require('@mmckegg/mutant/watch-all')
 
 var Param = require('lib/param')
 var Transform = require('lib/param-transform')
@@ -9,230 +10,95 @@ var Transform = require('lib/param-transform')
 module.exports = LFO
 
 function LFO (context) {
-  var releaseSchedule = context.scheduler.onSchedule(handleSchedule)
-  var active = []
-  var scheduledTo = 0
-  var lastBeatDuration = 1
-
-  var free = {
-    start: context.audio.currentTime,
-    nextTime: context.audio.currentTime
-  }
-
   var obs = ObservStruct({
     mode: Property('multiply'),
     sync: Property(false),
     trigger: Property(true),
 
-    phaseOffset: Observ(),
     rate: Param(context, 1),
     amp: Param(context, 1),
     value: Param(context, 1),
 
-    curve: Param(context, 1),
-    skew: Param(context, 0)
-  })
-
-  obs.trigger(function (value) {
-    if (!value) {
-      free.nextTime = context.audio.currentTime
-    }
+    phaseOffset: Property(0),
+    curve: Property(1),
+    skew: Property(0)
   })
 
   obs.context = context
-
-  var broadcast = null
-  var eventSource = {
-    onSchedule: Event(function (b) {
-      broadcast = b
-    }),
-
-    getValueAt: function (at) {
-      return 0
-    }
-  }
-
-  var transform = Transform(context, [
-    { param: eventSource, transform: offsetForOperation },
-    { param: obs.amp, transform: multiply },
-    { param: obs.value, transform: operation }
-  ])
-
-  obs.getValueAt = transform.getValueAt
-  obs.onSchedule = transform.onSchedule
   obs.getReleaseDuration = Param.getReleaseDuration.bind(this, obs)
+
+  var currentEvent = null
+  var buffer = context.audio.createBuffer(1, 1 * context.audio.sampleRate, context.audio.sampleRate)
+  watchAll([buffer, obs.curve, obs.skew], refreshBuffer, { nextTick: true })
+
+  var outputValue = context.audio.createGain()
+  obs.currentValue = computed([obs.mode], function (mode) {
+    if (mode === 'multiply') {
+      var offset = Transform(outputValue, obs.value, 'multiply')
+      return Transform(offset, obs.value, 'add')
+    } else if (mode === 'add') {
+      return Transform(outputValue, obs.value, 'add')
+    } else if (mode === 'subtract') {
+      return Transform(obs.value, outputValue, 'subtract')
+    }
+  })
+
+  var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
+  var rate = Transform(rateMultiplier, obs.rate, 'multiply')
+
+  Apply(context, outputValue.gain, obs.amp)
 
   obs.triggerOn = function (at) {
     if (obs.trigger()) {
-      at = at || context.audio.currentTime
-
-      var event = {
-        start: at,
-        end: null,
-        nextTime: at
-      }
-
-      truncate(at)
-
-      Param.triggerOn(obs, at)
-
-      active.push(event)
-
-      broadcast({
-        at: at,
-        value: 0
-      })
-
-      if (at < scheduledTo) {
-        scheduleEvent(event, at, scheduledTo, lastBeatDuration)
-      }
+      start(at, 0)
+    } else {
+      var cycleTime = 1 / rate()
+      var offset = typeof rate() === 'number'
+        ? obs.sync()
+          ? (context.scheduler.getPositionAt(at) % cycleTime) / cycleTime
+          : (at % cycleTime) / cycleTime
+        : 0
+      start(at, offset)
     }
+    Param.triggerOn(obs, at)
   }
 
   obs.triggerOff = function (at) {
-    at = at || context.audio.currentTime
-    var event = eventAt(at)
-    if (event) {
-      var stopAt = obs.getReleaseDuration() + at
-      Param.triggerOff(obs, stopAt)
-      truncate(stopAt)
-
-      broadcast({
-        at: stopAt,
-        value: 0
-      })
-
-      event.end = stopAt
-    }
+    var stopAt = stop(at)
+    Param.triggerOff(obs, stopAt)
   }
 
   obs.destroy = function () {
-    releaseSchedule && releaseSchedule()
-    releaseSchedule = null
+    Param.destroy(obs)
   }
 
   return obs
 
   // scoped
 
-  function handleSchedule (schedule) {
-    var from = schedule.time
-    var to = schedule.time + schedule.duration
-    for (var i = active.length - 1;i >= 0;i--) {
-      var event = active[i]
-
-      // clean up old events
-      if (event.end && event.end < context.audio.currentTime) {
-        active.splice(i, 1)
-        continue
-      }
-
-      scheduleEvent(event, from, to, schedule.beatDuration)
+  function start (at, offset) {
+    if (currentEvent) {
+      currentEvent.player.stop(at)
+      currentEvent.to = at
+      currentEvent = null
     }
-
-    if (!obs.trigger() && (!context.active || context.active())) {
-      scheduleEvent(free, from, to, schedule.beatDuration)
-    }
-
-    lastBeatDuration = schedule.beatDuration
-    scheduledTo = to
+    var player = context.audio.createBufferSource()
+    player.buffer = buffer
+    player.loop = true
+    player.start(at, mod(obs.phaseOffset() + (offset || 0), 1))
+    player.connect(outputValue)
+    var event = {from: at, to: Infinity, player: player}
+    Apply(context, player.playbackRate, rate, event)
+    currentEvent = event
   }
 
-  function scheduleEvent (event, from, to, beatDuration) {
-    if (event.nextTime < from) {
-      event.nextTime = from
+  function stop (at) {
+    if (currentEvent && currentEvent.to > at) {
+      currentEvent.player.stop(at)
+      currentEvent.to = at
+      currentEvent = null
     }
-
-    if (event.start <= to && (!event.end || event.end > from)) {
-      var rate = obs.rate.getValueAt(from)
-
-      if (obs.sync()) {
-        rate = rate / beatDuration
-      }
-
-      var duration = 1 / rate
-
-      while (event.nextTime < to) {
-        step(event.nextTime, duration)
-        event.nextTime += duration
-        if (obs.mode() !== 'oneshot') {
-          event.nextOffset = event.nextOffset % 1
-        }
-      }
-    }
-  }
-
-  function step (start, duration) {
-    var skew = clamp((obs.skew.getValueAt(start) + 1), 0, 1.9999999999)
-    var curve = clamp(obs.curve.getValueAt(start), 0, 1)
-    var stepDuration = duration / 4
-    var up = stepDuration * skew * curve
-    var pause = (stepDuration - curve * stepDuration) * 2
-    var down = stepDuration * (2 - skew) * curve
-
-    broadcast({
-      at: start,
-      value: 1,
-      duration: up
-    })
-
-    broadcast({
-      at: start + up + pause,
-      value: 0,
-      duration: down
-    })
-
-    broadcast({
-      at: start + up + pause + down,
-      value: -1,
-      duration: down
-    })
-
-    broadcast({
-      at: start + up + pause + down + down + pause,
-      value: 0,
-      duration: up
-    })
-  }
-
-  function offsetForOperation (_, value) {
-    var mode = obs.mode()
-    if (mode === 'add') {
-      return value
-    } else if (mode === 'subtract') {
-      return value
-    } else {
-      return (value + 1) / 2
-    }
-  }
-
-  function operation (base, value) {
-    var mode = obs.mode()
-    if (mode === 'add') {
-      return base + value
-    } else if (mode === 'subtract') {
-      return value - base
-    } else {
-      return base * value
-    }
-  }
-
-  function truncate (at) {
-    for (var i = active.length - 1;i >= 0;i--) {
-      if (active[i].start >= at) {
-        active.splice(i, 1)
-      } else if (active[i].end && active[i].end > at) {
-        active[i].end = at
-      }
-    }
-  }
-
-  function eventAt (time) {
-    for (var i = 0;i < active.length;i++) {
-      if (active[i].start <= time && (!active[i].end || active[i].end > time)) {
-        return active[i]
-      }
-    }
+    return at
   }
 }
 
@@ -240,6 +106,55 @@ function clamp (value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
 
-function multiply (a, b) {
-  return a * b
+function refreshBuffer (buffer, curve, skew) {
+  var data = buffer.getChannelData(0)
+  var stepDuration = data.length / 4
+  var skewValue = clamp((skew + 1), 0.1, 1.9999999999)
+  var curveValue = clamp(curve, 0, 1)
+  var up = stepDuration * skewValue * curveValue
+  var pause = (stepDuration - curveValue * stepDuration) * 2
+  var down = stepDuration * (2 - skewValue) * curveValue
+
+  var phases = [
+    [0, up],
+    [up + pause, down],
+    [up + pause + down, down],
+    [up + pause + down + down + pause, up]
+  ]
+
+  var phase = 0
+  for (var i = 0; i < data.length; i++) {
+    if (phases[phase + 1] && phases[phase + 1][0] <= i) {
+      phase += 1
+    }
+    var index = i - phases[phase][0]
+    data[i] = getValue(index, phases[phase][1], phase)
+  }
+
+  return buffer
+}
+
+function getValue (index, length, phase) {
+  var pos = Math.min(index / length, 1)
+  if (phase === 1) {
+    return 1 - pos
+  } else if (phase === 2) {
+    return 0 - pos
+  } else if (phase === 3) {
+    return -1 + pos
+  } else {
+    return pos
+  }
+}
+
+function getRateMultiplier (sync, tempo) {
+  if (sync) {
+    return tempo / 60 
+  } else {
+    return 1
+  }
+}
+
+function mod (n, m) {
+  return ((n % m) + m) % m
 }

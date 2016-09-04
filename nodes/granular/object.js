@@ -46,11 +46,8 @@ function GranularNode (context) {
   obs.resolvedBuffer = resolvedBuffer
   obs.context = context
 
-  var playbackRate = Transform(context, [ 1,
-    { param: context.noteOffset, transform: noteOffsetToRate },
-    { param: obs.transpose, transform: noteOffsetToRate },
-    { param: obs.tune, transform: centsToRate }
-  ])
+  var transpose = toCents(Transform(context.noteOffset, obs.transpose, 'add'))
+  var detune = Transform(transpose, obs.tune, 'add')
 
   Apply(context, amp.gain, obs.amp)
 
@@ -61,21 +58,13 @@ function GranularNode (context) {
 
   // scoped
   function trigger (at) {
-    return new GranularSample(obs, amp, playbackRate, at)
+    return new GranularSample(obs, amp, detune, at)
   }
-}
-
-function noteOffsetToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 12)
-}
-
-function centsToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 1200)
 }
 
 // internal class
 
-function GranularSample (obs, output, playbackRate, from) {
+function GranularSample (obs, output, detune, from) {
   var clock = obs.context.scheduler
   var nextTime = clock.getNextScheduleTime()
   var schedule = {
@@ -99,7 +88,7 @@ function GranularSample (obs, output, playbackRate, from) {
   this.oneshot = obs.mode() === 'oneshot'
   this.events = ScheduleList()
   this.releases = [this.events.destroy]
-  this.playbackRate = playbackRate
+  this.detune = detune
 
   if (this.oneshot) {
     this.to = from + length
@@ -182,8 +171,6 @@ function play (at, startOffset, grainDuration) {
     var maxTime = (this.to || Infinity) - release
     var releaseAt = Math.min(at + grainDuration * obs.hold(), maxTime)
 
-    source.playbackRate.value = this.playbackRate.getValueAt(at)
-
     if (obs.mode() !== 'oneshot' && releaseAt + release > startOffset * duration) {
       source.loop = true
       source.loopStart = start
@@ -205,11 +192,15 @@ function play (at, startOffset, grainDuration) {
     envelope.connect(this.choker)
 
     var event = new ScheduleEvent(at, source, envelope, [
-      Apply(context, source.playbackRate, this.playbackRate)
+      Apply(context, source.detune, this.detune)
     ])
 
     event.to = releaseAt + release
 
     return event
   }
+}
+
+function toCents (param) {
+  return Transform(param, 100, 'multiply')
 }

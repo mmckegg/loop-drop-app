@@ -1,9 +1,9 @@
 var Observ = require('@mmckegg/mutant/value')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Prop = require('observ-default')
+var computed = require('@mmckegg/mutant/computed')
 
 var Param = require('lib/param')
-var ParamProxy = require('lib/param-proxy')
 var Transform = require('lib/param-transform')
 
 module.exports = LinkParam
@@ -17,97 +17,61 @@ function LinkParam (context) {
     quantize: Prop(0)
   })
 
-  obs.value = ParamProxy(context, 0)
   obs._type = 'LinkParam'
   obs.context = context
 
-  var updating = false
-  var releaseParams = null
-  var onDestroy = []
+  var range = subtract(obs.maxValue, obs.minValue)
 
   // transform: value * (maxValue - minValue) + minValue
-  var outputValue = Transform(context, [
-    { param: obs.mode },
-    { param: obs.value, transform: applyInterpolation },
-    { param: Transform(context,
-      [ { param: obs.maxValue },
-        { param: obs.minValue, transform: subtract }
-      ]), transform: multiply
-    },
-    { param: obs.minValue, transform: add },
-    { param: obs.quantize, transform: quantize }
-  ])
 
-  obs.onSchedule = outputValue.onSchedule
-  obs.getValueAt = outputValue.getValueAt
+  obs.currentValue = computed([obs.param, obs.mode, obs.quantize, range, context.paramLookup], function (paramId, mode, quantize, range) {
+    var param = context.paramLookup.get(paramId)
+    if (param) {
+      if (mode === 'exp') {
+        if (typeof range === 'number' && range < 0) {
+          var oneMinusParam = add(param, -1)
+          param = subtract(1, multiply(oneMinusParam, oneMinusParam))
+        } else {
+          param = multiply(param, param)
+        }
+      }
 
-  obs.getValue = function () {
-    return outputValue.getValueAt(context.audio.currentTime)
-  }
+      var result = multiply(param, range)
+      result = add(result, obs.minValue)
 
-  if (context.paramLookup) {
-    releaseParams = context.paramLookup(handleUpdate)
-  }
+      if (quantize) {
+        // TODO
+      }
 
-  if (context.active) {
-    onDestroy.push(context.active(handleUpdate))
-  }
-
-  obs.param(handleUpdate)
+      return result
+    } else {
+      return obs.minValue.currentValue
+    }
+  }, { nextTick: true })
 
   obs.destroy = function () {
-    while (onDestroy.length) {
-      onDestroy.pop()()
-    }
-    releaseParams && releaseParams()
-    releaseParams = null
-    obs.value.destroy()
+    Param.destroy(obs)
   }
 
   return obs
-
-  // scoped
-
-  function updateNow () {
-    if (!context.active || context.active()) {
-      var param = context.paramLookup.get(obs.param())
-      obs.value.setTarget(param)
-    } else {
-      obs.value.setTarget(null)
-    }
-    updating = false
-  }
-
-  function handleUpdate () {
-    if (!updating) {
-      updating = true
-      setImmediate(updateNow)
-    }
-  }
-
-  function applyInterpolation (mode, value) {
-    if (mode === 'exp') {
-      if (obs.minValue() < obs.maxValue()) {
-        return value * value
-      } else {
-        var i = 1 - value
-        return 1 - (i * i)
-      }
-    } else { // linear
-      return value
-    }
-  }
 }
 
-function quantize (value, grid) {
-  if (grid) {
-    return Math.round(value * grid) / grid
-  } else {
-    return value
-  }
+function add (a, b) {
+  return Transform(a, b, 'add')
 }
 
-// transform operations
-function add (a, b) { return a + b }
-function subtract (a, b) { return a - b }
-function multiply (a, b) { return a * b }
+function subtract (a, b) {
+  return Transform(a, b, 'subtract')
+}
+
+function multiply (a, b) {
+  return Transform(a, b, 'multiply')
+}
+
+// function quantize (value, grid) {
+//   if (grid) {
+//     return Math.round(value * grid) / grid
+//   } else {
+//     return value
+//   }
+// }

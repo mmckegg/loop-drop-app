@@ -1,9 +1,10 @@
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Property = require('observ-default')
-var Event = require('geval')
 
 var Param = require('lib/param')
 var Transform = require('lib/param-transform')
+
+var createVoltage = require('lib/create-voltage')
 
 module.exports = Envelope
 
@@ -17,87 +18,103 @@ function Envelope (context) {
     value: Param(context, 1)
   })
 
-  var broadcast = null
-  var eventSource = {
-    onSchedule: Event(function (b) {
-      broadcast = b
-    }),
-    getValueAt: function (at) {
-      return 0
-    }
-  }
-
-  var outputValue = Transform(context, [
-    { param: obs.value },
-    { param: eventSource, transform: multiply, watchingYou: true }
-  ])
-
-  obs.getValueAt = outputValue.getValueAt
-  obs.onSchedule = outputValue.onSchedule
-
+  var outputParam = context.audio.createGain()
+  obs.currentValue = Transform(obs.value, outputParam, 'multiply')
   obs.context = context
+
+  var currentPlayer = null
+  var currentAmp = null
+  var triggeredTo = 0
 
   obs.triggerOn = function (at) {
     at = Math.max(at, context.audio.currentTime)
 
+    if (obs.retrigger() || triggeredTo < at) {
+      obs.choke(at)
+      currentPlayer = createVoltage(context.audio)
+      currentAmp = context.audio.createGain()
+      currentAmp.gain.value = 0
+      currentPlayer.connect(currentAmp).connect(outputParam)
+      currentPlayer.start(at)
+      triggeredTo = Infinity
+    } else {
+      currentAmp.gain.cancelScheduledValues(at)
+      currentPlayer.stop(at + 1000) // HACK: cancel stop
+      triggeredTo = at + 1000
+    }
+
+    Param.triggerOn(obs, at)
+
     var peakTime = at + (obs.attack() || 0.005)
 
     if (obs.attack()) {
-      if (obs.retrigger()) {
-        broadcast({ value: 0, at: at })
-      }
-      broadcast({
-        value: 1,
-        at: at,
-        duration: obs.attack.getValueAt(at),
-        mode: 'log'
-      })
+      currentAmp.gain.setTargetAtTime(1, at, getValue(obs.attack) / 8)
     } else {
-      broadcast({ value: 1, at: at })
+      currentAmp.gain.setValueAtTime(1, at)
     }
 
     // decay / sustain
-    broadcast({
-      value: obs.sustain.getValueAt(peakTime),
-      at: peakTime,
-      duration: obs.decay.getValueAt(peakTime),
-      mode: 'log'
-    })
+    var sustain = getValue(obs.sustain)
+    if (sustain !== 1) {
+      currentAmp.gain.setTargetAtTime(getValue(obs.sustain), peakTime, getValue(obs.decay) / 8 || 0.0001)
+    }
   }
 
   obs.triggerOff = function (at) {
     at = Math.max(at, context.audio.currentTime)
+    var releaseTime = getValue(obs.release)
+    var stopAt = at + releaseTime
 
-    var releaseTime = obs.release.getValueAt(at)
+    if (at < triggeredTo) {
+      currentPlayer.stop(stopAt)
+      triggeredTo = stopAt
 
-    // release
-    if (releaseTime) {
-      broadcast({
-        value: 0, at: at,
-        duration: releaseTime,
-        mode: 'log'
-      })
-    } else {
-      broadcast({ value: 0, at: at })
+      Param.triggerOff(obs, stopAt)
+
+      if (releaseTime) {
+        currentAmp.gain.setTargetAtTime(0, at, releaseTime / 8)
+      }
     }
 
-    return at + releaseTime
+    return stopAt
+  }
+
+  obs.choke = function (at) {
+    if (at < triggeredTo) {
+      var attack = getValue(obs.attack)
+      if (attack > 0.1) {
+        currentPlayer.stop(at + 0.1)
+        triggeredTo = at + 0.1
+        currentAmp.gain.cancelScheduledValues(at)
+        currentAmp.gain.setTargetAtTime(0, at, 0.02)
+        currentAmp.gain.setValueAtTime(0, at + 0.1)
+      } else {
+        currentPlayer.stop(at)
+        triggeredTo = at
+        return true
+      }
+    }
   }
 
   obs.getReleaseDuration = function () {
-    return obs.release.getValueAt(context.audio.currentTime)
+    return getValue(obs.release)
   }
 
-  setImmediate(function () {
-    broadcast({
-      value: 0,
-      at: context.audio.currentTime
-    })
-  })
+  obs.destroy = function () {
+    Param.destroy(obs)
+  }
 
   return obs
 }
 
-function multiply (a, b) {
-  return a * b
+function getValue (param) {
+  if (param.currentValue) {
+    var value = param.currentValue()
+    if (typeof value === 'number') {
+      return value
+    } else {
+      console.warn('Unable to automate envelope param.')
+      return 0
+    }
+  }
 }

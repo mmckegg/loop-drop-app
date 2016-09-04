@@ -30,14 +30,8 @@ function FreeverbNode (context) {
     reverb.dampening = Math.min(20000, Math.max(0, value))
   })
 
-  Apply(context, reverb.wet, Transform(context, [
-    obs.wet, { value: 4, transform: divide }
-  ]))
+  Apply(context, reverb.wet, Transform(obs.wet, 1 / 4, 'multiply'))
   Apply(context, reverb.dry, obs.dry)
 
   return obs
-}
-
-function divide (a, b) {
-  return a / b
 }

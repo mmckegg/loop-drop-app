@@ -19,7 +19,7 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
-    "@mmckegg/mutant": "~1.0.2",
+    "@mmckegg/mutant": "~2.0.0",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",
@@ -49,7 +49,7 @@
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
     "observ-midi": "~2.2.0",
-    "observ-node-array": "~1.14.0",
+    "observ-node-array": "~1.14.1",
     "observ-varhash": "^1.0.6",
     "readable-blob-stream": "^1.1.0",
     "scroll-into-view": "~1.3.1",

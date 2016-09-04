@@ -39,9 +39,7 @@ function OverdriveNode (context) {
     amp: Param(context, 1)
   })
 
-  var invertedPreBand = Transform(context, [ 1,
-    { param: obs.preBand, transform: subtract }
-  ])
+  var invertedPreBand = Transform(1, obs.preBand, 'subtract')
 
   Apply(context, bpWet.gain, obs.preBand)
   Apply(context, bpDry.gain, invertedPreBand)
@@ -51,10 +49,6 @@ function OverdriveNode (context) {
   Apply(context, output.gain, obs.amp)
 
   return obs
-}
-
-function subtract (a, b) {
-  return a - b
 }
 
 function generateCurve (steps) {

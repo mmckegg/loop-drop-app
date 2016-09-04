@@ -3,7 +3,7 @@ var Param = require('lib/param')
 var Property = require('observ-default')
 var Transform = require('lib/param-transform')
 var Apply = require('lib/apply-param')
-var watch = require('@mmckegg/mutant/watch')
+var ParamClamp = require('lib/param-clamp')
 
 var ScheduleEvent = require('lib/schedule-event')
 
@@ -12,6 +12,7 @@ module.exports = OscillatorNode
 function OscillatorNode (context) {
   var output = context.audio.createGain()
   var amp = context.audio.createGain()
+  var lastEvent = null
   amp.gain.value = 0
   amp.connect(output)
 
@@ -26,21 +27,24 @@ function OscillatorNode (context) {
 
   obs.context = context
 
-  var frequency = Transform(context, [
-    { param: obs.frequency },
-    { param: obs.octave, transform: transformOctave },
-    { param: obs.noteOffset, transform: transformNote },
-    { param: context.noteOffset, transform: transformNote }
-  ])
+  var noteOffsetCents = toCents(add(
+    add(obs.noteOffset, context.noteOffset),
+    multiply(obs.octave, 12)
+  ))
 
-  var powerRolloff = Transform(context, [
-    { param: frequency, transform: frequencyToPowerRolloff }
-  ])
+  var detune = add(noteOffsetCents, obs.detune)
+  var powerRolloff = add(multiply(detune, -1 / 12800), 0.5) // TODO: improve this value?
 
-  Apply(context, amp.gain, obs.amp)
+  Apply(context, amp.gain, ParamClamp(obs.amp, 0, 10))
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)
+
+  obs.shape(function (value) {
+    if (lastEvent && (!lastEvent.to || lastEvent.to > context.audio.currentTime)) {
+      setShape(context, lastEvent.source, value)
+    }
+  })
 
   return obs
 
@@ -49,23 +53,19 @@ function OscillatorNode (context) {
     var oscillator = context.audio.createOscillator()
     var power = context.audio.createGain()
     var choker = context.audio.createGain()
-    oscillator.frequency.setValueAtTime(frequency.getValueAt(at), at)
     oscillator.start(at)
     oscillator.connect(power)
     power.connect(choker)
     choker.connect(amp)
+    setShape(context, oscillator, obs.shape())
+    var event = new ScheduleEvent(at, oscillator, choker)
+    Apply(context, power.gain, powerRolloff, event)
+    Apply(context, oscillator.detune, detune, event)
+    Apply(context, oscillator.frequency, obs.frequency, event)
 
-    return new ScheduleEvent(at, oscillator, choker, [
-      Apply(context, oscillator.detune, obs.detune),
-      Apply(context, oscillator.frequency, frequency),
-      Apply(context, power.gain, powerRolloff),
-      ApplyShape(context, oscillator, obs.shape)
-    ])
+    lastEvent = event
+    return event
   }
-}
-
-function ApplyShape (context, target, shape) {
-  return watch(shape, setShape.bind(this, context, target))
 }
 
 function setShape (context, target, value) {
@@ -79,14 +79,14 @@ function setShape (context, target, value) {
   }
 }
 
-function transformOctave (baseFrequency, value) {
-  return baseFrequency * Math.pow(2, value)
+function toCents (param) {
+  return Transform(param, 100, 'multiply')
 }
 
-function transformNote (baseFrequency, value) {
-  return baseFrequency * Math.pow(2, value / 12)
+function add (a, b) {
+  return Transform(a, b, 'add')
 }
 
-function frequencyToPowerRolloff (baseValue, value) {
-  return 1 - ((value / 20000) || 0)
+function multiply (a, b) {
+  return Transform(a, b, 'multiply')
 }
