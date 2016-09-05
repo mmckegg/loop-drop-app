@@ -19,13 +19,12 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
-    "@mmckegg/mutant": "~2.0.0",
+    "@mmckegg/mutant": "~2.0.1",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",
     "async-debounce": "0.0.0",
     "async-each": "^1.0.0",
-    "audio-rms": "~2.0.0",
     "bitcrusher": "^0.3.0",
     "bopper": "~2.11.0",
     "brace": "~0.8.0",

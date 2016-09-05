@@ -12,7 +12,7 @@ var resolve = require('@mmckegg/mutant/resolve')
 
 var TapTempo = require('tap-tempo')
 var Bopper = require('bopper')
-var AudioRMS = require('audio-rms')
+var ObservRms = require('lib/observ-rms')
 
 var ObservDirectory = require('lib/observ-directory')
 var FileObject = require('lib/file-object')
@@ -22,14 +22,11 @@ var SessionRecorder = require('lib/session-recorder')
 
 var getDirectory = require('path').dirname
 var getExt = require('path').extname
-var getBaseName = require('path').basename
 var join = require('path').join
 var pathSep = require('path').sep
 var resolvePath = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
-var gainToDecibels = require('decibels/from-gain')
 
-var copyFile = require('lib/copy-file')
 var moveItemToTrash = require('electron').shell.moveItemToTrash
 
 var scrollIntoView = require('scroll-into-view')
@@ -42,8 +39,6 @@ function Project (parentContext) {
   // main output and monitoring
   var masterOutput = context.audio.createGain()
   masterOutput.connect(context.audio.destination)
-  masterOutput.rms = AudioRMS(context.audio)
-  masterOutput.connect(masterOutput.rms.input)
   context.masterOutput = masterOutput
 
   // recording output and limiter
@@ -75,10 +70,7 @@ function Project (parentContext) {
   obs.entries = ObservDirectory(context.cwd)
   obs.recordingEntries = ObservDirectory(resolvePath(context.cwd, '~recordings'), context.fs)
 
-  obs.outputRms = Observ()
-  masterOutput.rms.on('data', function (value) {
-    obs.outputRms.set(value.map(gainToDecibels))
-  })
+  obs.outputRms = ObservRms(masterOutput)
 
   obs.availableGlobalControllers = computed([context.midiPorts], function (portNames) {
     var result = []
