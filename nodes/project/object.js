@@ -19,6 +19,7 @@ var FileObject = require('lib/file-object')
 var QueryParam = require('lib/query-param')
 var findItemByPath = require('lib/find-item-by-path')
 var SessionRecorder = require('lib/session-recorder')
+var Cleaner = require('lib/cleaner')
 
 var getDirectory = require('path').dirname
 var getExt = require('path').extname
@@ -40,6 +41,8 @@ function Project (parentContext) {
   var masterOutput = context.audio.createGain()
   masterOutput.connect(context.audio.destination)
   context.masterOutput = masterOutput
+
+  context.cleaner = Cleaner(context.audio)
 
   // recording output and limiter
   var output = context.audio.createDynamicsCompressor()

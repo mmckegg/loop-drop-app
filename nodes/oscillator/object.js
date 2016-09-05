@@ -58,13 +58,12 @@ function OscillatorNode (context) {
     power.connect(choker)
     choker.connect(amp)
     setShape(context, oscillator, obs.shape())
-    var event = new ScheduleEvent(at, oscillator, choker)
-    Apply(context, power.gain, powerRolloff, event)
-    Apply(context, oscillator.detune, detune, event)
-    Apply(context, oscillator.frequency, obs.frequency, event)
-
-    lastEvent = event
-    return event
+    lastEvent = new ScheduleEvent(at, oscillator, choker, [
+      Apply(context, power.gain, powerRolloff),
+      Apply(context, oscillator.detune, detune),
+      Apply(context, oscillator.frequency, obs.frequency)
+    ])
+    return lastEvent
   }
 }
 

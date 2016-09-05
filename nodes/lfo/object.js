@@ -3,6 +3,7 @@ var ObservStruct = require('@mmckegg/mutant/struct')
 var Property = require('observ-default')
 var computed = require('@mmckegg/mutant/computed')
 var watchAll = require('@mmckegg/mutant/watch-all')
+var ScheduleEvent = require('lib/schedule-event')
 
 var Param = require('lib/param')
 var Transform = require('lib/param-transform')
@@ -78,7 +79,7 @@ function LFO (context) {
 
   function start (at, offset) {
     if (currentEvent) {
-      currentEvent.player.stop(at)
+      currentEvent.source.stop(at)
       currentEvent.to = at
       currentEvent = null
     }
@@ -87,14 +88,15 @@ function LFO (context) {
     player.loop = true
     player.start(at, mod(obs.phaseOffset() + (offset || 0), 1))
     player.connect(outputValue)
-    var event = {from: at, to: Infinity, player: player}
-    Apply(context, player.playbackRate, rate, event)
-    currentEvent = event
+    currentEvent = new ScheduleEvent(at, player, null, [
+      Apply(context, player.playbackRate, rate)
+    ])
+    context.cleaner.push(currentEvent)
   }
 
   function stop (at) {
-    if (currentEvent && currentEvent.to > at) {
-      currentEvent.player.stop(at)
+    if (currentEvent && (!currentEvent.to || currentEvent.to > at)) {
+      currentEvent.source.stop(at)
       currentEvent.to = at
       currentEvent = null
     }
@@ -149,7 +151,7 @@ function getValue (index, length, phase) {
 
 function getRateMultiplier (sync, tempo) {
   if (sync) {
-    return tempo / 60 
+    return tempo / 60
   } else {
     return 1
   }

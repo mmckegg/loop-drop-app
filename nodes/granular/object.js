@@ -6,7 +6,6 @@ var Transform = require('lib/param-transform')
 var Apply = require('lib/apply-param')
 
 var Triggerable = require('lib/triggerable')
-var ScheduleList = require('lib/schedule-list')
 var ScheduleEvent = require('lib/schedule-event')
 var SyncProperty = require('./granular-sync')
 
@@ -86,9 +85,8 @@ function GranularSample (obs, output, detune, from) {
   this.nextOffset = 0
   this.choker = obs.context.audio.createGain()
   this.oneshot = obs.mode() === 'oneshot'
-  this.events = ScheduleList()
-  this.releases = [this.events.destroy]
   this.detune = detune
+  this.releases = []
 
   if (this.oneshot) {
     this.to = from + length
@@ -117,6 +115,13 @@ GranularSample.prototype.stop = function (at) {
   this.to = at
 }
 
+GranularSample.prototype.destroy = function (at) {
+  this.choker.disconnect()
+  while (this.releases.length) {
+    this.releases.pop()()
+  }
+}
+
 function handleSchedule (schedule) {
   var obs = this.obs
   var endTime = schedule.time + schedule.duration
@@ -136,7 +141,7 @@ function handleSchedule (schedule) {
     while (this.nextTime < endTime) {
       var event = play.call(this, this.nextTime, this.nextOffset, duration)
       if (event) {
-        this.events.push(event)
+        this.context.cleaner.push(event)
       }
       this.nextTime += duration
       this.nextOffset += 1 / slices
