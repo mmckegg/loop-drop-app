@@ -34,7 +34,7 @@ function SampleNode (context) {
   var detune = Transform(transpose, obs.tune, 'add')
 
   var lastDetuneValue = 0
-  var playbackRate = computed([detune], function (buffer, detune) {
+  var playbackRate = computed([detune], function (detune) {
     // HACK: handle playback rate to estimate duration - won't work if detune is automated
     if (typeof detune === 'number') {
       lastDetuneValue = detune
@@ -97,8 +97,8 @@ function SampleNode (context) {
   }
 }
 
-function centsToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 1200)
+function centsToRate (value) {
+  return Math.pow(2, value / 1200)
 }
 
 function toCents (param) {
