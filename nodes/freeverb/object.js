@@ -6,7 +6,7 @@ var Property = require('observ-default')
 
 var Param = require('lib/param')
 var Apply = require('lib/apply-param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
 
 module.exports = FreeverbNode
 
@@ -30,7 +30,7 @@ function FreeverbNode (context) {
     reverb.dampening = Math.min(20000, Math.max(0, value))
   })
 
-  Apply(context, reverb.wet, Transform(obs.wet, 1 / 4, 'multiply'))
+  Apply(context, reverb.wet, Multiply([obs.wet, 1 / 4]))
   Apply(context, reverb.dry, obs.dry)
 
   return obs

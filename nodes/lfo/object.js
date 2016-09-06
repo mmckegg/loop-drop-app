@@ -6,7 +6,9 @@ var watchAll = require('@mmckegg/mutant/watch-all')
 var ScheduleEvent = require('lib/schedule-event')
 
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
+var Negate = require('lib/param-negate')
+var Sum = require('lib/param-sum')
 
 module.exports = LFO
 
@@ -35,17 +37,19 @@ function LFO (context) {
   var outputValue = context.audio.createGain()
   obs.currentValue = computed([obs.mode], function (mode) {
     if (mode === 'multiply') {
-      var offset = Transform(outputValue, obs.value, 'multiply')
-      return Transform(offset, obs.value, 'add')
+      return Sum([
+        Multiply([outputValue, obs.value]),
+        obs.value
+      ])
     } else if (mode === 'add') {
-      return Transform(outputValue, obs.value, 'add')
+      return Sum([outputValue, obs.value])
     } else if (mode === 'subtract') {
-      return Transform(obs.value, outputValue, 'subtract')
+      return Sum([outputValue, Negate(obs.value)])
     }
   })
 
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
-  var rate = Transform(rateMultiplier, obs.rate, 'multiply')
+  var rate = Multiply([rateMultiplier, obs.rate])
 
   Apply(context, outputValue.gain, obs.amp)
 

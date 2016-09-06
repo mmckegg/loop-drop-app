@@ -2,7 +2,8 @@ var Node = require('observ-node-array/single')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var Param = require('lib/param')
 var Property = require('observ-default')
-var Transform = require('lib/param-transform')
+var Sum = require('lib/param-sum')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
 var computed = require('@mmckegg/mutant/computed')
 
@@ -30,8 +31,11 @@ function SampleNode (context) {
   obs.resolvedBuffer = ResolvedValue(obs.buffer)
   obs.context = context
 
-  var transpose = toCents(Transform(context.noteOffset, obs.transpose, 'add'))
-  var detune = Transform(transpose, obs.tune, 'add')
+  var detune = Sum([
+    toCents(context.noteOffset),
+    toCents(obs.transpose),
+    obs.tune
+  ])
 
   var lastDetuneValue = 0
   var playbackRate = computed([detune], function (detune) {
@@ -102,5 +106,5 @@ function centsToRate (value) {
 }
 
 function toCents (param) {
-  return Transform(param, 100, 'multiply')
+  return Multiply([param, 100])
 }

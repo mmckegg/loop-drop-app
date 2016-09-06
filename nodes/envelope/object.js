@@ -2,7 +2,7 @@ var ObservStruct = require('@mmckegg/mutant/struct')
 var Property = require('observ-default')
 
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
 
 var createVoltage = require('lib/create-voltage')
 
@@ -19,7 +19,7 @@ function Envelope (context) {
   })
 
   var outputParam = context.audio.createGain()
-  obs.currentValue = Transform(obs.value, outputParam, 'multiply')
+  obs.currentValue = Multiply([obs.value, outputParam])
   obs.context = context
 
   var currentPlayer = null

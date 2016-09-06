@@ -3,7 +3,7 @@ var Processor = require('lib/processor')
 var Property = require('observ-default')
 var computed = require('@mmckegg/mutant/computed')
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
 
 module.exports = DelayNode
@@ -46,7 +46,7 @@ function DelayNode (context) {
   }, releases)
 
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
-  var time = Transform(obs.time, rateMultiplier, 'multiply')
+  var time = Multiply([obs.time, rateMultiplier])
 
   releases.push(
     Apply(context, delay.delayTime, time),

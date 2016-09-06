@@ -3,7 +3,7 @@ var ObservStruct = require('@mmckegg/mutant/struct')
 var computed = require('@mmckegg/mutant/computed')
 
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Sum = require('lib/param-sum')
 
 module.exports = ParamModulator
 
@@ -21,7 +21,7 @@ function ParamModulator (context) {
     return context.paramLookup.get(param)
   })
 
-  obs.currentValue = Transform(obs.value, offsetValue, 'add')
+  obs.currentValue = Sum([obs.value, offsetValue])
 
   obs.destroy = function () {
     Param.destroy(obs)

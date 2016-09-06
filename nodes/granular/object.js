@@ -2,7 +2,8 @@ var Node = require('observ-node-array/single')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var Param = require('lib/param')
 var Property = require('observ-default')
-var Transform = require('lib/param-transform')
+var Sum = require('lib/param-sum')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
 
 var Triggerable = require('lib/triggerable')
@@ -45,8 +46,11 @@ function GranularNode (context) {
   obs.resolvedBuffer = resolvedBuffer
   obs.context = context
 
-  var transpose = toCents(Transform(context.noteOffset, obs.transpose, 'add'))
-  var detune = Transform(transpose, obs.tune, 'add')
+  var detune = Sum([
+    toCents(context.noteOffset),
+    toCents(context.transpose),
+    obs.tune
+  ])
 
   Apply(context, amp.gain, obs.amp)
 
@@ -207,5 +211,5 @@ function play (at, startOffset, grainDuration) {
 }
 
 function toCents (param) {
-  return Transform(param, 100, 'multiply')
+  return Multiply([param, 100])
 }

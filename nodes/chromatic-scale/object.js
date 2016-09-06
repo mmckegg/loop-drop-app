@@ -17,14 +17,19 @@ function ScaleModulator (context) {
     scale: Property(defaultScale)
   })
 
-  obs.currentValue = computed([obs.value.currentValue, context.offset.currentValue || context.offset, obs.scale], lambda)
+  obs.currentValue = computed([obs.value.currentValue, context.offset.currentValue || context.offset, obs.scale], lambda, {
+    immutableTypes: [Object],
+    nextTick: true
+  })
+
   return obs
 }
 
 function lambda (input, offset, scale) {
   if (input instanceof global.AudioNode || offset instanceof global.AudioNode) {
     var params = getParams(input, offset)
-    return paramApplyScale(add(params[0], params[1]), scale)
+    var note = add(params[0], params[1])
+    return paramApplyScale(note, scale)
   } else if (typeof input === 'number') {
     return applyScale(input + offset, scale)
   }
@@ -38,13 +43,14 @@ function paramApplyScale (param, scale) {
   var shaper = param.context.createWaveShaper()
   shaper.curve = curve
   multiply(param, 1 / 64).connect(shaper)
+
   return shaper
 }
 
 function multiply (param, multiplier) {
   var sum = param.context.createGain()
+  sum.gain.value = multiplier
   param.connect(sum)
-  param.gain.value = multiplier
   return sum
 }
 

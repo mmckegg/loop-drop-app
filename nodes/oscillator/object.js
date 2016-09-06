@@ -1,10 +1,10 @@
 var Triggerable = require('lib/triggerable')
 var Param = require('lib/param')
 var Property = require('observ-default')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
+var Sum = require('lib/param-sum')
 var Apply = require('lib/apply-param')
 var ParamClamp = require('lib/param-clamp')
-
 var ScheduleEvent = require('lib/schedule-event')
 
 module.exports = OscillatorNode
@@ -27,13 +27,17 @@ function OscillatorNode (context) {
 
   obs.context = context
 
-  var noteOffsetCents = toCents(add(
-    add(obs.noteOffset, context.noteOffset),
-    multiply(obs.octave, 12)
-  ))
+  var detune = Sum([
+    toCents(context.noteOffset),
+    toCents(obs.noteOffset),
+    Multiply([obs.octave, 1200]),
+    obs.detune
+  ])
 
-  var detune = add(noteOffsetCents, obs.detune)
-  var powerRolloff = add(multiply(detune, -1 / 12800), 0.5) // TODO: improve this value?
+  var powerRolloff = Sum([ // TODO: improve this value?
+    Multiply([detune, -1 / 12800]),
+    0.5
+  ])
 
   Apply(context, amp.gain, ParamClamp(obs.amp, 0, 10))
 
@@ -79,13 +83,5 @@ function setShape (context, target, value) {
 }
 
 function toCents (param) {
-  return Transform(param, 100, 'multiply')
-}
-
-function add (a, b) {
-  return Transform(a, b, 'add')
-}
-
-function multiply (a, b) {
-  return Transform(a, b, 'multiply')
+  return Multiply([param, 100])
 }

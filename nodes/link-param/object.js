@@ -4,7 +4,9 @@ var Prop = require('observ-default')
 var computed = require('@mmckegg/mutant/computed')
 
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
+var Sum = require('lib/param-sum')
+var Negate = require('lib/param-negate')
 
 module.exports = LinkParam
 
@@ -20,7 +22,10 @@ function LinkParam (context) {
   obs._type = 'LinkParam'
   obs.context = context
 
-  var range = subtract(obs.maxValue, obs.minValue)
+  var range = Sum([
+    obs.maxValue,
+    Negate(obs.minValue)
+  ])
 
   // transform: value * (maxValue - minValue) + minValue
 
@@ -29,15 +34,17 @@ function LinkParam (context) {
     if (param) {
       if (mode === 'exp') {
         if (typeof range === 'number' && range < 0) {
-          var oneMinusParam = add(param, -1)
-          param = subtract(1, multiply(oneMinusParam, oneMinusParam))
+          var oneMinusParam = Sum([param, -1])
+          param = Sum(1, Negate(Multiply([oneMinusParam, oneMinusParam])))
         } else {
-          param = multiply(param, param)
+          param = Multiply([param, param])
         }
       }
 
-      var result = multiply(param, range)
-      result = add(result, obs.minValue)
+      var result = Sum([
+        Multiply([param, range]),
+        obs.minValue
+      ])
 
       if (quantize) {
         // TODO
@@ -54,18 +61,6 @@ function LinkParam (context) {
   }
 
   return obs
-}
-
-function add (a, b) {
-  return Transform(a, b, 'add')
-}
-
-function subtract (a, b) {
-  return Transform(a, b, 'subtract')
-}
-
-function multiply (a, b) {
-  return Transform(a, b, 'multiply')
 }
 
 // function quantize (value, grid) {
