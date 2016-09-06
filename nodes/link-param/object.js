@@ -35,7 +35,9 @@ function LinkParam (context) {
       if (mode === 'exp') {
         if (typeof range === 'number' && range < 0) {
           var oneMinusParam = Sum([param, -1])
-          param = Sum(1, Negate(Multiply([oneMinusParam, oneMinusParam])))
+          param = Sum([
+            1, Negate(Multiply([oneMinusParam, oneMinusParam]))
+          ])
         } else {
           param = Multiply([param, param])
         }

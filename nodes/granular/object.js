@@ -48,7 +48,7 @@ function GranularNode (context) {
 
   var detune = Sum([
     toCents(context.noteOffset),
-    toCents(context.transpose),
+    toCents(obs.transpose),
     obs.tune
   ])
 
