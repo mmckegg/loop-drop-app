@@ -1,8 +1,9 @@
 var Processor = require('lib/processor')
 var Property = require('observ-default')
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
+var computed = require('@mmckegg/mutant/computed')
 
 module.exports = PingPongDelayNode
 
@@ -14,6 +15,7 @@ function PingPongDelayNode (context) {
   var delayR = context.audio.createDelay(4)
 
   var filter = context.audio.createBiquadFilter()
+  filter.Q.value = 0
 
   var feedback = context.audio.createGain()
   var dry = context.audio.createGain()
@@ -49,31 +51,20 @@ function PingPongDelayNode (context) {
     dry: Param(context, 1)
   }, releases)
 
-  var rateMultiplier = Transform(context, [
-    { param: obs.sync },
-    { param: context.tempo, transform: getRateMultiplier }
-  ])
+  var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
+  var time = Multiply([obs.time, rateMultiplier])
 
-  // release context.tempo
-  releases.push(rateMultiplier.destroy)
-
-  var time = Transform(context, [
-    { param: obs.time },
-    { param: rateMultiplier, transform: multiply }
-  ])
-
-  Apply(context, delayL.delayTime, time)
-  Apply(context, delayR.delayTime, time)
-  Apply(context, filter.frequency, obs.cutoff)
-  Apply(context, feedback.gain, obs.feedback)
-  obs.filterType(function (value) {
-    filter.type = value
-  })
-
-  filter.Q.value = 0
-
-  Apply(context, wet.gain, obs.wet)
-  Apply(context, dry.gain, obs.dry)
+  releases.push(
+    Apply(context, delayL.delayTime, time),
+    Apply(context, delayR.delayTime, time),
+    Apply(context, filter.frequency, obs.cutoff),
+    Apply(context, feedback.gain, obs.feedback),
+    Apply(context, wet.gain, obs.wet),
+    Apply(context, dry.gain, obs.dry),
+    obs.filterType(function (value) {
+      filter.type = value
+    })
+  )
 
   return obs
 }
@@ -84,8 +75,4 @@ function getRateMultiplier (sync, tempo) {
   } else {
     return 1
   }
-}
-
-function multiply (a, b) {
-  return a * b
 }

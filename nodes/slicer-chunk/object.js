@@ -7,12 +7,10 @@ var BaseChunk = require('lib/base-chunk')
 var ExternalRouter = require('lib/external-router')
 var lookup = require('observ-node-array/lookup')
 var computed = require('@mmckegg/mutant/computed')
-var computedNextTick = require('lib/computed-next-tick')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var detectPeaks = require('lib/detect-peaks')
 var gridSlicePeaks = require('lib/grid-slice-peaks')
 var throttle = require('throttle-observ')
-var throttleWatch = require('throttle-observ/watch')
 var watch = require('@mmckegg/mutant/watch')
 var extend = require('xtend')
 var debounce = require('async-debounce')
@@ -22,9 +20,8 @@ var destroyAll = require('lib/destroy-all')
 module.exports = SlicerChunk
 
 function SlicerChunk (parentContext) {
-
   var context = Object.create(parentContext)
-  var output = context.output = context.audio.createGain()
+  context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
   var queueRefreshSlices = noargs(debounce(refreshSlices, 200))
@@ -75,12 +72,11 @@ function SlicerChunk (parentContext) {
      // without this everything breaks :( no idea why :(
    })
 
-  var computedSlots = computedNextTick([
+  var computedSlots = computed([
     obs.sample, obs.stretch, obs.tempo, obs.eq, volume, obs.sample.resolvedBuffer
   ], function (sample, stretch, tempo, eq, volume, buffer) {
     var result = (sample.slices || []).map(function (offset, i) {
       if (stretch && buffer) {
-
         var originalDuration = getOffsetDuration(buffer.duration, offset)
         var stretchedDuration = tempo / 60 * originalDuration
 
@@ -117,7 +113,6 @@ function SlicerChunk (parentContext) {
           ]
         }
       }
-
     })
 
     result.unshift({
@@ -129,12 +124,12 @@ function SlicerChunk (parentContext) {
     })
 
     return result
-  })
+  }, {nextTick: true})
 
   watch(computedSlots, slots.set)
   slots.onUpdate(obs.routes.refresh)
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     releaseMixerParams()
     destroyAll(obs)
   }
@@ -173,7 +168,6 @@ function SlicerChunk (parentContext) {
       cb && setImmediate(cb)
     }
   }
-
 }
 
 function EQ (context) {
@@ -204,28 +198,28 @@ function Sample (context) {
   return obs
 }
 
-function sliceOffsets(slices, offset, playToEnd) {
+function sliceOffsets (slices, offset, playToEnd) {
   if (playToEnd) {
     return slices.map(function (pos) {
       return [pos, offset[1]]
     })
   } else {
     return slices.map(function (pos, i) {
-      return [pos, slices[i+1] || offset[1]]
+      return [pos, slices[i + 1] || offset[1]]
     })
   }
 }
 
-function divideSlices(length, offset, playToEnd) {
+function divideSlices (length, offset, playToEnd) {
   var step = 1 / length
   var result = []
   for (var i = 0; i < 1; i += step) {
-    result.push(subOffset(offset, [i, playToEnd ? 1 : i+step]))
+    result.push(subOffset(offset, [i, playToEnd ? 1 : i + step]))
   }
   return result
 }
 
-function subOffset(main, sub) {
+function subOffset (main, sub) {
   var range = main[1] - main[0]
   return [
     main[0] + (sub[0] * range),

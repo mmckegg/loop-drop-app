@@ -1,7 +1,8 @@
 var Processor = require('lib/processor')
 
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Sum = require('lib/param-sum')
+var Negate = require('lib/param-negate')
 var Apply = require('lib/apply-param')
 
 module.exports = OverdriveNode
@@ -39,9 +40,7 @@ function OverdriveNode (context) {
     amp: Param(context, 1)
   })
 
-  var invertedPreBand = Transform(context, [ 1,
-    { param: obs.preBand, transform: subtract }
-  ])
+  var invertedPreBand = Sum([1, Negate(obs.preBand)])
 
   Apply(context, bpWet.gain, obs.preBand)
   Apply(context, bpDry.gain, invertedPreBand)
@@ -51,10 +50,6 @@ function OverdriveNode (context) {
   Apply(context, output.gain, obs.amp)
 
   return obs
-}
-
-function subtract (a, b) {
-  return a - b
 }
 
 function generateCurve (steps) {

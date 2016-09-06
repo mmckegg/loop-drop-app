@@ -1,9 +1,9 @@
 var Processor = require('lib/processor')
 
 var Property = require('observ-default')
-
+var computed = require('@mmckegg/mutant/computed')
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
 
 module.exports = DelayNode
@@ -14,6 +14,7 @@ function DelayNode (context) {
 
   var delay = context.audio.createDelay(4)
   var filter = context.audio.createBiquadFilter()
+  filter.Q.value = 0
 
   var feedback = context.audio.createGain()
   var dry = context.audio.createGain()
@@ -44,30 +45,21 @@ function DelayNode (context) {
     dry: Param(context, 1)
   }, releases)
 
-  var rateMultiplier = Transform(context, [
-    { param: obs.sync },
-    { param: context.tempo, transform: getRateMultiplier }
-  ])
+  var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
+  var time = Multiply([obs.time, rateMultiplier])
 
-  // release context.tempo
-  releases.push(rateMultiplier.destroy)
+  releases.push(
+    Apply(context, delay.delayTime, time),
+    Apply(context, filter.frequency, obs.cutoff),
+    Apply(context, feedback.gain, obs.feedback),
 
-  var time = Transform(context, [
-    { param: obs.time },
-    { param: rateMultiplier, transform: multiply }
-  ])
+    obs.filterType(function (value) {
+      filter.type = value
+    }),
 
-  Apply(context, delay.delayTime, time)
-  Apply(context, filter.frequency, obs.cutoff)
-  Apply(context, feedback.gain, obs.feedback)
-  obs.filterType(function (value) {
-    filter.type = value
-  })
-
-  filter.Q.value = 0
-
-  Apply(context, wet.gain, obs.wet)
-  Apply(context, dry.gain, obs.dry)
+    Apply(context, wet.gain, obs.wet),
+    Apply(context, dry.gain, obs.dry)
+  )
 
   return obs
 }
@@ -78,8 +70,4 @@ function getRateMultiplier (sync, tempo) {
   } else {
     return 1
   }
-}
-
-function multiply (a, b) {
-  return a * b
 }

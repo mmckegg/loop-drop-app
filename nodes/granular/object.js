@@ -2,11 +2,11 @@ var Node = require('observ-node-array/single')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var Param = require('lib/param')
 var Property = require('observ-default')
-var Transform = require('lib/param-transform')
+var Sum = require('lib/param-sum')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
 
 var Triggerable = require('lib/triggerable')
-var ScheduleList = require('lib/schedule-list')
 var ScheduleEvent = require('lib/schedule-event')
 var SyncProperty = require('./granular-sync')
 
@@ -46,10 +46,10 @@ function GranularNode (context) {
   obs.resolvedBuffer = resolvedBuffer
   obs.context = context
 
-  var playbackRate = Transform(context, [ 1,
-    { param: context.noteOffset, transform: noteOffsetToRate },
-    { param: obs.transpose, transform: noteOffsetToRate },
-    { param: obs.tune, transform: centsToRate }
+  var detune = Sum([
+    toCents(context.noteOffset),
+    toCents(obs.transpose),
+    obs.tune
   ])
 
   Apply(context, amp.gain, obs.amp)
@@ -61,21 +61,13 @@ function GranularNode (context) {
 
   // scoped
   function trigger (at) {
-    return new GranularSample(obs, amp, playbackRate, at)
+    return new GranularSample(obs, amp, detune, at)
   }
-}
-
-function noteOffsetToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 12)
-}
-
-function centsToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 1200)
 }
 
 // internal class
 
-function GranularSample (obs, output, playbackRate, from) {
+function GranularSample (obs, output, detune, from) {
   var clock = obs.context.scheduler
   var nextTime = clock.getNextScheduleTime()
   var schedule = {
@@ -97,9 +89,8 @@ function GranularSample (obs, output, playbackRate, from) {
   this.nextOffset = 0
   this.choker = obs.context.audio.createGain()
   this.oneshot = obs.mode() === 'oneshot'
-  this.events = ScheduleList()
-  this.releases = [this.events.destroy]
-  this.playbackRate = playbackRate
+  this.detune = detune
+  this.releases = []
 
   if (this.oneshot) {
     this.to = from + length
@@ -128,6 +119,13 @@ GranularSample.prototype.stop = function (at) {
   this.to = at
 }
 
+GranularSample.prototype.destroy = function (at) {
+  this.choker.disconnect()
+  while (this.releases.length) {
+    this.releases.pop()()
+  }
+}
+
 function handleSchedule (schedule) {
   var obs = this.obs
   var endTime = schedule.time + schedule.duration
@@ -147,7 +145,7 @@ function handleSchedule (schedule) {
     while (this.nextTime < endTime) {
       var event = play.call(this, this.nextTime, this.nextOffset, duration)
       if (event) {
-        this.events.push(event)
+        this.context.cleaner.push(event)
       }
       this.nextTime += duration
       this.nextOffset += 1 / slices
@@ -182,8 +180,6 @@ function play (at, startOffset, grainDuration) {
     var maxTime = (this.to || Infinity) - release
     var releaseAt = Math.min(at + grainDuration * obs.hold(), maxTime)
 
-    source.playbackRate.value = this.playbackRate.getValueAt(at)
-
     if (obs.mode() !== 'oneshot' && releaseAt + release > startOffset * duration) {
       source.loop = true
       source.loopStart = start
@@ -205,11 +201,15 @@ function play (at, startOffset, grainDuration) {
     envelope.connect(this.choker)
 
     var event = new ScheduleEvent(at, source, envelope, [
-      Apply(context, source.playbackRate, this.playbackRate)
+      Apply(context, source.detune, this.detune)
     ])
 
     event.to = releaseAt + release
 
     return event
   }
+}
+
+function toCents (param) {
+  return Multiply([param, 100])
 }

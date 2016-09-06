@@ -2,6 +2,7 @@ var Param = require('lib/param')
 var Apply = require('lib/apply-param')
 var Triggerable = require('lib/triggerable')
 var ScheduleEvent = require('lib/schedule-event')
+var getParamValue = require('lib/get-param-value')
 
 var Clappy = require('./clappy')
 
@@ -36,9 +37,9 @@ function ClapNode (context) {
   // scoped
   function trigger (at) {
     // HACK: apply params
-    currentParams.tone = obs.tone.getValueAt(at) * 128
-    currentParams.decay = obs.decay.getValueAt(at) / 2.2 * 128
-    currentParams.density = obs.density.getValueAt(at) * 128
+    currentParams.tone = getParamValue(obs.tone) * 128
+    currentParams.decay = getParamValue(obs.decay) / 2.2 * 128
+    currentParams.density = getParamValue(obs.density) * 128
 
     var choker = context.audio.createGain()
     var source = ctor()
@@ -48,7 +49,7 @@ function ClapNode (context) {
 
     var event = new ScheduleEvent(at, source, choker)
     event.oneshot = true
-    event.to = at + obs.decay.getValueAt(at)
+    event.to = at + getParamValue(obs.decay)
     return event
   }
 }

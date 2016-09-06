@@ -143,7 +143,7 @@ function Setup (parentContext) {
 
   lookups.push(
     lookup(node.chunks, function (x) {
-      if (x && x.onSchedule) {
+      if (x && x.currentValue) {
         return resolve(x.id)
       }
     }, getResolved, resolveInner)

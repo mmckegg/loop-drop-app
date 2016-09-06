@@ -1,8 +1,8 @@
 var ObservStruct = require('@mmckegg/mutant/struct')
+var computed = require('@mmckegg/mutant/computed')
 var Property = require('observ-default')
-
 var Param = require('lib/param')
-var Transform = require('lib/param-transform')
+var applyScale = require('lib/apply-scale')
 
 module.exports = ScaleModulator
 
@@ -17,49 +17,62 @@ function ScaleModulator (context) {
     scale: Property(defaultScale)
   })
 
-  var transformedValue = Transform(context, [
-    { param: obs.value },
-    { param: context.offset, transform: add },
-    { param: obs.scale, transform: applyScale }
-  ])
-
-  obs.onSchedule = transformedValue.onSchedule
-  obs.getValueAt = transformedValue.getValueAt
+  obs.currentValue = computed([obs.value.currentValue, context.offset.currentValue || context.offset, obs.scale], lambda, {
+    immutableTypes: [Object],
+    nextTick: true
+  })
 
   return obs
 }
 
-function add (base, value) {
-  return base + value
-}
-
-function applyScale (base, scale) {
-  var offset = scale && scale.offset || defaultScale.offset
-  var notes = scale && scale.notes || defaultScale.notes
-
-  var multiplier = Math.floor(base / notes.length)
-  var scalePosition = mod(base, notes.length)
-  var absScalePosition = Math.floor(scalePosition)
-  var fraction = scalePosition - absScalePosition
-
-  var note = notes[absScalePosition] + offset
-
-  if (fraction) {
-    var interval = getInterval(absScalePosition, notes)
-    return note + (interval * fraction) + (multiplier * 12)
-  } else {
-    return note + (multiplier * 12)
+function lambda (input, offset, scale) {
+  if (input instanceof global.AudioNode || offset instanceof global.AudioNode) {
+    var params = getParams(input, offset)
+    var note = add(params[0], params[1])
+    return paramApplyScale(note, scale)
+  } else if (typeof input === 'number') {
+    return applyScale(input + offset, scale)
   }
 }
 
-function getInterval (current, notes) {
-  if (current >= notes.length - 1) {
-    return 12 + notes[0] - notes[current]
-  } else {
-    return notes[current + 1] - notes[current]
+function paramApplyScale (param, scale) {
+  var curve = new Float32Array(129)
+  for (var i = 0; i < 129; i++) {
+    curve[i] = applyScale(i - 64, scale)
   }
+  var shaper = param.context.createWaveShaper()
+  shaper.curve = curve
+  multiply(param, 1 / 64).connect(shaper)
+
+  return shaper
 }
 
-function mod (n, m) {
-  return ((n % m) + m) % m
+function multiply (param, multiplier) {
+  var sum = param.context.createGain()
+  sum.gain.value = multiplier
+  param.connect(sum)
+  return sum
+}
+
+function add (a, b) {
+  var sum = a.context.createGain()
+  a.connect(sum)
+  b.connect(sum)
+  return sum
+}
+
+function getParams (a, b) {
+  if (a instanceof global.AudioNode && b instanceof global.AudioNode) {
+    return [ a, b ]
+  } else if (a instanceof global.AudioNode) {
+    var bParam = a.context.createWaveShaper()
+    bParam.curve = new Float32Array([b, b])
+    a.connect(bParam)
+    return [ a, bParam ]
+  } else {
+    var aParam = b.context.createWaveShaper()
+    aParam.curve = new Float32Array([a, a])
+    b.connect(aParam)
+    return [ aParam, b ]
+  }
 }

@@ -2,7 +2,7 @@ var Processor = require('lib/processor')
 var Property = require('observ-default')
 var Param = require('lib/param')
 var Apply = require('lib/apply-param')
-var Transform = require('lib/param-transform')
+var Clamp = require('lib/param-clamp')
 
 module.exports = FilterNode
 
@@ -20,15 +20,9 @@ function FilterNode (context) {
     node.type = value
   })
 
-  Apply(context, node.frequency, Transform(context, [
-    { param: obs.frequency, transform: clampMin20 }
-  ]))
+  Apply(context, node.frequency, Clamp(obs.frequency, 20, 20000))
   Apply(context, node.Q, obs.Q)
   Apply(context, node.gain, obs.gain)
 
   return obs
-}
-
-function clampMin20 (_, val) {
-  return Math.max(20, val)
 }

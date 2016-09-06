@@ -2,8 +2,10 @@ var Node = require('observ-node-array/single')
 var ResolvedValue = require('observ-node-array/resolved-value')
 var Param = require('lib/param')
 var Property = require('observ-default')
-var Transform = require('lib/param-transform')
+var Sum = require('lib/param-sum')
+var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
+var computed = require('@mmckegg/mutant/computed')
 
 var Triggerable = require('lib/triggerable')
 var ScheduleEvent = require('lib/schedule-event')
@@ -29,11 +31,21 @@ function SampleNode (context) {
   obs.resolvedBuffer = ResolvedValue(obs.buffer)
   obs.context = context
 
-  var playbackRate = Transform(context, [ 1,
-    { param: context.noteOffset, transform: noteOffsetToRate },
-    { param: obs.transpose, transform: noteOffsetToRate },
-    { param: obs.tune, transform: centsToRate }
+  var detune = Sum([
+    toCents(context.noteOffset),
+    toCents(obs.transpose),
+    obs.tune
   ])
+
+  var lastDetuneValue = 0
+  var playbackRate = computed([detune], function (detune) {
+    // HACK: handle playback rate to estimate duration - won't work if detune is automated
+    if (typeof detune === 'number') {
+      lastDetuneValue = detune
+    }
+    var rate = centsToRate(lastDetuneValue)
+    return rate
+  })
 
   Apply(context, amp.gain, obs.amp)
 
@@ -58,11 +70,11 @@ function SampleNode (context) {
       player.loopEnd = buffer.duration * obs.offset()[1]
 
       var event = new ScheduleEvent(at, player, choker, [
-        Apply(context, player.playbackRate, playbackRate)
+        Apply(context, player.detune, detune)
       ])
 
-      event.maxTo = at + (buffer.duration - player.loopStart) / playbackRate.getValueAt(at)
-      event.to = at + (player.loopEnd - player.loopStart) / playbackRate.getValueAt(at)
+      event.maxTo = at + (buffer.duration - player.loopStart) / playbackRate()
+      event.to = at + (player.loopEnd - player.loopStart) / playbackRate()
 
       if (mode === 'loop') {
         player.loop = true
@@ -73,7 +85,7 @@ function SampleNode (context) {
         event.to = null
         event.stop = function (at) {
           if (at) {
-            player.start(at, player.loopStart, (player.loopEnd - player.loopStart) / playbackRate.getValueAt(at))
+            player.start(at, player.loopStart, (player.loopEnd - player.loopStart) / playbackRate())
           }
         }
       } else {
@@ -89,10 +101,10 @@ function SampleNode (context) {
   }
 }
 
-function noteOffsetToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 12)
+function centsToRate (value) {
+  return Math.pow(2, value / 1200)
 }
 
-function centsToRate (baseRate, value) {
-  return baseRate * Math.pow(2, value / 1200)
+function toCents (param) {
+  return Multiply([param, 100])
 }
