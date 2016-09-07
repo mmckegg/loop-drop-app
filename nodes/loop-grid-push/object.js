@@ -79,7 +79,7 @@ module.exports = function(context){
     triggers: loopGrid.grid
   })
 
-  watch(looper, loopGrid.loops.set)
+  var releaseLooper = watch(looper, loopGrid.loops.set)
 
   obs.context = context
   obs.playback = loopGrid
@@ -383,6 +383,7 @@ module.exports = function(context){
     display.init()
     output.destroy()
     loopGrid.destroy()
+    releaseLooper()
   }
 
   return obs

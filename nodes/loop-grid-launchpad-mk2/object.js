@@ -92,7 +92,7 @@ module.exports = function(context){
     return !!value
   })
 
-  watch(looper, loopGrid.loops.set)
+  var releaseLooper = watch(looper, loopGrid.loops.set)
 
   obs.context = context
   obs.playback = loopGrid
@@ -400,6 +400,7 @@ module.exports = function(context){
     midiPort.destroy()
     output.destroy()
     loopGrid.destroy()
+    releaseLooper()
   }
 
   return obs

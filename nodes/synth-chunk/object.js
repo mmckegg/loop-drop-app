@@ -140,7 +140,7 @@ function SynthChunk (parentContext) {
     releaseGlobalScale && releaseGlobalScale()
     releaseGlobalScale = null
   }
-  
+
   return obs
 }
 

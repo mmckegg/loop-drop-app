@@ -55,7 +55,7 @@ function LoopQwerty (context) {
     triggers: loopGrid.grid
   })
 
-  watch(looper, loopGrid.loops.set)
+  var releaseLooper = watch(looper, loopGrid.loops.set)
 
   obs.context = context
   obs.playback = loopGrid
@@ -178,7 +178,7 @@ function LoopQwerty (context) {
   // repeater
   var releaseRepeatLight = null
   setMappedValue(repeatStates, repeatButtons, obs.repeatLength)
-  watch(obs.repeatLength, function(value){
+  var releasesGlobalRepeatLength = watch(obs.repeatLength, function (value) {
     transforms.holder.setLength(value)
     if (value < 2){
       transforms.repeater.start(grabInputExcludeNoRepeat, value)
@@ -193,6 +193,9 @@ function LoopQwerty (context) {
     keysDown.close()
     recording.destroy()
     loopGrid.destroy()
+    releaseLooper()
+    releasesGlobalRepeatLength()
+    obs.context = null
   }
 
   return obs
