@@ -5,8 +5,6 @@ var Recorder = require('lib/loop-recorder')
 var ObservArray = require('observ-array')
 var ArrayGrid = require('array-grid')
 
-var computedRecording = require('./recording')
-
 module.exports = Looper
 
 function Looper (loopGrid) {
@@ -32,7 +30,6 @@ function Looper (loopGrid) {
   })
 
   obs.transforms = transforms
-  obs.recording = computedRecording(loopGrid)
 
   var record = Recorder()
   var context = loopGrid.context

@@ -3,6 +3,7 @@ var Looper = require('../loop-grid/looper')
 var Holder = require('../loop-grid/holder')
 var Repeater = require('../loop-grid/repeater')
 var Suppressor = require('../loop-grid/suppressor')
+var computedRecording = require('../loop-grid/recording')
 var holdActive = require('lib/hold-active-transform')
 
 var ArrayGrid = require('array-grid')
@@ -37,6 +38,7 @@ var repeatLength = Observ(2)
 function LoopQwerty (context) {
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
+  var recording = computedRecording(loopGrid)
 
   var gridMapping = getGridMapping()
   loopGrid.shape.set(gridMapping.shape)
@@ -49,7 +51,7 @@ function LoopQwerty (context) {
   obs.gridState = ObservStruct({
     active: loopGrid.active,
     playing: loopGrid.playing,
-    recording: looper.recording,
+    recording: recording,
     triggers: loopGrid.grid
   })
 
@@ -189,6 +191,7 @@ function LoopQwerty (context) {
 
   obs.destroy = function(){
     keysDown.close()
+    recording.destroy()
     loopGrid.destroy()
   }
 

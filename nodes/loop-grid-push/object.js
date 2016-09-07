@@ -3,6 +3,7 @@
 
 var LoopGrid = require('../loop-grid/object')
 var Looper = require('../loop-grid/looper')
+var computedRecording = require('../loop-grid/recording')
 var computeTargets = require('../loop-grid/compute-targets')
 var computeFlags = require('../loop-grid/compute-flags')
 var holdActive = require('lib/hold-active-transform')
@@ -44,6 +45,7 @@ module.exports = function(context){
 
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
+  var recording = computedRecording(loopGrid)
 
   var scheduler = context.scheduler
   var gridMapping = getPushGridMapping()
@@ -73,7 +75,7 @@ module.exports = function(context){
   obs.gridState = ObservStruct({
     active: loopGrid.active,
     playing: loopGrid.playing,
-    recording: looper.recording,
+    recording: recording,
     triggers: loopGrid.grid
   })
 
@@ -108,7 +110,7 @@ module.exports = function(context){
   var outputLayers = ObservGridStack([
 
     // recording
-    mapGridValue(looper.recording, pushColors.pads.redLow),
+    mapGridValue(recording, pushColors.pads.redLow),
 
     // active
     mapGridValue(loopGrid.active, pushColors.pads.greenLow),
@@ -376,6 +378,7 @@ module.exports = function(context){
   // cleanup / disconnect from keyboard on destroy
 
   obs.destroy = function(){
+    recording.destroy()
     midiPort.destroy()
     display.init()
     output.destroy()
