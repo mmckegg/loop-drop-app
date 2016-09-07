@@ -15,7 +15,7 @@ var Mover = require('../loop-grid/mover')
 var Repeater = require('../loop-grid/repeater')
 var Suppressor = require('../loop-grid/suppressor')
 
-var ObservVarhash = require('observ-varhash')
+var Dict = require('@mmckegg/mutant/dict')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var ObservMidi = require('observ-midi')
 var ObservGridStack = require('observ-grid-stack')
@@ -69,7 +69,7 @@ module.exports = function(context){
   var obs = ObservStruct({
     port: midiPort,
     loopLength: loopGrid.loopLength,
-    chunkPositions: ObservVarhash({})
+    chunkPositions: Dict({})
   })
 
   obs.gridState = ObservStruct({

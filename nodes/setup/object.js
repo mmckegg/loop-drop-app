@@ -115,7 +115,6 @@ function Setup (parentContext) {
 
   node.destroy = function(){
     destroyAll(node)
-    context.paramLookup.destroy()
   }
 
   // maps and lookup

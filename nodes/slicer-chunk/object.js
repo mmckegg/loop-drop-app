@@ -44,7 +44,7 @@ function SlicerChunk (parentContext) {
     includedAllTriggers: true
   })
 
-  var releaseMixerParams = applyMixerParams(obs)
+  applyMixerParams(obs)
   obs.overrideVolume = Property(1)
 
   var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
@@ -130,7 +130,6 @@ function SlicerChunk (parentContext) {
   slots.onUpdate(obs.routes.refresh)
 
   obs.destroy = function () {
-    releaseMixerParams()
     destroyAll(obs)
   }
 

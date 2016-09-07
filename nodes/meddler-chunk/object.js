@@ -6,7 +6,7 @@ var BaseChunk = require('lib/base-chunk')
 var Property = require('observ-default')
 var ExternalRouter = require('lib/external-router')
 var ChainScheduler = require('lib/chain-scheduler')
-var Varhash = require('observ-varhash')
+var Dict = require('@mmckegg/mutant/dict')
 var Struct = require('@mmckegg/mutant/struct')
 var merge = require('observ-node-array/merge')
 var computed = require('@mmckegg/mutant/computed')
@@ -21,7 +21,7 @@ function MeddlerChunk (parentContext) {
   context.slotProcessorsOnly = true
 
   var slots = NodeArray(context)
-  var extraSlots = Varhash({})
+  var extraSlots = Dict({})
 
   context.slotLookup = merge([
     lookup(slots, 'id'),

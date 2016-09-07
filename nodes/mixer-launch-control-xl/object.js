@@ -4,7 +4,7 @@ var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var deepEqual = require('deep-equal')
-var ObservVarhash = require('observ-varhash')
+var Dict = require('@mmckegg/mutant/dict')
 var Property = require('observ-default')
 
 var QueryParam = require('lib/query-param')
@@ -244,7 +244,7 @@ function setValue (object, value) {
 }
 
 function PressedChunks (controllers) {
-  var pressed = ObservVarhash({})
+  var pressed = Dict({})
   pressed.destroy = watchNodeArray(controllers, function (controller) {
     if (controller.currentlyPressed) {
       var lastPressed = []

@@ -1,9 +1,9 @@
 var Observ = require('@mmckegg/mutant/value')
 var Property = require('observ-default')
 var NodeArray = require('observ-node-array')
-var ObservArray = require('observ-array')
+var MutantArray = require('@mmckegg/mutant/array')
 var ObservStruct = require('@mmckegg/mutant/struct')
-var ObservVarhash = require('observ-varhash')
+var Dict = require('@mmckegg/mutant/dict')
 var watch = require('@mmckegg/mutant/watch')
 var computed = require('@mmckegg/mutant/computed')
 var Event = require('geval')
@@ -56,7 +56,7 @@ function Project (parentContext) {
   scheduler.start()
   context.scheduler = scheduler
 
-  context.paramLookup = ObservVarhash({})
+  context.paramLookup = Dict({})
 
   var obs = ObservStruct({
     zoom: parentContext.zoom,
@@ -98,7 +98,7 @@ function Project (parentContext) {
   watch(obs.speed, scheduler.setSpeed.bind(scheduler))
 
   var broadcastItemLoaded = null
-  obs.items = ObservArray([])
+  obs.items = MutantArray([])
   obs.items.onLoad = Event(function (broadcast) {
     broadcastItemLoaded = broadcast
   })
@@ -125,19 +125,6 @@ function Project (parentContext) {
 
   // clean up old preroll recordings
   recorder.cleanUpOldClips(10)
-
-  obs.openFiles = Observ([])
-
-  obs.resolved = ObservStruct({
-    openFiles: obs.openFiles,
-    renaming: obs.renaming,
-    entries: obs.entries,
-    recording: obs.recording,
-    recordingPath: obs.recordingPath,
-    recordingEntries: obs.recordingEntries,
-    availableGlobalControllers: obs.availableGlobalControllers,
-    selected: obs.selected
-  })
 
   var tapTempo = TapTempo()
   tapTempo.on('tempo', function (value) {
@@ -189,7 +176,7 @@ function Project (parentContext) {
     closeExternal: function (externalObject) {
       var index = obs.items.indexOf(externalObject)
       if (~index) {
-        obs.items.splice(index, 1)
+        obs.items.delete(externalObject)
         if (externalObject.path() === obs.selected()) {
           var lastSelectedSetup = obs.items.get(index) || obs.items.get(index - 1) || obs.items.get(0)
           obs.selected.set(lastSelectedSetup ? lastSelectedSetup.path() : null)
@@ -264,13 +251,13 @@ function Project (parentContext) {
       moveItemToTrash(path)
       obs.entries.refresh()
       obs.recordingEntries.refresh()
-      obs.items.filter(function (item) {
-        return resolve(item.path) && (resolve(item.path) === path || resolve(item.path).startsWith(path + pathSep))
-      }).forEach(function (item) {
-        if (item.close) {
-          item.close()
-        } else {
-          actions.closeExternal(item)
+      obs.items.forEach(function (item) {
+        if (resolve(item.path) && (resolve(item.path) === path || resolve(item.path).startsWith(path + pathSep))) {
+          if (item.close) {
+            item.close()
+          } else {
+            actions.closeExternal(item)
+          }
         }
       })
     },
@@ -344,8 +331,6 @@ function Project (parentContext) {
         if (object.node && object.node.grabInput) {
           object.node.grabInput()
         }
-
-        refreshOpenFiles()
       })
 
       object.onClosing(function () {
@@ -357,13 +342,12 @@ function Project (parentContext) {
         console.log('closing', resolve(object.path))
         var index = obs.items.indexOf(object)
         if (~index) {
-          obs.items.splice(index, 1)
+          obs.items.delete(object)
         }
         if (resolve(object.path) === obs.selected()) {
           var lastSelectedSetup = obs.items.get(index) || obs.items.get(index - 1) || obs.items.get(0)
           obs.selected.set(lastSelectedSetup ? resolve(lastSelectedSetup.path) : null)
         }
-        refreshOpenFiles()
       })
 
       object.load(path)
@@ -390,14 +374,6 @@ function Project (parentContext) {
   context.project = obs
 
   return obs
-
-  // scoped
-
-  function refreshOpenFiles () {
-    obs.openFiles.set(obs.items.map(function (item) {
-      return resolve(item.path)
-    }))
-  }
 }
 
 function copyExternalFilesTo (fs, path, target) {

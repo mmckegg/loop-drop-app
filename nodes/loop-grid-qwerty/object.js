@@ -8,7 +8,7 @@ var holdActive = require('lib/hold-active-transform')
 
 var ArrayGrid = require('array-grid')
 var Observ = require('@mmckegg/mutant/value')
-var ObservVarhash = require('observ-varhash')
+var Dict = require('@mmckegg/mutant/dict')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var ObservGrid = require('observ-grid')
 var GrabGrid = require('lib/grab-grid')
@@ -45,7 +45,7 @@ function LoopQwerty (context) {
 
   var obs = ObservStruct({
     loopLength: loopGrid.loopLength,
-    chunkPositions: ObservVarhash({})
+    chunkPositions: Dict({})
   })
 
   obs.gridState = ObservStruct({
