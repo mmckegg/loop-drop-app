@@ -5,6 +5,7 @@ var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 
 var createVoltage = require('lib/create-voltage')
+var ScheduleEvent = require('lib/schedule-event')
 
 module.exports = Envelope
 
@@ -22,25 +23,27 @@ function Envelope (context) {
   obs.currentValue = Multiply([obs.value, outputParam])
   obs.context = context
 
-  var currentPlayer = null
-  var currentAmp = null
-  var triggeredTo = 0
+  var lastEvent = null
 
   obs.triggerOn = function (at) {
     at = Math.max(at, context.audio.currentTime)
 
-    if (obs.retrigger() || triggeredTo < at) {
+    if (obs.retrigger() || !lastEvent || (lastEvent.to && lastEvent.to < at)) {
       obs.choke(at)
-      currentPlayer = createVoltage(context.audio)
-      currentAmp = context.audio.createGain()
-      currentAmp.gain.value = 0
-      currentPlayer.connect(currentAmp).connect(outputParam)
-      currentPlayer.start(at)
-      triggeredTo = Infinity
+      var player = createVoltage(context.audio)
+      var amp = context.audio.createGain()
+      var choker = context.audio.createGain()
+      amp.gain.value = 0
+      player.connect(amp).connect(choker).connect(outputParam)
+      player.start(at)
+      lastEvent = new ScheduleEvent(at, player, choker)
+      lastEvent.amp = amp
+      context.cleaner.push(lastEvent)
     } else {
-      currentAmp.gain.cancelScheduledValues(at)
-      currentPlayer.stop(at + 1000) // HACK: cancel stop
-      triggeredTo = at + 1000
+      lastEvent.choker.gain.cancelScheduledValues(at)
+      lastEvent.choker.gain.setValueAtTime(1, at)
+      lastEvent.amp.gain.cancelScheduledValues(at)
+      lastEvent.to = null
     }
 
     Param.triggerOn(obs, at)
@@ -48,15 +51,15 @@ function Envelope (context) {
     var peakTime = at + (obs.attack() || 0.005)
 
     if (obs.attack()) {
-      currentAmp.gain.setTargetAtTime(1, at, getValue(obs.attack) / 8)
+      lastEvent.amp.gain.setTargetAtTime(1, at, getValue(obs.attack) / 8)
     } else {
-      currentAmp.gain.setValueAtTime(1, at)
+      lastEvent.amp.gain.setValueAtTime(1, at)
     }
 
     // decay / sustain
     var sustain = getValue(obs.sustain)
     if (sustain !== 1) {
-      currentAmp.gain.setTargetAtTime(getValue(obs.sustain), peakTime, getValue(obs.decay) / 8 || 0.0001)
+      lastEvent.amp.gain.setTargetAtTime(getValue(obs.sustain), peakTime, getValue(obs.decay) / 8 || 0.0001)
     }
   }
 
@@ -65,14 +68,14 @@ function Envelope (context) {
     var releaseTime = getValue(obs.release)
     var stopAt = at + releaseTime
 
-    if (at < triggeredTo) {
-      currentPlayer.stop(stopAt)
-      triggeredTo = stopAt
+    if (lastEvent && (!lastEvent.to || at < lastEvent.to)) {
+      lastEvent.choker.gain.setValueAtTime(0, stopAt)
+      lastEvent.to = stopAt
 
       Param.triggerOff(obs, stopAt)
 
       if (releaseTime) {
-        currentAmp.gain.setTargetAtTime(0, at, releaseTime / 8)
+        lastEvent.amp.gain.setTargetAtTime(0, at, releaseTime / 8)
       }
     }
 
@@ -80,17 +83,14 @@ function Envelope (context) {
   }
 
   obs.choke = function (at) {
-    if (at < triggeredTo) {
+    if (lastEvent && (!lastEvent.to || at < lastEvent.to)) {
       var attack = getValue(obs.attack)
       if (attack > 0.1) {
-        currentPlayer.stop(at + 0.1)
-        triggeredTo = at + 0.1
-        currentAmp.gain.cancelScheduledValues(at)
-        currentAmp.gain.setTargetAtTime(0, at, 0.02)
-        currentAmp.gain.setValueAtTime(0, at + 0.1)
+        lastEvent.to = at + 0.1
+        lastEvent.choker.gain.setTargetAtTime(0, at, 0.02)
       } else {
-        currentPlayer.stop(at)
-        triggeredTo = at
+        lastEvent.choker.gain.setValueAtTime(0, at)
+        lastEvent.to = at
         return true
       }
     }
