@@ -63,7 +63,7 @@ function renderTimeline (parentContext, descriptor, startOffset, duration, cb) {
       progress.set(currentTime / duration * 0.4)
 
       if (currentTime < duration) {
-        process.nextTick(schedule)
+        setImmediate(schedule)
       } else {
         render()
       }

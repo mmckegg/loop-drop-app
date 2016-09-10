@@ -361,7 +361,7 @@ function Project (parentContext) {
     if (path) {
       lastSelected = findItemByPath(obs.items, path)
       actions.scrollToSelected()
-      process.nextTick(actions.grabInputForSelected)
+      setImmediate(actions.grabInputForSelected)
     }
   })
 

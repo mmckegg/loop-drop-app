@@ -1,4 +1,4 @@
-var computed = require('lib/computed-next-tick')
+var computed = require('@mmckegg/mutant/computed')
 var Property = require('lib/property')
 
 var Param = require('lib/param')
