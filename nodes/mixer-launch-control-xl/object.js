@@ -94,9 +94,13 @@ module.exports = function (context) {
     }
   }, 108)
 
-  var pressed = computed(MutantMap(setup.controllers, x => x.currentlyPressed), function (items) {
-    return items.reduce(function (pressed, result) {
-      pressed.map(x => x && x.split('/')[0]).reduce(addIfUnique, result)
+  var pressed = computed(MutantMap(setup.controllers, function (controller) {
+    return controller && controller.currentlyPressed
+  }), function (items) {
+    return items.reduce(function (result, pressed) {
+      if (pressed) {
+        pressed.map(x => x && x.split('/')[0]).reduce(addIfUnique, result)
+      }
       return result
     }, [])
   })
@@ -106,7 +110,7 @@ module.exports = function (context) {
     for (var i = 0; i < 8; i++) {
       var chunk = setup.context.chunkLookup.get(chunkIds[i])
       if (chunk && chunk.params) {
-        var onValue = pressed[chunkIds[i]]
+        var onValue = pressed.includes(chunkIds[i])
           ? light(0, 2)
           : selected === chunkIds[i]
             ? light(1, 1)
@@ -130,7 +134,7 @@ module.exports = function (context) {
       if (chunkId) {
         if (chunkId === selected) {
           result.push(light(2, 3))
-        } else if (pressed[chunkId]) {
+        } else if (pressed.includes(chunkId)) {
           result.push(light(0, 1))
         } else {
           result.push(light(1, 0))
