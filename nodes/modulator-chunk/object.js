@@ -1,6 +1,6 @@
-var Property = require('observ-default')
 var NodeArray = require('observ-node-array')
 var lookup = require('observ-node-array/lookup')
+var Property = require('lib/property')
 var ParamSum = require('lib/param-sum')
 var BaseChunk = require('lib/base-chunk')
 var destroyAll = require('lib/destroy-all')

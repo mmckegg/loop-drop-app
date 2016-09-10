@@ -1,6 +1,6 @@
 var computed = require('@mmckegg/mutant/computed')
 var ArrayGrid = require('array-grid')
-var Observ = require('observ-default')
+var Observ = require('lib/property')
 
 module.exports = applyColorFilter
 

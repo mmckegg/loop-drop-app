@@ -2,7 +2,7 @@ var watch = require('@mmckegg/mutant/watch')
 
 var Freeverb = require('freeverb')
 var Processor = require('lib/processor')
-var Property = require('observ-default')
+var Property = require('lib/property')
 
 var Param = require('lib/param')
 var Apply = require('lib/apply-param')

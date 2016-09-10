@@ -1,5 +1,5 @@
 var Struct = require('@mmckegg/mutant/struct')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var WaveWriter = require('wav/lib/writer')
 var Scheduler = require('lib/timeline-scheduler')
 var electron = require('electron')

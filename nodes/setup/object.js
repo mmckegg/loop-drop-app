@@ -14,7 +14,7 @@ var merge = require('observ-node-array/merge')
 var join = require('path').join
 var extend = require('xtend')
 
-var Property = require('observ-default')
+var Property = require('lib/property')
 var YankSilence = require('lib/yank-silence')
 var setRoute = require('lib/set-route')
 var assignAvailablePort = require('lib/assign-available-port')

@@ -1,5 +1,5 @@
 var Timeline = require('./timeline')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var Event = require('geval')
 
 module.exports = renderTimeline

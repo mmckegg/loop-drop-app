@@ -6,7 +6,7 @@ var fs = require('fs')
 var join = require('path').join
 
 var Observ = require('@mmckegg/mutant/value')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var watch = require('@mmckegg/mutant/watch')
 var FileObject = require('lib/file-object')
 

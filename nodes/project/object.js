@@ -1,6 +1,6 @@
 var Observ = require('@mmckegg/mutant/value')
-var Property = require('observ-default')
 var NodeArray = require('observ-node-array')
+var Property = require('lib/property')
 var MutantArray = require('@mmckegg/mutant/array')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Dict = require('@mmckegg/mutant/dict')

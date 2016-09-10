@@ -1,10 +1,10 @@
 
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Observ = require('@mmckegg/mutant/value')
-var Property = require('observ-default')
 var NodeArray = require('observ-node-array')
 var NodeVarhash = require('observ-node-array/varhash')
 var SingleNode = require('observ-node-array/single')
+var Property = require('lib/property')
 
 var ArrayGrid = require('array-grid')
 

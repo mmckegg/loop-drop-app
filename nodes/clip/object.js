@@ -1,5 +1,5 @@
 var Struct = require('@mmckegg/mutant/struct')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var watch = require('@mmckegg/mutant/watch')
 var resolve = require('path').resolve
 var computed = require('@mmckegg/mutant/computed')

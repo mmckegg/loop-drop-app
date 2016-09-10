@@ -1,4 +1,4 @@
-var Property = require('observ-default')
+var Property = require('lib/property')
 var Param = require('lib/param')
 var NodeArray = require('observ-node-array')
 var Struct = require('@mmckegg/mutant/struct')

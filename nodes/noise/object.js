@@ -1,5 +1,5 @@
 var computed = require('lib/computed-next-tick')
-var Property = require('observ-default')
+var Property = require('lib/property')
 
 var Param = require('lib/param')
 var Apply = require('lib/apply-param')

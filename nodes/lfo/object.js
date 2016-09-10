@@ -1,6 +1,6 @@
 var Apply = require('lib/apply-param')
 var ObservStruct = require('@mmckegg/mutant/struct')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var computed = require('@mmckegg/mutant/computed')
 var watchAll = require('@mmckegg/mutant/watch-all')
 var ScheduleEvent = require('lib/schedule-event')

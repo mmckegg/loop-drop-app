@@ -1,5 +1,5 @@
 var Processor = require('lib/processor')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')

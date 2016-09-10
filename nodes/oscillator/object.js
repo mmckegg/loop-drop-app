@@ -1,6 +1,6 @@
 var Triggerable = require('lib/triggerable')
 var Param = require('lib/param')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var Multiply = require('lib/param-multiply')
 var Sum = require('lib/param-sum')
 var Apply = require('lib/apply-param')

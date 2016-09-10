@@ -1,7 +1,7 @@
 var PassThrough = require('stream').PassThrough
 var renderTimeline = require('./render-timeline')
 var AudioBufferStream = require('./audio-buffer-stream')
-var Property = require('observ-default')
+var Property = require('lib/property')
 
 module.exports = TimelineRenderStream
 

@@ -1,6 +1,6 @@
 var ObservStruct = require('@mmckegg/mutant/struct')
 var computed = require('@mmckegg/mutant/computed')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var Param = require('lib/param')
 var applyScale = require('lib/apply-scale')
 

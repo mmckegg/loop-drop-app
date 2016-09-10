@@ -44,7 +44,6 @@
     "noise-buffer": "^2.0.1",
     "notevil": "^1.0.0",
     "observ-array": "^3.2.1",
-    "observ-default": "^1.0.0",
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
     "observ-midi": "~2.2.0",

@@ -1,5 +1,5 @@
 var Processor = require('lib/processor')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var Bitcrusher = require('bitcrusher')
 var watch = require('@mmckegg/mutant/watch')
 

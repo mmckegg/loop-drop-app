@@ -5,7 +5,7 @@ var ObservMidi = require('observ-midi')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var deepEqual = require('deep-equal')
 var Dict = require('@mmckegg/mutant/dict')
-var Property = require('observ-default')
+var Property = require('lib/property')
 
 var QueryParam = require('lib/query-param')
 var ArrayStack = require('lib/array-stack')

@@ -1,6 +1,6 @@
 var Observ = require('@mmckegg/mutant/value')
 var ObservStruct = require('@mmckegg/mutant/struct')
-var Prop = require('observ-default')
+var Prop = require('lib/property')
 var computed = require('@mmckegg/mutant/computed')
 
 var Param = require('lib/param')

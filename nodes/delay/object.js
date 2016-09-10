@@ -1,6 +1,6 @@
 var Processor = require('lib/processor')
 
-var Property = require('observ-default')
+var Property = require('lib/property')
 var computed = require('@mmckegg/mutant/computed')
 var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')

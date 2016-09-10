@@ -2,7 +2,7 @@ var Observ = require('@mmckegg/mutant/value')
 var NodeArray = require('observ-node-array')
 
 var Param = require('lib/param')
-var Property = require('observ-default')
+var Property = require('lib/property')
 var RoutableSlot = require('lib/routable')
 
 module.exports = AudioSlot
