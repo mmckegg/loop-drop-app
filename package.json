@@ -51,7 +51,6 @@
     "strftime": "^0.9.2",
     "tap-tempo": "~0.0.0",
     "teoria": "~0.4.0",
-    "throttle-observ": "^1.1.0",
     "through": "^2.3.4",
     "wav": "^1.0.0",
     "wave-recorder": "^2.3.0",

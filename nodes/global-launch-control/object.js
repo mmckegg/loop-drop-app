@@ -1,6 +1,5 @@
 var ObservStruct = require('@mmckegg/mutant/struct')
 var ObservMidi = require('observ-midi')
-var Observ = require('@mmckegg/mutant/value')
 var MutantArray = require('@mmckegg/mutant/array')
 var computed = require('@mmckegg/mutant/computed')
 var MidiPort = require('lib/midi-port')
@@ -11,8 +10,8 @@ var AnyTrigger = require('lib/on-trigger')
 var MidiParam = require('lib/midi-to-param')
 var LightStack = require('observ-midi/light-stack')
 
-var watchThrottle = require('throttle-observ/watch')
-var throttle = require('throttle-observ')
+var watchThrottle = require('@mmckegg/mutant/watch-throttle')
+var throttle = require('@mmckegg/mutant/throttle')
 
 module.exports = LaunchControl
 
