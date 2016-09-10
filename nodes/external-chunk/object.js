@@ -1,7 +1,7 @@
 var Observ = require('@mmckegg/mutant/value')
 var computed = require('@mmckegg/mutant/computed')
 var watch = require('@mmckegg/mutant/watch')
-var resolveNode = require('observ-node-array/resolve')
+var resolveNode = require('lib/resolve-node')
 var getDirectory = require('path').dirname
 var Event = require('geval')
 
