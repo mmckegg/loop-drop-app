@@ -116,15 +116,27 @@ function shouldIgnore (el) {
           el.nodeName === 'TEXTAREA'
 }
 
+function isModifier (key) {
+  return key === 'MetaLeft' || key === 'MetaRight' || key === 'ControlLeft' || key === 'ControlRight'
+}
+
 function KeysDown () {
   var obs = Observ([])
+  var modifiers = new Set()
 
   function handleEvent (e) {
     var el = document.activeElement
     if (!el || (!shouldIgnore(el) && el.contentEditable !== 'true')) {
+      if (isModifier(e.code)) {
+        if (e.type === 'keydown') {
+          modifiers.add(e.code)
+        } else {
+          modifiers.delete(e.code)
+        }
+      }
       var index = obs().indexOf(e.code)
       if (e.type === 'keydown') {
-        if (!~index) {
+        if (!~index && modifiers.size === 0) {
           var val = obs().concat()
           val.push(e.code)
           obs.set(val)
