@@ -1,17 +1,17 @@
 
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Observ = require('@mmckegg/mutant/value')
-var NodeArray = require('observ-node-array')
-var NodeVarhash = require('observ-node-array/varhash')
-var SingleNode = require('observ-node-array/single')
 var Property = require('lib/property')
+var Slots = require('lib/slots')
+var SlotsDict = require('lib/slots-dict')
+var TemplateSlot = require('lib/template-slot')
+var MutantArray = require('@mmckegg/mutant/array')
 
 var ArrayGrid = require('array-grid')
 
 var computed = require('@mmckegg/mutant/computed')
-var lookup = require('observ-node-array/lookup')
-var merge = require('observ-node-array/merge')
-var watch = require('@mmckegg/mutant/watch')
+var lookup = require('@mmckegg/mutant/lookup')
+var merge = require('@mmckegg/mutant/merge')
 var ExternalRouter = require('lib/external-router')
 
 var Param = require('lib/param')
@@ -27,37 +27,47 @@ function ChromaticChunk (parentContext) {
   var output = context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
-  var scaleSlots = NodeArray(context)
-
   var defaultScale = {
     offset: 0,
-    notes: [0,2,4,5,7,9,11]
+    notes: [0, 2, 4, 5, 7, 9, 11]
   }
+
+  var scale = Property(defaultScale)
+  var shape = Property([1, 4])
+
+  var computedScale = computed([scale, context.globalScale], function (scale, globalScale) {
+    if (scale === '$global' && globalScale) {
+      return globalScale
+    } else if (scale instanceof Object) {
+      return scale
+    } else {
+      return defaultScale
+    }
+  })
 
   var volume = Property(1)
   var overrideVolume = Property(1)
 
   var obs = ObservStruct({
     id: Observ(),
-    shape: Property([1,4]),
-
-    templateSlot: SingleNode(context),
-
-    scale: Property(defaultScale),
     offset: Param(parentContext, 0),
-
-    slots: NodeArray(context),
-    inputs: Property([]),
-    outputs: Property(['output']),
     volume: volume,
 
+    shape: shape,
+    scale: scale,
+    templateSlot: TemplateSlot(context, shape, computedScale),
+
+    slots: Slots(context),
+    inputs: Property([]),
+    outputs: Property(['output']),
+
     params: Property([]),
-    paramValues: NodeVarhash(parentContext),
+    paramValues: SlotsDict(parentContext),
 
     routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply)),
     flags: Property([]),
     chokeAll: Property(false),
-    color: Property([255,255,255]),
+    color: Property([255, 255, 255]),
     minimised: Property(false),
     selectedSlotId: Observ()
   })
@@ -73,60 +83,24 @@ function ChromaticChunk (parentContext) {
 
   context.offset = obs.offset
 
-  var globalScale = Property(defaultScale)
-  if (context.globalScale){
-    var releaseGlobalScale = watch(context.globalScale, globalScale.set)
-  }
-
-  var scale = computed([obs.scale, globalScale], function(scale, globalScale){
-    if (scale === '$global'){
-      return globalScale
-    } else if (scale instanceof Object) {
-      return scale
-    } else {
-      return defaultScale
-    }
-  })
-
   obs.output = context.output
   obs.context = context
   context.chunk = obs
 
-  obs.volume(function(value){
+  obs.volume(function (value) {
     output.gain.value = value
   })
 
   context.slotLookup = merge([
-    lookup(scaleSlots, 'id'),
+    lookup(obs.templateSlot.slots, 'id'),
     lookup(obs.slots, 'id')
   ])
-
-  var computedSlots = computed([obs.templateSlot, scale, obs.shape], function(template, scale, shape){
-    var length = (shape[0]*shape[1])||0
-    var result = []
-    for (var i=0;i<length;i++){
-      if (template){
-        var slot = obtainWithParams(template, {
-          id: String(i),
-          value: i,
-          scale: scale
-        })
-        if (slot){
-          result.push(slot)
-        }
-      }
-    }
-    return result
-  })
-
-  computedSlots(scaleSlots.set)
-
 
   obs.triggerOn = function(id, at){
     var slot = context.slotLookup.get(id)
 
     if (obs.chokeAll()){
-      scaleSlots.forEach(function(slot){
+      obs.templateSlot.slots.forEach(function(slot){
         slot.choke(at)
       })
     }
@@ -165,10 +139,7 @@ function ChromaticChunk (parentContext) {
   })
 
   obs.destroy = function () {
-    scaleSlots.destroy()
     destroyAll(obs)
-    releaseGlobalScale && releaseGlobalScale()
-    releaseGlobalScale = null
   }
 
   extendParams(obs)

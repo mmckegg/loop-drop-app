@@ -11,25 +11,27 @@ module.exports = function (node) {
   var context = node.context
   var collection = context.collection
 
-  var nameSuffix = node().port ? ' (' + node().port + ')' : ''
-  return h('div ControllerNode', {
-    classList: [
-      when(node.activeInput, '-input')
-    ],
-    'ev-click': send(node.grabInput)
-  }, [
-    h('header', [
-      h('span', 'Loop Grid' + nameSuffix),
-      h('button.remove Button -warn', {
-        'ev-click': send(collection.remove, node)
-      }, 'X')
-    ]),
-    h('section', [
-      renderGrid(node),
-      renderLoopPosition(node.playback.loopPosition),
-      h('div.controls', renderParams(node))
+  if (node.playback) {
+    var nameSuffix = node().port ? ' (' + node().port + ')' : ''
+    return h('div ControllerNode', {
+      classList: [
+        when(node.activeInput, '-input')
+      ],
+      'ev-click': send(node.grabInput)
+    }, [
+      h('header', [
+        h('span', 'Loop Grid' + nameSuffix),
+        h('button.remove Button -warn', {
+          'ev-click': send(collection.remove, node)
+        }, 'X')
+      ]),
+      h('section', [
+        renderGrid(node),
+        renderLoopPosition(node.playback.loopPosition),
+        h('div.controls', renderParams(node))
+      ])
     ])
-  ])
+  }
 }
 
 function renderParams (controller) {

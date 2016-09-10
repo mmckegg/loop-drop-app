@@ -1,5 +1,5 @@
 var Observ = require('@mmckegg/mutant/value')
-var NodeArray = require('observ-node-array')
+var Slots = require('lib/slots')
 
 var Param = require('lib/param')
 var Property = require('lib/property')
@@ -28,10 +28,10 @@ function AudioSlot (parentContext, defaultValue) {
 
   var obs = RoutableSlot(context, {
     id: Observ(),
-    sources: NodeArray(context),
-    processors: NodeArray(context),
+    sources: Slots(context),
+    processors: Slots(context),
     noteOffset: Param(context, 0),
-    output: Observ(),
+    output: Property(null),
     volume: Property(1)
   }, input, output)
 
@@ -39,23 +39,23 @@ function AudioSlot (parentContext, defaultValue) {
   context.noteOffset = obs.noteOffset
   context.slot = obs
 
-  // reconnect sources on add / update
-  var connectedSources = []
-  obs.sources.onUpdate(function (diff) {
-    while (connectedSources.length) {
-      connectedSources.pop().disconnect()
+  obs.sources.onAdd(function (node) {
+    if (node.connect) {
+      node.connect(pre)
     }
-    obs.sources.forEach(function (source) {
-      source.connect(pre)
-      connectedSources.push(source)
-    })
+  })
+
+  obs.sources.onRemove(function (node) {
+    if (node.disconnect) {
+      node.disconnect(pre)
+    }
   })
 
   // reconnect processors on add / update
   var connectedProcessors = [ toProcessors ]
   var updatingProcessors = false
 
-  obs.processors.onUpdate(function (diff) {
+  obs.processors.onNodeChange(function () {
     if (!updatingProcessors) {
       setImmediate(updateProcessors)
     }

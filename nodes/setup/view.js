@@ -25,7 +25,7 @@ function renderSetup (setup) {
         h('h1', 'Controllers'),
         Collection(setup.controllers),
         Spawner(setup.controllers, {
-          nodes: groupLookup['loop-grids'].concat(groupLookup['mixers']),
+          nodes: (groupLookup['loop-grids'] || []).concat(groupLookup['mixers'] || []),
           onSpawn: handleControllerSpawn
         })
       ]),

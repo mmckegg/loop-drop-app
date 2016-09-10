@@ -165,7 +165,7 @@ function External (parentContext) {
     }
   }
 
-  obs.nodeName = computed(obs.resolved, r => r && r.node || null)
+  obs.nodeName = computed(obs.resolved, r => r && r.node || null, {nextTick: true})
   return obs
 
   // scoped

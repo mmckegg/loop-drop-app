@@ -9,7 +9,7 @@ var cachePerContext = new global.WeakMap()
 
 function ObservAudioBufferCached (context) {
   var obs = Observ({})
-  obs.resolved = Observ()
+  obs.currentValue = Observ()
   obs.cuePoints = Observ()
 
   var cache = cachePerContext.get(context.audio)
@@ -50,7 +50,7 @@ function ObservAudioBufferCached (context) {
         instance.set(obs())
       }
 
-      var releaseResolved = watch(instance.resolved, obs.resolved.set)
+      var releaseResolved = watch(instance.currentValue, obs.currentValue.set)
       var releaseCuePoints = watch(instance.cuePoints, obs.cuePoints.set)
       instance.listeners.push(obs)
 
@@ -64,7 +64,7 @@ function ObservAudioBufferCached (context) {
         }
       }
     } else {
-      obs.resolved.set(null)
+      obs.currentValue.set(null)
       obs.cuePoints.set(null)
     }
   }

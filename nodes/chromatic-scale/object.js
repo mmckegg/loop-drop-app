@@ -18,11 +18,17 @@ function ScaleModulator (context) {
   })
 
   obs.currentValue = computed([obs.value.currentValue, context.offset.currentValue || context.offset, obs.scale], lambda, {
-    immutableTypes: [Object],
+    comparer: audioNodeEq,
     nextTick: true
   })
 
   return obs
+}
+
+function audioNodeEq (a, b) {
+  if (a === b && a instanceof global.AudioNode) {
+    return true
+  }
 }
 
 function lambda (input, offset, scale) {

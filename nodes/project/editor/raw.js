@@ -36,9 +36,7 @@ function RawEditorHook (fileObject) {
     textEditor.$blockScrolling = Infinity
 
     var currentFile = null
-
-    var currentTransaction = NO_TRANSACTION
-    var lastSave = NO_TRANSACTION
+    var saving = false
 
     textEditor.setFile = function (fileObject) {
       clearTimeout(saveTimer)
@@ -58,21 +56,20 @@ function RawEditorHook (fileObject) {
     function save () {
       var value = textEditor.session.getValue()
       if (currentFile) {
+        saving = true
         try {
           var object = JSMN.parse(value)
-          lastSave = object
           currentFile.set(object)
         } catch (ex) {}
+        saving = false
       }
     }
 
     function update () {
-      var data = currentFile ? currentFile() : null
-      if (data && !deepEqual(lastSave, data)) {
+      if (!saving) {
+        var data = currentFile ? currentFile() : null
         var newValue = JSMN.stringify(data || {})
-        currentTransaction = newValue
         textEditor.session.setValue(newValue, -1)
-        currentTransaction = NO_TRANSACTION
       }
     }
 
@@ -92,10 +89,8 @@ function RawEditorHook (fileObject) {
 
     var saveTimer = null
     textEditor.on('change', function () {
-      if (currentTransaction === NO_TRANSACTION) {
-        clearTimeout(saveTimer)
-        saveTimer = setTimeout(save, 100)
-      }
+      clearTimeout(saveTimer)
+      saveTimer = setTimeout(save, 100)
     })
 
     textEditor.setFile(fileObject)

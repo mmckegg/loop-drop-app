@@ -1,5 +1,3 @@
-var Node = require('observ-node-array/single')
-var ResolvedValue = require('observ-node-array/resolved-value')
 var Param = require('lib/param')
 var Property = require('lib/property')
 var Sum = require('lib/param-sum')
@@ -18,17 +16,17 @@ function SampleNode (context) {
   amp.gain.value = 0
   amp.connect(output)
 
+  var releases = []
   var obs = Triggerable(context, {
     mode: Property('hold'),
     offset: Property([0, 1]),
-    buffer: Node(context),
+    buffer: Param(context),
 
     amp: Param(context, 1),
     transpose: Param(context, 0),
     tune: Param(context, 0)
-  }, trigger)
+  }, trigger, releases)
 
-  obs.resolvedBuffer = ResolvedValue(obs.buffer)
   obs.context = context
 
   var detune = Sum([
@@ -47,6 +45,9 @@ function SampleNode (context) {
     return rate
   })
 
+  var currentBuffer = null
+  releases.push(obs.buffer.currentValue(v => currentBuffer = v))
+
   Apply(context, amp.gain, obs.amp)
 
   obs.connect = output.connect.bind(output)
@@ -56,24 +57,23 @@ function SampleNode (context) {
 
   // scoped
   function trigger (at) {
-    var buffer = obs.resolvedBuffer()
     var mode = obs.mode()
 
-    if (buffer instanceof window.AudioBuffer) {
+    if (currentBuffer instanceof window.AudioBuffer) {
       var choker = context.audio.createGain()
       var player = context.audio.createBufferSource()
       player.connect(choker)
       choker.connect(amp)
 
-      player.buffer = buffer
-      player.loopStart = buffer.duration * obs.offset()[0]
-      player.loopEnd = buffer.duration * obs.offset()[1]
+      player.buffer = currentBuffer
+      player.loopStart = currentBuffer.duration * obs.offset()[0]
+      player.loopEnd = currentBuffer.duration * obs.offset()[1]
 
       var event = new ScheduleEvent(at, player, choker, [
         Apply(context, player.detune, detune)
       ])
 
-      event.maxTo = at + (buffer.duration - player.loopStart) / playbackRate()
+      event.maxTo = at + (currentBuffer.duration - player.loopStart) / playbackRate()
       event.to = at + (player.loopEnd - player.loopStart) / playbackRate()
 
       if (mode === 'loop') {

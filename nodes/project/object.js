@@ -1,6 +1,6 @@
 var Observ = require('@mmckegg/mutant/value')
-var NodeArray = require('observ-node-array')
 var Property = require('lib/property')
+var Slots = require('lib/slots')
 var MutantArray = require('@mmckegg/mutant/array')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Dict = require('@mmckegg/mutant/dict')
@@ -63,7 +63,7 @@ function Project (parentContext) {
     tempo: Property(120),
     swing: Property(0),
     rawMode: Property(false),
-    globalControllers: NodeArray(context)
+    globalControllers: Slots(context)
   })
 
   obs.context = context

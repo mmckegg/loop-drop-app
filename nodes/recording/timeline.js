@@ -1,8 +1,7 @@
 var Struct = require('@mmckegg/mutant/struct')
-var NodeArray = require('observ-node-array')
-var map = require('observ-node-array/map')
+var Slots = require('lib/slots')
 var computed = require('@mmckegg/mutant/computed')
-var watchArray = require('observ-node-array/watch')
+var MutantMap = require('@mmckegg/mutant/map')
 
 module.exports = AudioTimeline
 
@@ -12,26 +11,16 @@ function AudioTimeline (parentContext) {
   output.connect(parentContext.output || parentContext.audio.destination)
 
   var obs = Struct({
-    primary: NodeArray(context)
+    primary: Slots(context)
   })
 
   obs.context = context
-  obs.loading = Property(0)
-  obs.primary.resolved = map(obs.primary, resolve)
 
-  // track loading
-  watchArray(obs.primary, function (node) {
-    if (node.loading()) {
-      obs.loading.set(obs.loading() + 1)
-    }
-    return node.loading(function (value) {
-      if (value) {
-        obs.loading.set(obs.loading() + 1)
-      } else {
-        obs.loading.set(obs.loading() - 1)
-      }
-    })
+  obs.loading = computed(MutantMap(obs.primary, x => x.loading || false), function (loading) {
+    return loading.filter(x => x).length
   })
+
+  obs.primary.resolved = MutantMap(obs.primary, getResolved)
 
   obs.duration = computed([obs.primary.resolved], function (data) {
     return data.reduce(function (result, item) {
@@ -88,6 +77,6 @@ function AudioTimeline (parentContext) {
   return obs
 }
 
-function resolve(node){
+function getResolved (node) {
   return node && node.resolved || node
 }

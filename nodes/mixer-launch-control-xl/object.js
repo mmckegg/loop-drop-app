@@ -1,22 +1,17 @@
-var Observ = require('@mmckegg/mutant/value')
 var Param = require('lib/param')
 var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('@mmckegg/mutant/struct')
-var deepEqual = require('deep-equal')
-var Dict = require('@mmckegg/mutant/dict')
+var MutantMap = require('@mmckegg/mutant/map')
 var Property = require('lib/property')
 
-var QueryParam = require('lib/query-param')
 var ArrayStack = require('lib/array-stack')
 var FlashArray = require('lib/flash-array')
 var LightStack = require('observ-midi/light-stack')
 
-var watch = require('@mmckegg/mutant/watch')
 var computed = require('@mmckegg/mutant/computed')
 var watchKnobs = require('lib/watch-knobs')
 var scaleInterpolate = require('lib/scale-interpolate')
-var watchNodeArray = require('observ-node-array/watch')
 var setLights = require('./set-lights')
 
 var turnOffAll = [176 + 8, 0, 0]
@@ -99,7 +94,12 @@ module.exports = function (context) {
     }
   }, 108)
 
-  var pressed = PressedChunks(setup.controllers)
+  var pressed = computed(MutantMap(setup.controllers, x => x.currentlyPressed), function (items) {
+    return items.reduce(function (pressed, result) {
+      pressed.map(x => x && x.split('/')[0]).reduce(addIfUnique, result)
+      return result
+    }, [])
+  })
 
   var knobLights = computed([obs.chunkIds, setup.context.chunkLookup, pressed, setup.selectedChunkId], function (chunkIds, lookup, pressed, selected) {
     var result = []
@@ -241,22 +241,6 @@ function setValue (object, value) {
   } else {
     return value
   }
-}
-
-function PressedChunks (controllers) {
-  var pressed = Dict({})
-  pressed.destroy = watchNodeArray(controllers, function (controller) {
-    if (controller.currentlyPressed) {
-      var lastPressed = []
-      return controller.currentlyPressed(function (values) {
-        var current = values.map(x => x && x.split('/')[0]).reduce(addIfUnique, [])
-        current.filter(x => !lastPressed.includes(x)).forEach(x => pressed.put(x, true))
-        lastPressed.filter(x => !current.includes(x)).forEach(x => pressed.delete(x))
-        lastPressed = current
-      })
-    }
-  })
-  return pressed
 }
 
 function resolveValue (value) {

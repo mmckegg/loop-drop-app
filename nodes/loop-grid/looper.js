@@ -1,21 +1,20 @@
 var Observ = require('@mmckegg/mutant/value')
-var computedNextTick = require('lib/computed-next-tick')
 var computed = require('@mmckegg/mutant/computed')
 var Recorder = require('lib/loop-recorder')
-var ObservArray = require('observ-array')
+var MutantArray = require('@mmckegg/mutant/array')
 var ArrayGrid = require('array-grid')
 
 module.exports = Looper
 
 function Looper (loopGrid) {
   var base = Observ([])
-  var transforms = ObservArray([])
+  var transforms = MutantArray([])
   var undos = []
   var redos = []
 
   var swing = loopGrid.context.swing || Observ(0)
 
-  var transformedOutput = computedNextTick([base, transforms], function (base, transforms) {
+  var transformedOutput = computed([base, transforms], function (base, transforms) {
     if (transforms.length) {
       var input = ArrayGrid(base.map(cloneLoop), loopGrid.shape())
       var result = transforms.slice().sort(prioritySort).reduce(performTransform, input)
@@ -23,7 +22,7 @@ function Looper (loopGrid) {
     } else {
       return base
     }
-  })
+  }, { nextTick: true })
 
   var obs = computed([transformedOutput, swing], function (input, swing) {
     return swingLoops(input, 0.5 + (swing * (1 / 6)))
@@ -69,7 +68,6 @@ function Looper (loopGrid) {
   }
 
   obs.flatten = function () {
-    transformedOutput.update()
     undos.push(base())
     base.set(transformedOutput())
     transforms.set([])
@@ -99,10 +97,7 @@ function Looper (loopGrid) {
     obs.transforms.push(t)
 
     return function release () {
-      var index = obs.transforms.indexOf(t)
-      if (~index) {
-        obs.transforms.splice(index, 1)
-      }
+      obs.transforms.delete(t)
     }
   }
 
@@ -116,10 +111,7 @@ function Looper (loopGrid) {
     obs.transforms.push(t)
 
     return function release () {
-      var index = obs.transforms.indexOf(t)
-      if (~index) {
-        obs.transforms.splice(index, 1)
-      }
+      obs.transforms.delete(t)
     }
   }
 

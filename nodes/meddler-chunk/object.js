@@ -1,14 +1,13 @@
-var NodeArray = require('observ-node-array')
-var NodeVarhash = require('observ-node-array/varhash')
-var lookup = require('observ-node-array/lookup')
+var Slots = require('lib/slots')
+var SlotsDict = require('lib/slots-dict')
+var lookup = require('@mmckegg/mutant/lookup')
 var extendParams = require('lib/extend-params')
 var BaseChunk = require('lib/base-chunk')
 var Property = require('lib/property')
 var ExternalRouter = require('lib/external-router')
 var ChainScheduler = require('lib/chain-scheduler')
 var Dict = require('@mmckegg/mutant/dict')
-var Struct = require('@mmckegg/mutant/struct')
-var merge = require('observ-node-array/merge')
+var merge = require('@mmckegg/mutant/merge')
 var computed = require('@mmckegg/mutant/computed')
 var destroyAll = require('lib/destroy-all')
 
@@ -20,7 +19,7 @@ function MeddlerChunk (parentContext) {
   context.output.connect(parentContext.output)
   context.slotProcessorsOnly = true
 
-  var slots = NodeArray(context)
+  var slots = Slots(context)
   var extraSlots = Dict({})
 
   context.slotLookup = merge([
@@ -39,7 +38,7 @@ function MeddlerChunk (parentContext) {
     params: Property([]),
     volume: volume,
     color: Property([255,255,0]),
-    paramValues: NodeVarhash(parentContext),
+    paramValues: SlotsDict(parentContext),
     selectedSlotId: Property()
   })
 
@@ -76,7 +75,7 @@ function MeddlerChunk (parentContext) {
   context.chunk = obs
 
   obs.output = context.output
-  slots.onUpdate(obs.routes.refresh)
+  slots.onNodeChange(obs.routes.refresh)
 
   obs.destroy = function(){
     destroyAll(obs)

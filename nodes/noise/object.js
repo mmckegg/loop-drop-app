@@ -20,7 +20,7 @@ function NoiseNode (context) {
     amp: Param(context, 0.4)
   }, trigger)
 
-  obs.resolvedBuffer = computed([obs.type, obs.stereo], function (type, stereo) {
+  obs.buffer = computed([obs.type, obs.stereo], function (type, stereo) {
     if (type === 'pink') {
       return generatePinkNoise(context.audio, 4096 * 4, stereo ? 2 : 1)
     } else {
@@ -39,7 +39,7 @@ function NoiseNode (context) {
 
   // scoped
   function trigger (at) {
-    var buffer = obs.resolvedBuffer()
+    var buffer = obs.buffer()
 
     if (buffer instanceof window.AudioBuffer) {
       var choker = context.audio.createGain()

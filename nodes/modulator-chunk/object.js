@@ -1,6 +1,6 @@
-var NodeArray = require('observ-node-array')
-var lookup = require('observ-node-array/lookup')
 var Property = require('lib/property')
+var Slots = require('lib/slots')
+var lookup = require('@mmckegg/mutant/lookup')
 var ParamSum = require('lib/param-sum')
 var BaseChunk = require('lib/base-chunk')
 var destroyAll = require('lib/destroy-all')
@@ -11,7 +11,7 @@ module.exports = ModulatorChunk
 
 function ModulatorChunk (parentContext) {
   var context = Object.create(parentContext)
-  var slots = NodeArray(context)
+  var slots = Slots(context)
   context.slotLookup = lookup(slots, 'id')
 
   var obs = BaseChunk(context, {

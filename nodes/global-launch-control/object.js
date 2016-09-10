@@ -1,7 +1,7 @@
 var ObservStruct = require('@mmckegg/mutant/struct')
 var ObservMidi = require('observ-midi')
 var Observ = require('@mmckegg/mutant/value')
-var ObservArray = require('observ-array')
+var MutantArray = require('@mmckegg/mutant/array')
 var computed = require('@mmckegg/mutant/computed')
 var MidiPort = require('lib/midi-port')
 
@@ -26,7 +26,7 @@ function LaunchControl (context) {
   var releases = []
 
   var project = context.project
-  var setups = ObservArray([])
+  var setups = MutantArray([])
 
   releases.push(project.items.onLoad(addItem))
   setImmediate(function () {

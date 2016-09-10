@@ -1,5 +1,3 @@
-var Node = require('observ-node-array/single')
-var ResolvedValue = require('observ-node-array/resolved-value')
 var Param = require('lib/param')
 var Property = require('lib/property')
 var Sum = require('lib/param-sum')
@@ -19,10 +17,10 @@ function GranularNode (context) {
   amp.connect(output)
 
   var offset = Property([0, 1])
-  var buffer = Node(context)
-  var resolvedBuffer = ResolvedValue(buffer)
+  var buffer = Param(context)
   var duration = Property(1)
-  var sync = SyncProperty(duration, offset, resolvedBuffer)
+  var sync = SyncProperty(duration, offset, buffer.currentValue)
+  var releases = []
 
   var obs = Triggerable(context, {
     mode: Property('loop'),
@@ -41,9 +39,8 @@ function GranularNode (context) {
     transpose: Param(context, 0),
     tune: Param(context, 0),
     amp: Param(context, 1)
-  }, trigger)
+  }, trigger, releases)
 
-  obs.resolvedBuffer = resolvedBuffer
   obs.context = context
 
   var detune = Sum([
@@ -57,17 +54,20 @@ function GranularNode (context) {
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)
 
+  var currentBuffer = null
+  releases.push(obs.buffer.currentValue(v => currentBuffer = v))
+
   return obs
 
   // scoped
   function trigger (at) {
-    return new GranularSample(obs, amp, detune, at)
+    return new GranularSample(obs, amp, detune, currentBuffer, at)
   }
 }
 
 // internal class
 
-function GranularSample (obs, output, detune, from) {
+function GranularSample (obs, output, detune, buffer, from) {
   var clock = obs.context.scheduler
   var nextTime = clock.getNextScheduleTime()
   var schedule = {
@@ -91,6 +91,7 @@ function GranularSample (obs, output, detune, from) {
   this.oneshot = obs.mode() === 'oneshot'
   this.detune = detune
   this.releases = []
+  this.buffer = buffer
 
   if (this.oneshot) {
     this.to = from + length
@@ -163,7 +164,7 @@ function handleSchedule (schedule) {
 function play (at, startOffset, grainDuration) {
   var obs = this.obs
   var context = this.context
-  var buffer = obs.resolvedBuffer()
+  var buffer = this.buffer
   if (buffer instanceof window.AudioBuffer && isFinite(startOffset) && grainDuration) {
     var source = context.audio.createBufferSource()
     source.buffer = buffer

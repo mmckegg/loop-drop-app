@@ -1,13 +1,11 @@
 var Property = require('lib/property')
 var Param = require('lib/param')
-var Node = require('observ-node-array/single')
-var NodeArray = require('observ-node-array')
+var Slots = require('lib/slots')
 var Struct = require('@mmckegg/mutant/struct')
 var BaseChunk = require('lib/base-chunk')
 var ExternalRouter = require('lib/external-router')
-var lookup = require('observ-node-array/lookup')
+var lookup = require('@mmckegg/mutant/lookup')
 var computed = require('@mmckegg/mutant/computed')
-var ResolvedValue = require('observ-node-array/resolved-value')
 var detectPeaks = require('lib/detect-peaks')
 var gridSlicePeaks = require('lib/grid-slice-peaks')
 var throttle = require('throttle-observ')
@@ -26,7 +24,7 @@ function SlicerChunk (parentContext) {
 
   var queueRefreshSlices = noargs(debounce(refreshSlices, 200))
 
-  var slots = NodeArray(context)
+  var slots = Slots(context)
   context.slotLookup = lookup(slots, 'id')
 
   var obs = BaseChunk(context, {
@@ -51,12 +49,12 @@ function SlicerChunk (parentContext) {
     return a * b
   })
 
-  var watchApplied = obs.sample.resolvedBuffer(function (value) {
+  var watchApplied = obs.sample.buffer.currentValue(function (value) {
     if (value) {
       watchApplied()
       setImmediate(function () {
         obs.shape(queueRefreshSlices)
-        obs.sample.resolvedBuffer(queueRefreshSlices)
+        obs.sample.buffer.currentValue(queueRefreshSlices)
         obs.sliceMode(queueRefreshSlices)
         obs.sample.mode(queueRefreshSlices)
         throttle(obs.sample.offset, 1000)(queueRefreshSlices)
@@ -68,12 +66,12 @@ function SlicerChunk (parentContext) {
     }
   })
 
-   obs.sample.resolvedBuffer(function (value) {
-     // without this everything breaks :( no idea why :(
-   })
+  //  obs.sample.buffer.currentValue(function (value) {
+  //    // without this everything breaks :( no idea why :(
+  //  })
 
   var computedSlots = computed([
-    obs.sample, obs.stretch, obs.tempo, obs.eq, volume, obs.sample.resolvedBuffer
+    obs.sample, obs.stretch, obs.tempo, obs.eq, volume, obs.sample.buffer.currentValue
   ], function (sample, stretch, tempo, eq, volume, buffer) {
     var result = (sample.slices || []).map(function (offset, i) {
       if (stretch && buffer) {
@@ -127,7 +125,7 @@ function SlicerChunk (parentContext) {
   }, {nextTick: true})
 
   watch(computedSlots, slots.set)
-  slots.onUpdate(obs.routes.refresh)
+  slots.onNodeChange(obs.routes.refresh)
 
   obs.destroy = function () {
     destroyAll(obs)
@@ -138,7 +136,7 @@ function SlicerChunk (parentContext) {
   // scoped
   function refreshSlices (cb) {
     var shape = obs.shape()
-    var buffer = obs.sample.resolvedBuffer()
+    var buffer = obs.sample.buffer.currentValue()
     var sliceMode = obs.sliceMode()
     var triggerMode = obs.sample.mode()
     var offset = obs.sample.offset()
@@ -184,7 +182,7 @@ function Sample (context) {
     offset: Property([0, 1]),
     amp: Param(context, 1),
     transpose: Param(context, 0),
-    buffer: Node(context),
+    buffer: Param(context),
     slices: Property(),
     mode: Property('slice')
   })
@@ -192,7 +190,6 @@ function Sample (context) {
   obs.context = context
   obs.amp.triggerable = true
   obs.transpose.triggerable = true
-  obs.resolvedBuffer = ResolvedValue(obs.buffer)
 
   return obs
 }

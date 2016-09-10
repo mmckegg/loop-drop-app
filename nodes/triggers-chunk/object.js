@@ -1,6 +1,6 @@
-var NodeArray = require('observ-node-array')
-var NodeVarhash = require('observ-node-array/varhash')
-var lookup = require('observ-node-array/lookup')
+var Slots = require('lib/slots')
+var SlotsDict = require('lib/slots-dict')
+var lookup = require('@mmckegg/mutant/lookup')
 var extendParams = require('lib/extend-params')
 var BaseChunk = require('lib/base-chunk')
 var Property = require('lib/property')
@@ -15,7 +15,7 @@ function TriggersChunk (parentContext) {
   context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
-  var slots = NodeArray(context)
+  var slots = Slots(context)
   context.slotLookup = lookup(slots, 'id')
 
   var volume = Property(1)
@@ -28,7 +28,7 @@ function TriggersChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply)),
     params: Property([]),
     volume: volume,
-    paramValues: NodeVarhash(parentContext),
+    paramValues: SlotsDict(parentContext),
     selectedSlotId: Property()
   })
 
@@ -38,7 +38,7 @@ function TriggersChunk (parentContext) {
   obs.params.context = context
 
   obs.output = context.output
-  slots.onUpdate(obs.routes.refresh)
+  slots.onNodeChange(obs.routes.refresh)
 
   obs.destroy = function () {
     destroyAll(obs)

@@ -1,15 +1,12 @@
 var ObservStruct = require('@mmckegg/mutant/struct')
-var NodeArray = require('observ-node-array')
+var Slots = require('lib/slots')
 var Observ = require('@mmckegg/mutant/value')
 var watch = require('@mmckegg/mutant/watch')
 var computed = require('@mmckegg/mutant/computed')
 var Event = require('geval')
 var updateParamReferences = require('lib/update-param-references')
-var resolve = require('@mmckegg/mutant/resolve')
-
-var map = require('observ-node-array/map')
-var lookup = require('observ-node-array/lookup')
-var merge = require('observ-node-array/merge')
+var lookup = require('@mmckegg/mutant/lookup')
+var merge = require('@mmckegg/mutant/merge')
 
 var join = require('path').join
 var extend = require('xtend')
@@ -26,11 +23,10 @@ module.exports = Setup
 function Setup (parentContext) {
   var context = Object.create(parentContext)
   var audioContext = context.audio
-  var refreshingParamCount = false
 
   var node = ObservStruct({
-    controllers: NodeArray(context),
-    chunks: NodeArray(context),
+    controllers: Slots(context),
+    chunks: Slots(context),
     selectedChunkId: Observ(),
     volume: Property(1),
     globalScale: Property({
@@ -44,6 +40,7 @@ function Setup (parentContext) {
   node.overrideHighPass = Property(0)
 
   node._type = 'LoopDropSetup'
+  node.constructor = Setup
 
   context.setup = node
   context.globalScale = node.globalScale
@@ -97,12 +94,12 @@ function Setup (parentContext) {
     }
   })
 
-  node.chunks.resolveAvailable = function(id){
+  node.chunks.resolveAvailable = function (id) {
     var base = id
     var lookup = context.chunkLookup()
     var incr = 0
 
-    while (lookup[id]){
+    while (lookup[id]) {
       incr += 1
       id = base + ' ' + (incr + 1)
     }
@@ -113,26 +110,29 @@ function Setup (parentContext) {
   // deprecated: use chunks.resolveAvailable
   node.resolveAvailableChunk = node.chunks.resolveAvailable
 
-  node.destroy = function(){
+  node.destroy = function () {
     destroyAll(node)
   }
 
-  // maps and lookup
-  node.controllers.resolved = map(node.controllers, getResolved)
-  node.chunks.resolved = map(node.chunks, getResolved)
-
   // enforce controller types
-  node.controllers.onUpdate(function (update) {
-    update.slice(2).forEach(function (controller) {
-      if (controller.port) {
-        assignAvailablePort(controller)
-      }
-    })
+  node.controllers.onAdd(function (controller) {
+    if (controller.port) {
+      assignAvailablePort(controller)
+    }
   })
 
-  context.chunkLookup = lookup(node.chunks, function (x) {
-    return resolve(x.id)
-  }, getResolved, resolveInner)
+  context.chunkLookup = lookup(node.chunks, function (value, invalidateOn) {
+    if (value) {
+      if (value.nodeName) {
+        invalidateOn(value.nodeName)
+        if (value.node && value.node.id) {
+          return [value.node.id, value.node]
+        }
+      } else {
+        return [value.id, value]
+      }
+    }
+  })
 
   // extend param lookup
   var lookups = []
@@ -141,30 +141,22 @@ function Setup (parentContext) {
   }
 
   lookups.push(
-    lookup(node.chunks, function (x) {
-      if (x && x.currentValue) {
-        return resolve(x.id)
+    // modulator chunks
+    lookup(node.chunks, function (chunk) {
+      if (chunk && chunk.currentValue) {
+        return chunk.id
       }
-    }, getResolved, resolveInner)
+    })
   )
 
   context.paramLookup = merge(lookups)
   node.context = context
 
-  node.resolved = ObservStruct({
-    selectedChunkId: node.selectedChunkId,
-    controllers: node.controllers.resolved,
-    chunks: node.chunks.resolved,
-    paramCount: Observ(0)
-  })
-
-  context.paramLookup(refreshParamCount)
-
   node.grabInput = function () {
     var length = node.controllers.getLength()
     for (var i = 0; i < length; i++) {
       var controller = node.controllers.get(i)
-      if (controller.grabInput) {
+      if (controller && controller.grabInput) {
         controller.grabInput()
       }
     }
@@ -174,9 +166,11 @@ function Setup (parentContext) {
       var chunkId = node.selectedChunkId()
       for (var i = 0; i < length; i++) {
         var controller = node.controllers.get(i)
-        var chunkPositions = controller().chunkPositions || {}
-        if (controller.grabInput && chunkPositions[chunkId]) {
-          controller.grabInput()
+        if (controller) {
+          var chunkPositions = controller().chunkPositions || {}
+          if (controller.grabInput && chunkPositions[chunkId]) {
+            controller.grabInput()
+          }
         }
       }
     }
@@ -241,30 +235,13 @@ function Setup (parentContext) {
   }
 
   return node
-
-  // scoped
-
-  function refreshParamCount () {
-    if (!refreshingParamCount) {
-      refreshingParamCount = true
-      process.nextTick(refreshParamCountNow)
-    }
-  }
-
-  function refreshParamCountNow () {
-    refreshingParamCount = false
-    var count = Object.keys(context.paramLookup()).length
-    if (count !== node.resolved.paramCount()) {
-      node.resolved.paramCount.set(count)
-    }
-  }
 }
 
 function getResolved (node) {
   return node && node.resolved || node
 }
 
-function resolveInner(node){
+function resolveInner (node) {
   return node && node.node || node
 }
 
@@ -274,8 +251,8 @@ function updateRouteReferences (chunk, oldId, newId) {
     routes = routes()
     Object.keys(routes).forEach(function (key) {
       var value = routes[key]
-      var match = typeof value == 'string' && value.match(/^(.+)#(.+)$/)
-      if (match && match[1] === oldId){
+      var match = typeof value === 'string' && value.match(/^(.+)#(.+)$/)
+      if (match && match[1] === oldId) {
         if (newId) {
           setRoute(chunk, key, newId + '#' + match[2])
         } else {

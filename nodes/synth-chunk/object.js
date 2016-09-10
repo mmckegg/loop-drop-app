@@ -1,10 +1,10 @@
 var Property = require('lib/property')
 var Param = require('lib/param')
-var NodeArray = require('observ-node-array')
+var Slots = require('lib/slots')
 var Struct = require('@mmckegg/mutant/struct')
 var BaseChunk = require('lib/base-chunk')
 var ExternalRouter = require('lib/external-router')
-var lookup = require('observ-node-array/lookup')
+var lookup = require('@mmckegg/mutant/lookup')
 var computed = require('@mmckegg/mutant/computed')
 var watch = require('@mmckegg/mutant/watch')
 var extend = require('xtend')
@@ -18,7 +18,7 @@ function SynthChunk (parentContext) {
   context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
-  var slots = NodeArray(context)
+  var slots = Slots(context)
   context.slotLookup = lookup(slots, 'id')
 
   var obs = BaseChunk(context, {
@@ -132,7 +132,7 @@ function SynthChunk (parentContext) {
   //  obs.shape.set(obs.shape())
   //})
 
-  slots.onUpdate(obs.routes.refresh)
+  slots.onNodeChange(obs.routes.refresh)
 
   obs.destroy = function () {
     destroyAll(obs)
