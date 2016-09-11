@@ -1,95 +1,90 @@
 var electron = require('electron')
+var defaultMenu = require('electron-default-menu')
 var BrowserWindow = electron.BrowserWindow
 var fs = require('fs')
 var Menu = electron.Menu
-var menu = Menu.buildFromTemplate(require('lib/menu'))
 var join = require('path').join
 
-var welcomeWindow = null
 var mainWindow = null
 var currentProject = null
-var quiting = false
+var loading = false
+var storage = require('electron-json-storage')
 
 // expose manual gc()
 electron.app.commandLine.appendSwitch('js-flags', '--expose_gc')
 
-electron.app.on('before-quit', function () {
-  quiting = true
+var menu = defaultMenu(electron.app, electron.shell)
+menu.splice(1, 0, {
+  label: 'Project',
+  submenu: [
+    { label: 'New Project...', click: newProject },
+    { label: 'Choose Project...', click: chooseProject },
+    { type: 'separator' },
+    { label: 'Load Demo Project', click: loadDemoProject }
+  ]
 })
 
-electron.ipcMain.on('choose-project', function (event, arg) {
-  if (arg === 'new') {
-    electron.dialog.showSaveDialog({
-      title: 'Create New Project'
-    }, function (path) {
-      if (path) {
-        createProject(path)
-      }
-    })
-  } else if (arg === 'demo') {
-    loadProject(getDemoProjectPath())
-  } else if (arg === 'browse') {
-    electron.dialog.showOpenDialog({
-      title: 'Browse for Project Folder',
-      properties: [ 'openDirectory' ]
-    }, function (paths) {
-      if (paths && paths.length) {
-        loadProject(paths[0])
-      }
-    })
-  } else {
-    chooseProject()
-  }
-})
+menu.find(m => m.label === 'View').submenu.find(m => m.label === 'Reload').click = function () {
+  BrowserWindow.getFocusedWindow().webContents.send('reload')
+}
+
+function newProject () {
+  electron.dialog.showSaveDialog({
+    title: 'Create New Project',
+    buttonLabel: 'Create Project'
+  }, function (path) {
+    if (path) {
+      createProject(path)
+    }
+  })
+}
+
+function chooseProject () {
+  electron.dialog.showOpenDialog({
+    title: 'Browse for Project Folder',
+    buttonLabel: 'Load Project',
+    properties: [ 'openDirectory' ]
+  }, function (paths) {
+    if (paths && paths.length) {
+      loadProject(paths[0])
+    }
+  })
+}
+
+function loadDemoProject () {
+  loadProject(getDemoProjectPath())
+}
+
+function loadLastProject () {
+  storage.get('lastProject', function (err, path) {
+    if (err) throw err
+    if (typeof path === 'string' && fs.existsSync(path)) {
+      loadProject(path)
+    } else {
+      loadDemoProject()
+    }
+  })
+}
+
+electron.ipcMain.on('new-project', newProject)
+electron.ipcMain.on('choose-project', chooseProject)
+electron.ipcMain.on('load-demo-project', loadDemoProject)
 
 electron.ipcMain.on('loaded', function (event, arg) {
   event.sender.send('load-project', currentProject)
 })
 
 electron.app.on('window-all-closed', function () {
-  electron.app.quit()
+  if (!loading) {
+    mainWindow = null
+    electron.app.quit()
+  }
 })
 
 electron.app.on('ready', function () {
-  if (process.platform === 'darwin') {
-    Menu.setApplicationMenu(menu)
-  }
-  chooseProject()
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
+  loadLastProject()
 })
-
-function chooseProject () {
-  if (mainWindow) {
-    mainWindow.close()
-  }
-
-  if (welcomeWindow) {
-    welcomeWindow.show()
-  } else {
-    welcomeWindow = new BrowserWindow({
-      title: 'Choose Project',
-      acceptFirstMouse: true,
-      width: 500,
-      height: 550,
-      show: false,
-      backgroundColor: '#444'
-    })
-
-    welcomeWindow.once('ready-to-show', function () {
-      welcomeWindow.show()
-    })
-
-    welcomeWindow.webContents.on('will-navigate', function (e, url) {
-      e.preventDefault()
-      electron.shell.openExternal(url)
-    })
-
-    welcomeWindow.loadURL('file://' + __dirname + '/views/welcome.html')
-
-    welcomeWindow.on('closed', function () {
-      welcomeWindow = null
-    })
-  }
-}
 
 function createProject (path) {
   fs.mkdir(path, function (err) {
@@ -115,17 +110,12 @@ function getDemoProjectPath () {
 }
 
 function loadProject (path) {
-  if (mainWindow) {
-    mainWindow.close()
-  }
+  loading = true
 
-  if (welcomeWindow) {
-    welcomeWindow.hide()
-  }
-
+  storage.set('lastProject', path)
   currentProject = path
 
-  mainWindow = new BrowserWindow({
+  var window = new BrowserWindow({
     width: 1400,
     height: 900,
     title: path + ' — Loop Drop',
@@ -138,25 +128,25 @@ function loadProject (path) {
     backgroundColor: '#444'
   })
 
-  mainWindow.once('ready-to-show', function () {
-    mainWindow.show()
+  window.once('ready-to-show', function () {
+    window.show()
+    loading = false
   })
 
-  mainWindow.webContents.on('will-navigate', function (e) {
+  window.webContents.on('will-navigate', function (e) {
     e.preventDefault()
   })
 
-  mainWindow.webContents.on('will-navigate', function (e, url) {
+  window.webContents.on('will-navigate', function (e, url) {
     e.preventDefault()
     electron.shell.openExternal(url)
   })
 
-  mainWindow.loadURL('file://' + __dirname + '/views/window.html')
+  window.loadURL('file://' + __dirname + '/views/window.html')
 
-  mainWindow.on('closed', function () {
-    mainWindow = null
-    if (!quiting) {
-      chooseProject()
-    }
-  })
+  if (mainWindow) {
+    mainWindow.close()
+  }
+
+  mainWindow = window
 }

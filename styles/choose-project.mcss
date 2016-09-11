@@ -5,32 +5,82 @@ ChooseProject {
   flex-direction: column
   background: #333
 
-  header {
-    margin: 0 10px 10px 10px
-    border-bottom-left-radius: 10px
-    border-bottom-right-radius: 10px
-
-    background: #444
-    padding: 20px
-    overflow: hidden
-
-    img {
-      float: left
-      margin-right: 10px
-    }
-    h1 {
-      margin-top: 20px
-      margin-bottom: 0
-      font-size: 400%
-      color: #EEE
-    }
-    h2 {
-      margin-top: 0
-      color: #AAA
+  section.messages {
+    div.updateAvailable {
+      padding: 20px;
+      color: white;
+      background: #252525;
+      border-bottom: 1px solid black;
     }
   }
 
-  div {
+  section.main {
+
+    display: flex
+    flex: 1
+    justify-content: center;
+    align-items: center;
+
+    header {
+      margin: 0 10px 10px 10px
+      padding: 20px
+      overflow: hidden
+      text-align: center
+
+      h1 {
+        margin: 0
+        font-size: 200%
+        color: #EEE
+      }
+      h2 {
+        margin-top: 0
+        color: #AAA
+      }
+    }
+
+    div {
+      flex: 1
+      margin: 40px
+      display: flex
+      flex-direction: column
+      max-width: 300px
+
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+
+        background: #3A3A3A;
+        color: #C3C3C3;
+        text-align: center
+
+        -new {
+          background: #3A7A4A;
+        }
+
+        span {
+          color: white
+        }
+
+        :hover {
+          background: #202020;
+          color: #FFF;
+        }
+
+        :focus {
+          outline-style: none;
+          color: white;
+          box-shadow: white 0 0 10px;
+        }
+
+        margin: 3px;
+        font-size: 150%;
+        padding: 10px;
+      }
+    }
+  }
+
+  section.footer {
     padding: 20px
     background: #222
     color: #CCC
@@ -50,45 +100,6 @@ ChooseProject {
       :hover {
         text-decoration: underline
       }
-    }
-  }
-
-  section {
-    flex: 1
-    margin: 40px
-    display: flex
-    flex-direction: column
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-
-      background: #3A3A3A;
-      color: #C3C3C3;
-      text-align: center
-
-      -new {
-        background: #3A7A4A;
-      }
-
-      span {
-        color: white
-      }
-
-      :hover {
-        background: #202020;
-        color: #FFF;
-      }
-
-      :focus {
-        outline-style: none;
-        color: white;
-        box-shadow: white 0 0 10px;
-      }
-
-      margin: 3px;
-      font-size: 200%;
-      padding: 10px;
     }
   }
 }

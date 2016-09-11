@@ -12,6 +12,7 @@ var ToggleButton = require('lib/params/toggle-button')
 
 var renderNode = require('lib/render-node')
 var rawEditor = require('./editor/raw.js')
+var renderWelcome = require('./welcome')
 
 module.exports = TabbedEditor
 
@@ -80,7 +81,7 @@ function TabbedEditor (project) {
     h('header', [ tabButtons, controls ]),
     when(hasTabs,
       tabs,
-      renderHelper()
+      renderWelcome(project.context)
     )
   ])
 }
@@ -95,19 +96,6 @@ function getName (path) {
       return dir + ' > ' + base
     }
   }
-}
-
-function renderHelper () {
-  return h('div CenterTab', [
-    h('div Helper', [
-      h('a', {href: 'http://loopjs.com/'}, [
-        h('img', {src: 'file://' + join(__dirname, '..', '..', 'logo.png'), width: 128})
-      ]),
-      h('br'),
-      'For help visit ',
-      h('a', {href: 'http://loopjs.com/'}, 'loopjs.com')
-    ])
-  ])
 }
 
 function eq (a, b) {

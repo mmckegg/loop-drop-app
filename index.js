@@ -17,6 +17,8 @@ var renderNode = require('lib/render-node')
 var MidiStream = require('web-midi')
 var PeriodicWaves = require('lib/periodic-waves')
 
+var version = require('./package.json').version
+
 // apply css styles
 insertCss(require('./styles'))
 electron.webFrame.setZoomLevelLimits(1, 1)
@@ -64,7 +66,8 @@ var rootContext = window.rootContext = {
   midiPorts: midiPorts,
   nodes: nodes.objectLookup,
   nodeInfo: nodes,
-  zoom: Property(1.1)
+  zoom: Property(1.1),
+  version: version
 }
 
 watch(rootContext.zoom, function (value) {
