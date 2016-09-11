@@ -46,7 +46,7 @@ module.exports = function (collection) {
 
 function hasNode (collection, node) {
   return Array.isArray(collection) && collection.some(function (item) {
-    return item.node === node
+    return item && item.node === node
   })
 }
 
