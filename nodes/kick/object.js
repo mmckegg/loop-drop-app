@@ -30,9 +30,9 @@ function KickNode (context) {
 
   var getCtor = computed([obs.type], function (type) {
     if (type === '909') {
-      return KickNine(context.audio, currentParams)
+      return {fn: KickNine(context.audio, currentParams)}
     } else {
-      return KickEight(context.audio, currentParams)
+      return {fn: KickEight(context.audio, currentParams)}
     }
   })
 
@@ -53,7 +53,7 @@ function KickNode (context) {
     currentParams.tune = getParamValue(obs.tune) + 64
 
     var choker = context.audio.createGain()
-    var source = getCtor()()
+    var source = getCtor().fn()
     source.connect(choker)
     choker.connect(amp)
     source.start(at)

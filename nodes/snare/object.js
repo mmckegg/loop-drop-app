@@ -31,9 +31,9 @@ function SnareNode (context) {
 
   var getCtor = computed([obs.type], function (type) {
     if (type === 'rim') {
-      return RimShot(context.audio, currentParams)
+      return {fn: RimShot(context.audio, currentParams)}
     } else {
-      return Snare(context.audio, currentParams)
+      return {fn: Snare(context.audio, currentParams)}
     }
   })
 
@@ -55,7 +55,7 @@ function SnareNode (context) {
     currentParams.snappy = getParamValue(obs.snappy) * 128
 
     var choker = context.audio.createGain()
-    var source = getCtor()()
+    var source = getCtor().fn()
     source.connect(choker)
     choker.connect(amp)
     source.start(at)
