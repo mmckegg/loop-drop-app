@@ -121,18 +121,7 @@ function Setup (parentContext) {
     }
   })
 
-  context.chunkLookup = lookup(node.chunks, function (value, invalidateOn) {
-    if (value) {
-      if (value.nodeName) {
-        invalidateOn(value.nodeName)
-        if (value.node && value.node.id) {
-          return [value.node.id, value.node]
-        }
-      } else {
-        return [value.id, value]
-      }
-    }
-  })
+  context.chunkLookup = lookup(node.chunks, 'id')
 
   // extend param lookup
   var lookups = []

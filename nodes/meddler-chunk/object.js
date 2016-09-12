@@ -1,57 +1,50 @@
 var Slots = require('lib/slots')
-var SlotsDict = require('lib/slots-dict')
 var lookup = require('@mmckegg/mutant/lookup')
 var extendParams = require('lib/extend-params')
-var BaseChunk = require('lib/base-chunk')
+var Struct = require('@mmckegg/mutant/struct')
 var Property = require('lib/property')
-var ExternalRouter = require('lib/external-router')
 var ChainScheduler = require('lib/chain-scheduler')
 var Dict = require('@mmckegg/mutant/dict')
 var merge = require('@mmckegg/mutant/merge')
-var computed = require('@mmckegg/mutant/computed')
 var destroyAll = require('lib/destroy-all')
+var resolve = require('@mmckegg/mutant/resolve')
 
 module.exports = MeddlerChunk
 
 function MeddlerChunk (parentContext) {
   var context = Object.create(parentContext)
-  var output = context.output = context.audio.createGain()
-  context.output.connect(parentContext.output)
   context.slotProcessorsOnly = true
 
-  var slots = Slots(context)
-  var extraSlots = Dict({})
-
-  context.slotLookup = merge([
-    lookup(slots, 'id'),
-    extraSlots
-  ])
-
-  var volume = Property(1)
-  var overrideVolume = Property(1)
-
-  var obs = BaseChunk(context, {
-    slots: slots,
+  var obs = Struct({
+    slots: Slots(context),
     inputs: Property(['input']),
     outputs: Property(['output']),
-    routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply)),
     params: Property([]),
-    volume: volume,
-    color: Property([255,255,0]),
-    paramValues: SlotsDict(parentContext),
     selectedSlotId: Property()
   })
 
-  obs.overrideVolume = overrideVolume
-  obs.params.context = context
+  var extraSlots = Dict({})
+  obs.slotLookup = merge([
+    lookup(obs.slots, 'id'),
+    extraSlots
+  ])
+
+  obs.context = context
+  obs.shape = context.shape
+  obs.activeSlots = context.activeSlots
+
+  // HACK: allow triggered effects (such as LFOs and ring modulator) to work on non-triggerable slots
+  obs.slots.onAdd(function (slot) {
+    if (!isFinite(resolve(slot.id))) {
+      slot.triggerOn(context.audio.currentTime)
+    }
+  })
 
   var chainScheduler = ChainScheduler(context, 'input')
   extraSlots.put('input', chainScheduler)
 
   var lastTime = 0
   var currentChain = []
-  var triggerOn = obs.triggerOn
-  var triggerOff = obs.triggerOff
 
   obs.triggerOn = function (id, at) {
     at = Math.max(lastTime, at, context.audio.currentTime)
@@ -60,7 +53,6 @@ function MeddlerChunk (parentContext) {
     currentChain = currentChain.filter(not, { value: id })
     currentChain.push(id)
     chainScheduler.schedule(currentChain, at)
-    triggerOn(id, at)
   }
 
   obs.triggerOff = function (id, at) {
@@ -69,15 +61,11 @@ function MeddlerChunk (parentContext) {
 
     currentChain = currentChain.filter(not, { value: id })
     chainScheduler.schedule(currentChain, at)
-    triggerOff(id, at)
   }
 
   context.chunk = obs
 
-  obs.output = context.output
-  slots.onNodeChange(obs.routes.refresh)
-
-  obs.destroy = function(){
+  obs.destroy = function () {
     destroyAll(obs)
   }
 
@@ -88,8 +76,4 @@ function MeddlerChunk (parentContext) {
 
 function not (value) {
   return this.value !== value
-}
-
-function multiply (a, b) {
-  return a * b
 }

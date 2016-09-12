@@ -19,7 +19,7 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
-    "@mmckegg/mutant": "~3.1.1",
+    "@mmckegg/mutant": "~3.2.1",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",

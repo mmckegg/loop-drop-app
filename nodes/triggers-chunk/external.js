@@ -11,19 +11,19 @@ module.exports = function (external) {
     external: true,
     main: [
       h('section', [
-        renderParams(external.node),
+        renderParams(external),
         h('ParamList', [
           h('div -block', [
             h('div.extTitle', 'Use Global'),
             h('ParamList -compact', [
-              ToggleButton(FlagParam(external.node.flags, 'noRepeat'), {
+              ToggleButton(FlagParam(external.flags, 'noRepeat'), {
                 title: 'Repeat',
                 onValue: false,
                 offValue: true
               })
             ])
           ]),
-          renderRouting(external.node)
+          renderRouting(external)
         ])
       ])
     ]

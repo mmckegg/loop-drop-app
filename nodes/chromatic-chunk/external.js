@@ -11,23 +11,23 @@ var IndexParam = require('lib/index-param')
 
 module.exports = renderExternalChromaticChunk
 
-function renderExternalChromaticChunk (externalObject) {
-  var node = externalObject.node
-  return renderChunk(externalObject, {
+function renderExternalChromaticChunk (external) {
+  var node = external.node
+  return renderChunk(external, {
     volume: true,
     external: true,
     main: [
       h('section', [
         h('ParamList', [
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(node.shape, 0), {
+            h('div', Range(IndexParam(external.shape, 0), {
               title: 'rows',
               format: 'bit',
               defaultValue: 1
             }))
           ]),
           h('div -block -flexSmall', [
-            h('div', Range(IndexParam(node.shape, 1), {
+            h('div', Range(IndexParam(external.shape, 1), {
               title: 'cols',
               format: 'bit',
               defaultValue: 1
@@ -35,7 +35,7 @@ function renderExternalChromaticChunk (externalObject) {
           ])
         ]),
         h('ParamList', [
-          ModRange(node.offset, {
+          ModRange(external.offset, {
             title: 'offset',
             format: 'semitone',
             flex: true,
@@ -43,12 +43,12 @@ function renderExternalChromaticChunk (externalObject) {
             defaultValue: 0
           })
         ]),
-        renderParams(node),
+        renderParams(external),
         h('ParamList', [
           h('div -block', [
             h('div.extTitle', 'Use Global'),
             h('ParamList -compact', [
-              ToggleButton(FlagParam(node.flags, 'noRepeat'), {
+              ToggleButton(FlagParam(external.flags, 'noRepeat'), {
                 title: 'Repeat',
                 onValue: false,
                 offValue: true
@@ -60,7 +60,7 @@ function renderExternalChromaticChunk (externalObject) {
               })
             ])
           ]),
-          renderRouting(node)
+          renderRouting(external)
         ])
       ])
     ]

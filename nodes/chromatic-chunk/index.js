@@ -1,30 +1,31 @@
 var randomColor = require('lib/random-color')
 
 module.exports = {
-  name: "Chromatic",
+  name: 'Chromatic',
   node: 'chunk/scale',
   group: 'chunks',
   description: 'Describe a single audio slot that is chromatically scaled over specified shape.',
-  spawn: function (context) {
-    return {
-      templateSlot: {
-        id: { $param: 'id' },
-        noteOffset: {
-          node: 'modulator/scale',
-          value: { $param: 'value'},
-          offset: { $param: 'offset' },
-          scale: { $param: 'scale' }
-        },
-        node: 'slot',
-        output: 'output'
+  spawn: {
+    templateSlot: {
+      id: { $param: 'id' },
+      noteOffset: {
+        node: 'modulator/scale',
+        value: { $param: 'value' },
+        offset: { $param: 'offset' },
+        scale: { $param: 'scale' }
       },
-      outputs: ['output'],
-      slots: [{id: 'output', node: 'slot'}],
-      color: randomColor(),
-      selectedSlotId: '$template'
+      node: 'slot',
+      output: 'output'
+    },
+    outputs: ['output'],
+    slots: [{id: 'output', node: 'slot'}],
+    selectedSlotId: '$template'
+  },
+  external: function (context) {
+    return {
+      color: randomColor()
     }
   },
-  external: true,
   renderExternal: require('./external'),
   render: require('./view'),
   object: require('./object')
