@@ -1,6 +1,5 @@
 var Slots = require('lib/slots')
 var lookup = require('@mmckegg/mutant/lookup')
-var extendParams = require('lib/extend-params')
 var Struct = require('@mmckegg/mutant/struct')
 var Property = require('lib/property')
 var ChainScheduler = require('lib/chain-scheduler')
@@ -68,8 +67,6 @@ function MeddlerChunk (parentContext) {
   obs.destroy = function () {
     destroyAll(obs)
   }
-
-  extendParams(obs)
 
   return obs
 }
