@@ -2,6 +2,8 @@ var fs = require('fs')
 var join = require('path').join
 var getDirectory = require('path').dirname
 
+var toMove = ['id', 'shape', 'flags', 'chokeAll', 'chokeGroup', 'color', 'minimised', 'routes', 'paramValues', 'volume', 'offset']
+
 upgradeProject('/Users/matt/Code/loop-drop-app/demo-project', function (err) {
   if (err) {
     throw err
@@ -35,15 +37,16 @@ function upgradeSetup (setupPath, cb) {
     if (data.chunks) {
       forEach(data.chunks, function (chunk, next, i) {
         if (chunk.node === 'external') {
+          chunk.node = 'externalChunk'
           var chunkPath = join(setupDirectory, chunk.src)
-          data.chunks[i] = { node: 'externalChunk', src: chunk.src }
           console.log(' > ', chunk.src)
           fs.readFile(chunkPath, 'utf8', function (err, result) {
             if (err) return next && next(err)
             var params = JSON.parse(result)
-            Object.keys(chunk).forEach(function (key) {
-              if (key !== 'node' && key !== 'src') {
-                params[key] = chunk[key]
+            Object.keys(params).forEach(function (key) {
+              if (toMove.includes(key)) {
+                chunk[key] = params[key]
+                delete params[key]
               }
             })
             fs.writeFile(chunkPath, JSON.stringify(params), next)
