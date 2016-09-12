@@ -138,7 +138,6 @@ function Project (parentContext) {
     },
 
     purge: function () {
-      // avoid audio glitches by scheduling 1 second ahead
       if (global.gc) {
         var startAt = window.performance.now()
         global.gc()
@@ -319,7 +318,7 @@ function Project (parentContext) {
       var object = FileObject(context)
 
       // HACK: avoid audio glitches by scheduling 1 second ahead
-      scheduler.schedule(1)
+      scheduler.schedule(0.2)
 
       object.onLoad(function () {
         broadcastItemLoaded(object)
@@ -334,7 +333,7 @@ function Project (parentContext) {
       })
 
       object.onClosing(function () {
-        scheduler.schedule(1)
+        scheduler.schedule(0.2)
         setImmediate(actions.purge)
       })
 
