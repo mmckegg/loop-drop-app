@@ -57,7 +57,7 @@ function LFO (context) {
     if (obs.trigger()) {
       start(at, 0)
     } else {
-      var cycleTime = 1 / rate()
+      var cycleTime = 1 / obs.rate()
       var offset = typeof rate() === 'number'
         ? obs.sync()
           ? (context.scheduler.getPositionAt(at) % cycleTime) / cycleTime
