@@ -49,6 +49,8 @@ function ChromaticChunk (parentContext) {
   })
 
   context.chunk = obs
+  obs.flags = context.flag
+  obs.chokeAll = context.chokeAll
   obs.context = context
 
   obs.slotLookup = merge([

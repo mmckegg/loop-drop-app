@@ -45,6 +45,8 @@ function External (parentContext) {
   // expose shape to external chunk instances
   context.shape = obs.shape
   context.offset = obs.offset
+  context.flags = obs.flags
+  context.chokeAll = obs.chokeAll
   context.activeSlots = obs.activeSlots
 
   if (context.setup) {

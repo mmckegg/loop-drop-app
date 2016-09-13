@@ -30,6 +30,8 @@ function MeddlerChunk (parentContext) {
 
   obs.context = context
   obs.shape = context.shape
+  obs.flags = context.flags
+  obs.chokeAll = context.chokeAll
   obs.activeSlots = context.activeSlots
 
   // HACK: allow triggered effects (such as LFOs and ring modulator) to work on non-triggerable slots

@@ -30,6 +30,8 @@ function TriggersChunk (parentContext) {
   obs.activeSlots = context.activeSlots
   obs.context = context
   obs.shape = context.shape
+  obs.flags = context.flags
+  obs.chokeAll = context.chokeAl
   obs.slotLookup = lookup(obs.slots, 'id')
 
   obs.destroy = function () {
