@@ -75,6 +75,7 @@ function Envelope (context) {
       Param.triggerOff(obs, stopAt)
 
       if (releaseTime) {
+        lastEvent.amp.gain.cancelScheduledValues(at)
         lastEvent.amp.gain.setTargetAtTime(0, at, releaseTime / 8)
       }
     }
