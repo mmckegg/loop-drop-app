@@ -67,6 +67,7 @@ function OscillatorNode (context) {
       Apply(context, oscillator.detune, detune),
       Apply(context, oscillator.frequency, obs.frequency)
     ])
+    lastEvent.reuse = true
     return lastEvent
   }
 }
