@@ -102,7 +102,6 @@ function LFO (context) {
     if (currentEvent && (!currentEvent.to || currentEvent.to > at)) {
       currentEvent.source.stop(at)
       currentEvent.to = at
-      currentEvent = null
     }
     return at
   }
