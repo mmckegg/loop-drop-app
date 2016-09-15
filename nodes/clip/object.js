@@ -167,7 +167,7 @@ function AudioTimelineClip (context) {
     item.loading = true
     refreshLoading()
 
-    watch(item.file.resolved, function (buffer) {
+    watch(item.file.currentValue, function (buffer) {
       if (buffer && !item.player) {
         item.loading = false
         item.player = context.audio.createBufferSource()
