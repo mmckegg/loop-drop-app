@@ -2,7 +2,9 @@ var ObservStruct = require('@mmckegg/mutant/struct')
 var computed = require('@mmckegg/mutant/computed')
 var Property = require('lib/property')
 var Param = require('lib/param')
+var ParamSource = require('lib/param-source')
 var applyScale = require('lib/apply-scale')
+var ParamTransform = require('lib/param-transform')
 
 module.exports = ScaleModulator
 
@@ -18,17 +20,11 @@ function ScaleModulator (context) {
   })
 
   obs.currentValue = computed([obs.value.currentValue, context.offset.currentValue || context.offset, obs.scale], lambda, {
-    comparer: audioNodeEq,
-    nextTick: true
+    context: { audioContext: context.audio },
+    comparer: ParamTransform.deepEqual
   })
 
   return obs
-}
-
-function audioNodeEq (a, b) {
-  if (a === b && a instanceof global.AudioNode) {
-    return true
-  }
 }
 
 function lambda (input, offset, scale) {
@@ -36,6 +32,9 @@ function lambda (input, offset, scale) {
     var params = getParams(input, offset)
     var note = add(params[0], params[1])
     return paramApplyScale(note, scale)
+  } else if (ParamSource.isParam(input) || ParamSource.isParam(offset)) {
+    var offsetInput = ParamSource.reduce([input, offset], sum)
+    return ParamSource.reduce([offsetInput], (values) => applyScale(values[0], scale))
   } else if (typeof input === 'number') {
     return applyScale(input + offset, scale)
   }
@@ -81,4 +80,8 @@ function getParams (a, b) {
     b.connect(aParam)
     return [ aParam, b ]
   }
+}
+
+function sum (values) {
+  return values.reduce((a, b) => a + b, 0)
 }

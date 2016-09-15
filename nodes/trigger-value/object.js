@@ -1,8 +1,8 @@
 var Observ = require('@mmckegg/mutant/value')
 var ObservStruct = require('@mmckegg/mutant/struct')
 var Param = require('lib/param')
-var Apply = require('lib/apply-param')
-var createVoltage = require('lib/create-voltage')
+var computed = require('@mmckegg/mutant/computed')
+var ParamSource = require('lib/param-source')
 
 module.exports = ValueModulator
 
@@ -15,45 +15,29 @@ function ValueModulator (parentContext) {
   })
 
   obs._type = 'ValueModulator'
+  obs.context = context
   context.slot = obs
 
-  obs.context = context
-  obs.currentValue = context.audio.createGain()
-
-  var amp = context.audio.createGain()
-  amp.connect(obs.currentValue)
-
-  var unwatch = Apply(context, amp.gain, obs.value)
-  var lastSource = null
-  var triggeredTo = 0
-
+  var outputValue = ParamSource(context, 0)
+  obs.currentValue = computed([outputValue, obs.value.currentValue], function (outputValue, paramValue) {
+    if (typeof paramValue === 'number') {
+      return outputValue
+    } else {
+      return paramValue
+    }
+  })
+  
   obs.triggerOn = function (at) {
     at = at || context.audio.currentTime
-
-    if (at < triggeredTo) {
-      lastSource.stop(at + 1000) // HACK: cancel off
-      triggeredTo = at + 1000
-    } else {
-      lastSource = createVoltage(context.audio)
-      lastSource.connect(amp)
-      lastSource.start(at)
-      triggeredTo = Infinity
-    }
-
+    outputValue.setValueAtTime(getValue(obs.value), at)
     Param.triggerOn(obs, at)
   }
 
   obs.triggerOff = function (at) {
     at = at || context.audio.currentTime
     var stopAt = obs.getReleaseDuration() + at
-
-    if (at < triggeredTo) {
-      lastSource.stop(stopAt)
-      triggeredTo = stopAt
-    }
-
     Param.triggerOff(obs, stopAt)
-
+    outputValue.setValueAtTime(0, stopAt)
     return stopAt
   }
 
@@ -61,8 +45,18 @@ function ValueModulator (parentContext) {
 
   obs.destroy = function () {
     Param.destroy(obs)
-    unwatch()
   }
 
   return obs
+}
+
+function getValue (param) {
+  if (param.currentValue) {
+    var value = param.currentValue()
+    if (typeof value === 'number') {
+      return value
+    } else {
+      return 0
+    }
+  }
 }
