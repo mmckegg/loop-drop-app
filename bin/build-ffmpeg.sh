@@ -1,3 +1,0 @@
-./configure --enable-static --disable-shared --disable-all --enable-ffmpeg --enable-avcodec --enable-avformat --enable-avutil --enable-swresample --enable-swscale --enable-avfilter --disable-network --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau --enable-decoder=opus --enable-demuxer=matroska --enable-protocol=file --enable-protocol=pipe --disable-bzlib --disable-iconv --disable-libxcb --disable-lzma --disable-sdl --disable-securetransport --disable-xlib --disable-zlib --enable-filter=aresample --enable-encoder=pcm_f32le --enable-muxer=wav --enable-muxer=segment --enable-libopus && make
-
-# build for windows: https://github.com/rdp/ffmpeg-windows-build-helpers
