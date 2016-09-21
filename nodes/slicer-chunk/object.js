@@ -24,6 +24,7 @@ function SlicerChunk (parentContext) {
 
   var queueRefreshSlices = noargs(debounce(refreshSlices, 200))
 
+  var releases = []
   var slots = Slots(context)
   context.slotLookup = lookup(slots, 'id')
 
@@ -42,6 +43,8 @@ function SlicerChunk (parentContext) {
     includedAllTriggers: true
   })
 
+  var resolvedBuffer = obs.sample.buffer.currentValue
+
   applyMixerParams(obs)
   obs.overrideVolume = Property(1)
 
@@ -49,29 +52,20 @@ function SlicerChunk (parentContext) {
     return a * b
   })
 
-  var watchApplied = obs.sample.buffer.currentValue(function (value) {
-    if (value) {
-      watchApplied()
-      setImmediate(function () {
-        obs.shape(queueRefreshSlices)
-        obs.sample.buffer.currentValue(queueRefreshSlices)
-        obs.sliceMode(queueRefreshSlices)
-        obs.sample.mode(queueRefreshSlices)
-        throttle(obs.sample.offset, 1000)(queueRefreshSlices)
+  setImmediate(function () {
+    obs.shape(queueRefreshSlices)
+    releases.push(resolvedBuffer(queueRefreshSlices))
+    obs.sliceMode(queueRefreshSlices)
+    obs.sample.mode(queueRefreshSlices)
+    throttle(obs.sample.offset, 1000)(queueRefreshSlices)
 
-        if (!obs.sample.slices()) { // ensure slices have been generated
-          queueRefreshSlices()
-        }
-      })
+    if (!obs.sample.slices()) { // ensure slices have been generated
+      queueRefreshSlices()
     }
   })
 
-  //  obs.sample.buffer.currentValue(function (value) {
-  //    // without this everything breaks :( no idea why :(
-  //  })
-
   var computedSlots = computed([
-    obs.sample, obs.stretch, obs.tempo, obs.eq, volume, obs.sample.buffer.currentValue
+    obs.sample, obs.stretch, obs.tempo, obs.eq, volume, resolvedBuffer
   ], function (sample, stretch, tempo, eq, volume, buffer) {
     var result = (sample.slices || []).map(function (offset, i) {
       if (stretch && buffer) {
@@ -124,10 +118,16 @@ function SlicerChunk (parentContext) {
     return result
   }, {nextTick: true})
 
-  watch(computedSlots, slots.set)
-  slots.onNodeChange(obs.routes.refresh)
+  releases.push(
+    watch(computedSlots, slots.set),
+    slots.onNodeChange(obs.routes.refresh)
+  )
 
   obs.destroy = function () {
+    while (releases.length) {
+      releases.pop()()
+    }
+    slots.destroy()
     destroyAll(obs)
   }
 
@@ -136,7 +136,7 @@ function SlicerChunk (parentContext) {
   // scoped
   function refreshSlices (cb) {
     var shape = obs.shape()
-    var buffer = obs.sample.buffer.currentValue()
+    var buffer = resolvedBuffer()
     var sliceMode = obs.sliceMode()
     var triggerMode = obs.sample.mode()
     var offset = obs.sample.offset()
@@ -168,13 +168,19 @@ function SlicerChunk (parentContext) {
 }
 
 function EQ (context) {
-  return Struct({
+  var obs = Struct({
     lowcut: Param(context, 20),
     highcut: Param(context, 20000),
     low: Param(context, 0),
     mid: Param(context, 0),
     high: Param(context, 0)
   })
+
+  obs.destroy = function () {
+    destroyAll(obs)
+  }
+
+  return obs
 }
 
 function Sample (context) {
@@ -186,6 +192,10 @@ function Sample (context) {
     slices: Property(),
     mode: Property('slice')
   })
+
+  obs.destroy = function () {
+    destroyAll(obs)
+  }
 
   obs.context = context
   obs.amp.triggerable = true
