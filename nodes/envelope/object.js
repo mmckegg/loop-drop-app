@@ -24,7 +24,9 @@ function Envelope (context) {
     at = Math.max(at, context.audio.currentTime)
     outputParam.cancelScheduledValues(at)
 
-    if (obs.retrigger()) {
+    var releaseTime = getValue(obs.release)
+
+    if (obs.retrigger() || !releaseTime) {
       outputParam.setValueAtTime(0, at)
     }
 

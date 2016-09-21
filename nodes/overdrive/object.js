@@ -42,12 +42,12 @@ function OverdriveNode (context) {
 
   var invertedPreBand = Sum([1, Negate(obs.preBand)])
 
-  Apply(context, bpWet.gain, obs.preBand)
-  Apply(context, bpDry.gain, invertedPreBand)
-  Apply(context, bandpass.frequency, obs.color)
-  Apply(context, lowpass.frequency, obs.postCut)
-  Apply(context, input.gain, obs.gain)
-  Apply(context, output.gain, obs.amp)
+  Apply(context.audio, bpWet.gain, obs.preBand)
+  Apply(context.audio, bpDry.gain, invertedPreBand)
+  Apply(context.audio, bandpass.frequency, obs.color)
+  Apply(context.audio, lowpass.frequency, obs.postCut)
+  Apply(context.audio, input.gain, obs.gain)
+  Apply(context.audio, output.gain, obs.amp)
 
   return obs
 }

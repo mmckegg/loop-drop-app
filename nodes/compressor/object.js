@@ -17,11 +17,11 @@ function CompressorNode (context) {
     release: Param(context, node.release.defaultValue)
   })
 
-  Apply(context, node.threshold, obs.threshold)
-  Apply(context, node.knee, obs.knee)
-  Apply(context, node.ratio, obs.ratio)
-  Apply(context, node.attack, obs.attack)
-  Apply(context, node.release, obs.release)
+  Apply(context.audio, node.threshold, obs.threshold)
+  Apply(context.audio, node.knee, obs.knee)
+  Apply(context.audio, node.ratio, obs.ratio)
+  Apply(context.audio, node.attack, obs.attack)
+  Apply(context.audio, node.release, obs.release)
 
   return obs
 }

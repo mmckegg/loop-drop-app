@@ -55,12 +55,12 @@ function PingPongDelayNode (context) {
   var time = Multiply([obs.time, rateMultiplier])
 
   releases.push(
-    Apply(context, delayL.delayTime, time),
-    Apply(context, delayR.delayTime, time),
-    Apply(context, filter.frequency, obs.cutoff),
-    Apply(context, feedback.gain, obs.feedback),
-    Apply(context, wet.gain, obs.wet),
-    Apply(context, dry.gain, obs.dry),
+    Apply(context.audio, delayL.delayTime, time),
+    Apply(context.audio, delayR.delayTime, time),
+    Apply(context.audio, filter.frequency, obs.cutoff),
+    Apply(context.audio, feedback.gain, obs.feedback),
+    Apply(context.audio, wet.gain, obs.wet),
+    Apply(context.audio, dry.gain, obs.dry),
     obs.filterType(function (value) {
       filter.type = value
     })

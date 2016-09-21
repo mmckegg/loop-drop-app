@@ -39,7 +39,7 @@ function OscillatorNode (context) {
     0.5
   ])
 
-  Apply(context, amp.gain, ParamClamp(obs.amp, 0, 10))
+  Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10))
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)
@@ -57,16 +57,16 @@ function OscillatorNode (context) {
     var oscillator = context.audio.createOscillator()
     var power = context.audio.createGain()
     var choker = context.audio.createGain()
-    oscillator.start(at)
     oscillator.connect(power)
     power.connect(choker)
     choker.connect(amp)
     setShape(context, oscillator, obs.shape())
     lastEvent = new ScheduleEvent(at, oscillator, choker, [
-      Apply(context, power.gain, powerRolloff),
-      Apply(context, oscillator.detune, detune),
-      Apply(context, oscillator.frequency, obs.frequency)
+      Apply(context.audio, power.gain, powerRolloff, at),
+      Apply(context.audio, oscillator.detune, detune, at),
+      Apply(context.audio, oscillator.frequency, obs.frequency, at)
     ])
+    oscillator.start(at)
     lastEvent.reuse = true
     return lastEvent
   }

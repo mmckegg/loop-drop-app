@@ -20,9 +20,9 @@ function FilterNode (context) {
     node.type = value
   })
 
-  Apply(context, node.frequency, Clamp(obs.frequency, 20, 20000))
-  Apply(context, node.Q, obs.Q)
-  Apply(context, node.gain, obs.gain)
+  Apply(context.audio, node.frequency, Clamp(obs.frequency, 20, 20000))
+  Apply(context.audio, node.Q, obs.Q)
+  Apply(context.audio, node.gain, obs.gain)
 
   return obs
 }

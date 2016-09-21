@@ -37,8 +37,8 @@ function DipperNode (context) {
     }
   })
 
-  Apply(context, to.gain, obs.ratio)
-  Apply(context, from.gain, obs.ratio)
+  Apply(context.audio, to.gain, obs.ratio)
+  Apply(context.audio, from.gain, obs.ratio)
 
   return obs
 }

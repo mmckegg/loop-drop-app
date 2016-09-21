@@ -49,7 +49,7 @@ function GranularNode (context) {
     obs.tune
   ])
 
-  Apply(context, amp.gain, obs.amp)
+  Apply(context.audio, amp.gain, obs.amp)
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)
@@ -202,7 +202,7 @@ function play (at, startOffset, grainDuration) {
     envelope.connect(this.choker)
 
     var event = new ScheduleEvent(at, source, envelope, [
-      Apply(context, source.detune, this.detune)
+      Apply(context.audio, source.detune, this.detune)
     ])
 
     event.to = releaseAt + release

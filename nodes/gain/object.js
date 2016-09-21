@@ -12,7 +12,7 @@ function GainNode (context) {
     gain: Param(context, node.gain.defaultValue)
   })
 
-  Apply(context, node.gain, obs.gain)
+  Apply(context.audio, node.gain, obs.gain)
 
   return obs
 }

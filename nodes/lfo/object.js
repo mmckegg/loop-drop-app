@@ -51,7 +51,7 @@ function LFO (context) {
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
   var rate = Multiply([rateMultiplier, obs.rate])
 
-  Apply(context, outputValue.gain, obs.amp)
+  Apply(context.audio, outputValue.gain, obs.amp)
 
   obs.triggerOn = function (at) {
     if (obs.trigger()) {
@@ -93,7 +93,7 @@ function LFO (context) {
     player.start(at, mod(obs.phaseOffset() + (offset || 0), 1))
     player.connect(outputValue)
     currentEvent = new ScheduleEvent(at, player, null, [
-      Apply(context, player.playbackRate, rate)
+      Apply(context.audio, player.playbackRate, rate)
     ])
     context.cleaner.push(currentEvent)
   }

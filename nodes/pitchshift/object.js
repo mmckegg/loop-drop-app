@@ -33,8 +33,8 @@ function PitchshiftNode (context) {
     instance.setPitchOffset(getMultiplier(value))
   })
 
-  Apply(context, wet.gain, obs.wet)
-  Apply(context, dry.gain, obs.dry)
+  Apply(context.audio, wet.gain, obs.wet)
+  Apply(context.audio, dry.gain, obs.dry)
 
   return obs
 }

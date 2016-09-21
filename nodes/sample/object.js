@@ -48,7 +48,7 @@ function SampleNode (context) {
   var currentBuffer = null
   releases.push(obs.buffer.currentValue(v => currentBuffer = v))
 
-  Apply(context, amp.gain, obs.amp)
+  Apply(context.audio, amp.gain, obs.amp)
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)
@@ -70,7 +70,7 @@ function SampleNode (context) {
       player.loopEnd = currentBuffer.duration * obs.offset()[1]
 
       var event = new ScheduleEvent(at, player, choker, [
-        Apply(context, player.detune, detune)
+        Apply(context.audio, player.detune, detune)
       ])
 
       event.maxTo = at + (currentBuffer.duration - player.loopStart) / playbackRate()

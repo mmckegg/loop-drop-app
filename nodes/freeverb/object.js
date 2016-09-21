@@ -30,8 +30,8 @@ function FreeverbNode (context) {
     reverb.dampening = Math.min(20000, Math.max(0, value))
   })
 
-  Apply(context, reverb.wet, Multiply([obs.wet, 1 / 4]))
-  Apply(context, reverb.dry, obs.dry)
+  Apply(context.audio, reverb.wet, Multiply([obs.wet, 1 / 4]))
+  Apply(context.audio, reverb.dry, obs.dry)
 
   return obs
 }

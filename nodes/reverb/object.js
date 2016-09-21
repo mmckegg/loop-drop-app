@@ -45,13 +45,13 @@ function ReverbNode (context) {
   obs.decay(refreshImpulse)
   obs.reverse(refreshImpulse)
 
-  Apply(context, filter.frequency, obs.cutoff)
+  Apply(context.audio, filter.frequency, obs.cutoff)
   obs.filterType(function (value) {
     filter.type = value
   })
 
-  Apply(context, wet.gain, obs.wet)
-  Apply(context, dry.gain, obs.dry)
+  Apply(context.audio, wet.gain, obs.wet)
+  Apply(context.audio, dry.gain, obs.dry)
 
   return obs
 

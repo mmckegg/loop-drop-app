@@ -30,7 +30,7 @@ function NoiseNode (context) {
 
   obs.context = context
 
-  Apply(context, amp.gain, obs.amp)
+  Apply(context.audio, amp.gain, obs.amp)
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)

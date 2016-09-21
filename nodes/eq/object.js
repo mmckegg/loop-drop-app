@@ -39,11 +39,11 @@ function EQNode (context) {
     high: Param(context, 0)
   })
 
-  Apply(context, lowpass.frequency, Clamp(obs.highcut, 20, 20000))
-  Apply(context, highpass.frequency, Clamp(obs.lowcut, 20, 20000))
-  Apply(context, lowshelf.gain, obs.low)
-  Apply(context, peaking.gain, obs.mid)
-  Apply(context, highshelf.gain, obs.high)
+  Apply(context.audio, lowpass.frequency, Clamp(obs.highcut, 20, 20000))
+  Apply(context.audio, highpass.frequency, Clamp(obs.lowcut, 20, 20000))
+  Apply(context.audio, lowshelf.gain, obs.low)
+  Apply(context.audio, peaking.gain, obs.mid)
+  Apply(context.audio, highshelf.gain, obs.high)
 
   return obs
 }
