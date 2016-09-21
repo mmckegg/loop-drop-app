@@ -228,6 +228,7 @@ module.exports = function (context) {
   }
 
   obs.destroy = function () {
+    onTrigger.destroy()
     midiPort.destroy()
     params.forEach(function (id) {
       context.paramLookup.delete(id)

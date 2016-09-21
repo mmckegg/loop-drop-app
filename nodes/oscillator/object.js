@@ -16,6 +16,7 @@ function OscillatorNode (context) {
   amp.gain.value = 0
   amp.connect(output)
 
+  var releases = []
   var obs = Triggerable(context, {
     amp: Param(context, 1),
     frequency: Param(context, 440),
@@ -23,7 +24,7 @@ function OscillatorNode (context) {
     octave: Param(context, 0),
     detune: Param(context, 0),
     shape: Property('sine') // Param(context, multiplier.gain, 1)
-  }, trigger)
+  }, trigger, releases)
 
   obs.context = context
 
@@ -39,7 +40,9 @@ function OscillatorNode (context) {
     0.5
   ])
 
-  Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10))
+  releases.push(
+    Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10))
+  )
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)

@@ -29,6 +29,7 @@ function ReverbNode (context) {
   dry.connect(output)
   wet.connect(output)
 
+  var releases = []
   var obs = Processor(context, input, output, {
     time: Property(3),
     decay: Property(2),
@@ -39,19 +40,22 @@ function ReverbNode (context) {
 
     wet: Param(context, 1),
     dry: Param(context, 1)
-  }, [cancel])
+  }, releases)
 
-  obs.time(refreshImpulse)
-  obs.decay(refreshImpulse)
-  obs.reverse(refreshImpulse)
+  releases.push(
+    cancel,
+    obs.time(refreshImpulse),
+    obs.decay(refreshImpulse),
+    obs.reverse(refreshImpulse),
 
-  Apply(context.audio, filter.frequency, obs.cutoff)
-  obs.filterType(function (value) {
-    filter.type = value
-  })
+    Apply(context.audio, filter.frequency, obs.cutoff),
+    obs.filterType(function (value) {
+      filter.type = value
+    }),
 
-  Apply(context.audio, wet.gain, obs.wet)
-  Apply(context.audio, dry.gain, obs.dry)
+    Apply(context.audio, wet.gain, obs.wet),
+    Apply(context.audio, dry.gain, obs.dry)
+  )
 
   return obs
 

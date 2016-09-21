@@ -19,26 +19,29 @@ function DipperNode (context) {
   input.connect(to)
   dipper.connect(from)
 
+  var releases = []
   var obs = Processor(context, input, output, {
     mode: Property('modulate'),
     ratio: Param(context, 1)
-  }, [
+  }, releases)
+
+  releases.push(
     to.disconnect.bind(to),
-    from.disconnect.bind(from)
-  ])
+    from.disconnect.bind(from),
 
-  watch(obs.mode, function (value) {
-    if (value === 'source') {
-      from.disconnect()
-      to.connect(dipper)
-    } else {
-      to.disconnect()
-      from.connect(output.gain)
-    }
-  })
+    watch(obs.mode, function (value) {
+      if (value === 'source') {
+        from.disconnect()
+        to.connect(dipper)
+      } else {
+        to.disconnect()
+        from.connect(output.gain)
+      }
+    }),
 
-  Apply(context.audio, to.gain, obs.ratio)
-  Apply(context.audio, from.gain, obs.ratio)
+    Apply(context.audio, to.gain, obs.ratio),
+    Apply(context.audio, from.gain, obs.ratio)
+  )
 
   return obs
 }

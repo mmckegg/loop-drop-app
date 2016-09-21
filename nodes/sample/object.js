@@ -46,9 +46,10 @@ function SampleNode (context) {
   })
 
   var currentBuffer = null
-  releases.push(obs.buffer.currentValue(v => currentBuffer = v))
-
-  Apply(context.audio, amp.gain, obs.amp)
+  releases.push(
+    obs.buffer.currentValue(v => currentBuffer = v),
+    Apply(context.audio, amp.gain, obs.amp)
+  )
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)

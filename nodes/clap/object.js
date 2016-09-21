@@ -14,12 +14,13 @@ function ClapNode (context) {
   amp.gain.value = 0
   amp.connect(output)
 
+  var releases = []
   var obs = Triggerable(context, {
     tone: Param(context, 0.5), // ratio
     decay: Param(context, 0.5), // seconds
     density: Param(context, 0.1), // ratio
     amp: Param(context, 0.4)
-  }, trigger)
+  }, trigger, releases)
 
   var currentParams = {}
 
@@ -27,7 +28,9 @@ function ClapNode (context) {
 
   obs.context = context
 
-  Apply(context.audio, amp.gain, obs.amp)
+  releases.push(
+    Apply(context.audio, amp.gain, obs.amp)
+  )
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)

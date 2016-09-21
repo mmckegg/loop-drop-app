@@ -14,11 +14,12 @@ function CymbalNode (context) {
   amp.gain.value = 0
   amp.connect(output)
 
+  var releases = []
   var obs = Triggerable(context, {
     tune: Param(context, 0), // cents
     decay: Param(context, 0.3), // seconds
     amp: Param(context, 0.4)
-  }, trigger)
+  }, trigger, releases)
 
   var currentParams = {}
 
@@ -26,7 +27,9 @@ function CymbalNode (context) {
 
   obs.context = context
 
-  Apply(context.audio, amp.gain, obs.amp)
+  releases.push(
+    Apply(context.audio, amp.gain, obs.amp)
+  )
 
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)

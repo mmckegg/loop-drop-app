@@ -23,18 +23,20 @@ function PitchshiftNode (context) {
   dry.connect(output)
   wet.connect(output)
 
+  var releases = []
   var obs = Processor(context, input, output, {
     transpose: Property(12),
     wet: Param(context, 1),
     dry: Param(context, 0)
-  })
+  }, releases)
 
-  watch(obs.transpose, function (value) {
-    instance.setPitchOffset(getMultiplier(value))
-  })
-
-  Apply(context.audio, wet.gain, obs.wet)
-  Apply(context.audio, dry.gain, obs.dry)
+  releases.push(
+    watch(obs.transpose, function (value) {
+      instance.setPitchOffset(getMultiplier(value))
+    }),
+    Apply(context.audio, wet.gain, obs.wet),
+    Apply(context.audio, dry.gain, obs.dry)
+  )
 
   return obs
 }

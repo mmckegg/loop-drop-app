@@ -13,6 +13,7 @@ var Sum = require('lib/param-sum')
 module.exports = LFO
 
 function LFO (context) {
+  var releases = []
   var obs = ObservStruct({
     mode: Property('multiply'),
     sync: Property(false),
@@ -51,7 +52,9 @@ function LFO (context) {
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
   var rate = Multiply([rateMultiplier, obs.rate])
 
-  Apply(context.audio, outputValue.gain, obs.amp)
+  releases.push(
+    Apply(context.audio, outputValue.gain, obs.amp)
+  )
 
   obs.triggerOn = function (at) {
     if (obs.trigger()) {
@@ -74,6 +77,9 @@ function LFO (context) {
   }
 
   obs.destroy = function () {
+    while (releases.length) {
+      releases.pop()()
+    }
     Param.destroy(obs)
   }
 

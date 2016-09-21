@@ -32,22 +32,25 @@ function OverdriveNode (context) {
   waveshaper.connect(lowpass)
   lowpass.connect(output)
 
+  var releases = []
   var obs = Processor(context, input, output, {
     preBand: Param(context, 0.5),
     color: Param(context, 800),
     postCut: Param(context, 3000),
     gain: Param(context, 1),
     amp: Param(context, 1)
-  })
+  }, releases)
 
   var invertedPreBand = Sum([1, Negate(obs.preBand)])
 
-  Apply(context.audio, bpWet.gain, obs.preBand)
-  Apply(context.audio, bpDry.gain, invertedPreBand)
-  Apply(context.audio, bandpass.frequency, obs.color)
-  Apply(context.audio, lowpass.frequency, obs.postCut)
-  Apply(context.audio, input.gain, obs.gain)
-  Apply(context.audio, output.gain, obs.amp)
+  releases.push(
+    Apply(context.audio, bpWet.gain, obs.preBand),
+    Apply(context.audio, bpDry.gain, invertedPreBand),
+    Apply(context.audio, bandpass.frequency, obs.color),
+    Apply(context.audio, lowpass.frequency, obs.postCut),
+    Apply(context.audio, input.gain, obs.gain),
+    Apply(context.audio, output.gain, obs.amp)
+  )
 
   return obs
 }
