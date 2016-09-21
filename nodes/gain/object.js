@@ -8,11 +8,14 @@ function GainNode (context) {
   var node = context.audio.createGain()
   node.gain.value = 0
 
+  var releases = []
   var obs = Processor(context, node, node, {
     gain: Param(context, node.gain.defaultValue)
-  })
+  }, releases)
 
-  Apply(context.audio, node.gain, obs.gain)
+  releases.push(
+    Apply(context.audio, node.gain, obs.gain)
+  )
 
   return obs
 }

@@ -53,9 +53,17 @@ module.exports = function (duration, offset, buffer) {
     }
   }
 
-  duration(refresh)
-  offset(refresh)
-  buffer(refresh)
+  var releases = [
+    duration(refresh),
+    offset(refresh),
+    buffer(refresh)
+  ]
+
+  obs.destroy = function () {
+    while (releases.length) {
+      releases.pop()()
+    }
+  }
 
   return obs
 

@@ -49,13 +49,14 @@ function GranularNode (context) {
     obs.tune
   ])
 
-  Apply(context.audio, amp.gain, obs.amp)
-
   obs.connect = output.connect.bind(output)
   obs.disconnect = output.disconnect.bind(output)
 
   var currentBuffer = null
-  releases.push(obs.buffer.currentValue(v => currentBuffer = v))
+  releases.push(
+    Apply(context.audio, amp.gain, obs.amp),
+    obs.buffer.currentValue(v => currentBuffer = v)
+  )
 
   return obs
 
