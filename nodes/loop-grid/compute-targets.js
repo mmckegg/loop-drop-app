@@ -10,7 +10,7 @@ module.exports = function computeTargets (chunkLookup, positions, shape) {
 
   return computed([chunkGrids, positions, shape], function (chunkGrids, positions, shape) {
     var grid = ArrayGrid([], shape)
-    if (chunkLookup && positions) {
+    if (chunkGrids && positions) {
       Object.keys(positions).forEach(function (id) {
         var origin = positions[id]
         if (chunkGrids[id] && Array.isArray(origin)) {
