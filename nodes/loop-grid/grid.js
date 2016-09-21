@@ -202,7 +202,7 @@ function getId (chunk) {
 function dragOver (ev) {
   var controller = ev.data
   var currentDrag = window.currentDrag
-  var originalDirectory = ev.dataTransfer.getData('cwd')
+  var originalDirectory = currentDrag.data.context.cwd
 
   if (ev.altKey || ev.shiftKey) {
     ev.dataTransfer.dropEffect = 'copy'
