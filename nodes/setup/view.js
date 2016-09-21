@@ -89,9 +89,8 @@ function renderScaleChooser (scale) {
 
 function minimiseAll (items) {
   items.forEach(function (item) {
-    var node = item.node || item
-    if (node.minimised) {
-      node.minimised.set(true)
+    if (item.minimised) {
+      item.minimised.set(true)
     }
   })
 }
