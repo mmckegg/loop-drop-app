@@ -17,6 +17,7 @@ var setRoute = require('lib/set-route')
 var assignAvailablePort = require('lib/assign-available-port')
 var destroyAll = require('lib/destroy-all')
 var importAssociatedFiles = require('lib/import-associated-files')
+var Cleaner = require('lib/cleaner')
 
 module.exports = Setup
 
@@ -42,6 +43,7 @@ function Setup (parentContext) {
   node._type = 'LoopDropSetup'
   node.constructor = Setup
 
+  context.cleaner = Cleaner(context.audio)
   context.setup = node
   context.globalScale = node.globalScale
 
@@ -112,6 +114,7 @@ function Setup (parentContext) {
 
   node.destroy = function () {
     destroyAll(node)
+    context.cleaner.destroy()
   }
 
   // enforce controller types
