@@ -26,7 +26,7 @@ function ValueModulator (parentContext) {
       return paramValue
     }
   })
-  
+
   obs.triggerOn = function (at) {
     at = at || context.audio.currentTime
     outputValue.setValueAtTime(getValue(obs.value), at)
