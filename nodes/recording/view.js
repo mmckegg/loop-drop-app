@@ -239,6 +239,9 @@ function renderSvgTimeline (length, widthMultiplier) {
   return svg('svg', {
     width: fullWidth,
     viewBox: computed(fullWidth, w => '0 0 ' + w + ' 16'),
+    style: {
+      transform: 'translate3d(0,0,0)'
+    },
     preserveAspectRatio: 'xMinYMin',
     hooks: [
       TimelineTicksHook(length, widthMultiplier, xOffset)
