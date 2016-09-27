@@ -24,6 +24,10 @@ function ScaleModulator (context) {
     comparer: ParamTransform.deepEqual
   })
 
+  obs.destroy = function () {
+    Param.destroy(obs)
+  }
+
   return obs
 }
 

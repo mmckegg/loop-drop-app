@@ -202,6 +202,7 @@ module.exports = function (context) {
 
   obs.destroy = function () {
     midiPort.destroy()
+    params.forEach(items => items.forEach(param => param.destroy()))
   }
 
   return obs

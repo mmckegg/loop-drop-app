@@ -140,6 +140,7 @@ function External (parentContext) {
     }
 
     broadcastClose()
+    Param.destroy(obs)
   }
 
   obs.getPath = function () {
