@@ -104,36 +104,20 @@ function AudioTimelineClip (context) {
   })
 
   obs.start = function (at, timeOffset, duration) {
-    if (timeOffset == null) timeOffset = 0
-    if (duration == null) duration = obs.duration.resolved() - timeOffset
-    duration = Math.min(duration, obs.duration.resolved() - timeOffset)
-    var startOffset = timeOffset + obs.startOffset()
-    var endOffset = startOffset + duration
-    var endAt = at + duration
+    var time = at
     var remaining = duration
-    if (segments) {
-      for (var i = 0; i < segments.length; i++) {
-        var segment = segments[i]
-        if (startOffset < segment[2]) {
-          var from = Math.max(startOffset - segment[1], 0)
-          var to = Math.min(segment[2], endOffset - segment[1])
-          if (to > from) {
-            queue.push({
-              at: endAt - remaining,
-              src: segment[0],
-              from: from,
-              duration: to - from,
-              player: null,
-              loading: false
-            })
-          }
-          remaining = endOffset - segment[2]
-          if (remaining <= 0) {
-            break
-          }
-        }
-      }
-    }
+    var cues = getCueList(timeOffset, duration)
+    cues.forEach(cue => {
+      queue.push({
+        at: time,
+        src: cue[0],
+        from: cue[1],
+        duration: cue[2] - cue[1],
+        player: null,
+        loading: false
+      })
+      time += cue[2] - cue[1]
+    })
   }
 
   obs.stop = function (at) {
@@ -160,6 +144,33 @@ function AudioTimelineClip (context) {
   return obs
 
   // scoped
+
+  function getCueList (timeOffset, duration) {
+    var result = []
+    if (timeOffset == null) timeOffset = 0
+    if (duration == null) duration = obs.duration.resolved() - timeOffset
+    duration = Math.min(duration, obs.duration.resolved() - timeOffset)
+    var startOffset = timeOffset + obs.startOffset()
+    var endOffset = startOffset + duration
+    var remaining = duration
+    if (segments) {
+      for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i]
+        if (startOffset < segment[2]) {
+          var from = Math.max(startOffset - segment[1], 0)
+          var to = Math.min(segment[2], endOffset) - segment[1]
+          if (to > from) {
+            result.push([segment[0], from, to])
+          }
+          remaining = endOffset - segment[2]
+          if (remaining <= 0) {
+            break
+          }
+        }
+      }
+    }
+    return result
+  }
 
   function load (item) {
     item.file = context.nodes.AudioBuffer(context)
