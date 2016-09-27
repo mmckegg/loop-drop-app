@@ -1,15 +1,14 @@
 var Struct = require('@mmckegg/mutant/struct')
 var Property = require('lib/property')
-var WaveWriter = require('wav/lib/writer')
+var WaveFileWriter = require('wav/lib/file-writer')
 var Scheduler = require('lib/timeline-scheduler')
 var electron = require('electron')
 var Timeline = require('./timeline')
-var RenderStream = require('./render-stream')
 var throttledWatch = require('@mmckegg/mutant/watch-throttle')
-var writeHeader = require('lib/write-header')
 var getClosestPoint = require('lib/get-closest-point')
 var extend = require('xtend')
 var animateProp = require('animate-prop')
+var toStream = require('pull-stream-to-stream')
 
 module.exports = Recording
 
@@ -79,9 +78,9 @@ function Recording (parentContext) {
   obs.splice = function (snapToCue) {
     var info = getPositionInfo(obs.position())
     if (info) {
-      var pos = snapToCue ?
-        getClosestPoint(info.clip.cuePoints(), info.clip.startOffset() + info.clipOffset) - info.clip.startOffset() :
-        info.clipOffset
+      var pos = snapToCue
+        ? getClosestPoint(info.clip.cuePoints(), info.clip.startOffset() + info.clipOffset) - info.clip.startOffset()
+        : info.clipOffset
 
       if (pos > 0 && pos < info.clip.resolved.duration()) {
         var newClip = extend(info.clip(), {
@@ -92,7 +91,6 @@ function Recording (parentContext) {
         info.clip.duration.set(pos)
         obs.centerOnCursor(true)
       }
-
     }
   }
 
@@ -175,21 +173,18 @@ function Recording (parentContext) {
       if (path) {
         var bitDepth = 32
         obs.rendering.set(true)
-        var stream = RenderStream(obs.timeline, 0, obs.timeline.duration(), bitDepth)
-        stream.progress(obs.renderProgress.set)
 
-        var formatter = WaveWriter({
+        var source = obs.timeline.pull()
+        source.progress(obs.renderProgress.set)
+
+        var output = WaveFileWriter(path, {
           bitDepth: bitDepth,
           format: bitDepth === 32 ? 3 : 1,
           sampleRate: context.audio.sampleRate,
           channels: 2
         })
 
-        formatter.on('header', function (header) {
-          writeHeader(path, header, context.fs)
-        })
-
-        stream.pipe(formatter).pipe(context.fs.createWriteStream(path)).on('finish', function () {
+        toStream.source(source).pipe(output).on('finish', function () {
           obs.rendering.set(false)
         })
       }

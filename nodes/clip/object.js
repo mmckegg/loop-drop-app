@@ -3,6 +3,8 @@ var Property = require('lib/property')
 var watch = require('@mmckegg/mutant/watch')
 var resolve = require('path').resolve
 var computed = require('@mmckegg/mutant/computed')
+var pull = require('pull-stream')
+var toPcm = require('lib/to-pcm')
 
 module.exports = AudioTimelineClip
 
@@ -139,6 +141,25 @@ function AudioTimelineClip (context) {
     while (queue.length) {
       unload(queue.pop())
     }
+  }
+
+  obs.pull = function (timeOffset, duration) {
+    return pull(
+      pull.values(getCueList(timeOffset, duration)),
+      pull.asyncMap((cue, cb) => {
+        context.fs.readFile(context.fileObject.resolvePath(cue[0]), (err, result) => {
+          if (err) return cb(err)
+          context.audio.decodeAudioData(result.buffer, (audioData) => {
+            var start = Math.floor(cue[1] * audioData.sampleRate)
+            var end = Math.floor(cue[2] * audioData.sampleRate)
+            toPcm([
+              audioData.getChannelData(0).subarray(start, end),
+              audioData.getChannelData(1).subarray(start, end)
+            ], cb)
+          }, cb)
+        })
+      })
+    )
   }
 
   return obs

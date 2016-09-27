@@ -1,7 +1,10 @@
 var Struct = require('@mmckegg/mutant/struct')
+var Value = require('@mmckegg/mutant/value')
 var Slots = require('lib/slots')
 var computed = require('@mmckegg/mutant/computed')
 var MutantMap = require('@mmckegg/mutant/map')
+var pullCat = require('pull-cat')
+var pull = require('pull-stream')
 
 module.exports = AudioTimeline
 
@@ -66,6 +69,42 @@ function AudioTimeline (parentContext) {
     obs.primary.forEach(function (clip) {
       clip.stop(at)
     })
+  }
+
+  obs.pull = function (timeOffset, duration) {
+    timeOffset = Math.max(0, timeOffset || 0)
+    duration = duration == null ? obs.duration() : duration
+    duration = Math.min(obs.duration(), duration - timeOffset)
+
+    var streams = []
+    var currentTime = 0
+
+    obs.primary.forEach(function (clip, i) {
+      var endTime = currentTime + clip.duration.resolved()
+      if (timeOffset <= currentTime && currentTime < duration) {
+        streams.push(clip.pull(0, duration - currentTime))
+        currentTime = endTime
+      } else if (endTime < timeOffset) {
+        var start = timeOffset - currentTime
+        streams.push(clip.pull(start, duration - currentTime - start))
+        currentTime = endTime - start
+      }
+    })
+
+    var length = 0
+    var blockSize = 32 * 2 / 8
+    var progress = Value(0)
+
+    var result = pull(
+      pullCat(streams),
+      pull.through((data) => {
+        length += data.length / blockSize
+        progress.set(length / (duration * context.audio.sampleRate))
+      })
+    )
+
+    result.progress = progress
+    return result
   }
 
   obs.destroy = function () {
