@@ -24,7 +24,6 @@ module.exports = Setup
 function Setup (parentContext) {
   var context = Object.create(parentContext)
   var audioContext = context.audio
-
   var node = ObservStruct({
     controllers: Slots(context),
     chunks: Slots(context),
@@ -64,37 +63,39 @@ function Setup (parentContext) {
 
   context.active = node.output.active
 
-  watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
-    node.output.gain.value = value
-  })
-
-  watch(node.overrideLowPass, function (value) {
-    outputLowPass.frequency.setTargetAtTime(interpolate(value, 20000, 20, 'exp'), audioContext.currentTime, 0.01)
-  })
-
-  watch(node.overrideHighPass, function (value) {
-    outputHighPass.frequency.setTargetAtTime(interpolate(value, 20, 15000, 'exp'), audioContext.currentTime, 0.01)
-  })
-
   node.onTrigger = Event(function (b) {
     context.triggerEvent = b
   })
 
-  node.onTrigger(function (event) {
-    if (event.id) {
-      node.output.trigger()
-      var split = event.id.split('/')
-      var chunk = context.chunkLookup.get(split[0])
-      var slotId = split[1]
-      if (chunk) {
-        if (event.event === 'start' && (event.triggered || event.time >= context.audio.currentTime - 0.001)) {
-          chunk.triggerOn(slotId, event.time)
-        } else if (event.event === 'stop') {
-          chunk.triggerOff(slotId, event.time)
+  var releases = [
+    watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
+      node.output.gain.value = value
+    }),
+
+    watch(node.overrideLowPass, function (value) {
+      outputLowPass.frequency.setTargetAtTime(interpolate(value, 20000, 20, 'exp'), audioContext.currentTime, 0.01)
+    }),
+
+    watch(node.overrideHighPass, function (value) {
+      outputHighPass.frequency.setTargetAtTime(interpolate(value, 20, 15000, 'exp'), audioContext.currentTime, 0.01)
+    }),
+
+    node.onTrigger(function (event) {
+      if (event.id) {
+        node.output.trigger()
+        var split = event.id.split('/')
+        var chunk = context.chunkLookup.get(split[0])
+        var slotId = split[1]
+        if (chunk) {
+          if (event.event === 'start' && (event.triggered || event.time >= context.audio.currentTime - 0.001)) {
+            chunk.triggerOn(slotId, event.time)
+          } else if (event.event === 'stop') {
+            chunk.triggerOff(slotId, event.time)
+          }
         }
       }
-    }
-  })
+    })
+  ]
 
   node.chunks.resolveAvailable = function (id) {
     var base = id
@@ -113,6 +114,9 @@ function Setup (parentContext) {
   node.resolveAvailableChunk = node.chunks.resolveAvailable
 
   node.destroy = function () {
+    while (releases.length) {
+      releases.pop()()
+    }
     destroyAll(node)
     context.cleaner.destroy()
   }
