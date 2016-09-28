@@ -25,6 +25,7 @@ function RawEditorHook (fileObject) {
 
     var textEditor = ace.edit(el)
     var release = null
+    var lastValue = ''
 
     textEditor.setTheme('ace/theme/ambiance')
     textEditor.session.setUseWorker(false)
@@ -55,7 +56,8 @@ function RawEditorHook (fileObject) {
 
     function save () {
       var value = textEditor.session.getValue()
-      if (currentFile) {
+      if (currentFile && value !== lastValue) {
+        lastValue = value
         saving = true
         try {
           var object = JSMN.parse(value)
@@ -69,7 +71,10 @@ function RawEditorHook (fileObject) {
       if (!saving) {
         var data = currentFile ? currentFile() : null
         var newValue = JSMN.stringify(data || {})
-        textEditor.session.setValue(newValue, -1)
+        if (newValue !== lastValue) {
+          lastValue = newValue
+          textEditor.session.setValue(newValue, -1)
+        }
       }
     }
 
