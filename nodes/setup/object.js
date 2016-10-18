@@ -179,6 +179,17 @@ function Setup (parentContext) {
 
     descriptor = extend(descriptor, { id: id })
 
+    // ensure has default output
+    if (descriptor.routes && descriptor.routes.output) {
+      if (descriptor.routes.output !== '$default') {
+        var to = descriptor.routes.output.split('#')
+        var destinationChunk = context.chunkLookup.get(to[0])
+        if (!destinationChunk) {
+          descriptor.routes.output = '$default'
+        }
+      }
+    }
+
     importAssociatedFiles(descriptor, originalDirectory, context.cwd, function (err) {
       if (err) return cb && cb(err)
       if (info.external) {
