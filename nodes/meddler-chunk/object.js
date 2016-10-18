@@ -7,6 +7,7 @@ var Dict = require('@mmckegg/mutant/dict')
 var merge = require('@mmckegg/mutant/merge')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('@mmckegg/mutant/resolve')
+var MutantArray = require('@mmckegg/mutant/array')
 
 module.exports = MeddlerChunk
 
@@ -18,7 +19,7 @@ function MeddlerChunk (parentContext) {
     slots: Slots(context),
     inputs: Property(['input']),
     outputs: Property(['output']),
-    params: Property([]),
+    params: MutantArray([]),
     selectedSlotId: Property()
   })
 
@@ -28,6 +29,7 @@ function MeddlerChunk (parentContext) {
     extraSlots
   ])
 
+  obs.params.context = context
   obs.context = context
   obs.shape = context.shape
   obs.flags = context.flags
@@ -65,6 +67,12 @@ function MeddlerChunk (parentContext) {
   }
 
   context.chunk = obs
+
+  obs.spawnParam = function (id) {
+    var key = context.fileObject.resolveAvailableParam(id || 'New Param')
+    obs.params.push(key)
+    return key
+  }
 
   obs.destroy = function () {
     destroyAll(obs)

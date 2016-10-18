@@ -9,7 +9,6 @@ var computed = require('@mmckegg/mutant/computed')
 var lookup = require('@mmckegg/mutant/lookup')
 var merge = require('@mmckegg/mutant/merge')
 
-var Param = require('lib/param')
 var destroyAll = require('lib/destroy-all')
 
 module.exports = ChromaticChunk
@@ -48,6 +47,7 @@ function ChromaticChunk (parentContext) {
     slot.triggerOn(context.audio.currentTime)
   })
 
+  obs.params.context = context
   context.chunk = obs
   obs.flags = context.flag
   obs.chokeAll = context.chokeAll

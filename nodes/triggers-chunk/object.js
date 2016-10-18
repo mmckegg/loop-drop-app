@@ -4,6 +4,7 @@ var lookup = require('@mmckegg/mutant/lookup')
 var Property = require('lib/property')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('@mmckegg/mutant/resolve')
+var MutantArray = require('@mmckegg/mutant/array')
 
 module.exports = TriggersChunk
 
@@ -14,7 +15,7 @@ function TriggersChunk (parentContext) {
     slots: Slots(context),
     inputs: Property([]),
     outputs: Property([]),
-    params: Property([]),
+    params: MutantArray([]),
     selectedSlotId: Property()
   })
 
@@ -27,12 +28,19 @@ function TriggersChunk (parentContext) {
     }
   })
 
+  obs.params.context = context
   obs.activeSlots = context.activeSlots
   obs.context = context
   obs.shape = context.shape
   obs.flags = context.flags
   obs.chokeAll = context.chokeAl
   obs.slotLookup = lookup(obs.slots, 'id')
+
+  obs.spawnParam = function (id) {
+    var key = context.fileObject.resolveAvailableParam(id || 'New Param')
+    obs.params.push(key)
+    return key
+  }
 
   obs.destroy = function () {
     destroyAll(obs)
