@@ -107,19 +107,21 @@ module.exports = function (context) {
 
   var knobLights = computed([obs.chunkIds, setup.context.chunkLookup, pressed, setup.selectedChunkId], function (chunkIds, lookup, pressed, selected) {
     var result = []
-    for (var i = 0; i < 8; i++) {
-      var chunk = setup.context.chunkLookup.get(chunkIds[i])
-      if (chunk && chunk.params) {
-        var onValue = pressed.includes(chunkIds[i])
-          ? light(0, 2)
-          : selected === chunkIds[i]
-            ? light(1, 1)
-            : light(2, 0)
-        result[0 + i] = chunk.params()[0] ? onValue : 0
-        result[8 + i] = chunk.params()[1] ? onValue : 0
-        result[16 + i] = chunk.params()[2] ? onValue : 0
-      } else {
-        result[0 + i] = result[8 + i] = result[16 + i] = 0
+    if (setup.context) {
+      for (var i = 0; i < 8; i++) {
+        var chunk = setup.context.chunkLookup.get(chunkIds[i])
+        if (chunk && chunk.params) {
+          var onValue = pressed.includes(chunkIds[i])
+            ? light(0, 2)
+            : selected === chunkIds[i]
+              ? light(1, 1)
+              : light(2, 0)
+          result[0 + i] = chunk.params()[0] ? onValue : 0
+          result[8 + i] = chunk.params()[1] ? onValue : 0
+          result[16 + i] = chunk.params()[2] ? onValue : 0
+        } else {
+          result[0 + i] = result[8 + i] = result[16 + i] = 0
+        }
       }
     }
     return result
