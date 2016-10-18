@@ -18,13 +18,13 @@ module.exports = function renderFreeverb (node) {
         defaultValue: 'processor/freeverb',
         options: nodeChoices
       }),
-      Range(node.roomSize, {
+      ModRange(node.roomSize, {
         title: 'room size',
         defaultValue: 0.8,
         format: 'ratio1Log',
         flex: true
       }),
-      Range(node.dampening, {
+      ModRange(node.dampening, {
         title: 'dampening',
         defaultValue: 3000,
         format: 'arfo',

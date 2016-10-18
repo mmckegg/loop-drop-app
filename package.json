@@ -35,7 +35,7 @@
     "electron-json-storage": "~2.0.0",
     "electron-prebuilt": "~1.4.0",
     "frac": "^0.3.1",
-    "freeverb": "~1.0.3",
+    "freeverb": "~1.1.0",
     "geval": "^2.1.1",
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
