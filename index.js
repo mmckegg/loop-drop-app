@@ -97,20 +97,5 @@ electron.ipcRenderer.on('load-project', function (e, path) {
     window.currentProject = projectFile.node
   })
 
-  ensureProject(projectPath, function (err) {
-    if (err) throw err
-    projectFile.load(projectPath)
-  })
+  projectFile.load(projectPath)
 })
-
-function ensureProject (path, cb) {
-  rootContext.fs.exists(path, function (exists) {
-    if (exists) {
-      cb()
-    } else {
-      rootContext.fs.writeFile(path, JSON.stringify({
-        node: 'project'
-      }), cb)
-    }
-  })
-}

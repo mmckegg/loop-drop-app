@@ -46,7 +46,14 @@ function chooseProject () {
     properties: [ 'openDirectory' ]
   }, function (paths) {
     if (paths && paths.length) {
-      loadProject(paths[0])
+      var path = paths[0]
+      if (fs.existsSync(join(path, 'project.json'))) {
+        loadProject(path)
+      } else if (fs.existsSync(join(path, '..', 'project.json'))) {
+        loadProject(join(path, '..'))
+      } else {
+        electron.dialog.showErrorBox('Cannot Open Project', 'The chosen directory is not a Loop Drop project.')
+      }
     }
   })
 }
@@ -87,9 +94,14 @@ electron.app.on('ready', function () {
 })
 
 function createProject (path) {
-  fs.mkdir(path, function (err) {
+  fs.mkdir(path, (err) => {
     if (err) throw err
-    loadProject(path)
+    fs.writeFile(join(path, 'project.json'), JSON.stringify({
+      node: 'project'
+    }), (err) => {
+      if (err) throw err
+      loadProject(path)
+    })
   })
 }
 
