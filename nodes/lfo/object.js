@@ -9,6 +9,7 @@ var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 var Negate = require('lib/param-negate')
 var Sum = require('lib/param-sum')
+var Quantize = require('lib/param-quantize')
 
 module.exports = LFO
 
@@ -18,6 +19,7 @@ function LFO (context) {
     mode: Property('multiply'),
     sync: Property(false),
     trigger: Property(true),
+    quantize: Property(null),
 
     rate: Param(context, 1),
     amp: Param(context, 1),
@@ -33,20 +35,30 @@ function LFO (context) {
 
   var currentEvent = null
   var buffer = context.audio.createBuffer(1, 1 * context.audio.sampleRate, context.audio.sampleRate)
-  watchAll([buffer, obs.curve, obs.skew], refreshBuffer, { nextTick: true })
+
+  releases.push(
+    watchAll([buffer, obs.curve, obs.skew], refreshBuffer, { nextTick: true })
+  )
 
   var outputValue = context.audio.createGain()
-  obs.currentValue = computed([obs.mode], function (mode) {
+  obs.currentValue = computed([obs.mode, obs.quantize], function (mode, quantize) {
+    var result = null
     if (mode === 'multiply') {
-      return Sum([
+      result = Sum([
         Multiply([outputValue, obs.value]),
         obs.value
       ])
     } else if (mode === 'add') {
-      return Sum([outputValue, obs.value])
+      result = Sum([outputValue, obs.value])
     } else if (mode === 'subtract') {
-      return Sum([outputValue, Negate(obs.value)])
+      result = Sum([outputValue, Negate(obs.value)])
     }
+
+    if (quantize) {
+      result = Quantize(result, quantize)
+    }
+
+    return result
   })
 
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)

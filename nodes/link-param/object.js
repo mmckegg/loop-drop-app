@@ -7,6 +7,7 @@ var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 var Sum = require('lib/param-sum')
 var Negate = require('lib/param-negate')
+var Quantize = require('lib/param-quantize')
 
 module.exports = LinkParam
 
@@ -49,7 +50,7 @@ function LinkParam (context) {
       ])
 
       if (quantize) {
-        // TODO
+        result = Quantize(result, quantize)
       }
 
       return result
@@ -64,11 +65,3 @@ function LinkParam (context) {
 
   return obs
 }
-
-// function quantize (value, grid) {
-//   if (grid) {
-//     return Math.round(value * grid) / grid
-//   } else {
-//     return value
-//   }
-// }

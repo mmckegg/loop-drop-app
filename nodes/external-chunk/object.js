@@ -42,6 +42,8 @@ function External (parentContext) {
     volume: volume
   })
 
+  obs.offset.triggerOn(context.audio.currentTime)
+
   // expose shape to external chunk instances
   context.shape = obs.shape
   context.offset = obs.offset
