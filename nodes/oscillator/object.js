@@ -16,6 +16,9 @@ function OscillatorNode (context) {
   amp.gain.value = 0
   amp.connect(output)
 
+  // hack around C53 bugs
+  context.signal.connect(output)
+
   var releases = []
   var obs = Triggerable(context, {
     amp: Param(context, 1),
@@ -41,6 +44,7 @@ function OscillatorNode (context) {
   ])
 
   releases.push(
+    () => context.signal.disconnect(output),
     Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10))
   )
 

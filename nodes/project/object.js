@@ -27,6 +27,7 @@ var join = require('path').join
 var pathSep = require('path').sep
 var resolvePath = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
+var Voltage = require('lib/create-voltage')
 
 var moveItemToTrash = require('electron').shell.moveItemToTrash
 
@@ -50,6 +51,11 @@ function Project (parentContext) {
   output.threshold.value = -1
   output.connect(masterOutput)
   context.output = output
+
+  // signal for hacking around C53 bugs
+  var signal = Voltage(context.audio, 0)
+  signal.start()
+  context.signal = signal
 
   // main clock
   var scheduler = Bopper(context.audio)
