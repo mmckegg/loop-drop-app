@@ -9,6 +9,7 @@ var ArrayStack = require('lib/array-stack')
 var FlashArray = require('lib/flash-array')
 var LightStack = require('observ-midi/light-stack')
 
+var watch = require('@mmckegg/mutant/watch')
 var computed = require('@mmckegg/mutant/computed')
 var watchKnobs = require('lib/watch-knobs')
 var scaleInterpolate = require('lib/scale-interpolate')
@@ -42,6 +43,7 @@ module.exports = function (context) {
     chunkIds: Property([])
   })
 
+  var releases = []
   var params = []
   for (var i = 0; i < 8; i++) {
     params[i] = [
@@ -51,20 +53,28 @@ module.exports = function (context) {
     ]
   }
 
-  var paramReleases = []
-  obs.chunkIds(refreshParamLinks)
-  context.chunkLookup(refreshParamLinks)
-  function refreshParamLinks () {
-    while (paramReleases.length) {
-      paramReleases.pop()()
+  var bindingReleases = new Map()
+  var bindings = MutantMap(obs.chunkIds, (id, invalidateOn) => {
+    var item = context.chunkLookup.get(id)
+    var index = obs.chunkIds().indexOf(id)
+    invalidateOn(computed([context.chunkLookup, obs.chunkIds], (_, chunkIds) => {
+      // rebind when chunk is changed
+      return item !== context.chunkLookup.get(id) || chunkIds.indexOf(id) !== index
+    }))
+    if (item) {
+      bindingReleases.set(item, item.overrideParams(params[index]))
     }
-    obs.chunkIds().forEach(function (id, i) {
-      var chunk = context.chunkLookup.get(id)
-      if (chunk && chunk.overrideParams) {
-        paramReleases.push(chunk.overrideParams(params[i]))
+    return item
+  }, {
+    onRemove: function (item) {
+      if (bindingReleases.has(item)) {
+        bindingReleases.get(item)()
+        bindingReleases.delete(item)
       }
-    })
-  }
+    }
+  })
+
+  releases.push(watch(bindings))
 
   // grab the midi for the current port
   obs.grabInput = function () {
@@ -203,6 +213,13 @@ module.exports = function (context) {
   })
 
   obs.destroy = function () {
+    while (releases.length) {
+      releases.pop()()
+    }
+    for (var fn of bindingReleases.values()) {
+      fn()
+    }
+    bindingReleases.clear()
     midiPort.destroy()
     params.forEach(items => items.forEach(param => param.destroy()))
   }
