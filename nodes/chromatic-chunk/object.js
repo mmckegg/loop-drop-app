@@ -48,7 +48,7 @@ function ChromaticChunk (parentContext) {
   })
 
   obs.params.context = context
-  context.chunk = obs
+  context.externalChunk = obs
   obs.flags = context.flag
   obs.chokeAll = context.chokeAll
   obs.context = context

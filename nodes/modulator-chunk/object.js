@@ -20,6 +20,7 @@ function ModulatorChunk (parentContext) {
 
   obs._type = 'ModulatorChunk'
   obs.context = context
+  context.chunk = obs
 
   // TODO: ParamSum should just be able to accept obs.slots directly
 

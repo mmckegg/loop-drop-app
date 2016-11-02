@@ -19,7 +19,7 @@ function TriggersChunk (parentContext) {
     selectedSlotId: Property()
   })
 
-  context.chunk = obs
+  context.externalChunk = obs
 
   // HACK: allow triggered effects (such as LFOs and ring modulator) to work on non-triggerable slots
   obs.slots.onAdd(function (slot) {

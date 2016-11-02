@@ -140,7 +140,10 @@ function Setup (parentContext) {
     // modulator chunks
     lookup(node.chunks, function (chunk) {
       if (chunk && chunk.currentValue) {
-        return chunk.id
+        var param = ObservStruct({id: chunk.id})
+        param.context = chunk.context
+        param.currentValue = chunk.currentValue
+        return [chunk.id, param]
       }
     })
   )

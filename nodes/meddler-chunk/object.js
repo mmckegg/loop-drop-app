@@ -66,7 +66,7 @@ function MeddlerChunk (parentContext) {
     chainScheduler.schedule(currentChain, at)
   }
 
-  context.chunk = obs
+  context.externalChunk = obs
 
   obs.spawnParam = function (id) {
     var key = context.fileObject.resolveAvailableParam(id || 'New Param')
