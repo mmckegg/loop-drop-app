@@ -4,6 +4,7 @@ var Property = require('lib/property')
 var computed = require('@mmckegg/mutant/computed')
 var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
+var Sum = require('lib/param-sum')
 var Apply = require('lib/apply-param')
 
 module.exports = DelayNode
@@ -46,7 +47,10 @@ function DelayNode (context) {
   }, releases)
 
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
-  var time = Multiply([obs.time, rateMultiplier])
+  var time = Sum([
+    Multiply([obs.time, rateMultiplier]),
+    (-1 / context.audio.sampleRate) * 128
+  ])
 
   releases.push(
     Apply(context.audio, delay.delayTime, time),
