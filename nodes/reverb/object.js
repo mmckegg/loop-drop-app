@@ -11,6 +11,7 @@ module.exports = ReverbNode
 function ReverbNode (context) {
   var input = context.audio.createGain()
   var output = context.audio.createGain()
+  var refreshing = false
 
   var convolver = context.audio.createConvolver(4)
   var filter = context.audio.createBiquadFilter()
@@ -57,6 +58,7 @@ function ReverbNode (context) {
     Apply(context.audio, dry.gain, obs.dry)
   )
 
+  refreshImpulse()
   return obs
 
   // scoped
@@ -67,6 +69,14 @@ function ReverbNode (context) {
   }
 
   function refreshImpulse () {
+    if (!refreshing) {
+      refreshing = true
+      setTimeout(refreshImpulseNow, 100)
+    }
+  }
+
+  function refreshImpulseNow () {
+    refreshing = false
     var rate = context.audio.sampleRate
     var length = Math.max(rate * obs.time(), 1)
     cancel()
