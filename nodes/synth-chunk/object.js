@@ -52,7 +52,7 @@ function SynthChunk (parentContext) {
 
   var scale = Property({
     offset: 0,
-    notes: [0,2,4,5,7,9,11]
+    notes: [0, 2, 4, 5, 7, 9, 11]
   })
 
   if (context.globalScale) {
@@ -69,7 +69,7 @@ function SynthChunk (parentContext) {
       id: 'output',
       volume: volume,
       processors: [
-        extend(eq, {node: 'processor/eq'}),
+        extend(eq, {node: 'processor/eq'})
       ]
     }]
 
@@ -81,7 +81,7 @@ function SynthChunk (parentContext) {
       }
 
       var sources = [
-        extend(osc1, {node: 'source/oscillator' })
+        extend(osc1, { node: 'source/oscillator' })
       ]
 
       var processors = [
@@ -125,13 +125,6 @@ function SynthChunk (parentContext) {
 
   computedSlots(slots.set)
 
-  //throttleWatch(computedSlots, 50, function (value) {
-  //  slots.set(value)
-//
-  //  // HACK: bump shape to trigger update of slot mapping
-  //  obs.shape.set(obs.shape())
-  //})
-
   slots.onNodeChange(obs.routes.refresh)
 
   obs.destroy = function () {
@@ -159,7 +152,6 @@ function Filter (context) {
 }
 
 function Osc (context, opts) {
-
   var props = {
     amp: Param(context, 0.4),
     shape: Property('sine'),
