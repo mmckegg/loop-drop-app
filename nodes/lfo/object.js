@@ -133,7 +133,7 @@ function refreshBuffer (buffer, curve, skew) {
   var data = buffer.getChannelData(0)
   var stepDuration = data.length / 4
   var skewValue = clamp((skew + 1), 0.1, 1.9999999999)
-  var curveValue = clamp(curve, 0, 1)
+  var curveValue = clamp(curve, 0.0000000001, 1)
   var up = stepDuration * skewValue * curveValue
   var pause = (stepDuration - curveValue * stepDuration) * 2
   var down = stepDuration * (2 - skewValue) * curveValue
