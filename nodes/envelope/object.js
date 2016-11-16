@@ -24,9 +24,7 @@ function Envelope (context) {
     at = Math.max(at, context.audio.currentTime)
     outputParam.cancelScheduledValues(at)
 
-    var releaseTime = getValue(obs.release)
-
-    if (obs.retrigger() || !releaseTime) {
+    if (obs.retrigger()) {
       outputParam.setValueAtTime(0, at)
     }
 
@@ -51,17 +49,12 @@ function Envelope (context) {
   obs.triggerOff = function (at) {
     at = Math.max(at, context.audio.currentTime)
 
-    var releaseTime = getValue(obs.release)
+    var releaseTime = getValue(obs.release) || 0.0001
     var stopAt = at + releaseTime
 
     Param.triggerOff(obs, stopAt)
-
-    if (releaseTime) {
-      outputParam.cancelScheduledValues(at)
-      outputParam.setTargetAtTime(0, at, releaseTime / 8)
-    } else {
-      outputParam.setValueAtTime(0, at)
-    }
+    outputParam.cancelScheduledValues(at)
+    outputParam.setTargetAtTime(0, at, releaseTime / 8)
 
     return stopAt
   }
