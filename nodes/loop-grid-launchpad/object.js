@@ -335,13 +335,12 @@ module.exports = function(context){
       releaseRepeatLight = button.light(shiftHeld ? stateLights.red : stateLights.amberLow)
     }
     transforms.holder.setLength(value)
-    if (value < 2) {
+    if (value < 2 || shiftHeld) {
       transforms.repeater.start(grabInputExcludeNoRepeat, value, shiftHeld)
     } else {
       transforms.repeater.stop()
     }
   })
-
 
   // visual metronome / loop position
   var releaseBeatLight = null
