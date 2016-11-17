@@ -170,8 +170,8 @@ function AudioSlot (parentContext, defaultValue) {
         if (processor) {
           lastProcessor.connect(processor.input)
           lastProcessor = processor
+          connectedProcessors.push(processor)
         }
-        connectedProcessors.push(processor)
       })
 
       lastProcessor.connect(post)
