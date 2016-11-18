@@ -76,8 +76,10 @@ function Project (parentContext) {
   obs.speed = Observ(1)
   obs.selected = Observ()
   obs.renaming = Observ(false)
+
   obs.entries = ObservDirectory(context.cwd)
-  obs.recordingEntries = ObservDirectory(resolvePath(context.cwd, '~recordings'), context.fs)
+
+  obs.recordingEntries = ObservDirectory(resolvePath(context.cwd, '~recordings'))
 
   obs.outputRms = ObservRms(masterOutput)
 

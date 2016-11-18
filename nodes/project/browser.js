@@ -8,16 +8,12 @@ var getDirectory = require('path').dirname
 var join = require('path').join
 
 var RenameWidget = require('lib/rename-widget')
-var DomEvent = require('lib/dom-event')
 
 module.exports = renderBrowser
 
 function renderBrowser (entries, project) {
   var elements = Map(entries, function (entry) {
-    var base = getBaseName(entry.path)
-    if (entry.type === 'directory' && base !== '~recordings') {
-      return renderEntry(entry, project)
-    }
+    return renderEntry(entry, project)
   })
 
   return h('ScrollBox', elements)
