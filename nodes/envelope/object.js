@@ -30,19 +30,17 @@ function Envelope (context) {
 
     Param.triggerOn(obs, at)
 
-    var peakTime = at + (getValue(obs.attack) || 0.005)
+    var attackTime = getValue(obs.attack) || 0.001
+    var decayTime = getValue(obs.decay) || 0.0001
+    var peakTime = at + attackTime
     var value = getValue(obs.value)
 
-    if (obs.attack()) {
-      outputParam.setTargetAtTime(value, at, getValue(obs.attack) / 8)
-    } else {
-      outputParam.setValueAtTime(value, at)
-    }
+    outputParam.setTargetAtTime(value, at, attackTime / 8)
 
     // decay / sustain
     var sustain = getValue(obs.sustain) * value
     if (sustain !== 1) {
-      outputParam.setTargetAtTime(sustain, peakTime, getValue(obs.decay) / 8 || 0.0001)
+      outputParam.setTargetAtTime(sustain, peakTime, decayTime / 8)
     }
   }
 
