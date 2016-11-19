@@ -19,11 +19,10 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
-    "@mmckegg/mutant": "~3.8.0",
+    "@mmckegg/mutant": "~3.9.0",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",
-    "async-debounce": "~0.0.0",
     "async-each": "~1.0.0",
     "bitcrusher": "~0.3.0",
     "bopper": "~2.11.0",

@@ -8,12 +8,12 @@ var lookup = require('@mmckegg/mutant/lookup')
 var computed = require('@mmckegg/mutant/computed')
 var detectPeaks = require('lib/detect-peaks')
 var gridSlicePeaks = require('lib/grid-slice-peaks')
-var throttle = require('@mmckegg/mutant/throttle')
+var watchThrottle = require('@mmckegg/mutant/watch-throttle')
 var watch = require('@mmckegg/mutant/watch')
 var extend = require('xtend')
-var debounce = require('async-debounce')
 var applyMixerParams = require('lib/apply-mixer-params')
 var destroyAll = require('lib/destroy-all')
+var onceTrue = require('lib/once-true')
 
 module.exports = SlicerChunk
 
@@ -22,9 +22,8 @@ function SlicerChunk (parentContext) {
   context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
-  var queueRefreshSlices = noargs(debounce(refreshSlices, 200))
-
   var releases = []
+  var refreshing = false
   var slots = Slots(context)
   context.slotLookup = lookup(slots, 'id')
 
@@ -52,12 +51,12 @@ function SlicerChunk (parentContext) {
     return a * b
   })
 
-  setImmediate(function () {
+  onceTrue(resolvedBuffer, function () {
     obs.shape(queueRefreshSlices)
     releases.push(resolvedBuffer(queueRefreshSlices))
     obs.sliceMode(queueRefreshSlices)
     obs.sample.mode(queueRefreshSlices)
-    throttle(obs.sample.offset, 1000)(queueRefreshSlices)
+    watchThrottle(obs.sample.offset, 1000, queueRefreshSlices, {broadcastInitial: false})
 
     if (!obs.sample.slices()) { // ensure slices have been generated
       queueRefreshSlices()
@@ -134,7 +133,16 @@ function SlicerChunk (parentContext) {
   return obs
 
   // scoped
+
+  function queueRefreshSlices () {
+    if (!refreshing) {
+      refreshing = true
+      setTimeout(refreshSlices, 200)
+    }
+  }
+
   function refreshSlices (cb) {
+    refreshing = false
     var shape = obs.shape()
     var buffer = resolvedBuffer()
     var sliceMode = obs.sliceMode()
@@ -146,23 +154,16 @@ function SlicerChunk (parentContext) {
       if (buffer) {
         detectPeaks(buffer.getChannelData(0), count, offset, function (peaks) {
           obs.sample.slices.set(sliceOffsets(peaks, offset, playToEnd))
-          cb && cb()
         })
-      } else {
-        cb && cb()
       }
     } else if (sliceMode === 'snap') {
       if (buffer) {
         gridSlicePeaks(buffer.getChannelData(0), count, offset, function (peaks) {
           obs.sample.slices.set(sliceOffsets(peaks, offset, playToEnd))
-          cb && cb()
         })
-      } else {
-        cb && cb()
       }
     } else {
       obs.sample.slices.set(divideSlices(count, offset, playToEnd))
-      cb && setImmediate(cb)
     }
   }
 }
