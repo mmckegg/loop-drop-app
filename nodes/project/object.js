@@ -28,6 +28,7 @@ var pathSep = require('path').sep
 var resolvePath = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
 var Voltage = require('lib/create-voltage')
+var onceIdle = require('@mmckegg/mutant/once-idle')
 
 var moveItemToTrash = require('electron').shell.moveItemToTrash
 
@@ -326,10 +327,12 @@ function Project (parentContext) {
       var object = FileObject(context)
 
       // HACK: avoid audio glitches by scheduling 1 second ahead
-      scheduler.schedule(0.2)
+      scheduler.schedule(0.5)
+      var timer = setInterval(() => scheduler.schedule(0.5), 460)
 
       object.onLoad(function () {
         broadcastItemLoaded(object)
+        onceIdle(() => clearInterval(timer))
 
         if (!~obs.items.indexOf(object)) {
           obs.items.push(object)
@@ -342,7 +345,6 @@ function Project (parentContext) {
 
       object.onClosing(function () {
         scheduler.schedule(0.2)
-        setImmediate(actions.purge)
       })
 
       object.onClose(function () {
