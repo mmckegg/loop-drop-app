@@ -30,8 +30,8 @@ function Envelope (context) {
 
     Param.triggerOn(obs, at)
 
-    var attackTime = getValue(obs.attack) || 0.001
-    var decayTime = getValue(obs.decay) || 0.0001
+    var attackTime = getValue(obs.attack) || 0.005
+    var decayTime = getValue(obs.decay) || 0.005
     var peakTime = at + attackTime
     var value = getValue(obs.value)
 
