@@ -18,6 +18,7 @@ var assignAvailablePort = require('lib/assign-available-port')
 var destroyAll = require('lib/destroy-all')
 var importAssociatedFiles = require('lib/import-associated-files')
 var Cleaner = require('lib/cleaner')
+var triggerEvents = require('lib/trigger-events')
 
 module.exports = Setup
 
@@ -80,21 +81,13 @@ function Setup (parentContext) {
       outputHighPass.frequency.setTargetAtTime(interpolate(value, 20, 15000, 'exp'), audioContext.currentTime, 0.01)
     }),
 
-    node.onTrigger(function (event) {
-      if (event.id) {
-        node.output.trigger()
-        var split = event.id.split('/')
-        var chunk = context.chunkLookup.get(split[0])
-        var slotId = split[1]
-        if (chunk) {
-          if (event.event === 'start' && (event.triggered || event.time >= context.audio.currentTime - 0.001)) {
-            chunk.triggerOn(slotId, event.time)
-          } else if (event.event === 'stop') {
-            chunk.triggerOff(slotId, event.time)
-          }
-        }
-      }
-    })
+    node.onTrigger((event) => {
+      // cancel yank
+      node.output.trigger()
+    }),
+
+    // route controllers to chunks (and prioritize events)
+    triggerEvents(context, node.onTrigger)
   ]
 
   node.chunks.resolveAvailable = function (id) {

@@ -74,7 +74,7 @@ function SampleNode (context) {
       player.loopEnd = currentBuffer.duration * obs.offset()[1]
 
       var event = new ScheduleEvent(at, player, choker, [
-        Apply(context.audio, player.detune, detune)
+        Apply(context.audio, player.detune, detune, at)
       ])
 
       event.maxTo = at + (currentBuffer.duration - player.loopStart) / playbackRate()
