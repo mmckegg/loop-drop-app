@@ -29,6 +29,9 @@ function External (parentContext) {
   var volume = Property(1)
   var overrideVolume = Property(1)
 
+  context.output = context.audio.createGain()
+  context.output.connect(parentContext.output)
+
   context.slotLookup = ProxyDict(null, {
     onRemove: onSlotsChanged,
     onAdd: onSlotsChanged
