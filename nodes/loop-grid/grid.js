@@ -166,7 +166,11 @@ function leaveButton (ev) {
 
 function startDrag (ev) {
   var data = resolve(ev.data)
-  ev.dataTransfer.setData('loop-drop/' + data.node.split('/')[0], JSON.stringify(data))
+  var type = data.node.split('/')[0]
+  if (type === 'externalChunk') {
+    type = 'chunk'
+  }
+  ev.dataTransfer.setData('loop-drop/' + type, JSON.stringify(data))
   ev.dataTransfer.setData('cwd', ev.data.context.cwd)
   window.currentDrag = ev
 }
