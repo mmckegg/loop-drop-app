@@ -53,6 +53,7 @@ MixerNode {
         padding: 3px
         border-radius: 3px
         margin: 2px
+        overflow: hidden
 
         div.title {
           overflow: hidden
