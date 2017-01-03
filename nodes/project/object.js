@@ -332,14 +332,15 @@ function Project (parentContext) {
 
       object.onLoad(function () {
         broadcastItemLoaded(object)
-        onceIdle(() => clearInterval(timer))
+        onceIdle(() => {
+          clearInterval(timer)
+          if (object.node && object.node.grabInput) {
+            object.node.grabInput()
+          }
+        })
 
         if (!~obs.items.indexOf(object)) {
           obs.items.push(object)
-        }
-
-        if (object.node && object.node.grabInput) {
-          object.node.grabInput()
         }
       })
 
@@ -370,7 +371,7 @@ function Project (parentContext) {
     if (path) {
       lastSelected = findItemByPath(obs.items, path)
       actions.scrollToSelected()
-      setImmediate(actions.grabInputForSelected)
+      onceIdle(actions.grabInputForSelected)
     }
   })
 
