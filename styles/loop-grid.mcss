@@ -1,5 +1,4 @@
 LoopGrid {
-  overflow: hidden
   position: relative
   background: #444
   flex-wrap: wrap
@@ -86,6 +85,32 @@ LoopGrid {
         opacity: 0.7
       }
 
+      button.remove {
+        border-radius: 7px;
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        visibility: hidden;
+        font-size: 10px;
+        padding: 1px 3px;
+        border: 1px solid silver;
+        background: #333;
+        color: silver;
+        box-shadow: 0 0 4px black;
+        z-index: 1
+
+        :hover {
+          background: #A00
+          color: white
+        }
+      }
+
+      :hover {
+        button.remove {
+          visibility: visible;
+        }
+      }
+
       div.handle {
         position: absolute
 
@@ -132,5 +157,5 @@ LoopGrid {
     }
   }
 
-  
+
 }

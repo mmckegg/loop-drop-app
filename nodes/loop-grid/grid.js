@@ -5,9 +5,7 @@ var watch = require('@mmckegg/mutant/watch')
 var resolve = require('@mmckegg/mutant/resolve')
 var MPE = require('lib/mouse-position-event')
 var MouseDragEvent = require('lib/mouse-drag-event')
-var getBaseName = require('path').basename
 var read = require('lib/read')
-var extend = require('xtend')
 var computed = require('@mmckegg/mutant/computed')
 
 var QueryParam = require('lib/query-param')
@@ -101,9 +99,9 @@ function renderChunkBlock (controller, chunk, origin) {
         'color': color(mixColor(chunk.color, [255, 255, 255]), 1)
       },
       draggable: true,
-      'ev-click': send(selectChunk, { chunk: chunk, controller: controller }),
+      'ev-click': send(selectChunk, { chunk, controller }),
       'ev-dblclick': send(toggleChunk, chunk),
-      'ev-dragstart': MPE(startDrag, chunk),
+      'ev-dragstart': MPE(startDrag, { chunk, controller }),
       'ev-dragend': MPE(endDrag, chunk)
     }, [
       h('span.label', chunk.id),
@@ -116,9 +114,16 @@ function renderChunkBlock (controller, chunk, origin) {
           draggable: true,
           'ev-mousedown': MouseDragEvent(resize, { edge: 'right', node: chunk, shape: bounds })
         })
-      ] : null
+      ] : null,
+      h('button.remove', {
+        'ev-click': send(remove, { key: chunk.id, obj: controller.chunkPositions })
+      }, 'X')
     ])
   }
+}
+
+function remove (info) {
+  info.obj.delete(resolve(info.key))
 }
 
 function resize (ev) {
@@ -165,13 +170,22 @@ function leaveButton (ev) {
 }
 
 function startDrag (ev) {
-  var data = resolve(ev.data)
+  var chunk = ev.data.chunk
+  var controller = ev.data.controller
+
+  var data = resolve(chunk)
   var type = data.node.split('/')[0]
   if (type === 'externalChunk') {
     type = 'chunk'
   }
+
+  ev.node = chunk
+  ev.origin = {
+    controller: controller,
+    coords: controller.chunkPositions.get(chunk.id())
+  }
   ev.dataTransfer.setData('loop-drop/' + type, JSON.stringify(data))
-  ev.dataTransfer.setData('cwd', ev.data.context.cwd)
+  ev.dataTransfer.setData('cwd', chunk.context.cwd)
   window.currentDrag = ev
 }
 
@@ -183,9 +197,13 @@ var entering = null
 function dragLeave (ev) {
   var controller = ev.data
   if (window.currentDrag && (!entering || entering !== controller)) {
-    var chunkId = getId(window.currentDrag.data)
+    var chunkId = getId(window.currentDrag.node)
     if (chunkId && !ev.altKey && !ev.shiftKey) {
-      controller.chunkPositions.delete(chunkId)
+      // NASTY!
+      window.currentDrag.node.context.setup.controllers.forEach((c) => c.chunkPositions && c.chunkPositions.delete(chunkId))
+      if (window.currentDrag.origin) {
+        window.currentDrag.origin.controller.chunkPositions.put(chunkId, window.currentDrag.origin.coords)
+      }
     }
   }
 }
@@ -206,12 +224,12 @@ function getId (chunk) {
 function dragOver (ev) {
   var controller = ev.data
   var currentDrag = window.currentDrag
-  var originalDirectory = currentDrag.data.context.cwd
+  var originalDirectory = currentDrag.node.context.cwd
 
   if (ev.altKey || ev.shiftKey) {
     ev.dataTransfer.dropEffect = 'copy'
   } else if (currentDrag && originalDirectory === controller.context.cwd) {
-    var chunkId = getId(currentDrag.data)
+    var chunkId = getId(currentDrag.node)
     if (chunkId) {
       var shape = controller.playback.shape()
       var height = ev.offsetHeight / shape[0]
@@ -226,6 +244,7 @@ function dragOver (ev) {
       var currentValue = controller.chunkPositions.get(chunkId)
 
       if (!currentValue || currentValue[0] !== r || currentValue[1] !== c) {
+        currentDrag.node.context.setup.controllers.forEach((c) => c.chunkPositions && c.chunkPositions.delete(chunkId))
         controller.chunkPositions.put(chunkId, [r, c])
       }
     }
