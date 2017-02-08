@@ -1,8 +1,8 @@
-var Struct = require('@mmckegg/mutant/struct')
+var Struct = require('mutant/struct')
 var Property = require('lib/property')
-var watch = require('@mmckegg/mutant/watch')
+var watch = require('mutant/watch')
 var resolve = require('path').resolve
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var pull = require('pull-stream')
 var toPcm = require('lib/to-pcm')
 

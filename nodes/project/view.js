@@ -1,6 +1,6 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var computed = require('@mmckegg/mutant/computed')
+var send = require('mutant/send')
+var computed = require('mutant/computed')
 
 var AudioMeter = require('lib/widgets/audio-meter')
 var Range = require('lib/params/range')

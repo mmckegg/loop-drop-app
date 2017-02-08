@@ -1,6 +1,6 @@
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var ArrayGrid = require('array-grid')
-var Observ = require('@mmckegg/mutant/value')
+var Observ = require('mutant/value')
 
 module.exports = ChunkColors
 

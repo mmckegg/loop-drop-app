@@ -1,10 +1,10 @@
 var Slots = require('lib/slots')
-var ObservStruct = require('@mmckegg/mutant/struct')
-var lookup = require('@mmckegg/mutant/lookup')
+var ObservStruct = require('mutant/struct')
+var lookup = require('mutant/lookup')
 var Property = require('lib/property')
 var destroyAll = require('lib/destroy-all')
-var resolve = require('@mmckegg/mutant/resolve')
-var MutantArray = require('@mmckegg/mutant/array')
+var resolve = require('mutant/resolve')
+var MutantArray = require('mutant/array')
 
 module.exports = TriggersChunk
 

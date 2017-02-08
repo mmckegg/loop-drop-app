@@ -1,8 +1,8 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var when = require('@mmckegg/mutant/when')
-var computed = require('@mmckegg/mutant/computed')
-var resolve = require('@mmckegg/mutant/resolve')
+var send = require('mutant/send')
+var when = require('mutant/when')
+var computed = require('mutant/computed')
+var resolve = require('mutant/resolve')
 
 var Select = require('lib/params/select')
 var QueryParam = require('lib/query-param')

@@ -1,7 +1,7 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var computed = require('@mmckegg/mutant/computed')
-var Map = require('@mmckegg/mutant/map')
+var send = require('mutant/send')
+var computed = require('mutant/computed')
+var Map = require('mutant/map')
 
 var getBaseName = require('path').basename
 var getDirectory = require('path').dirname

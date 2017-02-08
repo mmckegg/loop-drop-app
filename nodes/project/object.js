@@ -1,14 +1,14 @@
-var Observ = require('@mmckegg/mutant/value')
+var Observ = require('mutant/value')
 var Property = require('lib/property')
 var Slots = require('lib/slots')
-var MutantArray = require('@mmckegg/mutant/array')
-var ObservStruct = require('@mmckegg/mutant/struct')
-var Dict = require('@mmckegg/mutant/dict')
-var watch = require('@mmckegg/mutant/watch')
-var computed = require('@mmckegg/mutant/computed')
+var MutantArray = require('mutant/array')
+var ObservStruct = require('mutant/struct')
+var Dict = require('mutant/dict')
+var watch = require('mutant/watch')
+var computed = require('mutant/computed')
 var Event = require('geval')
-var map = require('@mmckegg/mutant/map')
-var resolve = require('@mmckegg/mutant/resolve')
+var map = require('mutant/map')
+var resolve = require('mutant/resolve')
 
 var TapTempo = require('tap-tempo')
 var Bopper = require('bopper')
@@ -28,7 +28,7 @@ var pathSep = require('path').sep
 var resolvePath = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
 var Voltage = require('lib/create-voltage')
-var onceIdle = require('@mmckegg/mutant/once-idle')
+var onceIdle = require('mutant/once-idle')
 
 var moveItemToTrash = require('electron').shell.moveItemToTrash
 

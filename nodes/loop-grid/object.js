@@ -1,9 +1,9 @@
 var ArrayGrid = require('array-grid')
-var Observ = require('@mmckegg/mutant/value')
+var Observ = require('mutant/value')
 var ObservDefault = require('lib/property')
-var ObservStruct = require('@mmckegg/mutant/struct')
+var ObservStruct = require('mutant/struct')
 var Event = require('geval')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var getEvents = require('lib/get-events')
 
 module.exports = LoopGrid

@@ -1,4 +1,4 @@
-var Observ = require('@mmckegg/mutant/value')
+var Observ = require('mutant/value')
 var ArrayGrid = require('array-grid')
 
 module.exports = function (loopGrid) {

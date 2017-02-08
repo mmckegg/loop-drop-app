@@ -1,4 +1,4 @@
-var Observ = require('@mmckegg/mutant/value')
+var Observ = require('mutant/value')
 var Property = require('lib/property')
 
 module.exports = function (duration, offset, buffer) {

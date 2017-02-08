@@ -1,5 +1,5 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
+var send = require('mutant/send')
 var Collection = require('lib/widgets/collection')
 var Spawner = require('lib/widgets/spawner')
 

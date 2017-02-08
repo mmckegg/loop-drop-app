@@ -1,9 +1,9 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var computed = require('@mmckegg/mutant/computed')
+var send = require('mutant/send')
+var computed = require('mutant/computed')
 var Select = require('lib/widgets/select')
-var Map = require('@mmckegg/mutant/map')
-var when = require('@mmckegg/mutant/when')
+var Map = require('mutant/map')
+var when = require('mutant/when')
 
 module.exports = function (collection) {
   var spawners = collection.context.project.availableGlobalControllers()

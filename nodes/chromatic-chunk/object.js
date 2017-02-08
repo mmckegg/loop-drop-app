@@ -1,13 +1,13 @@
-var ObservStruct = require('@mmckegg/mutant/struct')
-var MutantArray = require('@mmckegg/mutant/array')
-var Observ = require('@mmckegg/mutant/value')
+var ObservStruct = require('mutant/struct')
+var MutantArray = require('mutant/array')
+var Observ = require('mutant/value')
 var Property = require('lib/property')
 var Slots = require('lib/slots')
 var TemplateSlot = require('lib/template-slot')
 
-var computed = require('@mmckegg/mutant/computed')
-var lookup = require('@mmckegg/mutant/lookup')
-var merge = require('@mmckegg/mutant/merge')
+var computed = require('mutant/computed')
+var lookup = require('mutant/lookup')
+var merge = require('mutant/merge')
 
 var destroyAll = require('lib/destroy-all')
 

@@ -1,7 +1,7 @@
-var Observ = require('@mmckegg/mutant/value')
-var computed = require('@mmckegg/mutant/computed')
+var Observ = require('mutant/value')
+var computed = require('mutant/computed')
 var Recorder = require('lib/loop-recorder')
-var MutantArray = require('@mmckegg/mutant/array')
+var MutantArray = require('mutant/array')
 var ArrayGrid = require('array-grid')
 
 module.exports = Looper

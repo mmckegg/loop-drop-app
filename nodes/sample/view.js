@@ -1,6 +1,6 @@
 var h = require('lib/h')
 var Header = require('lib/widgets/header')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
 var SampleTrimmer = require('lib/params/sample-trimmer')

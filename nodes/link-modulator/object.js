@@ -1,6 +1,6 @@
-var Observ = require('@mmckegg/mutant/value')
-var ObservStruct = require('@mmckegg/mutant/struct')
-var computed = require('@mmckegg/mutant/computed')
+var Observ = require('mutant/value')
+var ObservStruct = require('mutant/struct')
+var computed = require('mutant/computed')
 
 var Param = require('lib/param')
 var Sum = require('lib/param-sum')

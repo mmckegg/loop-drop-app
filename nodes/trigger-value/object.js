@@ -1,7 +1,7 @@
-var Observ = require('@mmckegg/mutant/value')
-var ObservStruct = require('@mmckegg/mutant/struct')
+var Observ = require('mutant/value')
+var ObservStruct = require('mutant/struct')
 var Param = require('lib/param')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var ParamSource = require('lib/param-source')
 
 module.exports = ValueModulator

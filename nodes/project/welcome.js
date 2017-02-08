@@ -1,7 +1,7 @@
 var h = require('lib/h')
 var electron = require('electron')
-var Value = require('@mmckegg/mutant/value')
-var computed = require('@mmckegg/mutant/computed')
+var Value = require('mutant/value')
+var computed = require('mutant/computed')
 
 module.exports = function (context) {
   var updateAvailable = UpdateAvailable(context.version)

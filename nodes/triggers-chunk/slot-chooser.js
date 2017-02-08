@@ -1,8 +1,8 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var when = require('@mmckegg/mutant/when')
-var computed = require('@mmckegg/mutant/computed')
-var Keys = require('@mmckegg/mutant/keys')
+var send = require('mutant/send')
+var when = require('mutant/when')
+var computed = require('mutant/computed')
+var Keys = require('mutant/keys')
 
 var MPE = require('lib/mouse-position-event.js')
 var importSample = require('lib/import-sample')

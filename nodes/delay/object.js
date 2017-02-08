@@ -1,7 +1,7 @@
 var Processor = require('lib/processor')
 
 var Property = require('lib/property')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 var Sum = require('lib/param-sum')

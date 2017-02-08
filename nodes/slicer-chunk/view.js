@@ -1,5 +1,5 @@
 var h = require('lib/h')
-var when = require('@mmckegg/mutant/when')
+var when = require('mutant/when')
 var renderRouting = require('lib/widgets/routing')
 var FlagParam = require('lib/flag-param')
 var renderChunk = require('lib/widgets/chunk')

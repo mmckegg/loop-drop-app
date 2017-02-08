@@ -1,4 +1,4 @@
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var ArrayGrid = require('array-grid')
 
 module.exports = function computeFlags (obsChunkLookup, obsPositions, obsShape) {

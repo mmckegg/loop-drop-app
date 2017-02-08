@@ -1,8 +1,8 @@
-var Struct = require('@mmckegg/mutant/struct')
-var Value = require('@mmckegg/mutant/value')
+var Struct = require('mutant/struct')
+var Value = require('mutant/value')
 var Slots = require('lib/slots')
-var computed = require('@mmckegg/mutant/computed')
-var MutantMap = require('@mmckegg/mutant/map')
+var computed = require('mutant/computed')
+var MutantMap = require('mutant/map')
 var pullCat = require('pull-cat')
 var pull = require('pull-stream')
 

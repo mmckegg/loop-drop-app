@@ -1,12 +1,12 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var when = require('@mmckegg/mutant/when')
-var watch = require('@mmckegg/mutant/watch')
-var resolve = require('@mmckegg/mutant/resolve')
+var send = require('mutant/send')
+var when = require('mutant/when')
+var watch = require('mutant/watch')
+var resolve = require('mutant/resolve')
 var MPE = require('lib/mouse-position-event')
 var MouseDragEvent = require('lib/mouse-drag-event')
 var read = require('lib/read')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 
 var QueryParam = require('lib/query-param')
 
