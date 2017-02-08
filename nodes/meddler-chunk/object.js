@@ -8,12 +8,16 @@ var merge = require('@mmckegg/mutant/merge')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('@mmckegg/mutant/resolve')
 var MutantArray = require('@mmckegg/mutant/array')
+var Voltage = require('lib/create-voltage')
 
 module.exports = MeddlerChunk
 
 function MeddlerChunk (parentContext) {
   var context = Object.create(parentContext)
   context.slotProcessorsOnly = true
+
+  var signal = Voltage(context.audio, 0)
+  signal.start()
 
   var obs = Struct({
     slots: Slots(context),
@@ -44,6 +48,7 @@ function MeddlerChunk (parentContext) {
   })
 
   var chainScheduler = ChainScheduler(context, 'input')
+  signal.connect(chainScheduler.input)
   extraSlots.put('input', chainScheduler)
 
   var lastTime = 0
@@ -76,6 +81,7 @@ function MeddlerChunk (parentContext) {
 
   obs.destroy = function () {
     destroyAll(obs)
+    signal.stop()
   }
 
   return obs
