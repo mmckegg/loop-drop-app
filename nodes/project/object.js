@@ -129,6 +129,7 @@ function Project (parentContext) {
   // recording
   var recorder = SessionRecorder(context, active)
   obs.recording = recorder.recording
+  obs.recordPosition = recorder.recordPosition
   obs.recordingPath = recorder.recordingPath
   output.connect(recorder.input)
 
