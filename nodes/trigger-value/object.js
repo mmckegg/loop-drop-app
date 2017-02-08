@@ -29,7 +29,7 @@ function ValueModulator (parentContext) {
 
   obs.triggerOn = function (at) {
     at = at || context.audio.currentTime
-    outputValue.setValueAtTime(getValue(obs.value), at)
+    outputValue.setTargetAtTime(getValue(obs.value), at, 0.001)
     Param.triggerOn(obs, at)
   }
 
@@ -37,7 +37,7 @@ function ValueModulator (parentContext) {
     at = at || context.audio.currentTime
     var stopAt = obs.getReleaseDuration() + at
     Param.triggerOff(obs, stopAt)
-    outputValue.setValueAtTime(0, stopAt)
+    outputValue.setTargetAtTime(0, stopAt, 0.001)
     return stopAt
   }
 
