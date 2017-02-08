@@ -1,0 +1,112 @@
+diff --git a/../loop-drop-app2/nodes/arpeggiator/index.js b/../loop-drop-app2/nodes/arpeggiator/index.js
+new file mode 100644
+index 0000000..c7a6661
+--- /dev/null
++++ b/../loop-drop-app2/nodes/arpeggiator/index.js
+@@ -0,0 +1,4 @@
++module.exports = {
++  node: 'modulator/arpeggiator',
++  object: require('./object')
++}
+\ No newline at end of file
+diff --git a/../loop-drop-app2/nodes/arpeggiator/object.js b/../loop-drop-app2/nodes/arpeggiator/object.js
+new file mode 100644
+index 0000000..53c2f17
+--- /dev/null
++++ b/../loop-drop-app2/nodes/arpeggiator/object.js
+@@ -0,0 +1,36 @@
++var ObservStruct = require('@mmckegg/mutant/struct')
++var computed = require('@mmckegg/mutant/computed')
++var Property = require('lib/property')
++var Param = require('lib/param')
++var ParamSource = require('lib/param-source')
++var applyScale = require('lib/apply-scale')
++var ParamTransform = require('lib/param-transform')
++var Sum = require('lib/param-sum')
++
++module.exports = ArpeggiatorNode
++
++
++function ArpeggiatorNode(context) {
++
++  // in the future, get scale from parent and check it's length?
++  var position = 0;
++
++  var obs = ObservStruct({
++    value: Param(context, 0),
++    sequence: Property([0,1,2,3,4,5,6,7])
++  })
++
++  var outputParam = ParamSource(context, 0) //
++  obs.currentValue = Sum([obs.value, outputParam]) // Multiply([obs.value, outputParam])
++  obs.context = context
++
++  //at is the time to trigger the change 
++  obs.triggerOn = function(at){
++    var sequence = obs.sequence()
++    var value = sequence[position++ % sequence.length]
++    outputParam.setTargetAtTime(value, at, 0.000001) // value of sound we play, time to start changing to that, time to interpolate to that value
++  }
++
++  return obs
++
++}
+\ No newline at end of file
+diff --git a/./nodes/chromatic-scale/object.js b/../loop-drop-app2/nodes/chromatic-scale/object.js
+index 267eddd..4108c10 100644
+--- a/./nodes/chromatic-scale/object.js
++++ b/../loop-drop-app2/nodes/chromatic-scale/object.js
+@@ -24,6 +24,14 @@ function ScaleModulator (context) {
+     comparer: ParamTransform.deepEqual
+   })
+ 
++  obs.triggerOn = function(at){
++    Param.triggerOn(obs, at)
++  }
++
++  obs.triggerOff = function(at){
++    Param.triggerOff(obs, at)
++  }
++
+   obs.destroy = function () {
+     Param.destroy(obs)
+   }
+diff --git a/./nodes/slot/object.js b/../loop-drop-app2/nodes/slot/object.js
+index 508cdd8..49e3716 100644
+--- a/./nodes/slot/object.js
++++ b/../loop-drop-app2/nodes/slot/object.js
+@@ -90,8 +90,11 @@ function AudioSlot (parentContext, defaultValue) {
+     if (offTime) {
+       obs.triggerOff(offTime)
+     }
++
++    Param.triggerOn(obs, at)
+   }
+ 
++
+   obs.triggerOff = function (at) {
+     if (!initialized) {
+       queue.push(function () {
+@@ -135,6 +138,9 @@ function AudioSlot (parentContext, defaultValue) {
+         target.triggerOff(at + Math.max(0, difference))
+       }
+     })
++
++    //not sure if this is right.. :)
++    Param.triggerOff(obs, at)
+   }
+ 
+   obs.choke = function (at) {
+diff --git a/./nodes/triggers-chunk/object.js b/../loop-drop-app2/nodes/triggers-chunk/object.js
+index b996366..db1eee1 100644
+--- a/./nodes/triggers-chunk/object.js
++++ b/../loop-drop-app2/nodes/triggers-chunk/object.js
+@@ -33,7 +33,7 @@ function TriggersChunk (parentContext) {
+   obs.context = context
+   obs.shape = context.shape
+   obs.flags = context.flags
+-  obs.chokeAll = context.chokeAl
++  obs.chokeAll = context.chokeAll
+   obs.slotLookup = lookup(obs.slots, 'id')
+ 
+   obs.spawnParam = function (id) {

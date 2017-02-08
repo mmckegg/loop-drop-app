@@ -24,6 +24,14 @@ function ScaleModulator (context) {
     comparer: ParamTransform.deepEqual
   })
 
+  obs.triggerOn = function(at){
+    Param.triggerOn(obs, at)
+  }
+
+  obs.triggerOff = function(at){
+    Param.triggerOn(obs, at)
+  }
+
   obs.destroy = function () {
     Param.destroy(obs)
   }

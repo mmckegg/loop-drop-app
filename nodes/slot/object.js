@@ -90,6 +90,8 @@ function AudioSlot (parentContext, defaultValue) {
     if (offTime) {
       obs.triggerOff(offTime)
     }
+
+    Param.triggerOn(obs, at)
   }
 
   obs.triggerOff = function (at) {
@@ -135,6 +137,9 @@ function AudioSlot (parentContext, defaultValue) {
         target.triggerOff(at + Math.max(0, difference))
       }
     })
+
+    //not sure if this is right.. :)
+    Param.triggerOff(obs, at)
   }
 
   obs.choke = function (at) {
