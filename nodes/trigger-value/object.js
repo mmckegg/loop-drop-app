@@ -1,7 +1,7 @@
-var Observ = require('@mmckegg/mutant/value')
-var ObservStruct = require('@mmckegg/mutant/struct')
+var Observ = require('mutant/value')
+var ObservStruct = require('mutant/struct')
 var Param = require('lib/param')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var ParamSource = require('lib/param-source')
 
 module.exports = ValueModulator
@@ -29,7 +29,7 @@ function ValueModulator (parentContext) {
 
   obs.triggerOn = function (at) {
     at = at || context.audio.currentTime
-    outputValue.setValueAtTime(getValue(obs.value), at)
+    outputValue.setTargetAtTime(getValue(obs.value), at, 0.001)
     Param.triggerOn(obs, at)
   }
 
@@ -37,7 +37,7 @@ function ValueModulator (parentContext) {
     at = at || context.audio.currentTime
     var stopAt = obs.getReleaseDuration() + at
     Param.triggerOff(obs, stopAt)
-    outputValue.setValueAtTime(0, stopAt)
+    outputValue.setTargetAtTime(0, stopAt, 0.001)
     return stopAt
   }
 

@@ -1,7 +1,7 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var computed = require('@mmckegg/mutant/computed')
-var Keys = require('@mmckegg/mutant/keys')
+var send = require('mutant/send')
+var computed = require('mutant/computed')
+var Keys = require('mutant/keys')
 
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')

@@ -1,5 +1,5 @@
 SourceNode {
-  $node
+  _node
 
   border-color: #4B5F5F
 

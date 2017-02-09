@@ -1,4 +1,4 @@
-var watch = require('@mmckegg/mutant/watch')
+var watch = require('mutant/watch')
 var Processor = require('lib/processor')
 var Property = require('lib/property')
 

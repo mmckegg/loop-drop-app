@@ -1,11 +1,11 @@
-var Observ = require('@mmckegg/mutant/value')
-var computed = require('@mmckegg/mutant/computed')
-var watch = require('@mmckegg/mutant/watch')
+var Observ = require('mutant/value')
+var computed = require('mutant/computed')
+var watch = require('mutant/watch')
 var resolveNode = require('lib/resolve-node')
 var getDirectory = require('path').dirname
 var Event = require('geval')
 var Property = require('lib/property')
-var ProxyDict = require('@mmckegg/mutant/proxy-dict')
+var ProxyDict = require('mutant/proxy-dict')
 var SlotsDict = require('lib/slots-dict')
 
 var ObservFile = require('lib/observ-file')
@@ -15,8 +15,8 @@ var BaseChunk = require('lib/base-chunk')
 var extendParams = require('lib/extend-params')
 var Param = require('lib/param')
 
-var forEach = require('@mmckegg/mutant/for-each')
-var forEachPair = require('@mmckegg/mutant/for-each-pair')
+var forEach = require('mutant/for-each')
+var forEachPair = require('mutant/for-each-pair')
 
 var relative = require('path').relative
 var resolve = require('path').resolve

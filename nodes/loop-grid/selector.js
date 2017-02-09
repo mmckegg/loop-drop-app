@@ -1,6 +1,6 @@
 var ObservGrid = require('observ-grid')
 var watchGridChanges = require('observ-grid/watch-changes')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 
 module.exports = function (shape) {
   var self = ObservGrid([], shape)

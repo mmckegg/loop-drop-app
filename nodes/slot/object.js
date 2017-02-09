@@ -1,4 +1,4 @@
-var Observ = require('@mmckegg/mutant/value')
+var Observ = require('mutant/value')
 var Slots = require('lib/slots')
 
 var Param = require('lib/param')

@@ -1,5 +1,5 @@
 var h = require('lib/h')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 
 var ParamEditor = require('lib/widgets/param-editor')
 

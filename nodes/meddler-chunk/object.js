@@ -1,19 +1,23 @@
 var Slots = require('lib/slots')
-var lookup = require('@mmckegg/mutant/lookup')
-var Struct = require('@mmckegg/mutant/struct')
+var lookup = require('mutant/lookup')
+var Struct = require('mutant/struct')
 var Property = require('lib/property')
 var ChainScheduler = require('lib/chain-scheduler')
-var Dict = require('@mmckegg/mutant/dict')
-var merge = require('@mmckegg/mutant/merge')
+var Dict = require('mutant/dict')
+var merge = require('mutant/merge')
 var destroyAll = require('lib/destroy-all')
-var resolve = require('@mmckegg/mutant/resolve')
-var MutantArray = require('@mmckegg/mutant/array')
+var resolve = require('mutant/resolve')
+var MutantArray = require('mutant/array')
+var Voltage = require('lib/create-voltage')
 
 module.exports = MeddlerChunk
 
 function MeddlerChunk (parentContext) {
   var context = Object.create(parentContext)
   context.slotProcessorsOnly = true
+
+  var signal = Voltage(context.audio, 0)
+  signal.start()
 
   var obs = Struct({
     slots: Slots(context),
@@ -44,6 +48,7 @@ function MeddlerChunk (parentContext) {
   })
 
   var chainScheduler = ChainScheduler(context, 'input')
+  signal.connect(chainScheduler.input)
   extraSlots.put('input', chainScheduler)
 
   var lastTime = 0
@@ -76,6 +81,7 @@ function MeddlerChunk (parentContext) {
 
   obs.destroy = function () {
     destroyAll(obs)
+    signal.stop()
   }
 
   return obs

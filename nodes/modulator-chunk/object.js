@@ -1,10 +1,10 @@
 var Property = require('lib/property')
 var Slots = require('lib/slots')
-var lookup = require('@mmckegg/mutant/lookup')
+var lookup = require('mutant/lookup')
 var ParamSum = require('lib/param-sum')
 var BaseChunk = require('lib/base-chunk')
 var destroyAll = require('lib/destroy-all')
-var MutantMap = require('@mmckegg/mutant/map')
+var MutantMap = require('mutant/map')
 
 module.exports = ModulatorChunk
 

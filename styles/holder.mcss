@@ -45,7 +45,7 @@ Holder {
           }
 
           button.record {
-
+            margin-top: -2px
             border: #4A4A4A 1px solid
 
             :after {

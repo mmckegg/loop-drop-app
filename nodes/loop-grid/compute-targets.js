@@ -1,7 +1,7 @@
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var ArrayGrid = require('array-grid')
-var DictToCollection = require('@mmckegg/mutant/dict-to-collection')
-var Lookup = require('@mmckegg/mutant/lookup')
+var DictToCollection = require('mutant/dict-to-collection')
+var Lookup = require('mutant/lookup')
 
 module.exports = function computeTargets (chunkLookup, positions, shape) {
   var chunkGrids = Lookup(DictToCollection(chunkLookup), function (pair) {

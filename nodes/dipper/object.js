@@ -2,7 +2,7 @@ var Processor = require('lib/processor')
 
 var Property = require('lib/property')
 var Param = require('lib/param')
-var watch = require('@mmckegg/mutant/watch')
+var watch = require('mutant/watch')
 
 var Apply = require('lib/apply-param')
 

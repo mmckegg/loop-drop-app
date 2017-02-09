@@ -3,7 +3,7 @@ var Property = require('lib/property')
 var Sum = require('lib/param-sum')
 var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 
 var Triggerable = require('lib/triggerable')
 var ScheduleEvent = require('lib/schedule-event')

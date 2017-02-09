@@ -1,4 +1,4 @@
-var watch = require('@mmckegg/mutant/watch')
+var watch = require('mutant/watch')
 
 var Freeverb = require('freeverb')
 var Processor = require('lib/processor')

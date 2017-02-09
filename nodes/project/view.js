@@ -1,5 +1,6 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
+var send = require('mutant/send')
+var computed = require('mutant/computed')
 
 var AudioMeter = require('lib/widgets/audio-meter')
 var Range = require('lib/params/range')
@@ -12,7 +13,6 @@ var renderEditor = require('./tabbed-editor')
 var renderControllers = require('./global-controllers')
 
 module.exports = function (project) {
-
   var context = project.context
   var actions = project.actions
 
@@ -59,8 +59,20 @@ module.exports = function (project) {
         h('div -recordings', [
           h('header', [
             h('span', 'Recordings'),
+            h('span', {
+              style: {
+                'margin-right': '5px',
+                'font-weight': 'bold',
+                'color': '#AAA',
+                'text-align': 'right',
+                'font-family': 'monospace',
+                'margin-top': '2px'
+              }
+            }, [
+              computed([project.recordPosition], formatRecordingPosition)
+            ]),
             ToggleButton(project.recording, {
-              classList: ['.record'],
+              classList: ['record'],
               title: 'Record',
               description: 'Record output audio to project folder'
             })
@@ -78,4 +90,16 @@ module.exports = function (project) {
 
 function setValue (target) {
   target.set(this.opts)
+}
+
+function formatRecordingPosition (value) {
+  if (value != null) {
+    return formatTime(value)
+  }
+}
+
+function formatTime (value) {
+  var minutes = Math.floor(value / 60)
+  var seconds = Math.floor(value % 60)
+  return minutes + ':' + ('0' + seconds).slice(-2)
 }

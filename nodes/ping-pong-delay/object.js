@@ -3,7 +3,7 @@ var Property = require('lib/property')
 var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 var Apply = require('lib/apply-param')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 var Sum = require('lib/param-sum')
 
 module.exports = PingPongDelayNode

@@ -1,12 +1,12 @@
 var h = require('lib/h')
-var send = require('@mmckegg/mutant/send')
-var when = require('@mmckegg/mutant/when')
-var watch = require('@mmckegg/mutant/watch')
-var resolve = require('@mmckegg/mutant/resolve')
+var send = require('mutant/send')
+var when = require('mutant/when')
+var watch = require('mutant/watch')
+var resolve = require('mutant/resolve')
 var MPE = require('lib/mouse-position-event')
 var MouseDragEvent = require('lib/mouse-drag-event')
 var read = require('lib/read')
-var computed = require('@mmckegg/mutant/computed')
+var computed = require('mutant/computed')
 
 var QueryParam = require('lib/query-param')
 
@@ -61,7 +61,7 @@ function GridStateHook (gridState) {
       for (var r = 0; r < triggers.shape[0]; r++) {
         for (var c = 0; c < triggers.shape[1]; c++) {
           var button = element.childNodes[r].childNodes[c]
-          var classes = '.button'
+          var classes = 'button'
 
           if (triggers.get(r, c)) classes += ' -present'
           if (playing.get(r, c)) classes += ' -playing'
