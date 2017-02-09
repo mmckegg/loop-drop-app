@@ -1,5 +1,5 @@
 ProcessorNode {
-  $node
+  _node
 
   border-color: #644B77
   

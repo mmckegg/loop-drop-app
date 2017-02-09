@@ -72,7 +72,7 @@ module.exports = function (project) {
               computed([project.recordPosition], formatRecordingPosition)
             ]),
             ToggleButton(project.recording, {
-              classList: ['.record'],
+              classList: ['record'],
               title: 'Record',
               description: 'Record output audio to project folder'
             })

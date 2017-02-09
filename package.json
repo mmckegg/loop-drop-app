@@ -39,7 +39,7 @@
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
     "make-distortion-curve": "^1.0.0",
-    "micro-css": "~0.6.1",
+    "micro-css": "~1.0.0",
     "mkdirp": "^0.5.0",
     "next-tick": "^0.2.2",
     "noise-buffer": "^2.0.1",

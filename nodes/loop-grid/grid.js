@@ -61,7 +61,7 @@ function GridStateHook (gridState) {
       for (var r = 0; r < triggers.shape[0]; r++) {
         for (var c = 0; c < triggers.shape[1]; c++) {
           var button = element.childNodes[r].childNodes[c]
-          var classes = '.button'
+          var classes = 'button'
 
           if (triggers.get(r, c)) classes += ' -present'
           if (playing.get(r, c)) classes += ' -playing'
