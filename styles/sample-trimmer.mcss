@@ -51,7 +51,7 @@ SampleTrimmer {
 
 
   input.start {
-    _trimmerSlider
+    $trimmerSlider
 
     cursor: e-resize;
 
@@ -70,7 +70,7 @@ SampleTrimmer {
   }
 
   input.end {
-    _trimmerSlider
+    $trimmerSlider
 
     cursor: w-resize;
 
@@ -89,7 +89,7 @@ SampleTrimmer {
   }
 
 
-  _trimmerSlider {
+  $trimmerSlider {
     outline: none
     position: absolute;
 

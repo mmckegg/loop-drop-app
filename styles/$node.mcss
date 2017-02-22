@@ -1,4 +1,4 @@
-_node {
+$node {
   position: relative
   margin-top: 6px
   background: #464545;
@@ -55,7 +55,7 @@ _node {
         opacity: 1
       }
     }
-    
+
     button.edit {
       margin-left: 3px
       margin-top: -1px

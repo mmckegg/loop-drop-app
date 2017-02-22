@@ -1,5 +1,5 @@
 GlobalControllerNode {
-  _node
+  $node
 
   header {
     padding: 5px 3px;
