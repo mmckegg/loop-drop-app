@@ -47,10 +47,7 @@ function DelayNode (context) {
   }, releases)
 
   var rateMultiplier = computed([obs.sync, context.tempo], getRateMultiplier)
-  var time = Sum([
-    Multiply([obs.time, rateMultiplier]),
-    (-1 / context.audio.sampleRate) * 128
-  ])
+  var time = Multiply([obs.time, rateMultiplier])
 
   releases.push(
     Apply(context.audio, delay.delayTime, time),
