@@ -19,7 +19,7 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
-    "mutant": "~3.16.0",
+    "mutant": "~3.17.1",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",
@@ -32,7 +32,7 @@
     "deep-equal": "^0.2.1",
     "electron-default-menu": "~1.0.0",
     "electron-json-storage": "~2.0.0",
-    "electron-prebuilt": "~1.4.0",
+    "electron": "~1.4.15",
     "frac": "^0.3.1",
     "freeverb": "~1.1.0",
     "geval": "^2.1.1",
