@@ -22,6 +22,13 @@ module.exports = function renderOscillator (node) {
         format: 'dB',
         flex: true
       }),
+      ModRange(node.pan, {
+        title: 'pan',
+        defaultValue: 0,
+        format: 'pan',
+        flex: true,
+        width: 100
+      }),
       ModRange(node.detune, {
         title: 'detune',
         format: 'cents',

@@ -12,9 +12,12 @@ module.exports = OscillatorNode
 function OscillatorNode (context) {
   var output = context.audio.createGain()
   var amp = context.audio.createGain()
+  var panner = context.audio.createStereoPanner()
+
   var lastEvent = null
   amp.gain.value = 0
-  amp.connect(output)
+  amp.connect(panner)
+  panner.connect(output)
 
   // hack around C53 bugs
   context.signal.connect(output)
@@ -24,6 +27,7 @@ function OscillatorNode (context) {
     amp: Param(context, 1),
     frequency: Param(context, 440),
     noteOffset: Param(context, 0),
+    pan: Param(context, 0),
     octave: Param(context, 0),
     detune: Param(context, 0),
     shape: Property('sine') // Param(context, multiplier.gain, 1)
@@ -45,7 +49,8 @@ function OscillatorNode (context) {
 
   releases.push(
     () => context.signal.disconnect(output),
-    Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10))
+    Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10)),
+    Apply(context.audio, panner.pan, ParamClamp(obs.pan, -1, 1))
   )
 
   obs.connect = output.connect.bind(output)
