@@ -15,6 +15,7 @@ function renderSetup (setup) {
   var groupLookup = setup.context.nodeInfo.groupLookup
   var chunkSpawners = [].concat(
     setup.context.nodeInfo.groupLookup.chunks,
+    setup.context.nodeInfo.groupLookup.simpleChunks,
     setup.context.nodeInfo.groupLookup.modifierChunks
   )
 

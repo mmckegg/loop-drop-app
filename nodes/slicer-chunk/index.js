@@ -4,7 +4,7 @@ module.exports = {
   node: 'chunk/slicer',
   name: 'Slicer',
   description: 'Slice an audio file into pieces and distribute across controller.',
-  group: 'chunks',
+  group: 'simpleChunks',
   object: require('./object'),
   spawn: function () {
     return {

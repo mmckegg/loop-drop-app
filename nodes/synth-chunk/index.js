@@ -4,7 +4,7 @@ module.exports = {
   name: 'Synth',
   node: 'chunk/synth',
   description: 'Basic subtractive synthesier using global scale specified.',
-  group: 'chunks',
+  group: 'simpleChunks',
   spawn: function () {
     return {
       color: randomColor(),
