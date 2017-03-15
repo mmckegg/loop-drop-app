@@ -9,8 +9,8 @@ self.groupLookup = {}
 Object.keys(nodes).forEach(function (key) {
   var item = nodes[key].index
   self.push(item)
-  self.lookup[item.node || entry] = item
-  self.objectLookup[item.node || entry] = item.object
+  self.lookup[item.node] = item
+  self.objectLookup[item.node] = item.object
   if (item.group) {
     self.groupLookup[item.group] = self.groupLookup[item.group] || []
     self.groupLookup[item.group].push(item)
