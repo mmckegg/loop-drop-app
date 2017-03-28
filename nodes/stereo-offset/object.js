@@ -28,10 +28,10 @@ function StereoOffsetNode (context) {
 
   releases.push(
     Apply(context.audio, delayL.delayTime, Multiply([
-      ParamClamp(obs.offset, 0, 1), 0.04
+      ParamClamp(obs.offset, 0, 1), 0.005
     ])),
     Apply(context.audio, delayR.delayTime, Multiply([
-      ParamClamp(obs.offset, -1, 0), -0.04
+      ParamClamp(obs.offset, -1, 0), -0.005
     ]))
   )
   return obs
