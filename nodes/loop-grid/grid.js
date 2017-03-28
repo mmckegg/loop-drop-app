@@ -222,11 +222,12 @@ function getId (chunk) {
 }
 
 function dragOver (ev) {
+  if (!currentDrag) return
   var controller = ev.data
   var currentDrag = window.currentDrag
   var originalDirectory = currentDrag.node.context.cwd
 
-  if (ev.altKey || ev.shiftKey) {
+  if (ev.altKey) {
     ev.dataTransfer.dropEffect = 'copy'
   } else if (currentDrag && originalDirectory === controller.context.cwd) {
     var chunkId = getId(currentDrag.node)
@@ -248,14 +249,12 @@ function dragOver (ev) {
         controller.chunkPositions.put(chunkId, [r, c])
       }
     }
-  }
 
-  if (ev.dataTransfer.types.length) {
-    // HACK: detect when dragging from chunks - prevent remove
-    // need to rewrite all the drag and drop to be native, without currentDrag hacks
-    ev.dataTransfer.dropEffect = 'link'
-  } else {
-    ev.dataTransfer.dropEffect = 'move'
+    if (currentDrag.ordering) {
+      ev.dataTransfer.dropEffect = 'link'
+    } else {
+      ev.dataTransfer.dropEffect = 'move'
+    }
   }
 
   ev.event.preventDefault()
