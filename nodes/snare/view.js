@@ -7,11 +7,12 @@ var Select = require('lib/params/select')
 
 var types = [
   ['Snare', 'snare'],
+  ['Snap Snare', 'snap'],
   ['Rim Shot', 'rim']
 ]
 
 module.exports = function renderDrumSynth (node) {
-  var isSnare = computed(node.type, t => t === 'snare')
+  var isSnare = computed(node.type, t => t !== 'rim')
   return h('SourceNode -drumSynth', [
     Header(node, h('span', [
       h('strong', 'Drum Synth:'), ' ',
@@ -29,13 +30,13 @@ module.exports = function renderDrumSynth (node) {
       }),
       ModRange(node.tune, {
         title: 'tune',
-        defaultValue: 0,
+        defaultValue: -200,
         format: 'cents+',
         flex: true
       }),
       ModRange(node.decay, {
         title: 'decay',
-        defaultValue: 0.5,
+        defaultValue: 0.2,
         format: 'ms',
         flex: true
       }),
@@ -48,7 +49,7 @@ module.exports = function renderDrumSynth (node) {
         }),
         ModRange(node.snappy, {
           title: 'snappy',
-          defaultValue: 0.5,
+          defaultValue: 1,
           format: 'ratio',
           flex: true
         })

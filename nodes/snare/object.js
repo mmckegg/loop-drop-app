@@ -8,6 +8,7 @@ var ScheduleEvent = require('lib/schedule-event')
 var getParamValue = require('lib/get-param-value')
 
 var Snare = require('./snare')
+var SnapSnare = require('./snap-snare')
 var RimShot = require('./rim-shot')
 
 module.exports = SnareNode
@@ -21,11 +22,11 @@ function SnareNode (context) {
   var releases = []
   var obs = Triggerable(context, {
     type: Property('snare'),
-    tune: Param(context, 0), // cents
+    tune: Param(context, -200), // cents
     tone: Param(context, 0.5), // ratio
     decay: Param(context, 0.2), // seconds
-    snappy: Param(context, 0.5), // ratio
-    amp: Param(context, 0.4)
+    snappy: Param(context, 1), // ratio
+    amp: Param(context, 0.6)
   }, trigger, releases)
 
   var currentParams = {}
@@ -33,6 +34,8 @@ function SnareNode (context) {
   var getCtor = computed([obs.type], function (type) {
     if (type === 'rim') {
       return {fn: RimShot(context.audio, currentParams)}
+    } else if (type === 'snap') {
+      return {fn: SnapSnare(context.audio, currentParams)}
     } else {
       return {fn: Snare(context.audio, currentParams)}
     }
