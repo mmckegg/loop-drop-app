@@ -222,9 +222,10 @@ function getId (chunk) {
 }
 
 function dragOver (ev) {
-  if (!currentDrag) return
   var controller = ev.data
   var currentDrag = window.currentDrag
+
+  if (!currentDrag) return
   var originalDirectory = currentDrag.node.context.cwd
 
   if (ev.altKey) {
