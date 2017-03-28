@@ -48,15 +48,16 @@ MixerNode {
       div {
         pointer-events: auto
         position: relative
+        display: flex
         flex: 1 1
         height: 40px
         padding: 3px
         border-radius: 3px
         margin: 2px
-        overflow: hidden
 
         div.title {
           overflow: hidden
+          flex: 1
         }
 
         -dragOver {
