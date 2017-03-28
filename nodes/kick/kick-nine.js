@@ -61,7 +61,8 @@ module.exports = function(context, parameters) {
       osc.stop(when + duration);
 
       noiseSource.start(when);
-      noisePath.gain.exponentialRampToValueAtTime(2 * Math.max((parameters.tone / 127), 0.0001), when + 0.003);
+      noisePath.gain.setValueAtTime(2 * Math.max((parameters.tone / 127), 0.0001), when);
+      noisePath.gain.setTargetAtTime(0, when, 0.003);
     };
     node.stop = function(when) {
       if (typeof when !== 'number') {

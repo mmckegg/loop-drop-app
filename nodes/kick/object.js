@@ -7,7 +7,7 @@ var Triggerable = require('lib/triggerable')
 var ScheduleEvent = require('lib/schedule-event')
 var getParamValue = require('lib/get-param-value')
 
-var KickEight = require('./kick-eight')
+var KickEight = require('./kick-lo')
 var KickNine = require('./kick-nine')
 
 module.exports = KickNode
@@ -21,10 +21,10 @@ function KickNode (context) {
   var releases = []
   var obs = Triggerable(context, {
     type: Property('808'),
-    tone: Param(context, 0.1), // ratio
+    tone: Param(context, 0.4), // ratio
     decay: Param(context, 0.5), // seconds
     tune: Param(context, 0), // cents
-    amp: Param(context, 0.4)
+    amp: Param(context, 0.6)
   }, trigger, releases)
 
   var currentParams = {}
@@ -59,11 +59,11 @@ function KickNode (context) {
     var source = getCtor().fn()
     source.connect(choker)
     choker.connect(amp)
-    source.start(at)
+    var to = source.start(at)
 
     var event = new ScheduleEvent(at, source, choker)
     event.oneshot = true
-    event.to = at + getParamValue(obs.decay)
+    event.to = to || (at + getParamValue(obs.decay))
     return event
   }
 }
