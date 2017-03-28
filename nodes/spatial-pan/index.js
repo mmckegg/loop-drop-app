@@ -1,7 +1,7 @@
 module.exports = {
-  name: 'Stereo Offset',
+  name: 'Spatial Pan',
   spawn: false, // spawned by pan
-  node: 'processor/stereo-offset',
+  node: 'processor/spatial-pan',
   group: 'processors',
   object: require('./object'),
   render: require('../pan/view')

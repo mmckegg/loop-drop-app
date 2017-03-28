@@ -9,8 +9,8 @@ module.exports = function renderPanNode (node) {
     Header(node, h('span', 'Pan')),
     h('ParamList', [
       ToggleButton(QueryParam(node, 'node'), {
-        title: 'Delay',
-        onValue: 'processor/stereo-offset',
+        title: 'Spatial',
+        onValue: 'processor/spatial-pan',
         offValue: 'processor/pan'
       }),
       ModRange(node.offset, {

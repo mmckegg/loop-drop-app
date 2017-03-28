@@ -4,13 +4,14 @@ var Apply = require('lib/apply-param')
 var Multiply = require('lib/param-multiply')
 var ParamClamp = require('lib/param-clamp')
 
-module.exports = StereoOffsetNode
+module.exports = SpatialPanNode
 
-function StereoOffsetNode (context) {
+function SpatialPanNode (context) {
   var delayL = context.audio.createDelay(0.04)
   var delayR = context.audio.createDelay(0.04)
   var splitter = context.audio.createChannelSplitter(2)
   var merger = context.audio.createChannelMerger(2)
+  var panner = context.audio.createStereoPanner()
 
   splitter.channelCount = 2
   splitter.channelCountMode = 'explicit'
@@ -19,10 +20,11 @@ function StereoOffsetNode (context) {
   splitter.connect(delayR, 1)
   delayL.connect(merger, 0, 0)
   delayR.connect(merger, 0, 1)
+  merger.connect(panner)
 
   var releases = []
 
-  var obs = Processor(context, splitter, merger, {
+  var obs = Processor(context, splitter, panner, {
     offset: Param(context, 0.1)
   }, releases)
 
@@ -32,6 +34,9 @@ function StereoOffsetNode (context) {
     ])),
     Apply(context.audio, delayR.delayTime, Multiply([
       ParamClamp(obs.offset, -1, 0), -0.003
+    ])),
+    Apply(context.audio, panner.pan, Multiply([
+      obs.offset, 0.5
     ]))
   )
   return obs
