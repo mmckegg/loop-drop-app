@@ -16,10 +16,10 @@ function ClapNode (context) {
 
   var releases = []
   var obs = Triggerable(context, {
-    tone: Param(context, 0.5), // ratio
-    decay: Param(context, 0.5), // seconds
-    density: Param(context, 0.1), // ratio
-    amp: Param(context, 0.4)
+    tone: Param(context, 0.6), // ratio
+    decay: Param(context, 0.8), // seconds
+    density: Param(context, 0.2), // ratio
+    amp: Param(context, 0.6)
   }, trigger, releases)
 
   var currentParams = {}

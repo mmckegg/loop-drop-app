@@ -43,6 +43,7 @@ module.exports = function(context, parameters) {
 
 
     var audioNode = context.createGain();
+    audioNode.gain.value = 2;
 
     var noise = context.createBufferSource();
     noise.buffer = buffer;
