@@ -54,7 +54,7 @@ function renderChannels (controller) {
           'ev-dblclick': send(toggleChunk, { context: controller.context, id: id })
 
         }, [
-          h('div.title', id),
+          h('div.title', {title: id}, id),
           h('button.remove', {
             'ev-click': send(remove, { value: id, obj: controller.chunkIds })
           }, 'X')
