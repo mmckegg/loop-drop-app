@@ -228,7 +228,7 @@ function dragOver (ev) {
   if (!currentDrag) return
   var originalDirectory = currentDrag.node.context.cwd
 
-  if (ev.altKey) {
+  if (ev.altKey || originalDirectory !== controller.context.cwd) {
     ev.dataTransfer.dropEffect = 'copy'
   } else if (currentDrag && originalDirectory === controller.context.cwd) {
     var chunkId = getId(currentDrag.node)
