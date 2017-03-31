@@ -4,6 +4,7 @@ var renderRouting = require('lib/widgets/routing')
 var FlagParam = require('lib/flag-param')
 var renderChunk = require('lib/widgets/chunk')
 var SampleTrimmer = require('lib/params/sample-trimmer')
+var SampleRecorder = require('lib/params/sample-recorder')
 var SampleChooser = require('lib/params/sample-chooser')
 var ToggleButton = require('lib/params/toggle-button')
 var IndexParam = require('lib/index-param')
@@ -56,6 +57,7 @@ module.exports = function renderSlicerChunk (node) {
       h('section', [
 
         h('ParamList', [
+          SampleRecorder(node.sample),
           SampleChooser(node.sample),
           Select(node.sample.mode, { options: triggerOptions }),
           ModRange(node.sample.amp, {
