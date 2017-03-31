@@ -169,10 +169,7 @@ function Setup (parentContext) {
   }
 
   node.importChunk = function (descriptor, originalDirectory, cb) {
-    var info = context.nodeInfo.lookup[descriptor.node]
     var id = node.chunks.resolveAvailable(descriptor.id)
-    var targetPath = join(context.cwd, id + '.json')
-
     descriptor = extend(descriptor, { id: id })
 
     // ensure has default output
@@ -186,24 +183,30 @@ function Setup (parentContext) {
       }
     }
 
-    importAssociatedFiles(descriptor, originalDirectory, context.cwd, function (err) {
-      if (err) return cb && cb(err)
-      if (info.external) {
-        // duplicate external file
-        context.fs.writeFile(targetPath, JSON.stringify(descriptor), function (err) {
+    if (descriptor.node === 'externalChunk') {
+      var originalPath = join(originalDirectory, descriptor.src)
+      var targetPath = join(context.cwd, id + '.json')
+      context.fs.readFile(originalPath, 'utf8', function (err, data) {
+        if (err) return cb && cb(err)
+        var externalDescriptor = JSON.parse(data)
+        importAssociatedFiles(externalDescriptor, originalDirectory, context.cwd, function (err) {
           if (err) return cb && cb(err)
-          node.chunks.push({
-            node: 'externalChunk',
-            src: context.fileObject.relative(targetPath)
+          context.fs.writeFile(targetPath, JSON.stringify(externalDescriptor), function (err) {
+            if (err) return cb && cb(err)
+            node.chunks.push(extend(descriptor, {
+              src: context.fileObject.relative(targetPath)
+            }))
+            cb && cb(null, id)
           })
-          cb && cb(null, id)
         })
-      } else {
-        // duplicate local chunk
+      })
+    } else {
+      importAssociatedFiles(descriptor, originalDirectory, context.cwd, function (err) {
+        if (err) return cb && cb(err)
         node.chunks.push(descriptor)
         cb && cb(null, id)
-      }
-    })
+      })
+    }
 
     return id
   }
