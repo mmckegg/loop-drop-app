@@ -54,6 +54,9 @@ function Envelope (context) {
     outputParam.cancelScheduledValues(at)
     outputParam.setTargetAtTime(0, at, releaseTime / 8)
 
+    // HACK: clean up hanging target
+    outputParam.setValueAtTime(0, stopAt)
+
     return stopAt
   }
 

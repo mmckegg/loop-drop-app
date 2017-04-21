@@ -109,6 +109,7 @@ GranularSample.prototype.choke = function (at) {
   if (!this.to || at < this.to) {
     this.choker.gain.cancelScheduledValues(this.choker.context.currentTime)
     this.choker.gain.setTargetAtTime(0, at, 0.02)
+    this.choker.gain.setValueAtTime(0, at + 0.1)
     this.to = at + 0.1
   }
 }
