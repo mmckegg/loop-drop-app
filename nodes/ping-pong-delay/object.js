@@ -16,7 +16,7 @@ function PingPongDelayNode (context) {
   var delayR = context.audio.createDelay(4)
 
   var filter = context.audio.createBiquadFilter()
-  filter.Q.value = 0
+  filter.Q.value = -3.0102999566398125 // no resonance
 
   var feedback = context.audio.createGain()
   var dry = context.audio.createGain()
