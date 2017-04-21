@@ -35,6 +35,10 @@ function Kick (context, parameters) {
       gain.gain.setTargetAtTime(0, time + attack, release / 8)
       osc.frequency.setTargetAtTime(pitch / 3, time + attack, 1)
 
+      // HACK: clean up hanging targets
+      gain.gain.setValueAtTime(0, time + attack + release)
+      osc.frequency.setValueAtTime(pitch / 3, time + attack + 8)
+
       osc.start(time)
       osc.stop(time + attack + release)
       return time + attack + release

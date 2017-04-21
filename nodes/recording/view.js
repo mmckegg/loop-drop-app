@@ -320,7 +320,7 @@ function getPaddedSeconds (value) {
 }
 
 function getPaddedFraction (value) {
-  return padded((value % 1) * 100)
+  return Math.floor((value % 1) * 10)
 }
 
 function padded (val) {

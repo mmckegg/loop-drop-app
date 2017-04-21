@@ -63,6 +63,10 @@ module.exports = function(context, parameters) {
       noiseSource.start(when);
       noisePath.gain.setValueAtTime(2 * Math.max((parameters.tone / 127), 0.0001), when);
       noisePath.gain.setTargetAtTime(0, when, 0.003);
+
+      // HACK: clean up hanging target
+      noisePath.gain.setValueAtTime(0, when + 0.01);
+
     };
     node.stop = function(when) {
       if (typeof when !== 'number') {
