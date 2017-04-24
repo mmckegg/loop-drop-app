@@ -41,6 +41,7 @@ function LFO (context) {
   )
 
   var outputValue = context.audio.createGain()
+
   obs.currentValue = computed([obs.mode, obs.quantize], function (mode, quantize) {
     var result = null
     if (mode === 'multiply') {
@@ -67,6 +68,18 @@ function LFO (context) {
   releases.push(
     Apply(context.audio, outputValue.gain, obs.amp)
   )
+
+  // for manual probing of value
+  outputValue.getValueAtTime = function (time) {
+    if (currentEvent && time >= currentEvent.from && (!currentEvent.to || currentEvent.to > time)) {
+      var data = buffer.getChannelData(0)
+      var offset = getOffset(time)
+      var amp = obs.amp.getValueAtTime(time)
+      return (data[Math.floor(offset * data.length)] || 0) * amp
+    } else {
+      return 0
+    }
+  }
 
   obs.triggerOn = function (at) {
     if (obs.trigger()) {
@@ -98,6 +111,26 @@ function LFO (context) {
   return obs
 
   // scoped
+
+  function getOffset (at) {
+    var offset = 0
+
+    if (obs.trigger()) {
+      var cycleTime = 1 / rate()
+      if (currentEvent && (!currentEvent.to || currentEvent.to < at)) {
+        offset = (at - currentEvent.from) / cycleTime
+      }
+    } else {
+      var cycleLength = 1 / obs.rate()
+      offset = typeof rate() === 'number'
+        ? obs.sync()
+          ? (context.scheduler.getPositionAt(at) % cycleLength) / cycleLength
+          : (at % cycleLength) / cycleLength
+        : 0
+    }
+
+    return mod(obs.phaseOffset() + (offset || 0), 1)
+  }
 
   function start (at, offset) {
     if (currentEvent) {

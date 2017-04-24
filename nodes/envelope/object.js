@@ -30,15 +30,15 @@ function Envelope (context) {
 
     Param.triggerOn(obs, at)
 
-    var attackTime = getValue(obs.attack) || 0.005
-    var decayTime = getValue(obs.decay) || 0.005
+    var attackTime = obs.attack.getValueAtTime(at) || 0.005
+    var decayTime = obs.decay.getValueAtTime(at) || 0.005
     var peakTime = at + attackTime
-    var value = getValue(obs.value)
+    var value = obs.value.getValueAtTime(at)
 
     outputParam.setTargetAtTime(value, at, attackTime / 8)
 
     // decay / sustain
-    var sustain = getValue(obs.sustain) * value
+    var sustain = obs.sustain.getValueAtTime(at) * value
     if (sustain !== 1) {
       outputParam.setTargetAtTime(sustain, peakTime, decayTime / 8)
     }
@@ -47,7 +47,7 @@ function Envelope (context) {
   obs.triggerOff = function (at) {
     at = Math.max(at, context.audio.currentTime)
 
-    var releaseTime = getValue(obs.release) || 0.0001
+    var releaseTime = obs.release.getValueAtTime(at) || 0.0001
     var stopAt = at + releaseTime
 
     Param.triggerOff(obs, stopAt)
@@ -61,7 +61,7 @@ function Envelope (context) {
   }
 
   obs.getReleaseDuration = function () {
-    return getValue(obs.release)
+    return obs.release.getValueAtTime(context.audio.currentTime)
   }
 
   obs.destroy = function () {
@@ -69,16 +69,4 @@ function Envelope (context) {
   }
 
   return obs
-}
-
-function getValue (param) {
-  if (param.currentValue) {
-    var value = param.currentValue()
-    if (typeof value === 'number') {
-      return value
-    } else {
-      console.warn('Unable to automate envelope param.')
-      return 0
-    }
-  }
 }
