@@ -53,6 +53,7 @@ function paramApplyScale (param, scale) {
   shaper.curve = curve
   multiply(param, 1 / 64).connect(shaper)
 
+  shaper.getValueAtTime = Getter(param, scale)
   return shaper
 }
 
@@ -88,4 +89,12 @@ function getParams (a, b) {
 
 function sum (values) {
   return values.reduce((a, b) => a + b, 0)
+}
+
+function Getter (param, scale) {
+  return function getValueAtTime (time) {
+    if (param.getValueAtTime) {
+      return applyScale(param.getValueAtTime(time), scale)
+    }
+  }
 }
