@@ -33,28 +33,16 @@ MidiStream.watchPortNames(function (ports) {
   midiPorts.set(ports)
 })
 
-var unloadAction = 'close'
-var interceptUnload = true
-
-electron.ipcRenderer.on('reload', function () {
-  unloadAction = 'reload'
-  electron.remote.getCurrentWindow().reload()
-})
-
-window.onbeforeunload = function (e) {
-  // ensure recording is saved on close
-  if (interceptUnload && window.currentProject && window.currentProject.actions.prepareToClose) {
+// make sure recording has saved to disk before closing
+electron.ipcRenderer.on('close', function () {
+  if (window.currentProject && !window.currentProject.isReadyToClose()) {
     window.currentProject.actions.prepareToClose(function () {
-      interceptUnload = false
-      if (unloadAction === 'reload') {
-        electron.remote.getCurrentWindow().reload()
-      } else {
-        electron.remote.getCurrentWindow().close()
-      }
+      electron.remote.getCurrentWindow().destroy()
     })
-    return false
+  } else {
+    electron.remote.getCurrentWindow().destroy()
   }
-}
+})
 
 // create root context
 var audioContext = new global.AudioContext()

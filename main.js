@@ -24,10 +24,6 @@ menu.splice(1, 0, {
   ]
 })
 
-menu.find(m => m.label === 'View').submenu.find(m => m.label === 'Reload').click = function () {
-  BrowserWindow.getFocusedWindow().webContents.send('reload')
-}
-
 function newProject () {
   electron.dialog.showSaveDialog({
     title: 'Create New Project',
@@ -143,6 +139,11 @@ function loadProject (path) {
   window.once('ready-to-show', function () {
     window.show()
     loading = false
+  })
+
+  window.on('close', function (e) {
+    e.preventDefault()
+    window.send('close')
   })
 
   window.webContents.on('will-navigate', function (e) {

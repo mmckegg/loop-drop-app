@@ -142,6 +142,11 @@ function Project (parentContext) {
   })
 
   var chunkScroller = null
+
+  obs.isReadyToClose = computed([recorder.recording], (recording) => {
+    return !recording
+  })
+
   var actions = obs.actions = {
     prepareToClose: function (cb) {
       return recorder.stop(cb)
