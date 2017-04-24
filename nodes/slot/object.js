@@ -54,12 +54,21 @@ function AudioSlot (parentContext, defaultValue) {
   // reconnect processors on add / update
   var connectedProcessors = [ toProcessors ]
   var updatingProcessors = false
+  var lastTriggerOn = null
+  var lastTriggerOff = null
 
   obs.processors.onNodeChange(function () {
     if (!updatingProcessors) {
       setImmediate(updateProcessors)
     }
     updatingProcessors = true
+  })
+
+  obs.processors.onAdd(function (node) {
+    if (isOn() && node.triggerOn) {
+      // immediately trigger processors if slot is already triggered
+      node.triggerOn(context.audio.currentTime)
+    }
   })
 
   obs.triggerOn = function (at) {
@@ -86,6 +95,12 @@ function AudioSlot (parentContext, defaultValue) {
         offTime = time
       }
     })
+
+    // track off time for immediate triggering of nodes when added
+    var onTime = at
+    if (!lastTriggerOn || lastTriggerOn < onTime) {
+      lastTriggerOn = onTime
+    }
 
     if (offTime) {
       obs.triggerOff(offTime)
@@ -135,6 +150,12 @@ function AudioSlot (parentContext, defaultValue) {
         target.triggerOff(at + Math.max(0, difference))
       }
     })
+
+    // track off time for immediate triggering of nodes when added
+    var offTime = at + Math.max(0, difference)
+    if (!lastTriggerOff || lastTriggerOff < offTime) {
+      lastTriggerOff = offTime
+    }
   }
 
   obs.choke = function (at) {
@@ -157,6 +178,10 @@ function AudioSlot (parentContext, defaultValue) {
   return obs
 
   // scoped
+
+  function isOn () {
+    return (lastTriggerOn < context.audio.currentTime && (!lastTriggerOff || lastTriggerOff < lastTriggerOn))
+  }
 
   function updateProcessors () {
     if (checkProcessorsChanged()) {
