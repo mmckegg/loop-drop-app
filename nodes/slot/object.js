@@ -19,6 +19,7 @@ function AudioSlot (parentContext, defaultValue) {
   var post = audioContext.createGain()
 
   var initialized = false
+  var releases = []
   var queue = []
 
   input.connect(pre)
@@ -33,7 +34,7 @@ function AudioSlot (parentContext, defaultValue) {
     noteOffset: Param(context, 0),
     output: Property(null),
     volume: Property(1)
-  }, input, output)
+  }, input, output, releases)
 
   obs._type = 'AudioSlot'
   context.noteOffset = obs.noteOffset
@@ -163,6 +164,15 @@ function AudioSlot (parentContext, defaultValue) {
       source.choke && source.choke(at)
     })
   }
+
+  releases.push(
+    function () {
+      if (isOn()) {
+        // force trigger off on removal
+        obs.triggerOff(context.audio.currentTime)
+      }
+    }
+  )
 
   if (defaultValue) {
     obs.set(defaultValue)
