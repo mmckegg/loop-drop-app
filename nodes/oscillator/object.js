@@ -6,6 +6,7 @@ var Sum = require('lib/param-sum')
 var Apply = require('lib/apply-param')
 var ParamClamp = require('lib/param-clamp')
 var ScheduleEvent = require('lib/schedule-event')
+var watch = require('mutant/watch')
 
 module.exports = OscillatorNode
 
@@ -48,6 +49,7 @@ function OscillatorNode (context) {
   ])
 
   releases.push(
+    watch(detune), // HACK: stop detune from regenerating on every trigger
     () => context.signal.disconnect(output),
     Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10)),
     Apply(context.audio, panner.pan, ParamClamp(obs.pan, -1, 1))
