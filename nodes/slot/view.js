@@ -7,7 +7,22 @@ var QueryParam = require('lib/query-param')
 var ToggleChooser = require('lib/params/toggle-chooser')
 
 module.exports = function renderSlot (node) {
+  var modulatorTypes = node.context.nodeInfo.groupLookup.modulators
+  if (checkIsTrigger(node)) {
+    modulatorTypes = modulatorTypes.concat(
+      node.context.nodeInfo.groupLookup.triggerModulators
+    )
+  }
+
   return h('AudioSlot', [
+
+    h('section', [
+      h('h1', 'Modulators'),
+      Collection(node.modulators),
+      Spawner(node.modulators, {
+        nodes: modulatorTypes
+      })
+    ]),
 
     // NOTE: this check could be error prone - consider revising?
     checkIsTrigger(node) ? [

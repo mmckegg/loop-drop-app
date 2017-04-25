@@ -16,6 +16,7 @@ module.exports = LFO
 function LFO (context) {
   var releases = []
   var obs = ObservStruct({
+    id: Property(),
     mode: Property('multiply'),
     sync: Property(false),
     trigger: Property(true),
@@ -25,13 +26,14 @@ function LFO (context) {
     amp: Param(context, 1),
     value: Param(context, 1),
 
-    phaseOffset: Property(0),
+    phaseOffset: Param(context, 0),
     curve: Property(1),
     skew: Property(0)
   })
 
   obs.context = context
   obs.getReleaseDuration = Param.getReleaseDuration.bind(this, obs)
+  obs.id.context = context
 
   var currentEvent = null
   var buffer = context.audio.createBuffer(1, 1 * context.audio.sampleRate, context.audio.sampleRate)
@@ -129,7 +131,7 @@ function LFO (context) {
         : 0
     }
 
-    return mod(obs.phaseOffset() + (offset || 0), 1)
+    return mod(obs.phaseOffset.getValueAtTime(at) + (offset || 0), 1)
   }
 
   function start (at, offset) {
@@ -141,7 +143,7 @@ function LFO (context) {
     var player = context.audio.createBufferSource()
     player.buffer = buffer
     player.loop = true
-    player.start(at, mod(obs.phaseOffset() + (offset || 0), 1))
+    player.start(at, mod(obs.phaseOffset.getValueAtTime(at) + (offset || 0), 1))
     player.connect(outputValue)
     currentEvent = new ScheduleEvent(at, player, null, [
       Apply(context.audio, player.playbackRate, rate)

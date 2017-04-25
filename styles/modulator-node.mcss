@@ -1,0 +1,9 @@
+ModulatorNode {
+  $node
+
+  border-color: #5a5538
+
+  header {
+    background: #5a5538
+  }
+}

@@ -8,6 +8,7 @@ module.exports = Envelope
 
 function Envelope (context) {
   var obs = ObservStruct({
+    id: Property(),
     attack: Param(context, 0),
     decay: Param(context, 0),
     release: Param(context, 0),
@@ -16,9 +17,11 @@ function Envelope (context) {
     value: Param(context, 1)
   })
 
+
   var outputParam = ParamSource(context, 0)
   obs.currentValue = outputParam// Multiply([obs.value, outputParam])
   obs.context = context
+  obs.id.context = context
 
   obs.triggerOn = function (at) {
     at = Math.max(at, context.audio.currentTime)

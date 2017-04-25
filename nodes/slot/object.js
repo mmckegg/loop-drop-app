@@ -1,5 +1,8 @@
 var Observ = require('mutant/value')
 var Slots = require('lib/slots')
+var lookup = require('mutant/lookup')
+var merge = require('mutant/merge')
+var updateParamReferences = require('lib/update-param-references')
 
 var Param = require('lib/param')
 var Property = require('lib/property')
@@ -29,6 +32,7 @@ function AudioSlot (parentContext, defaultValue) {
 
   var obs = RoutableSlot(context, {
     id: Observ(),
+    modulators: Slots(context),
     sources: Slots(context),
     processors: Slots(context),
     noteOffset: Param(context, 0),
@@ -52,6 +56,32 @@ function AudioSlot (parentContext, defaultValue) {
     }
   })
 
+  obs.modulators.onRemove(function (node) {
+    if (node && node.id && node.id()) {
+      updateParamReferences(obs, node.id(), null)
+    }
+  })
+
+  context.modulatorLookup = lookup(obs.modulators, 'id')
+
+  context.paramLookup = merge([
+    parentContext.paramLookup,
+    context.modulatorLookup
+  ])
+
+  obs.modulators.resolveAvailable = function (id) {
+    var base = id
+    var lookup = context.paramLookup()
+    var incr = 0
+
+    while (lookup[id]) {
+      incr += 1
+      id = base + ' ' + (incr + 1)
+    }
+
+    return id
+  }
+
   // reconnect processors on add / update
   var connectedProcessors = [ toProcessors ]
   var updatingProcessors = false
@@ -65,12 +95,8 @@ function AudioSlot (parentContext, defaultValue) {
     updatingProcessors = true
   })
 
-  obs.processors.onAdd(function (node) {
-    if (isOn() && node.triggerOn) {
-      // immediately trigger processors if slot is already triggered
-      node.triggerOn(context.audio.currentTime)
-    }
-  })
+  obs.processors.onAdd(triggerIfOn)
+  obs.modulators.onAdd(triggerIfOn)
 
   obs.triggerOn = function (at) {
     if (!initialized) {
@@ -82,18 +108,12 @@ function AudioSlot (parentContext, defaultValue) {
 
     var offTime = null
 
-    obs.sources.forEach(function (source) {
-      var time = source.triggerOn(at)
-      if (time && (!offTime || time > offTime)) {
-        offTime = time
-      }
-    })
-
-    // for processor modulators
-    obs.processors.forEach(function (processor) {
-      var time = processor && processor.triggerOn(at)
-      if (time && (!offTime || time > offTime)) {
-        offTime = time
+    forEachAll([obs.sources, obs.modulators, obs.processors], function (node) {
+      if (node && node.triggerOn) {
+        var time = node.triggerOn(at)
+        if (time && (!offTime || time > offTime)) {
+          offTime = time
+        }
       }
     })
 
@@ -130,11 +150,13 @@ function AudioSlot (parentContext, defaultValue) {
       offEvents.push([source, releaseDuration])
     })
 
-    obs.processors.forEach(function (processor) {
-      var releaseDuration = processor.getReleaseDuration && processor.getReleaseDuration() || 0
-      offEvents.push([processor, releaseDuration, true])
-      if (releaseDuration > maxProcessorDuration) {
-        maxProcessorDuration = releaseDuration
+    forEachAll([obs.modulators, obs.processors], function (node) {
+      if (node && node.triggerOff) {
+        var releaseDuration = node.getReleaseDuration && node.getReleaseDuration() || 0
+        offEvents.push([node, releaseDuration, true])
+        if (releaseDuration > maxProcessorDuration) {
+          maxProcessorDuration = releaseDuration
+        }
       }
     })
 
@@ -189,6 +211,13 @@ function AudioSlot (parentContext, defaultValue) {
 
   // scoped
 
+  function triggerIfOn (node) {
+    if (isOn() && node.triggerOn) {
+      // immediately trigger processors if slot is already triggered
+      node.triggerOn(context.audio.currentTime)
+    }
+  }
+
   function isOn () {
     return (lastTriggerOn < context.audio.currentTime && (!lastTriggerOff || lastTriggerOff < lastTriggerOn))
   }
@@ -219,11 +248,15 @@ function AudioSlot (parentContext, defaultValue) {
     if (connectedProcessors.length !== obs.processors.getLength()) {
       return true
     } else {
-      for (var i = 0;i < connectedProcessors.length;i++) {
+      for (var i = 0; i < connectedProcessors.length; i++) {
         if (connectedProcessors[i] !== obs.processors.get(i)) {
           return true
         }
       }
     }
   }
+}
+
+function forEachAll (collections, iterator) {
+  collections.forEach(collection => collection.forEach(iterator))
 }
