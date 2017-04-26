@@ -48,7 +48,6 @@ function LinkParam (context) {
   })
 
   obs.currentValue = computed([obs.mode, obs.quantize, inverted, param], function (mode, quantize, inverted, param) {
-    console.log('recompute')
     if (param) {
       if (mode === 'exp') {
         if (inverted) {
