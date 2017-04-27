@@ -1,140 +1,161 @@
-var ObservStruct = require('mutant/struct')
-var ObservMidi = require('observ-midi')
-var MutantArray = require('mutant/array')
-var computed = require('mutant/computed')
+var Observ = require('mutant/value')
 var MidiPort = require('lib/midi-port')
-
+var ObservMidi = require('observ-midi')
+var ObservStruct = require('mutant/struct')
 var ArrayStack = require('lib/array-stack')
 var FlashArray = require('lib/flash-array')
 var AnyTrigger = require('lib/on-trigger')
-var MidiParam = require('lib/midi-to-param')
 var LightStack = require('observ-midi/light-stack')
+var MidiParam = require('lib/midi-to-param')
 
-var watchThrottle = require('mutant/watch-throttle')
-var throttle = require('mutant/throttle')
+var computed = require('mutant/computed')
+var watchKnobs = require('lib/watch-knobs')
+var scaleInterpolate = require('lib/scale-interpolate')
+var findItemByPath = require('lib/find-item-by-path')
 
-module.exports = LaunchControl
+var turnOffAll = [176 + 8, 0, 0]
+var mappings = {
+  row1: ['184/21', '184/22', '184/23', '184/24', '184/25', '184/26', '184/27', '184/28'],
+  row2: ['184/41', '184/42', '184/43', '184/44', '184/45', '184/46', '184/47', '184/48'],
+  buttons: ['152/9', '152/10', '152/11', '152/12', '152/25', '152/26', '152/27', '152/28'],
 
-function LaunchControl (context) {
-  var midiPort = MidiPort(context)
+  up: '184/114',
+  down: '184/115',
+  left: '184/116',
+  right: '184/117'
+}
+
+module.exports = function (context) {
+  var unloadState = { lastSuppressId: null, lastSuppressAt: 0 }
+  var lastSuppress = null
+  var turnOffSuppressLight = null
+
+  var midiPort = MidiPort(context, function (port, lastPort) {
+    // turn off on switch
+    lastPort && lastPort.write(turnOffAll)
+
+    if (port) {
+      port.write(turnOffAll)
+      port.on('data', console.log)
+    }
+  })
+
 
   var obs = ObservStruct({
     port: midiPort
   })
 
-  var releases = []
-
-  var project = context.project
-  var setups = MutantArray([])
-
-  releases.push(project.items.onLoad(addItem))
-  setImmediate(function () {
-    project.items.forEach(addItem)
-  })
-
-  function addItem (item) {
-    if (item.node._type === 'LoopDropSetup') {
-      for (var i = 0; i <= setups._list.length; i++) {
-        if (!setups._list[i]) {
-          setups.put(i, item)
-          item.onClose(function () {
-            setups.put(i, null)
-          })
-          break
-        }
-      }
-    }
+  // grab the midi for the current port
+  obs.grabInput = function () {
+    midiPort.grab()
   }
 
-  var onTrigger = AnyTrigger(setups)
+  obs.context = context
 
-  // FIRST ROW OF KNOBS:
-  var knobs = ObservMidi(midiPort.stream, {
-    tempo: '184/21',
-    swing: '184/22',
-    param3: '184/23',
-    param4: '184/24',
-    param5: '184/25',
-    param6: '184/26',
-    param7: '184/27',
-    param8: '184/28'
+  var project = context.project
+  var onTrigger = AnyTrigger(project.items)
+
+  var knobs = {
+    3: Observ(0),
+    4: Observ(0),
+    5: Observ(0),
+    6: Observ(0),
+    7: Observ(0),
+    8: Observ(0)
+  }
+
+  var params = []
+
+  Object.keys(knobs).forEach(function (key) {
+    var id = 'Launch Control > ' + key
+    params.push(id)
+    context.paramLookup.put(id, MidiParam(context, id, knobs[key]))
   })
 
-  watchThrottle(knobs.tempo, 20, function(value) {
-    if (value != null) {
-      project.tempo.set(value+60)
+  var paramState = []
+  watchKnobs(midiPort.stream, mappings.row1, function (id, data) {
+    var state = paramState[id] = paramState[id] || {}
+    if (id === 0) {
+      project.tempo.set(scaleInterpolate(project.tempo() - 60, data, state) + 60)
+    } else if (id === 1) {
+      project.swing.set(scaleInterpolate(project.swing() * 128, data, state) / 128)
+    } else {
+      knobs[id + 1].set(scaleInterpolate(knobs[id + 1](), data, state))
     }
   })
 
-
-  watchThrottle(knobs.swing, 20, function(value) {
-    if (value != null) {
-      project.swing.set(value / 128)
+  var sliderState = []
+  watchKnobs(midiPort.stream, mappings.row2, function (id, data) {
+    var state = sliderState[id] = sliderState[id] || {}
+    var item = project.items.get(id)
+    if (isSetup(item)) {
+      var setup = item.node
+      var volume = setup.overrideVolume
+      var currentPosition = Math.pow(volume(), 1 / Math.E) * 128
+      var newPosition = scaleInterpolate(currentPosition, data, state)
+      volume.set(Math.pow(newPosition / 128, Math.E))
     }
-  })
+  }, 127)
 
-  var params = [
-    MidiParam(context, 'Launch Control > 3', throttle(knobs.param3)),
-    MidiParam(context, 'Launch Control > 4', throttle(knobs.param4)),
-    MidiParam(context, 'Launch Control > 5', throttle(knobs.param5)),
-    MidiParam(context, 'Launch Control > 6', throttle(knobs.param6)),
-    MidiParam(context, 'Launch Control > 7', throttle(knobs.param7)),
-    MidiParam(context, 'Launch Control > 8', throttle(knobs.param8)),
-  ]
-
-  params.forEach(function(param) {
-    context.paramLookup.put(param.id(), param)
-  })
-  //////
-
-
-
-  // SECOND ROW OF KNOBS:
-  var volumes = ObservMidi(midiPort.stream, [
-    '184/41',
-    '184/42',
-    '184/43',
-    '184/44',
-    '184/45',
-    '184/46',
-    '184/47',
-  ])
-
-  volumes(function (values) {
-    values.forEach(function (val, i) {
-      var item = setups.get(i)
-      if (item && item.node.output) {
-
-        if (val == null) {
-          val = 64
+  var selectedId = 0
+  var buttonBase = computed([project.selected, project.items], function (selected, items) {
+    var result = []
+    for (var i = 0; i < 8; i++) {
+      var item = project.items.get(i)
+      if (item) {
+        if (item.path() === selected) {
+          selectedId = i
+          result.push(light(2, 3))
+        } else {
+          result.push(light(0, 1))
         }
-
-        item.node.output.gain.value = (val / 64)
+      } else {
+        result.push(0)
       }
-
-    })
-  })
-  ////////
-
-
-  // CONTROL BUTTONS:
-  var controlButtons = LightStack(midiPort.stream, {
-    clearOthers: '184/115',
-    suppressOthers: '184/114',
-    tap: '152/28',
-    nudgeLeft: '184/116',
-    nudgeRight: '184/117'
+    }
+    return result
   })
 
-  controlButtons.tap.light(light(0, 1))
-  controlButtons.clearOthers.light(0)
-
-  controlButtons.tap(function (value) {
-    if (value) {
-      controlButtons.tap.flash(light(0,2))
-      project.actions.tapTempo()
+  var buttonFlash = FlashArray()
+  onTrigger(function (index) {
+    if (index === selectedId) {
+      buttonFlash.flash(index, light(3, 3), 40)
+    } else {
+      buttonFlash.flash(index, light(0, 3), 40)
+      controlButtons.clearOthers.flash(127, 100)
     }
   })
+
+  var buttons = ObservMidi(midiPort.stream, mappings.buttons, ArrayStack([
+    buttonBase,
+    buttonFlash
+  ]))
+
+  buttons(function (values) {
+    var result = null
+
+    values.forEach(function (val, i) {
+      if (val) {
+        result = i
+      }
+    })
+
+    if (result != null) {
+      var item = project.items.get(result)
+      if (item) {
+        project.selected.set(item.path())
+      }
+    }
+  })
+
+  var controlButtons = LightStack(midiPort.stream, {
+    clearOthers: mappings.down,
+    suppressOthers: mappings.up,
+    nudgeLeft: mappings.left,
+    nudgeRight: mappings.right
+  })
+
+  controlButtons.clearOthers.light(0)
 
   controlButtons.nudgeLeft(function (value) {
     if (value) {
@@ -158,12 +179,20 @@ function LaunchControl (context) {
 
   controlButtons.clearOthers(function (value) {
     if (value) {
-      suppressOthers(true)
+      if (unloadState.lastSuppressId === selectedId && unloadState.lastSuppressAt > Date.now() - 500) {
+        unloadState.lastSuppressAt = 0
+        var toClose = []
+        project.items.forEach((item, i) => {
+          if (selectedId !== i) toClose.push(item)
+        })
+        toClose.forEach(x => x.close())
+      } else {
+        unloadState.lastSuppressId = selectedId
+        unloadState.lastSuppressAt = Date.now()
+        suppressOthers(true)
+      }
     }
   })
-
-  var lastSuppress = null
-  var turnOffSuppressLight = null
 
   controlButtons.suppressOthers(function (value) {
     if (value) {
@@ -175,79 +204,16 @@ function LaunchControl (context) {
       turnOffSuppressLight = lastSuppress = null
     }
   })
-  ///
 
-
-  // SELECT BUTTONS:
-  var selectedButton = null
-  var buttonBase = computed([setups, project.selected], function(items, selected) {
-    var result = []
-    for (var i=0;i<8;i++) {
-      var item = setups.get(i)
-      if (item) {
-        if (item.path() === selected) {
-          result.push(light(2, 3))
-          selectedButton = i
-        } else {
-          result.push(light(1, 0))
-        }
-      } else {
-        result.push(0)
-      }
-    }
-    return result
-  })
-
-  var buttonFlash = FlashArray()
-  onTrigger(function(i) {
-
-    if (i === selectedButton) {
-      buttonFlash.flash(i, light(3, 3), 40)
-    } else {
-      buttonFlash.flash(i, light(3, 0), 40)
-      controlButtons.clearOthers.flash(127, 100)
-    }
-  })
-
-  var buttons = ObservMidi(midiPort.stream, [
-    '152/9',
-    '152/10',
-    '152/11',
-    '152/12',
-    '152/25',
-    '152/26',
-    '152/27',
-  ], ArrayStack([
-    buttonBase,
-    buttonFlash
-  ]))
-
-
-  buttons(function (values) {
-    var result = null
-
-    values.forEach(function(val, i) {
-      if (val) {
-        result = i
-      }
-    })
-
-    if (result != null) {
-      var item = setups.get(result)
-      if (item) {
-        project.selected.set(item.path())
-      }
-    }
-  })
+  obs.grabInput = function () {
+    midiPort.grab()
+  }
 
   obs.destroy = function () {
-    setups.set([])
-    while (releases.length) {
-      releases.pop()()
-    }
+    onTrigger.destroy()
     midiPort.destroy()
-    params.forEach(function(param) {
-      context.paramLookup.delete(param.id())
+    params.forEach(function (id) {
+      context.paramLookup.delete(id)
     })
   }
 
@@ -258,7 +224,7 @@ function LaunchControl (context) {
   function suppressOthers (flatten) {
     var releases = []
 
-    setups.forEach(function (item) {
+    project.items.forEach(function (item) {
       if (item && item.path() !== project.selected()) {
         if (item.node && item.node.controllers) {
           item.node.controllers.forEach(function (controller) {
@@ -283,11 +249,7 @@ function LaunchControl (context) {
   }
 }
 
-function invoke (fn) {
-  fn()
-}
-
-function light(r, g, flag){
+function light (r, g, flag) {
   if (!r || r < 0)  r = 0
   if (r > 3)        r = 3
   if (!g || g < 0)  g = 0
@@ -301,4 +263,12 @@ function light(r, g, flag){
   }
 
   return ((16 * g) + r) + flag
+}
+
+function isSetup (item) {
+  return item && item.node && item.node._type === 'LoopDropSetup'
+}
+
+function invoke (fn) {
+  fn()
 }
