@@ -69,10 +69,8 @@ module.exports = function(context, parameters) {
 
     };
     node.stop = function(when) {
-      if (typeof when !== 'number') {
-        when = context.currentTime;
-      }
-      osc.stop(when);
+      noiseSource.stop(when)
+      osc.stop(when)
     };
     return node;
   };

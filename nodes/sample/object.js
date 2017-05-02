@@ -16,8 +16,6 @@ function SampleNode (context) {
   amp.gain.value = 0
   amp.connect(output)
 
-  context.signal.connect(output)
-
   var releases = []
   var obs = Triggerable(context, {
     mode: Property('hold'),
@@ -49,7 +47,6 @@ function SampleNode (context) {
 
   var currentBuffer = null
   releases.push(
-    () => context.signal.disconnect(output),
     obs.buffer.currentValue(v => currentBuffer = v),
     Apply(context.audio, amp.gain, obs.amp)
   )

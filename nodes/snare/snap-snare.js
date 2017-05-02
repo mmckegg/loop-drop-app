@@ -3,16 +3,14 @@ var NoiseBuffer = require('noise-buffer');
 var noiseBuffer = NoiseBuffer(1);
 
 module.exports = function(context, parameters) {
-
-  parameters = parameters || {};
+  parameters = parameters || {}
   parameters.tune = typeof parameters.tune === 'number' ? parameters.tune : 64
   parameters.tone = typeof parameters.tone === 'number' ? parameters.tone : 64
-  parameters.snappy = typeof parameters.snappy === 'number' ? parameters.snappy : 64;
-  parameters.decay = typeof parameters.decay === 'number' ? parameters.decay : 64;
+  parameters.snappy = typeof parameters.snappy === 'number' ? parameters.snappy : 64
+  parameters.decay = typeof parameters.decay === 'number' ? parameters.decay : 64
 
-
-  return function() {
-    var transpose = Math.pow(2, (parameters.tune - 64) / 1200);
+  return function () {
+    var transpose = Math.pow(2, (parameters.tune - 64) / 1200)
 
     var max = 2.2
     var min = 0.09
@@ -58,6 +56,11 @@ module.exports = function(context, parameters) {
       osc.stop(time + duration)
       noise.stop(time + duration)
       return time + duration
+    }
+
+    audioNode.stop = function (when) {
+      osc.stop(when)
+      noise.stop(when)
     }
 
     return audioNode

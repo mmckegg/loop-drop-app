@@ -4,6 +4,7 @@ var Property = require('lib/property')
 
 var Param = require('lib/param')
 var Apply = require('lib/apply-param')
+var destroySourceNode = require('lib/destroy-source-node')
 
 module.exports = PitchshiftNode
 
@@ -35,7 +36,8 @@ function PitchshiftNode (context) {
       instance.setPitchOffset(getMultiplier(value))
     }),
     Apply(context.audio, wet.gain, obs.wet),
-    Apply(context.audio, dry.gain, obs.dry)
+    Apply(context.audio, dry.gain, obs.dry),
+    () => instance.destroy()
   )
 
   return obs
@@ -247,6 +249,8 @@ function Jungle (context) {
 
   this.mod1 = mod1
   this.mod2 = mod2
+  this.mod3 = mod3
+  this.mod4 = mod4
   this.mod1Gain = mod1Gain
   this.mod2Gain = mod2Gain
   this.mod3Gain = mod3Gain
@@ -281,4 +285,13 @@ Jungle.prototype.setPitchOffset = function (mult) {
     this.mod4Gain.gain.value = 0
   }
   this.setDelay(delayTime * Math.abs(mult))
+}
+
+Jungle.prototype.destroy = function () {
+  destroySourceNode(this.mod1)
+  destroySourceNode(this.mod2)
+  destroySourceNode(this.mod3)
+  destroySourceNode(this.mod4)
+  destroySourceNode(this.fade1)
+  destroySourceNode(this.fade2)
 }

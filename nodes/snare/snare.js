@@ -78,6 +78,9 @@ module.exports = function(context, parameters) {
       });
     };
     audioNode.stop = function(when) {
+      oscs.forEach(function (osc) {
+        osc.stop(when);
+      });
       noise.stop(when);
     };
     return audioNode;

@@ -54,9 +54,8 @@ module.exports = function(context, parameters) {
     };
 
     gain.stop = function(when) {
-      if (typeof when !== 'number') {
-        when = context.currentTime;
-      }
+      osc.stop(when);
+      noise.stop(when);
     };
 
     return gain;

@@ -44,6 +44,10 @@ function Kick (context, parameters) {
       return time + attack + release
     }
 
+    node.stop = function(when) {
+      osc.stop(when)
+    }
+
     return node
   }
 }

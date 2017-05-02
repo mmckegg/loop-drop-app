@@ -8,7 +8,7 @@ var merge = require('mutant/merge')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('mutant/resolve')
 var MutantArray = require('mutant/array')
-var Voltage = require('lib/create-voltage')
+var destroySourceNode = require('lib/destroy-source-node')
 
 module.exports = MeddlerChunk
 
@@ -16,7 +16,8 @@ function MeddlerChunk (parentContext) {
   var context = Object.create(parentContext)
   context.slotProcessorsOnly = true
 
-  var signal = Voltage(context.audio, 0)
+  var signal = context.audio.createConstantSource()
+  signal.offset.value = 0
   signal.start()
 
   var obs = Struct({
@@ -81,7 +82,7 @@ function MeddlerChunk (parentContext) {
 
   obs.destroy = function () {
     destroyAll(obs)
-    signal.stop()
+    destroySourceNode(signal)
   }
 
   return obs
