@@ -20,9 +20,6 @@ function OscillatorNode (context) {
   amp.connect(output)
   //panner.connect(output)
 
-  // hack around C53 bugs
-  context.signal.connect(output)
-
   var releases = []
   var obs = Triggerable(context, {
     amp: Param(context, 1),
@@ -50,7 +47,6 @@ function OscillatorNode (context) {
 
   releases.push(
     watch(detune), // HACK: stop detune from regenerating on every trigger
-    () => context.signal.disconnect(output),
     Apply(context.audio, amp.gain, ParamClamp(obs.amp, 0, 10)),
     Apply(context.audio, panner.pan, ParamClamp(obs.pan, -1, 1))
   )
