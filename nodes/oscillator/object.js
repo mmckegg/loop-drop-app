@@ -17,8 +17,8 @@ function OscillatorNode (context) {
 
   var lastEvent = null
   amp.gain.value = 0
-  amp.connect(panner)
-  panner.connect(output)
+  amp.connect(output)
+  //panner.connect(output)
 
   // hack around C53 bugs
   context.signal.connect(output)
