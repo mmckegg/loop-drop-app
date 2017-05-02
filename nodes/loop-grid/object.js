@@ -30,6 +30,7 @@ function LoopGrid (context) {
     }), shape)
   })
 
+
   var current = {}
   var currentlyPlaying = {}
   var overriding = {}
@@ -52,6 +53,27 @@ function LoopGrid (context) {
         }
       }
     }
+
+    listen(obs.loops, function (loops) {
+      var targets = obs.targets()
+      targets.forEach(function (id, index) {
+        var loop = loops[index]
+        if (loop && loop.events && loop.events.length === 1 && loop.events[0][1]) {
+          var event = loop.events[0]
+          if (id && current[id] !== event[1]) {
+            current[id] = event[1]
+            if (!overriding[id]) {
+              broadcast({
+                id: id,
+                event: 'start',
+                position: context.scheduler.getCurrentPosition(),
+                time: context.audio.currentTime
+              })
+            }
+          }
+        }
+      })
+    })
 
     listen(context.scheduler.onSchedule, function (schedule) {
       var targets = obs.targets()
