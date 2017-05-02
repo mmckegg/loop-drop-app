@@ -29,7 +29,7 @@
     "bulk-require": "~0.2.1",
     "decibels": "^1.0.0",
     "deep-equal": "^0.2.1",
-    "electron": "~1.6.5",
+    "electron": "~1.6.6",
     "electron-default-menu": "~1.0.0",
     "electron-json-storage": "~2.0.0",
     "frac": "^0.3.1",
