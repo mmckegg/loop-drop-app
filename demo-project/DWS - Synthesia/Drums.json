@@ -1,0 +1,194 @@
+{
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "threshold": -28.719109417715984,
+          "knee": 25.142704990421024,
+          "ratio": 12,
+          "attack": 0.043,
+          "release": 0.25,
+          "node": "processor/compressor"
+        },
+        {
+          "highcut": {
+            "node": "linkParam",
+            "minValue": 20000,
+            "maxValue": 20,
+            "param": "highcut",
+            "mode": "exp"
+          },
+          "lowcut": {
+            "node": "linkParam",
+            "minValue": 20,
+            "maxValue": 20000,
+            "param": "lowcut",
+            "mode": "exp"
+          },
+          "low": 0,
+          "mid": 0,
+          "high": -2.0015987747016197,
+          "node": "processor/eq"
+        },
+        {
+          "time": 0.25,
+          "sync": true,
+          "feedback": {
+            "param": "feedback",
+            "minValue": 0.4109,
+            "maxValue": 0.9968,
+            "mode": "linear",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "cutoff": 285,
+          "filterType": "highpass",
+          "wet": {
+            "param": "feedback",
+            "minValue": 0.0995,
+            "maxValue": 0.7968,
+            "mode": "linear",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "dry": 1,
+          "node": "processor/ping-pong-delay"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "0",
+      "output": "output",
+      "volume": 0.5981,
+      "modulators": [],
+      "sources": [
+        {
+          "type": "808",
+          "tone": 0.4,
+          "decay": 0.5,
+          "tune": -83,
+          "amp": 0.6,
+          "node": "source/kick"
+        }
+      ],
+      "processors": [
+        {
+          "preBand": 0.5,
+          "color": 800,
+          "postCut": 14000,
+          "gain": 7.1202,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "mode": "source",
+          "ratio": 1,
+          "node": "processor/dipper"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "2",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "tune": 0,
+          "decay": 0.281,
+          "amp": 0.2068,
+          "node": "source/cymbal"
+        }
+      ],
+      "processors": [
+        {
+          "highcut": 20000,
+          "lowcut": 20,
+          "low": 0,
+          "mid": 0,
+          "high": -2.966173229063287,
+          "node": "processor/eq"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot",
+      "chokeGroup": "D"
+    },
+    {
+      "id": "1",
+      "output": "output",
+      "volume": 0.7783,
+      "modulators": [],
+      "sources": [
+        {
+          "type": "snap",
+          "tune": 179,
+          "tone": 0.14408409955750548,
+          "decay": 0.2,
+          "snappy": 0.9504909838250818,
+          "amp": 0.2024,
+          "node": "source/snare"
+        }
+      ],
+      "processors": [
+        {
+          "preBand": 0.5,
+          "color": 175,
+          "postCut": 7700,
+          "gain": 9.9024,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "highcut": 20000,
+          "lowcut": 20,
+          "low": 0,
+          "mid": 0,
+          "high": -4.117745530526484,
+          "node": "processor/eq"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "3",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "tune": 0,
+          "decay": 1.5,
+          "amp": 0.4,
+          "node": "source/cymbal"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot",
+      "chokeGroup": "D"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "lowcut",
+    "highcut",
+    "feedback"
+  ],
+  "selectedSlotId": "output",
+  "node": "chunk",
+  "scale": "$global"
+}

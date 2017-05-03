@@ -1,0 +1,221 @@
+{
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 0.6015,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "highcut": 20000,
+          "lowcut": {
+            "param": "lowcut",
+            "minValue": 40,
+            "maxValue": 14000,
+            "mode": "exp",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "low": -1.8272154741673177,
+          "mid": 0,
+          "high": -2.212585849450143,
+          "node": "processor/eq"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "1",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./clap (7).opus"
+          },
+          "amp": 0.6515,
+          "transpose": -6,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "0",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0.02019159066138932,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./kick (11).opus"
+          },
+          "amp": {
+            "id": null,
+            "attack": 0,
+            "decay": 0,
+            "release": 0.292,
+            "sustain": 1,
+            "retrigger": false,
+            "value": 1,
+            "node": "modulator/adsr"
+          },
+          "transpose": 0,
+          "tune": -10,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [
+        {
+          "frequency": 125,
+          "Q": 1,
+          "gain": -1.8835941817620423,
+          "type": "lowshelf",
+          "node": "processor/filter"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "5",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./snare (4).opus"
+          },
+          "amp": 1,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "2",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./hi hat (22).opus"
+          },
+          "amp": 0.1179,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [
+        {
+          "frequency": 1500,
+          "Q": 1,
+          "gain": 0,
+          "type": "highpass",
+          "node": "processor/filter"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "3",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./cymbal (1).opus"
+          },
+          "amp": 0.2344,
+          "transpose": -8,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "6",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./hi hat (15).opus"
+          },
+          "amp": 0.1939,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "lowcut"
+  ],
+  "selectedSlotId": "2",
+  "node": "chunk",
+  "scale": "$global"
+}

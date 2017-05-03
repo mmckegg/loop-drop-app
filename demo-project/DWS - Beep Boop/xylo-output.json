@@ -1,0 +1,74 @@
+{
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "sources": [],
+      "processors": [
+        {
+          "threshold": -47.71751511637778,
+          "knee": 30,
+          "ratio": 12,
+          "attack": 0.003000000026077032,
+          "release": 0.25,
+          "node": "processor/compressor"
+        },
+        {
+          "offset": 0.05,
+          "node": "processor/spatial-pan"
+        },
+        {
+          "preBand": 0.5,
+          "color": 445,
+          "postCut": 4400,
+          "gain": 5.9643,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "roomSize": 0.7644229484083279,
+          "dampening": 7800,
+          "wet": 0.8682,
+          "dry": 0.9593,
+          "time": 0.548,
+          "decay": 2,
+          "reverse": false,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "node": "processor/freeverb"
+        },
+        {
+          "time": 0.25,
+          "sync": true,
+          "feedback": 0.5843,
+          "cutoff": 1700,
+          "filterType": "lowpass",
+          "wet": 0.4894,
+          "dry": 1,
+          "node": "processor/ping-pong-delay"
+        },
+        {
+          "highcut": 20000,
+          "lowcut": 20,
+          "low": 0,
+          "mid": 3.36007649588214,
+          "high": -2.3679532989417567,
+          "node": "processor/eq"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [
+    "input"
+  ],
+  "outputs": [
+    "output"
+  ],
+  "params": [],
+  "selectedSlotId": "output",
+  "node": "chunk/meddler",
+  "scale": "$global"
+}

@@ -1,0 +1,340 @@
+{
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1.6854,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "time": 0.645,
+          "decay": 3.53,
+          "reverse": false,
+          "cutoff": 2800,
+          "filterType": "highpass",
+          "wet": 1,
+          "dry": 1,
+          "node": "processor/reverb"
+        },
+        {
+          "frequency": 1500,
+          "Q": 1,
+          "gain": 8.588921353935518,
+          "type": "peaking",
+          "node": "processor/filter"
+        },
+        {
+          "preBand": 0.19369245324669535,
+          "color": 8900,
+          "postCut": {
+            "param": "highcut",
+            "minValue": 19000,
+            "maxValue": 125,
+            "mode": "exp",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "gain": 1.6778,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "frequency": {
+            "param": "lowcut",
+            "minValue": 48,
+            "maxValue": 1100,
+            "mode": "exp",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "Q": 1,
+          "gain": 0,
+          "type": "highpass",
+          "node": "processor/filter"
+        },
+        {
+          "highcut": 20000,
+          "lowcut": 20,
+          "low": 0,
+          "mid": 0,
+          "high": -1.7797039374379722,
+          "node": "processor/eq"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "0",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./bd01.opus"
+          },
+          "amp": 1,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [
+        {
+          "mode": "source",
+          "ratio": 1.1342027624089397,
+          "node": "processor/dipper"
+        },
+        {
+          "highcut": 20000,
+          "lowcut": 0,
+          "low": 0,
+          "mid": 0,
+          "high": -1.176498723007569,
+          "node": "processor/eq"
+        },
+        {
+          "preBand": 0.5,
+          "color": 64,
+          "postCut": 7400,
+          "gain": 8.2858,
+          "amp": 1,
+          "node": "processor/overdrive"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "7",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./cr01.opus"
+          },
+          "amp": 0.214,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "1",
+      "output": "output",
+      "volume": 0.6911,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./cp01.opus"
+          },
+          "amp": 1,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [
+        {
+          "frequency": 5000,
+          "Q": 1,
+          "gain": 3.4179621306476555,
+          "type": "peaking",
+          "node": "processor/filter"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "4",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./bd08.opus"
+          },
+          "amp": 1,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [
+        {
+          "mode": "source",
+          "ratio": 1,
+          "node": "processor/dipper"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "2",
+      "output": "output",
+      "volume": 0.7865,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0.2725,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./hh01.opus"
+          },
+          "amp": {
+            "attack": 0.018,
+            "decay": 0,
+            "release": 0.092,
+            "sustain": 1,
+            "retrigger": false,
+            "value": 0.5541,
+            "node": "modulator/adsr"
+          },
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [
+        {
+          "frequency": 880,
+          "Q": 1,
+          "gain": 0,
+          "type": "highpass",
+          "node": "processor/filter"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "6",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0.42,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./hh02.opus"
+          },
+          "amp": 1,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "3",
+      "output": "output",
+      "volume": 0.8194,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0.01125,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./oh01.opus"
+          },
+          "amp": 0.1734,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "5",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "mode": "oneshot",
+          "offset": [
+            0,
+            1
+          ],
+          "buffer": {
+            "node": "AudioBuffer",
+            "src": "./sd12.opus"
+          },
+          "amp": 1,
+          "transpose": 0,
+          "tune": 0,
+          "node": "source/sample"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "highcut",
+    "lowcut"
+  ],
+  "selectedSlotId": "0",
+  "node": "chunk",
+  "scale": "$global"
+}

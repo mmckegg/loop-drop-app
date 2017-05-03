@@ -1,0 +1,183 @@
+{
+  "scale": "$global",
+  "templateSlot": {
+    "id": {
+      "$param": "id"
+    },
+    "output": "output",
+    "volume": 1,
+    "modulators": [],
+    "sources": [
+      {
+        "amp": {
+          "attack": 0.047,
+          "decay": 2,
+          "release": 0.535,
+          "sustain": 0.2137226758466415,
+          "retrigger": false,
+          "value": 0.2024,
+          "node": "modulator/adsr"
+        },
+        "frequency": 440,
+        "noteOffset": 0,
+        "pan": 0,
+        "octave": -3,
+        "detune": 0,
+        "shape": "sine",
+        "node": "source/oscillator"
+      },
+      {
+        "amp": {
+          "id": null,
+          "attack": 1.8,
+          "decay": 0,
+          "release": 0.587,
+          "sustain": 1,
+          "retrigger": false,
+          "value": 0.1269,
+          "node": "modulator/adsr"
+        },
+        "frequency": 440,
+        "noteOffset": 0,
+        "pan": 0,
+        "octave": {
+          "mode": "add",
+          "sync": true,
+          "trigger": false,
+          "quantize": 1,
+          "rate": 0.3333333333333333,
+          "amp": 2,
+          "value": 0,
+          "phaseOffset": 0,
+          "curve": 0.3262864741084318,
+          "skew": 0,
+          "node": "modulator/lfo"
+        },
+        "detune": 0,
+        "shape": "square",
+        "node": "source/oscillator"
+      },
+      {
+        "amp": {
+          "attack": 0.112,
+          "decay": 0,
+          "release": 0.107,
+          "sustain": 1,
+          "retrigger": false,
+          "value": 0.188,
+          "node": "modulator/adsr"
+        },
+        "frequency": 440,
+        "noteOffset": 0,
+        "pan": 0,
+        "octave": -3,
+        "detune": 0,
+        "shape": "square",
+        "node": "source/oscillator"
+      }
+    ],
+    "processors": [
+      {
+        "frequency": {
+          "id": null,
+          "attack": 0.792,
+          "decay": 0,
+          "release": 0,
+          "sustain": 1,
+          "retrigger": false,
+          "value": {
+            "param": "highpass",
+            "minValue": 53,
+            "maxValue": 20000,
+            "mode": "exp",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "node": "modulator/adsr"
+        },
+        "Q": 0,
+        "gain": 0,
+        "type": "highpass",
+        "node": "processor/filter"
+      }
+    ],
+    "noteOffset": {
+      "value": {
+        "$param": "value"
+      },
+      "scale": {
+        "$param": "scale"
+      },
+      "node": "modulator/scale",
+      "offset": {
+        "$param": "offset"
+      }
+    },
+    "node": "slot"
+  },
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "frequency": {
+            "param": "lowpass",
+            "minValue": 15000,
+            "maxValue": 9,
+            "mode": "exp",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "Q": 1,
+          "gain": 0,
+          "type": "lowpass",
+          "node": "processor/filter"
+        },
+        {
+          "time": 0.34,
+          "decay": 2,
+          "reverse": false,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 1,
+          "dry": 1,
+          "node": "processor/reverb"
+        },
+        {
+          "time": 0.375,
+          "sync": true,
+          "feedback": 0.2918,
+          "cutoff": 92,
+          "filterType": "highpass",
+          "wet": {
+            "param": "wet",
+            "minValue": 0,
+            "maxValue": 0.6261,
+            "mode": "linear",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "dry": 1,
+          "node": "processor/ping-pong-delay"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "highpass",
+    "lowpass",
+    "wet"
+  ],
+  "selectedSlotId": "$template",
+  "node": "chunk/scale"
+}

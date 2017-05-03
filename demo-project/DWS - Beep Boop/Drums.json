@@ -1,0 +1,282 @@
+{
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1.1009,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "highcut": {
+            "node": "linkParam",
+            "minValue": 20000,
+            "maxValue": 20,
+            "param": "highcut",
+            "mode": "exp"
+          },
+          "lowcut": {
+            "node": "linkParam",
+            "minValue": 20,
+            "maxValue": 20000,
+            "param": "lowcut",
+            "mode": "exp"
+          },
+          "low": 0,
+          "mid": 0,
+          "high": -1.9640400442096109,
+          "node": "processor/eq"
+        },
+        {
+          "roomSize": {
+            "node": "linkParam",
+            "minValue": 0.3829966585447244,
+            "maxValue": 0.9999,
+            "param": "room size",
+            "mode": "linear"
+          },
+          "dampening": 13000,
+          "wet": 0.6345,
+          "dry": 1,
+          "time": 0.2,
+          "decay": 2,
+          "reverse": false,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "node": "processor/freeverb"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "0",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "type": "808",
+          "tone": 0.3419842958823219,
+          "decay": 0.61,
+          "tune": -103,
+          "amp": 0.6,
+          "node": "source/kick"
+        }
+      ],
+      "processors": [
+        {
+          "preBand": 0.5,
+          "color": 800,
+          "postCut": 3000,
+          "gain": 5.5453,
+          "amp": 1,
+          "node": "processor/overdrive"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot",
+      "chokeGroup": "A"
+    },
+    {
+      "id": "2",
+      "output": "output",
+      "volume": 0.7313,
+      "modulators": [],
+      "sources": [
+        {
+          "tune": 0,
+          "decay": 0.3,
+          "amp": {
+            "id": null,
+            "attack": 0.034,
+            "decay": 0,
+            "release": 0,
+            "sustain": 1,
+            "retrigger": true,
+            "value": 0.3273,
+            "node": "modulator/adsr"
+          },
+          "node": "source/cymbal"
+        }
+      ],
+      "processors": [
+        {
+          "offset": 0.02,
+          "node": "processor/spatial-pan"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot",
+      "chokeGroup": "D"
+    },
+    {
+      "id": "5",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "type": "snare",
+          "tune": -1006,
+          "tone": 0.5,
+          "decay": 0.2,
+          "snappy": 0.5616602456839066,
+          "amp": 0.6,
+          "node": "source/snare"
+        }
+      ],
+      "processors": [
+        {
+          "time": 0.38,
+          "decay": 0.9,
+          "reverse": false,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 1,
+          "dry": 1,
+          "node": "processor/reverb"
+        },
+        {
+          "preBand": 0.5,
+          "color": 800,
+          "postCut": 13000,
+          "gain": 6.5909,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "offset": -0.01,
+          "node": "processor/spatial-pan"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "3",
+      "output": "output",
+      "volume": 0.8851,
+      "modulators": [],
+      "sources": [
+        {
+          "tune": 0,
+          "decay": 4,
+          "amp": 0.2853,
+          "node": "source/cymbal"
+        }
+      ],
+      "processors": [
+        {
+          "offset": 0.01,
+          "node": "processor/spatial-pan"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot",
+      "chokeGroup": "D"
+    },
+    {
+      "id": "7",
+      "output": "output",
+      "volume": 1,
+      "modulators": [],
+      "sources": [
+        {
+          "tune": 458,
+          "decay": 3.8,
+          "amp": 0.4,
+          "node": "source/cymbal"
+        }
+      ],
+      "processors": [
+        {
+          "carrier": {
+            "amp": {
+              "attack": 0,
+              "decay": 0,
+              "release": 4.4,
+              "sustain": 1,
+              "retrigger": false,
+              "value": 3.957,
+              "node": "modulator/adsr"
+            },
+            "frequency": 530,
+            "noteOffset": 0,
+            "pan": 0,
+            "octave": 0,
+            "detune": 0,
+            "shape": "brass"
+          },
+          "node": "processor/ring-modulator"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    },
+    {
+      "id": "4",
+      "output": "output",
+      "volume": 1.094,
+      "modulators": [],
+      "sources": [
+        {
+          "type": "808",
+          "tone": 0.2903947446259952,
+          "decay": 10.7,
+          "tune": -103,
+          "amp": 0.6,
+          "node": "source/kick"
+        }
+      ],
+      "processors": [
+        {
+          "mode": "source",
+          "ratio": 1.2880822963164584,
+          "node": "processor/dipper"
+        },
+        {
+          "preBand": 0.5,
+          "color": 800,
+          "postCut": 3000,
+          "gain": 2.1277,
+          "amp": 1,
+          "node": "processor/overdrive"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot",
+      "chokeGroup": "A"
+    },
+    {
+      "id": "1",
+      "output": "output",
+      "volume": 0.9141,
+      "modulators": [],
+      "sources": [
+        {
+          "tone": 0.6,
+          "decay": 0.389,
+          "density": 0.2,
+          "amp": 0.6,
+          "node": "source/clap"
+        }
+      ],
+      "processors": [],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "lowcut",
+    "highcut",
+    "room size"
+  ],
+  "selectedSlotId": "2",
+  "node": "chunk",
+  "scale": "$global"
+}

@@ -1,0 +1,106 @@
+{
+  "scale": "$global",
+  "templateSlot": {
+    "id": {
+      "$param": "id"
+    },
+    "output": "output",
+    "volume": 1,
+    "sources": [
+      {
+        "mode": "oneshot",
+        "offset": [
+          0,
+          1
+        ],
+        "buffer": {
+          "node": "AudioBuffer",
+          "src": "./tom (7) 1.opus"
+        },
+        "amp": 1,
+        "transpose": -4,
+        "tune": 0,
+        "node": "source/sample"
+      }
+    ],
+    "processors": [],
+    "noteOffset": {
+      "node": "modulator/scale",
+      "value": {
+        "$param": "value"
+      },
+      "offset": {
+        "$param": "offset"
+      },
+      "scale": {
+        "$param": "scale"
+      }
+    },
+    "node": "slot"
+  },
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "sources": [],
+      "processors": [
+        {
+          "transpose": 12,
+          "wet": 1,
+          "dry": 0.8731,
+          "node": "processor/pitchshift"
+        },
+        {
+          "preBand": 0.5,
+          "color": 3000,
+          "postCut": {
+            "node": "linkParam",
+            "minValue": 3000,
+            "maxValue": 20,
+            "param": "post cut",
+            "mode": "exp"
+          },
+          "gain": 1.4828,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "frequency": {
+            "node": "linkParam",
+            "minValue": 590,
+            "maxValue": 20000,
+            "param": "freq",
+            "mode": "exp"
+          },
+          "Q": 1,
+          "gain": 0,
+          "type": "highpass",
+          "node": "processor/filter"
+        },
+        {
+          "time": 0.5,
+          "sync": true,
+          "feedback": 0.6,
+          "cutoff": 1900,
+          "filterType": "highpass",
+          "wet": 1,
+          "dry": 1,
+          "node": "processor/delay"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "freq",
+    "post cut"
+  ],
+  "selectedSlotId": "output",
+  "node": "chunk/scale"
+}

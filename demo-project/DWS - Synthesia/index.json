@@ -1,0 +1,560 @@
+{
+  "controllers": [
+    {
+      "port": "Launchpad MK2",
+      "loopLength": 16,
+      "chunkPositions": {
+        "Drums": [
+          0,
+          0
+        ],
+        "Bass-offset": [
+          2,
+          0
+        ],
+        "Bass": [
+          1,
+          0
+        ],
+        "Pad": [
+          4,
+          0
+        ],
+        "Pad-offset": [
+          6,
+          0
+        ]
+      },
+      "node": "controller/launchpad-mk2"
+    },
+    {
+      "port": "Launchpad MK2 2",
+      "loopLength": 16,
+      "chunkPositions": {
+        "Pitched": [
+          4,
+          0
+        ],
+        "Build": [
+          5,
+          0
+        ],
+        "Lead": [
+          0,
+          0
+        ],
+        "Lead-offset": [
+          2,
+          0
+        ]
+      },
+      "node": "controller/launchpad-mk2"
+    },
+    {
+      "port": "Launch Control XL",
+      "chunkIds": [
+        "Drums",
+        "Bass",
+        "Pad",
+        null,
+        null,
+        "Lead",
+        "Pitched",
+        "Build"
+      ],
+      "node": "controller/launch-control-xl"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "Pad",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        103,
+        189,
+        111
+      ],
+      "minimised": true,
+      "src": "Pad.json",
+      "offset": {
+        "param": "Pad-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 0.7796,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Pad-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "freezeSuppress"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "Bass",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        94,
+        6,
+        159
+      ],
+      "minimised": true,
+      "src": "Bass.json",
+      "offset": {
+        "param": "Bass-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Bass-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "freezeSuppress",
+        "noRepeat"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "Drums",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        149,
+        163,
+        225
+      ],
+      "minimised": true,
+      "src": "Drums.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Lead",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        161,
+        254,
+        18
+      ],
+      "minimised": true,
+      "src": "Lead.json",
+      "offset": {
+        "param": "Lead-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Lead-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "freezeSuppress"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "Pitched",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        207,
+        60,
+        252
+      ],
+      "minimised": true,
+      "sample": {
+        "offset": [
+          0.000039215686274509805,
+          1
+        ],
+        "amp": 1,
+        "transpose": 0,
+        "buffer": {
+          "node": "AudioBuffer",
+          "src": "./Pitched.opus"
+        },
+        "slices": [
+          [
+            0.000039215686274509805,
+            1
+          ],
+          [
+            0.1250343137254902,
+            1
+          ],
+          [
+            0.2500294117647059,
+            1
+          ],
+          [
+            0.37502450980392155,
+            1
+          ],
+          [
+            0.5000196078431373,
+            1
+          ],
+          [
+            0.625014705882353,
+            1
+          ],
+          [
+            0.7500098039215686,
+            1
+          ],
+          [
+            0.8750049019607843,
+            1
+          ]
+        ],
+        "mode": "full"
+      },
+      "eq": {
+        "lowcut": {
+          "param": "A",
+          "minValue": 20,
+          "maxValue": 20000,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "highcut": {
+          "param": "B",
+          "minValue": 20000,
+          "maxValue": 20,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "low": 0,
+        "mid": 0,
+        "high": 0
+      },
+      "sliceMode": "divide",
+      "stretch": true,
+      "tempo": 120,
+      "outputs": [
+        "output"
+      ],
+      "routes": {
+        "output": "$default"
+      },
+      "volume": 0.4642,
+      "node": "chunk/slicer"
+    },
+    {
+      "id": "Build",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        204,
+        91,
+        146
+      ],
+      "minimised": true,
+      "sample": {
+        "offset": [
+          0,
+          1
+        ],
+        "amp": 1,
+        "transpose": 0,
+        "buffer": {
+          "node": "AudioBuffer",
+          "src": "./Build.opus"
+        },
+        "slices": [
+          [
+            0,
+            1
+          ],
+          [
+            0.25,
+            1
+          ],
+          [
+            0.5,
+            1
+          ],
+          [
+            0.75,
+            1
+          ]
+        ],
+        "mode": "full"
+      },
+      "eq": {
+        "lowcut": {
+          "param": "A",
+          "minValue": 20,
+          "maxValue": 20000,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "highcut": {
+          "param": "B",
+          "minValue": 20000,
+          "maxValue": 20,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "low": 0,
+        "mid": 0,
+        "high": 0
+      },
+      "sliceMode": "divide",
+      "stretch": true,
+      "tempo": 120,
+      "outputs": [
+        "output"
+      ],
+      "routes": {
+        "output": "$default"
+      },
+      "volume": 0.5027,
+      "node": "chunk/slicer"
+    }
+  ],
+  "selectedChunkId": "Pad-offset",
+  "volume": 1,
+  "globalScale": {
+    "offset": 0,
+    "notes": [
+      0,
+      2,
+      4,
+      5,
+      7,
+      9,
+      10
+    ]
+  },
+  "node": "setup"
+}

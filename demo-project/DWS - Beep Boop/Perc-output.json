@@ -1,0 +1,42 @@
+{
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "sources": [],
+      "processors": [
+        {
+          "threshold": -45.67430775096497,
+          "knee": 30,
+          "ratio": 12,
+          "attack": 0.003000000026077032,
+          "release": 0.25,
+          "node": "processor/compressor"
+        },
+        {
+          "time": 0.461,
+          "decay": 2.88,
+          "reverse": true,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 1,
+          "dry": 1,
+          "node": "processor/reverb"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [
+    "input"
+  ],
+  "outputs": [
+    "output"
+  ],
+  "params": [],
+  "selectedSlotId": "output",
+  "node": "chunk/meddler",
+  "scale": "$global"
+}

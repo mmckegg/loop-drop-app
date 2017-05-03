@@ -1,0 +1,593 @@
+{
+  "controllers": [
+    {
+      "port": "Launchpad MK2",
+      "loopLength": 8,
+      "chunkPositions": {
+        "909": [
+          0,
+          4
+        ],
+        "drums": [
+          0,
+          0
+        ],
+        "bass-offset": [
+          7,
+          0
+        ],
+        "pad": [
+          2,
+          0
+        ],
+        "bass": [
+          5,
+          0
+        ],
+        "bloop": [
+          3,
+          0
+        ],
+        "bloop-output": [
+          1,
+          4
+        ]
+      },
+      "node": "controller/launchpad-mk2"
+    },
+    {
+      "port": "Launchpad MK2 2",
+      "loopLength": 16,
+      "chunkPositions": {
+        "synth-offset": [
+          7,
+          0
+        ],
+        "cspan": [
+          0,
+          0
+        ],
+        "synth": [
+          5,
+          0
+        ],
+        "cspan-transpose": [
+          1,
+          0
+        ]
+      },
+      "node": "controller/launchpad-mk2"
+    },
+    {
+      "port": "Launch Control XL",
+      "chunkIds": [
+        "drums",
+        "909",
+        "bass",
+        "pad",
+        "bloop",
+        null,
+        "synth",
+        "cspan-output"
+      ],
+      "node": "controller/launch-control-xl"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "bass",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        112,
+        175,
+        168
+      ],
+      "minimised": true,
+      "src": "bass.json",
+      "offset": {
+        "param": "bass-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "cutoff": 0,
+        "undefined": 0.5078125,
+        "lowcut": 0
+      },
+      "volume": 1.0431,
+      "node": "externalChunk"
+    },
+    {
+      "id": "bass-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "noRepeat",
+        "freezeSuppress"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "synth-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "synth",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        43,
+        207,
+        139
+      ],
+      "minimised": true,
+      "src": "synth.json",
+      "offset": {
+        "param": "synth-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "cutoff": {
+          "param": "Launch Control > 4",
+          "minValue": 0.46875,
+          "maxValue": 1,
+          "mode": "linear",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "decay": 0,
+        "undefined": 0.1484375
+      },
+      "volume": 0.7835,
+      "node": "externalChunk"
+    },
+    {
+      "id": "drums",
+      "shape": [
+        2,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        238,
+        129,
+        179
+      ],
+      "minimised": true,
+      "src": "./drums.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "lowcut": 0,
+        "undefined": 0
+      },
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "cspan",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        214,
+        48,
+        19
+      ],
+      "minimised": true,
+      "sample": {
+        "offset": [
+          0.0019796380090497737,
+          0.07125
+        ],
+        "amp": {
+          "id": null,
+          "attack": 0.02,
+          "decay": 0,
+          "release": 0.086,
+          "sustain": 1,
+          "retrigger": false,
+          "value": 1,
+          "node": "modulator/adsr"
+        },
+        "transpose": {
+          "param": "cspan-transpose",
+          "minValue": 0,
+          "maxValue": 1,
+          "mode": "linear",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "buffer": {
+          "node": "AudioBuffer",
+          "src": "./DOLLARS and TODAY and EDUCATION-Jc_RKi4rmzs.m4a"
+        },
+        "slices": [
+          [
+            0.0019796380090497737,
+            0.019297228506787327
+          ],
+          [
+            0.019297228506787327,
+            0.03661481900452488
+          ],
+          [
+            0.03661481900452488,
+            0.053932409502262434
+          ],
+          [
+            0.053932409502262434,
+            0.07124999999999998
+          ]
+        ],
+        "mode": "slice"
+      },
+      "eq": {
+        "lowcut": 0,
+        "highcut": 20000,
+        "low": 0,
+        "mid": 0,
+        "high": 0
+      },
+      "sliceMode": "divide",
+      "stretch": false,
+      "tempo": 100,
+      "outputs": [
+        "output"
+      ],
+      "routes": {
+        "output": "cspan-output#input"
+      },
+      "volume": 0.511,
+      "node": "chunk/slicer"
+    },
+    {
+      "id": "cspan-transpose",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "noRepeat"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -12,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 12,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "cspan-output",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        255,
+        255,
+        0
+      ],
+      "minimised": true,
+      "src": "cspan-output.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "post cut": 0.0234375,
+        "freq": 0
+      },
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "909",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        162,
+        156,
+        232
+      ],
+      "minimised": true,
+      "src": "./909.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "highcut": 0,
+        "lowcut": 0.0625
+      },
+      "volume": 0.4233,
+      "node": "externalChunk"
+    },
+    {
+      "id": "bloop",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        138,
+        218,
+        5
+      ],
+      "minimised": true,
+      "src": "./pticer.json",
+      "offset": 0,
+      "routes": {
+        "output": "bloop-output#input"
+      },
+      "paramValues": {
+        "undefined": 0.08298916608116944
+      },
+      "volume": 1.0965,
+      "node": "externalChunk"
+    },
+    {
+      "id": "bloop-output",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [
+        "noRepeat"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        255,
+        255,
+        0
+      ],
+      "minimised": true,
+      "src": "bloop-output.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "pad",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        149,
+        100,
+        188
+      ],
+      "minimised": true,
+      "src": "./pad.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "undefined": 0.015625,
+        "post cut": 0
+      },
+      "volume": 1,
+      "node": "externalChunk"
+    }
+  ],
+  "selectedChunkId": "cspan-transpose",
+  "volume": 1.2285,
+  "globalScale": {
+    "offset": -4,
+    "notes": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ]
+  },
+  "node": "setup"
+}

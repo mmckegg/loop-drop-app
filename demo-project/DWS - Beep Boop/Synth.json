@@ -1,0 +1,163 @@
+{
+  "scale": "$global",
+  "templateSlot": {
+    "id": {
+      "$param": "id"
+    },
+    "output": "output",
+    "volume": 1,
+    "sources": [
+      {
+        "amp": {
+          "attack": 0,
+          "decay": 0.959,
+          "release": 1.6,
+          "sustain": 0.2959540605451768,
+          "retrigger": false,
+          "value": 0.6,
+          "node": "modulator/adsr"
+        },
+        "frequency": 440,
+        "noteOffset": {
+          "grid": 7,
+          "offset": 0,
+          "value": {
+            "mode": "add",
+            "sync": true,
+            "trigger": false,
+            "quantize": null,
+            "rate": 0.6666666666666666,
+            "amp": 0,
+            "value": 0,
+            "phaseOffset": 0,
+            "curve": 0.519340321679308,
+            "skew": -0.45,
+            "node": "modulator/lfo"
+          },
+          "node": "modulator/quantize"
+        },
+        "pan": 0,
+        "octave": -1,
+        "detune": {
+          "mode": "add",
+          "sync": false,
+          "trigger": false,
+          "quantize": null,
+          "rate": 5,
+          "amp": 19,
+          "value": 0,
+          "phaseOffset": 0,
+          "curve": 1,
+          "skew": 0,
+          "node": "modulator/lfo"
+        },
+        "shape": "sine",
+        "node": "source/oscillator"
+      }
+    ],
+    "processors": [
+      {
+        "preBand": 0.5,
+        "color": 800,
+        "postCut": {
+          "attack": 0.334,
+          "decay": 0,
+          "release": 0,
+          "sustain": 1,
+          "retrigger": false,
+          "value": 18000,
+          "node": "modulator/adsr"
+        },
+        "gain": {
+          "attack": 0,
+          "decay": 0.39,
+          "release": 0.031,
+          "sustain": {
+            "param": "sustain",
+            "minValue": 0.022162360615627652,
+            "maxValue": 1.995423642905786,
+            "mode": "linear",
+            "quantize": 0,
+            "node": "linkParam"
+          },
+          "retrigger": false,
+          "value": 9.5159,
+          "node": "modulator/adsr"
+        },
+        "amp": 1,
+        "node": "processor/overdrive"
+      }
+    ],
+    "noteOffset": {
+      "value": {
+        "$param": "value"
+      },
+      "scale": {
+        "$param": "scale"
+      },
+      "node": "modulator/scale",
+      "offset": {
+        "$param": "offset"
+      }
+    },
+    "node": "slot"
+  },
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "time": 0.25,
+          "sync": false,
+          "feedback": 0.3153,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 0.1584,
+          "dry": 1,
+          "node": "processor/ping-pong-delay"
+        },
+        {
+          "highcut": {
+            "node": "linkParam",
+            "minValue": 20000,
+            "maxValue": 20,
+            "param": "highcut",
+            "mode": "exp"
+          },
+          "lowcut": {
+            "node": "linkParam",
+            "minValue": 20,
+            "maxValue": 20000,
+            "param": "lowcut",
+            "mode": "exp"
+          },
+          "low": -12.61117983519717,
+          "mid": 4.552950866865039,
+          "high": 0,
+          "node": "processor/eq"
+        },
+        {
+          "offset": -0.03,
+          "node": "processor/spatial-pan"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "lowcut",
+    "highcut",
+    "sustain"
+  ],
+  "selectedSlotId": "output",
+  "node": "chunk/scale"
+}

@@ -1,0 +1,640 @@
+{
+  "controllers": [
+    {
+      "port": "Launchpad MK2",
+      "loopLength": 16,
+      "chunkPositions": {
+        "Perc": [
+          0,
+          4
+        ],
+        "bass": [
+          2,
+          0
+        ],
+        "Drums": [
+          0,
+          0
+        ],
+        "Synth": [
+          4,
+          0
+        ],
+        "Arp Synth": [
+          6,
+          0
+        ],
+        "bass-offset": [
+          3,
+          0
+        ]
+      },
+      "node": "controller/launchpad-mk2"
+    },
+    {
+      "port": "Launchpad MK2 2",
+      "loopLength": 16,
+      "chunkPositions": {
+        "xylo": [
+          0,
+          0
+        ],
+        "xylo-transpose": [
+          1,
+          0
+        ],
+        "Pad": [
+          3,
+          0
+        ],
+        "Pad-offset": [
+          5,
+          0
+        ]
+      },
+      "node": "controller/launchpad-mk2"
+    },
+    {
+      "port": "Launch Control XL",
+      "chunkIds": [
+        "Drums",
+        "bass",
+        "Perc",
+        "Synth",
+        "Arp Synth",
+        null,
+        "Pad",
+        "xylo"
+      ],
+      "node": "controller/launch-control-xl"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "Drums",
+      "shape": [
+        2,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        192,
+        253,
+        201
+      ],
+      "minimised": true,
+      "src": "Drums.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "tone": 0,
+        "tune": 0
+      },
+      "volume": 1.0312,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Synth",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        151,
+        42,
+        178
+      ],
+      "minimised": true,
+      "src": "Synth.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "pitch": 0
+      },
+      "volume": 0.835,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Arp Synth",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        151,
+        42,
+        178
+      ],
+      "minimised": true,
+      "src": "Arp Synth.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "pitch": 0
+      },
+      "volume": 0.6543,
+      "node": "externalChunk"
+    },
+    {
+      "id": "bass",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        7,
+        9,
+        98
+      ],
+      "minimised": true,
+      "src": "bass.json",
+      "offset": {
+        "param": "bass-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {
+        "freq": 0.4242960521768976,
+        "Q": 1
+      },
+      "volume": 0.73,
+      "node": "externalChunk"
+    },
+    {
+      "id": "bass-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "freezeSuppress",
+        "noRepeat"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "Perc",
+      "shape": [
+        2,
+        4
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        247,
+        244,
+        242
+      ],
+      "minimised": false,
+      "sample": {
+        "offset": [
+          0.42375,
+          0.985
+        ],
+        "amp": {
+          "id": null,
+          "attack": 2.1,
+          "decay": 0,
+          "release": 2.8,
+          "sustain": 1,
+          "retrigger": true,
+          "value": 2.9071,
+          "node": "modulator/adsr"
+        },
+        "transpose": -2,
+        "buffer": {
+          "node": "AudioBuffer",
+          "src": "./1490926241152.opus"
+        },
+        "slices": [
+          [
+            0.423749081246113,
+            0.5145643693107932
+          ],
+          [
+            0.5145643693107932,
+            0.5386752982416464
+          ],
+          [
+            0.5386752982416464,
+            0.5997342681065189
+          ],
+          [
+            0.5997342681065189,
+            0.7263526884152203
+          ],
+          [
+            0.7263526884152203,
+            0.7479759145134844
+          ],
+          [
+            0.7479759145134844,
+            0.8518459885791825
+          ],
+          [
+            0.8518459885791825,
+            0.9449313054786
+          ],
+          [
+            0.9449313054786,
+            0.983821450783061
+          ],
+          [
+            0.983821450783061,
+            0.985
+          ]
+        ],
+        "mode": "slice"
+      },
+      "eq": {
+        "lowcut": {
+          "param": "A",
+          "minValue": 20,
+          "maxValue": 20000,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "highcut": {
+          "param": "B",
+          "minValue": 20000,
+          "maxValue": 20,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "low": 0,
+        "mid": 0,
+        "high": 0
+      },
+      "sliceMode": "snap",
+      "stretch": true,
+      "tempo": 120,
+      "outputs": [
+        "output"
+      ],
+      "routes": {
+        "output": "Perc-output#input"
+      },
+      "volume": 1,
+      "node": "chunk/slicer"
+    },
+    {
+      "id": "Perc-output",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        255,
+        255,
+        0
+      ],
+      "minimised": true,
+      "src": "Perc-output.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "xylo",
+      "shape": [
+        1,
+        3
+      ],
+      "flags": [],
+      "chokeAll": true,
+      "chokeGroup": null,
+      "color": [
+        204,
+        172,
+        138
+      ],
+      "minimised": true,
+      "sample": {
+        "offset": [
+          0.186,
+          0.31625
+        ],
+        "amp": 1,
+        "transpose": {
+          "param": "xylo-transpose",
+          "minValue": -13,
+          "maxValue": -12,
+          "mode": "linear",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "buffer": {
+          "node": "AudioBuffer",
+          "src": "./1490928138978.wav"
+        },
+        "slices": [
+          [
+            0.18599714338342982,
+            0.31625
+          ],
+          [
+            0.2413237065958854,
+            0.31625
+          ],
+          [
+            0.2899979164213177,
+            0.31625
+          ],
+          [
+            0.32189176865633334,
+            0.31625
+          ]
+        ],
+        "mode": "full"
+      },
+      "eq": {
+        "lowcut": {
+          "param": "A",
+          "minValue": 20,
+          "maxValue": 20000,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "highcut": {
+          "param": "B",
+          "minValue": 175,
+          "maxValue": 11000,
+          "mode": "exp",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "low": 0,
+        "mid": 0,
+        "high": 0
+      },
+      "sliceMode": "snap",
+      "stretch": true,
+      "tempo": 110,
+      "outputs": [
+        "output"
+      ],
+      "routes": {
+        "output": "xylo-output#input"
+      },
+      "volume": 0.558,
+      "node": "chunk/slicer"
+    },
+    {
+      "id": "xylo-transpose",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [
+        "freezeSuppress",
+        "noRepeat"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    },
+    {
+      "id": "xylo-output",
+      "shape": [
+        1,
+        4
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        255,
+        255,
+        0
+      ],
+      "minimised": true,
+      "src": "xylo-output.json",
+      "offset": 0,
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Pad",
+      "shape": [
+        2,
+        8
+      ],
+      "flags": [],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        59,
+        5,
+        28
+      ],
+      "minimised": true,
+      "src": "Pad.json",
+      "offset": {
+        "param": "Pad-offset",
+        "minValue": 0,
+        "maxValue": 1,
+        "mode": "linear",
+        "quantize": 0,
+        "node": "linkParam"
+      },
+      "routes": {
+        "output": "$default"
+      },
+      "paramValues": {},
+      "volume": 1,
+      "node": "externalChunk"
+    },
+    {
+      "id": "Pad-offset",
+      "shape": [
+        1,
+        8
+      ],
+      "flags": [
+        "freezeSuppress"
+      ],
+      "chokeAll": false,
+      "chokeGroup": null,
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "minimised": true,
+      "slots": [
+        {
+          "id": "0",
+          "value": -4,
+          "node": "slot/value"
+        },
+        {
+          "id": "1",
+          "value": -3,
+          "node": "slot/value"
+        },
+        {
+          "id": "2",
+          "value": -2,
+          "node": "slot/value"
+        },
+        {
+          "id": "3",
+          "value": -1,
+          "node": "slot/value"
+        },
+        {
+          "id": "4",
+          "value": 1,
+          "node": "slot/value"
+        },
+        {
+          "id": "5",
+          "value": 2,
+          "node": "slot/value"
+        },
+        {
+          "id": "6",
+          "value": 3,
+          "node": "slot/value"
+        },
+        {
+          "id": "7",
+          "value": 4,
+          "node": "slot/value"
+        }
+      ],
+      "node": "modulatorChunk"
+    }
+  ],
+  "selectedChunkId": "Perc",
+  "volume": 1,
+  "globalScale": {
+    "offset": 0,
+    "notes": [
+      0,
+      2,
+      3,
+      5,
+      7,
+      8,
+      10
+    ]
+  },
+  "node": "setup"
+}

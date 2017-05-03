@@ -1,0 +1,144 @@
+{
+  "scale": "$global",
+  "templateSlot": {
+    "id": {
+      "$param": "id"
+    },
+    "output": "output",
+    "volume": 1,
+    "sources": [
+      {
+        "amp": {
+          "attack": 0.025,
+          "decay": 0,
+          "release": 1.9,
+          "sustain": 1,
+          "retrigger": false,
+          "value": 0.6,
+          "node": "modulator/adsr"
+        },
+        "frequency": 440,
+        "noteOffset": 0,
+        "pan": 0,
+        "octave": 0,
+        "detune": 0,
+        "shape": "sine",
+        "node": "source/oscillator"
+      }
+    ],
+    "processors": [],
+    "noteOffset": {
+      "node": "modulator/scale",
+      "value": {
+        "$param": "value"
+      },
+      "offset": {
+        "$param": "offset"
+      },
+      "scale": {
+        "$param": "scale"
+      }
+    },
+    "node": "slot"
+  },
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 1,
+      "sources": [],
+      "processors": [
+        {
+          "preBand": 0.5,
+          "color": 800,
+          "postCut": 2300,
+          "gain": 1.488,
+          "amp": 1,
+          "node": "processor/overdrive"
+        },
+        {
+          "time": {
+            "mode": "add",
+            "sync": false,
+            "trigger": false,
+            "quantize": null,
+            "rate": 0.16666666666666666,
+            "amp": 0.5,
+            "value": 0.5,
+            "phaseOffset": 0,
+            "curve": 0.3364971054651293,
+            "skew": 0,
+            "node": "modulator/lfo"
+          },
+          "sync": true,
+          "feedback": 0.6324,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 0.1881,
+          "dry": 1,
+          "node": "processor/ping-pong-delay"
+        },
+        {
+          "time": 3,
+          "decay": 2,
+          "reverse": false,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 1,
+          "dry": 1,
+          "node": "processor/reverb"
+        },
+        {
+          "threshold": -4.1955790465463,
+          "knee": 30,
+          "ratio": 12,
+          "attack": 0.003000000026077032,
+          "release": 0.25,
+          "node": "processor/compressor"
+        },
+        {
+          "time": 0.25,
+          "sync": true,
+          "feedback": 0.6,
+          "cutoff": 20000,
+          "filterType": "lowpass",
+          "wet": 0.705,
+          "dry": 1,
+          "node": "processor/ping-pong-delay"
+        },
+        {
+          "highcut": {
+            "node": "linkParam",
+            "minValue": 20000,
+            "maxValue": 20,
+            "param": "highcut",
+            "mode": "exp"
+          },
+          "lowcut": {
+            "node": "linkParam",
+            "minValue": 20,
+            "maxValue": 20000,
+            "param": "lowcut",
+            "mode": "exp"
+          },
+          "low": 0,
+          "mid": 0,
+          "high": 0,
+          "node": "processor/eq"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "lowcut",
+    "highcut"
+  ],
+  "selectedSlotId": "output",
+  "node": "chunk/scale"
+}

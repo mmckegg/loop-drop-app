@@ -1,0 +1,172 @@
+{
+  "scale": "$global",
+  "templateSlot": {
+    "id": {
+      "$param": "id"
+    },
+    "output": "output",
+    "volume": 1.4331,
+    "modulators": [],
+    "sources": [
+      {
+        "amp": {
+          "node": "modulator/adsr",
+          "value": 0.6,
+          "release": 2.1,
+          "decay": 0.175,
+          "sustain": 0.2415998783891398,
+          "attack": 0
+        },
+        "frequency": 440,
+        "noteOffset": 0,
+        "pan": 0,
+        "octave": -3,
+        "detune": 0,
+        "shape": "sine",
+        "node": "source/oscillator"
+      },
+      {
+        "amp": {
+          "node": "modulator/adsr",
+          "value": 0.6,
+          "release": 2.1,
+          "attack": 0,
+          "decay": 0.451,
+          "sustain": 0.6270806123711388
+        },
+        "frequency": 440,
+        "noteOffset": 0,
+        "pan": 0,
+        "octave": -2,
+        "detune": 0,
+        "shape": "square",
+        "node": "source/oscillator"
+      }
+    ],
+    "processors": [
+      {
+        "frequency": {
+          "node": "modulator/adsr",
+          "value": 2300,
+          "decay": {
+            "node": "linkParam",
+            "minValue": 0.3,
+            "maxValue": 1,
+            "param": "cutoff",
+            "mode": "linear"
+          },
+          "sustain": {
+            "node": "linkParam",
+            "minValue": 0,
+            "maxValue": 0.1,
+            "param": "cutoff",
+            "mode": "linear"
+          },
+          "release": 0,
+          "attack": 0
+        },
+        "Q": {
+          "param": "Q",
+          "minValue": 0.13933476654464494,
+          "maxValue": 12.900822264111822,
+          "mode": "linear",
+          "quantize": 0,
+          "node": "linkParam"
+        },
+        "gain": 0,
+        "type": "lowpass",
+        "node": "processor/filter"
+      },
+      {
+        "preBand": 0.5,
+        "color": 150,
+        "postCut": {
+          "node": "linkParam",
+          "minValue": 935,
+          "maxValue": 12000,
+          "param": "cutoff",
+          "mode": "exp"
+        },
+        "gain": 1,
+        "amp": 1,
+        "node": "processor/overdrive"
+      },
+      {
+        "frequency": 50,
+        "Q": 0,
+        "gain": 0,
+        "type": "highpass",
+        "node": "processor/filter"
+      },
+      {
+        "gain": {
+          "id": null,
+          "attack": 0.038,
+          "decay": 0,
+          "release": 0,
+          "sustain": 1,
+          "retrigger": false,
+          "value": 1,
+          "node": "modulator/adsr"
+        },
+        "node": "processor/gain"
+      }
+    ],
+    "noteOffset": {
+      "node": "modulator/scale",
+      "value": {
+        "$param": "value"
+      },
+      "offset": {
+        "$param": "offset"
+      },
+      "scale": {
+        "$param": "scale"
+      }
+    },
+    "node": "slot"
+  },
+  "slots": [
+    {
+      "id": "output",
+      "output": null,
+      "volume": 0.5979,
+      "modulators": [],
+      "sources": [],
+      "processors": [
+        {
+          "highcut": 20000,
+          "lowcut": {
+            "node": "linkParam",
+            "minValue": 0,
+            "maxValue": 20000,
+            "param": "lowcut",
+            "mode": "exp"
+          },
+          "low": -5.376391153457945,
+          "mid": 2.028985507246375,
+          "high": 0,
+          "node": "processor/eq"
+        },
+        {
+          "mode": "modulate",
+          "ratio": 0.477084015686764,
+          "node": "processor/dipper"
+        }
+      ],
+      "noteOffset": 0,
+      "node": "slot"
+    }
+  ],
+  "inputs": [],
+  "outputs": [
+    "output"
+  ],
+  "params": [
+    "lowcut",
+    "cutoff",
+    "Q"
+  ],
+  "selectedSlotId": "$template",
+  "node": "chunk/scale"
+}

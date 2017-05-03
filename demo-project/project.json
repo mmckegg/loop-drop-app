@@ -1,1 +1,8 @@
-{"node":"project","zoom":1.1,"tempo":120,"swing":0,"rawMode":false,"globalControllers":[]}
+{
+  "zoom": 1.1,
+  "tempo": 120,
+  "swing": 0,
+  "rawMode": false,
+  "globalControllers": [],
+  "node": "project"
+}
