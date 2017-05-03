@@ -195,7 +195,6 @@ function LoopQwerty (context) {
     loopGrid.destroy()
     releaseLooper()
     releasesGlobalRepeatLength()
-    obs.context = null
   }
 
   return obs
