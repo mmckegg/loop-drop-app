@@ -7,6 +7,7 @@ var Range = require('lib/params/range')
 var Select = require('lib/params/select')
 var EditableHook = require('lib/editable-hook')
 var updateParamReferences = require('lib/update-param-references')
+var isTriggerable = require('lib/is-triggerable')
 
 var modeOptions = [
   ['Add', 'add'],
@@ -14,6 +15,8 @@ var modeOptions = [
 ]
 
 module.exports = function renderLfo (node) {
+  var trigger = isTriggerable(node)
+
   return h('ModulatorNode -lfo', [
     Header(node, h('span', [
       h('strong', 'LFO:'), ' ',
@@ -26,9 +29,9 @@ module.exports = function renderLfo (node) {
         title: 'BPM Sync'
       }),
 
-      ToggleButton(node.trigger, {
+      when(trigger, ToggleButton(node.trigger, {
         title: 'Retrigger'
-      }),
+      })),
 
       Select(node.mode, {
         options: modeOptions

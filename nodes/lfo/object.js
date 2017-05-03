@@ -68,7 +68,10 @@ function LFO (context) {
   var rate = Multiply([rateMultiplier, obs.rate])
 
   releases.push(
-    Apply(context.audio, outputValue.gain, obs.amp)
+    Apply(context.audio, outputValue.gain, obs.amp),
+    obs.phaseOffset(restart),
+    obs.trigger(restart),
+    obs.sync(restart)
   )
 
   // for manual probing of value
@@ -113,6 +116,14 @@ function LFO (context) {
   return obs
 
   // scoped
+
+  function restart () {
+    var time = context.audio.currentTime
+    if (currentEvent && (!currentEvent.to || currentEvent.to < time)) {
+      var offset = getOffset(time)
+      start(time, offset)
+    }
+  }
 
   function getOffset (at) {
     var offset = 0
