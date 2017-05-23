@@ -4,11 +4,7 @@ var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
 var QueryParam = require('lib/query-param')
-
-var nodeChoices = [
-  ['Fast', 'processor/freeverb'],
-  ['Convolver', 'processor/reverb']
-]
+var nodeChoices = require('../reverb/types')
 
 module.exports = function renderFreeverb (node) {
   return h('ProcessorNode -reverb', [

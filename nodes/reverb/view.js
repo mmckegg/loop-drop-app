@@ -5,15 +5,11 @@ var ModRange = require('lib/params/mod-range')
 var ToggleButton = require('lib/params/toggle-button')
 var Select = require('lib/params/select')
 var QueryParam = require('lib/query-param')
+var nodeChoices = require('./types')
 
 var filterChoices = [
   ['Lowpass', 'lowpass'],
   ['Highpass', 'highpass']
-]
-
-var nodeChoices = [
-  ['Fast', 'processor/freeverb'],
-  ['Convolver', 'processor/reverb']
 ]
 
 module.exports = function renderReverb (node) {
