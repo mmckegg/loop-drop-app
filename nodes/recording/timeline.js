@@ -1,10 +1,11 @@
 var Struct = require('mutant/struct')
-var Value = require('mutant/value')
+var resolve = require('mutant/resolve')
 var Slots = require('lib/slots')
 var computed = require('mutant/computed')
 var MutantMap = require('mutant/map')
 var pullCat = require('pull-cat')
 var pull = require('pull-stream')
+var StreamProgress = require('lib/stream-progress')
 
 module.exports = AudioTimeline
 
@@ -33,7 +34,8 @@ function AudioTimeline (parentContext) {
 
   obs.resolved = Struct({
     primary: obs.primary.resolved,
-    duration: obs.duration
+    duration: obs.duration,
+    sampleRate: computed(obs.primary.resolved, clips => clips[0] && clips[0].sampleRate || null)
   })
 
   obs.start = function (at, offset, duration) {
@@ -76,6 +78,7 @@ function AudioTimeline (parentContext) {
     duration = duration == null ? obs.duration() : duration
     duration = Math.min(obs.duration(), duration - timeOffset)
 
+    var sampleRate = resolve(obs.resolved.sampleRate)
     var streams = []
     var currentTime = 0
 
@@ -91,19 +94,15 @@ function AudioTimeline (parentContext) {
       }
     })
 
-    var length = 0
-    var blockSize = 32 * 2 / 8
-    var progress = Value(0)
+    var progressWatcher = StreamProgress({duration, sampleRate})
 
     var result = pull(
       pullCat(streams),
-      pull.through((data) => {
-        length += data.length / blockSize
-        progress.set(length / (duration * context.audio.sampleRate))
-      })
+      progressWatcher
     )
 
-    result.progress = progress
+    result.sampleRate = sampleRate
+    result.progress = progressWatcher.value
     return result
   }
 

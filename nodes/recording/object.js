@@ -1,4 +1,5 @@
 var Struct = require('mutant/struct')
+var watch = require('mutant/watch')
 var Property = require('lib/property')
 var WaveFileWriter = require('wav/lib/file-writer')
 var Scheduler = require('lib/timeline-scheduler')
@@ -9,6 +10,7 @@ var getClosestPoint = require('lib/get-closest-point')
 var extend = require('xtend')
 var animateProp = require('animate-prop')
 var toStream = require('pull-stream-to-stream')
+var abletonExport = require('./ableton-export')
 
 module.exports = Recording
 
@@ -163,6 +165,25 @@ function Recording (parentContext) {
     }
   }
 
+  obs.exportToLive = function () {
+    electron.remote.dialog.showSaveDialog({
+      title: 'Export to Ableton Live',
+      filters: [
+        { name: 'Ableton Live Project', extensions: ['als']}
+      ]
+    }, function (path) {
+      if (path) {
+        obs.rendering.set(true)
+        var progress = abletonExport(obs.timeline, path, (err) => {
+          if (err) throw err
+          obs.rendering.set(false)
+          unwatch()
+        })
+        var unwatch = watch(progress, obs.renderProgress.set)
+      }
+    })
+  }
+
   obs.exportFile = function (format) {
     electron.remote.dialog.showSaveDialog({
       title: 'Export Recording (PCM Wave)',
@@ -180,7 +201,7 @@ function Recording (parentContext) {
         var output = WaveFileWriter(path, {
           bitDepth: bitDepth,
           format: bitDepth === 32 ? 3 : 1,
-          sampleRate: context.audio.sampleRate,
+          sampleRate: source.sampleRate,
           channels: 2
         })
 

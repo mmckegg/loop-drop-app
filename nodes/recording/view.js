@@ -7,6 +7,7 @@ var computed = require('mutant/computed')
 var watch = require('mutant/watch')
 var map = require('mutant/map')
 var when = require('mutant/when')
+var sustained = require('lib/sustained')
 
 var ToggleButton = require('lib/params/toggle-button')
 var MouseDragEvent = require('lib/mouse-drag-event')
@@ -27,7 +28,7 @@ function RecordingView (recording) {
     ]),
 
     h('div.options', [
-      when(recording.rendering, h('progress', {
+      when(sustained(recording.rendering, 200, x => x), h('progress', {
         min: 0,
         max: 1,
         hooks: [ValueHook(recording.renderProgress)]
@@ -66,7 +67,10 @@ function RecordingView (recording) {
       h('section', [
         h('button.export', {
           'ev-click': send(recording.exportFile, 'wave')
-        }, 'Export Wave')
+        }, 'Export Wave'),
+        h('button.export', {
+          'ev-click': send(recording.exportToLive)
+        }, 'Export to Ableton Live')
       ])
     ])
 

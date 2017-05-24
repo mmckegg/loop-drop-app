@@ -1,7 +1,9 @@
+var Value = require('mutant/value')
 var Struct = require('mutant/struct')
 var Property = require('lib/property')
 var watch = require('mutant/watch')
-var resolve = require('path').resolve
+var resolve = require('mutant/resolve')
+var resolvePath = require('path').resolve
 var computed = require('mutant/computed')
 var pull = require('pull-stream')
 var toPcm = require('lib/to-pcm')
@@ -13,6 +15,9 @@ function AudioTimelineClip (context) {
   var preloadTime = 5
   var segments = null
   var loadingMeta = false
+  var sampleRate = Value(context.audio.sampleRate)
+  var bitDepth = Value(32)
+  var channels = Value(2)
 
   var obs = Struct({
     startOffset: Property(0),
@@ -44,6 +49,9 @@ function AudioTimelineClip (context) {
     duration: obs.duration.resolved,
     startOffset: obs.startOffset,
     cuePoints: obs.cuePoints,
+    sampleRate,
+    bitDepth,
+    channels,
     flags: obs.flags,
     src: obs.src
   })
@@ -53,7 +61,7 @@ function AudioTimelineClip (context) {
   var lastPath = null
   obs.src(function (value) {
     // preload
-    var path = resolve(context.cwd, value)
+    var path = resolvePath(context.cwd, value)
     if (path !== lastPath) {
       loadingMeta = true
       refreshLoading()
@@ -62,6 +70,8 @@ function AudioTimelineClip (context) {
         if (!err) {
           var data = JSON.parse(result)
           var offset = context.audio.sampleRate < data.sampleRate ? -(1 / context.audio.sampleRate) : 0
+          sampleRate.set(data.sampleRate)
+          channels.set(data.channels)
           var pos = 0
           segments = data.segments.map(function (segment, i) {
             var duration = segment.duration + offset
@@ -162,6 +172,22 @@ function AudioTimelineClip (context) {
     )
   }
 
+  obs.getWarpMarkers = function () {
+    var lastTempo = 0
+    var items = []
+    var cuePoints = resolve(obs.cuePoints)
+    cuePoints.forEach((time, i) => {
+      var next = cuePoints[i + 1]
+      var beat = i / 2
+      var tempo = tempoAt(cuePoints, i)
+      if (isFinite(tempo) && (lastTempo !== tempo || !next)) {
+        items.push({ time: time + 0.032, beat, tempo })
+      }
+      lastTempo = tempo
+    })
+    return items
+  }
+
   return obs
 
   // scoped
@@ -240,4 +266,18 @@ function AudioTimelineClip (context) {
       obs.loading.set(false)
     }
   }
+}
+
+function tempoAt (cues, pos) {
+  var difference = cues[pos + 1] - cues[pos]
+  var lastDifference = cues[pos - 1] - cues[pos - 2]
+  var nextDifference = cues[pos + 2] - cues[pos + 1]
+  if (lastDifference === nextDifference || isNaN(difference)) {
+    difference = lastDifference
+  }
+  return round((1 / (difference * 2)) * 60, 100)
+}
+
+function round (value, grid) {
+  return Math.round(value * grid) / grid
 }
