@@ -1,6 +1,7 @@
 var h = require('lib/h')
 var send = require('mutant/send')
 var computed = require('mutant/computed')
+var when = require('mutant/when')
 
 var AudioMeter = require('lib/widgets/audio-meter')
 var Range = require('lib/params/range')
@@ -51,7 +52,14 @@ module.exports = function (project) {
 
         h('div -setups', [
           h('header', [
-            h('span', 'Setups'), h('button.new', {'ev-click': send(actions.newSetup)}, '+ New')
+            h('span', 'Setups'),
+            when(project.selected,
+              when(project.duplicating,
+                h('button.new', {'disabled': true}, 'Duplicating...'),
+                h('button.new', {'ev-click': send(actions.duplicateCurrent)}, 'Duplicate')
+              )
+            ),
+            h('button.new', {'ev-click': send(actions.newSetup)}, '+ New')
           ]),
           renderBrowser(project.entries, project)
         ]),
