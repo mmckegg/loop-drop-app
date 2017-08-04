@@ -3,7 +3,7 @@ var Struct = require('mutant/struct')
 var Property = require('lib/property')
 var watch = require('mutant/watch')
 var resolve = require('mutant/resolve')
-var resolvePath = require('path').resolve
+var Path = require('path')
 var computed = require('mutant/computed')
 var pull = require('pull-stream')
 var toPcm = require('lib/to-pcm')
@@ -58,11 +58,11 @@ function AudioTimelineClip (context) {
 
   obs.position = Property(0)
 
-  var lastPath = null
-  obs.src(function (value) {
-    // preload
-    var path = resolvePath(context.cwd, value)
-    if (path !== lastPath) {
+  var path = computed([context.cwd, obs.src], (a, b) => a && b && Path.resolve(a, b) || null)
+  var queue = []
+
+  watch(path, (path) => {
+    if (path) {
       loadingMeta = true
       refreshLoading()
 
@@ -99,8 +99,6 @@ function AudioTimelineClip (context) {
     }
   })
 
-  var queue = []
-
   var releaseScheduler = context.scheduler(function (schedule) {
     for (var i = queue.length - 1; i >= 0; i--) {
       var item = queue[i]
@@ -117,7 +115,6 @@ function AudioTimelineClip (context) {
 
   obs.start = function (at, timeOffset, duration) {
     var time = at
-    var remaining = duration
     var cues = getCueList(timeOffset, duration)
     cues.forEach(cue => {
       queue.push({

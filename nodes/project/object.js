@@ -75,9 +75,9 @@ function Project (parentContext) {
   obs.renaming = Observ(false)
   obs.duplicating = Observ(false)
 
-  obs.entries = ObservDirectory(context.cwd)
+  obs.entries = ObservDirectory(resolve(context.cwd))
 
-  obs.recordingEntries = ObservDirectory(resolvePath(context.cwd, '~recordings'))
+  obs.recordingEntries = ObservDirectory(resolvePath(resolve(context.cwd), '~recordings'))
 
   obs.outputRms = ObservRms(masterOutput)
 
@@ -217,7 +217,6 @@ function Project (parentContext) {
         if (item) {
           resolveAvailable(path, context.fs, function (err, newPath) {
             if (err) throw err
-            var newName = getFile(path)
             ncp(path, newPath, (err) => {
               obs.duplicating.set(false)
 
@@ -226,7 +225,7 @@ function Project (parentContext) {
               obs.recordingEntries.refresh()
 
               var newSetupPath = join(newPath, 'index.json')
-              console.log(`Duplicated "${path}" to "${newName}"`)
+              console.log(`Duplicated "${path}"`)
               item.load(newSetupPath)
               obs.selected.set(resolve(item.path))
               obs.renaming.set(newPath)
@@ -237,7 +236,7 @@ function Project (parentContext) {
     },
 
     newSetup: function () {
-      var path = join(context.cwd, 'New Setup')
+      var path = join(resolve(context.cwd), 'New Setup')
       resolveAvailable(path, context.fs, function (err, path) {
         if (err) throw err
         context.fs.mkdir(path, function (err) {

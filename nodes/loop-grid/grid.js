@@ -185,7 +185,7 @@ function startDrag (ev) {
     coords: controller.chunkPositions.get(chunk.id())
   }
   ev.dataTransfer.setData('loop-drop/' + type, JSON.stringify(data))
-  ev.dataTransfer.setData('cwd', chunk.context.cwd)
+  ev.dataTransfer.setData('cwd', resolve(chunk.context.cwd))
   window.currentDrag = ev
 }
 
@@ -226,11 +226,11 @@ function dragOver (ev) {
   var currentDrag = window.currentDrag
 
   if (!currentDrag) return
-  var originalDirectory = currentDrag.node.context.cwd
+  var originalDirectory = resolve(currentDrag.node.context.cwd)
 
-  if (ev.altKey || originalDirectory !== controller.context.cwd) {
+  if (ev.altKey || originalDirectory !== resolve(controller.context.cwd)) {
     ev.dataTransfer.dropEffect = 'copy'
-  } else if (currentDrag && originalDirectory === controller.context.cwd) {
+  } else if (currentDrag && originalDirectory === resolve(controller.context.cwd)) {
     var chunkId = getId(currentDrag.node)
     if (chunkId) {
       var shape = controller.playback.shape()
@@ -275,7 +275,7 @@ function drop (ev) {
     var r = Math.floor(ev.offsetY / height)
     var c = Math.floor(ev.offsetX / width)
 
-    if (ev.altKey || ev.shiftKey || originalDirectory !== controller.context.cwd) {
+    if (ev.altKey || ev.shiftKey || originalDirectory !== resolve(controller.context.cwd)) {
       var chunk = JSON.parse(data)
       setup.importChunk(chunk, originalDirectory, function (err, id) {
         if (err) throw err
