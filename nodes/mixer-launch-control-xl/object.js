@@ -1,9 +1,13 @@
 var Param = require('lib/param')
+var Value = require('mutant/value')
+var Dict = require('mutant/dict')
+
 var MidiPort = require('lib/midi-port')
 var ObservMidi = require('observ-midi')
 var ObservStruct = require('mutant/struct')
 var MutantMap = require('mutant/map')
 var Property = require('lib/property')
+var ParamLooper = require('lib/param-looper')
 
 var ArrayStack = require('lib/array-stack')
 var FlashArray = require('lib/flash-array')
@@ -45,12 +49,27 @@ module.exports = function (context) {
 
   var releases = []
   var params = []
+  var paramLoopers = []
+
+  var recordingIndexes = Dict()
+  var playingIndexes = Dict()
+  var recordStarts = {}
+
   for (var i = 0; i < 8; i++) {
     params[i] = [
-      Param(context, 0),
-      Param(context, 0),
-      Param(context, 0)
+      Value(0),
+      Value(0),
+      Value(0)
     ]
+
+    paramLoopers[i] = [
+      ParamLooper(context, params[i][0]),
+      ParamLooper(context, params[i][1]),
+      ParamLooper(context, params[i][2])
+    ]
+
+    recordingIndexes.put(i, computed(paramLoopers[i].map(x => x.recording), (...args) => args.some(Boolean)))
+    playingIndexes.put(i, computed(paramLoopers[i].map(x => x.playing), (...args) => args.some(Boolean)))
   }
 
   var bindingReleases = new Map()
@@ -62,7 +81,7 @@ module.exports = function (context) {
       return item !== context.chunkLookup.get(id) || chunkIds.indexOf(id) !== index
     }))
     if (item) {
-      bindingReleases.set(item, item.overrideParams(params[index]))
+      bindingReleases.set(item, item.overrideParams(paramLoopers[index]))
     }
     return item
   }, {
@@ -85,12 +104,11 @@ module.exports = function (context) {
 
   var setup = context.setup
 
-  var paramState = []
   watchKnobs(midiPort.stream, mappings.row1.concat(mappings.row2, mappings.row3), function (id, data) {
     var param = params[id % 8][Math.floor(id / 8)]
     var chunk = setup.context.chunkLookup.get(obs.chunkIds()[id % 8])
     if (chunk && chunk.overrideParams && chunk.params) {
-      param.set(scaleInterpolate(param() * 128, data, paramState[id] = paramState[id] || {}) / 128)
+      param.set(data / 128)
     }
   })
 
@@ -196,6 +214,34 @@ module.exports = function (context) {
     }
   })
 
+  var recordButtonBase = computed([recordingIndexes, playingIndexes], function (recordingIndexes, playingIndexes) {
+    var result = []
+    for (var i = 0; i < 8; i++) {
+      if (recordingIndexes[i]) {
+        result[i] = light(3, 0)
+      } else if (playingIndexes[i]) {
+        result[i] = light(0, 3)
+      } else {
+        result[i] = 0
+      }
+    }
+    return result
+  })
+
+  var recordButtons = ObservMidi(midiPort.stream, mappings.trackControl, recordButtonBase)
+  recordButtons(function (values) {
+    values.forEach(function (val, i) {
+      paramLoopers[i].forEach(looper => looper.recording.set(!!val))
+
+      if (val) {
+        recordStarts[i] = Date.now()
+      } else if (Date.now() - recordStarts[i] < 200) {
+        paramLoopers[i].forEach(looper => looper.playing.set(false))
+        params[i].forEach(param => param.set(0))
+      }
+    })
+  })
+
   // CONTROL BUTTONS:
   var controlButtons = LightStack(midiPort.stream, {
     mode: mappings.device
@@ -221,7 +267,7 @@ module.exports = function (context) {
     }
     bindingReleases.clear()
     midiPort.destroy()
-    params.forEach(items => items.forEach(param => param.destroy()))
+    paramLoopers.forEach(items => items.forEach(param => param.destroy()))
   }
 
   return obs
