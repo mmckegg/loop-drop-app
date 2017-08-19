@@ -52,10 +52,11 @@ function LinkParam (context) {
 
   obs.currentValue = computed([obs.mode, obs.quantize, inverted, param], function (mode, quantize, inverted, param) {
     if (param != null) {
+      if (inverted) {
+        param = Sum([1, Negate(param)])
+      }
+
       if (mode === 'exp') {
-        if (inverted) {
-          param = Sum([1, Negate(param)])
-        }
         param = Square(param)
       }
 
