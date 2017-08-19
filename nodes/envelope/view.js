@@ -18,6 +18,13 @@ module.exports = function renderLfo (node) {
         title: 'Retrigger'
       }),
 
+      ModRange(node.value, {
+        flex: true,
+        title: 'multiplier',
+        defaultValue: 1,
+        format: 'ratio'
+      }),
+
       ModRange(node.attack, {
         flex: true,
         title: 'attack',
