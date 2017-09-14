@@ -9,7 +9,7 @@ var updateParamReferences = require('lib/update-param-references')
 var lookup = require('mutant/lookup')
 var merge = require('mutant/merge')
 
-var join = require('path').join
+var Path = require('path')
 var extend = require('xtend')
 
 var Property = require('lib/property')
@@ -185,12 +185,13 @@ function Setup (parentContext) {
     }
 
     if (descriptor.node === 'externalChunk') {
-      var originalPath = join(originalDirectory, descriptor.src)
-      var targetPath = join(resolve(context.cwd), id + '.json')
+      var originalPath = Path.join(originalDirectory, descriptor.src)
+      var externalRoot = Path.dirname(originalPath)
+      var targetPath = Path.join(resolve(context.cwd), id + '.json')
       context.fs.readFile(originalPath, 'utf8', function (err, data) {
         if (err) return cb && cb(err)
         var externalDescriptor = JSON.parse(data)
-        importAssociatedFiles(externalDescriptor, originalDirectory, resolve(context.cwd), function (err) {
+        importAssociatedFiles(externalDescriptor, externalRoot, resolve(context.cwd), function (err) {
           if (err) return cb && cb(err)
           context.fs.writeFile(targetPath, JSON.stringify(externalDescriptor), function (err) {
             if (err) return cb && cb(err)
