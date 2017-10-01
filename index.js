@@ -9,7 +9,8 @@ var Observ = require('mutant/value')
 var Property = require('lib/property')
 var watch = require('mutant/watch')
 var FileObject = require('lib/file-object')
-
+var loadKeyboards = require('lib/load-keyboards')
+var smalltalk = require('smalltalk')
 var noDrop = require('lib/no-drop')
 var applyKeyboardTempo = require('lib/keyboard-tempo')
 var renderNode = require('lib/render-node')
@@ -47,6 +48,15 @@ electron.ipcRenderer.on('close', function () {
 // create root context
 var audioContext = new global.AudioContext()
 var nodes = require('./nodes')
+var loadingError
+
+try {
+  loadKeyboards(nodes)
+} catch (e) {
+  loadingError = e
+}
+
+
 var rootContext = window.rootContext = {
   fs: fs,
   audio: audioContext,
@@ -83,6 +93,7 @@ electron.ipcRenderer.on('load-project', function (e, path) {
     ]), document.body)
 
     window.currentProject = projectFile.node
+    if (loadingError) smalltalk.alert('Error loading keyboards', loadingError.message)
   })
 
   projectFile.load(projectPath)

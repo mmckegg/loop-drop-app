@@ -1,0 +1,14 @@
+.smalltalk {
+  position: absolute;
+  z-index: 1;
+  border: 10px solid springgreen;
+  background: whitesmoke;
+  padding: 10px;
+  border-radius: 10px;
+  margin-left: 40%;
+  margin-top: 300px;
+}
+
+.smalltalk input {
+  width: 380px;
+}
