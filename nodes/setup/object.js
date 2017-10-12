@@ -69,7 +69,6 @@ function Setup (parentContext) {
   node.audioElement.srcObject = dest.stream
   node.audioElement.play()
 
-
   context.active = node.output.active
 
   node.onTrigger = Event(function (b) {
@@ -78,7 +77,14 @@ function Setup (parentContext) {
 
   var releases = [
     watch(node.selectedOutputId, function (value) {
-      node.audioElement.setSinkId(value)
+      node.output.disconnect()
+      node.audioElement = new Audio()
+      node.audioElement.setSinkId(value).then(() => {
+        var dest = audioContext.createMediaStreamDestination()
+        node.output.connect(dest)
+        node.audioElement.srcObject = dest.stream
+        node.audioElement.play()
+      })
     }),
 
     watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
