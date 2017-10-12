@@ -34,7 +34,8 @@ function Setup (parentContext) {
     globalScale: Property({
       offset: 0,
       notes: [0, 2, 4, 5, 7, 9, 11]
-    })
+    }),
+    selectedOutputId: Property('default')
   })
 
   node.overrideVolume = Property(1)
@@ -64,13 +65,9 @@ function Setup (parentContext) {
   //node.output.connect(parentContext.output)//
   var dest = audioContext.createMediaStreamDestination()
   node.output.connect(dest)
-  setTimeout(() => {
-    var daout = document.getElementsByClassName('audioOut')[0]
-    daout.srcObject = dest.stream
-    daout.setSinkId('56bb1f840fa8cbf16a67c2bc27dd2279424ef5f5215963003e6b403854cd916e').then(console.log)
-    console.log(daout)
-    daout.play()
-  }, 2400)
+  node.audioElement = new Audio()
+  node.audioElement.srcObject = dest.stream
+  node.audioElement.play()
 
 
   context.active = node.output.active
@@ -80,6 +77,13 @@ function Setup (parentContext) {
   })
 
   var releases = [
+    watch(node.selectedOutputId, function (value) {
+      console.log('selectedOutputId', value)
+      node.audioElement.setSinkId(value).then(function () {
+        console.log('done!')
+      })
+    }),
+
     watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
       node.output.gain.value = value
     }),

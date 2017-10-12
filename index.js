@@ -44,19 +44,6 @@ electron.ipcRenderer.on('close', function () {
   }
 })
 
-function gotDevices(deviceInfos) {
-
-  for (var i = 0; i !== deviceInfos.length; ++i) {
-    var deviceInfo = deviceInfos[i];
-    if (deviceInfo.kind === 'audiooutput') {
-      console.info('Found audio output device: ', deviceInfo.label, deviceInfo.deviceId);
-    }
-  }
-}
-
-navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(console.log);
-
-
 // create root context
 var audioContext = new global.AudioContext()
 var nodes = require('./nodes')
@@ -68,8 +55,22 @@ var rootContext = window.rootContext = {
   nodes: nodes.objectLookup,
   nodeInfo: nodes,
   zoom: Property(1.1),
-  version: version
+  version: version,
+  alternateOutputs: [],
+  alternateInputs: []
 }
+
+function addAlternates(deviceInfos) {
+  deviceInfos.forEach(function (device) {
+    var miniInfo = { label: device.label, deviceId: device.deviceId }
+    if (device.kind === 'audioinput') rootContext.alternateInputs.push(miniInfo)
+    if (device.kind === 'audiooutput') rootContext.alternateOutputs.push(miniInfo)
+  })
+}
+
+navigator.mediaDevices.enumerateDevices().then(addAlternates).catch(function (e) {
+  console.log('unable to get any alternate devices', e)
+});
 
 watch(rootContext.zoom, function (value) {
   electron.webFrame.setZoomFactor(value || 1)

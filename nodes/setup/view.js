@@ -3,6 +3,7 @@ var send = require('mutant/send')
 var Collection = require('lib/widgets/collection')
 var Spawner = require('lib/widgets/spawner')
 
+var Select = require('lib/params/select')
 var QueryParam = require('lib/query-param')
 var ScaleChooser = require('lib/params/scale-chooser')
 var Range = require('lib/params/range')
@@ -49,15 +50,29 @@ function renderSetup (setup) {
 
     h('div.options', [
       renderScaleChooser(setup.globalScale),
-      renderMasterVolume(setup.volume)
+      renderMasterVolume(setup.volume),
+      renderOutputSelector(setup),
     ])
 
   ])
 }
 
+function renderOutputSelector(setup) {
+  var outputOptions = setup.context.alternateOutputs.map(function (info) {
+    return [info.label, info.deviceId]
+  })
+  var params = [
+    Select(QueryParam(setup, 'selectedOutputId'), {
+      options: outputOptions,
+      flex: true,
+      missingPrefix: ' (unknown)'
+    })
+  ]
+  return h('ParamList', params)
+}
+
 function renderMasterVolume (volume) {
   return h('section.volume', [
-    h('audio.audioOut'),
     h('h1', 'Master Volume'),
     h('div.param', [
       Range(volume, {
