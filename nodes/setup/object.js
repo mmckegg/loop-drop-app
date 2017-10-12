@@ -61,7 +61,17 @@ function Setup (parentContext) {
   context.output.connect(outputLowPass)
   outputLowPass.connect(outputHighPass)
   node.output = YankSilence(audioContext, outputHighPass)
-  node.output.connect(parentContext.output)
+  //node.output.connect(parentContext.output)//
+  var dest = audioContext.createMediaStreamDestination()
+  node.output.connect(dest)
+  setTimeout(() => {
+    var daout = document.getElementsByClassName('audioOut')[0]
+    daout.srcObject = dest.stream
+    daout.setSinkId('56bb1f840fa8cbf16a67c2bc27dd2279424ef5f5215963003e6b403854cd916e').then(console.log)
+    console.log(daout)
+    daout.play()
+  }, 2400)
+
 
   context.active = node.output.active
 

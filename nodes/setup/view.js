@@ -57,7 +57,7 @@ function renderSetup (setup) {
 
 function renderMasterVolume (volume) {
   return h('section.volume', [
-
+    h('audio.audioOut'),
     h('h1', 'Master Volume'),
     h('div.param', [
       Range(volume, {

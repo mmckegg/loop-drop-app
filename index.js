@@ -44,6 +44,19 @@ electron.ipcRenderer.on('close', function () {
   }
 })
 
+function gotDevices(deviceInfos) {
+
+  for (var i = 0; i !== deviceInfos.length; ++i) {
+    var deviceInfo = deviceInfos[i];
+    if (deviceInfo.kind === 'audiooutput') {
+      console.info('Found audio output device: ', deviceInfo.label, deviceInfo.deviceId);
+    }
+  }
+}
+
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(console.log);
+
+
 // create root context
 var audioContext = new global.AudioContext()
 var nodes = require('./nodes')
