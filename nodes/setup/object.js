@@ -78,10 +78,7 @@ function Setup (parentContext) {
 
   var releases = [
     watch(node.selectedOutputId, function (value) {
-      console.log('selectedOutputId', value)
-      node.audioElement.setSinkId(value).then(function () {
-        console.log('done!')
-      })
+      node.audioElement.setSinkId(value)
     }),
 
     watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
