@@ -4,6 +4,7 @@ var Observ = require('mutant/value')
 var Property = require('lib/property')
 var Slots = require('lib/slots')
 var TemplateSlot = require('lib/template-slot')
+var datShare = require('lib/dat-share')
 
 var computed = require('mutant/computed')
 var lookup = require('mutant/lookup')
@@ -40,7 +41,22 @@ function ChromaticChunk (parentContext) {
     inputs: Property([]),
     outputs: Property(['output']),
     params: MutantArray([]),
-    selectedSlotId: Observ()
+    selectedSlotId: Observ(),
+    publish: Property(),
+    publishedName: Property(),
+    publishedTags: Property(),
+    publishedShape: Property(),
+    publishedUrl: Property()
+  })
+
+  obs.publish(value => {
+    if (!value) return
+    obs.publishedShape.set(parentContext.shape().join(','))
+    var fullPath = parentContext.fileObject.resolvePath('.')
+    datShare(fullPath, function (err, details) {
+      if (err) return console.log(err)
+      obs.publishedUrl.set(details.link)
+    })
   })
 
   obs.slots.onAdd(function (slot) {

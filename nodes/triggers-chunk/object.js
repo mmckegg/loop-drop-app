@@ -5,6 +5,7 @@ var Property = require('lib/property')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('mutant/resolve')
 var MutantArray = require('mutant/array')
+var datShare = require('lib/dat-share')
 
 module.exports = TriggersChunk
 
@@ -16,7 +17,22 @@ function TriggersChunk (parentContext) {
     inputs: Property([]),
     outputs: Property([]),
     params: MutantArray([]),
-    selectedSlotId: Property()
+    selectedSlotId: Property(),
+    publish: Property(),
+    publishedName: Property(),
+    publishedTags: Property(),
+    publishedShape: Property(),
+    publishedUrl: Property()
+  })
+
+  obs.publish(value => {
+    if (!value) return
+    obs.publishedShape.set(parentContext.shape().join(','))
+    var fullPath = parentContext.fileObject.resolvePath('.')
+    datShare(fullPath, function (err, details) {
+      if (err) return console.log(err)
+      obs.publishedUrl.set(details.link)
+    })
   })
 
   context.externalChunk = obs

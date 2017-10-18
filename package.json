@@ -63,6 +63,7 @@
     "tap-tempo": "~0.0.0",
     "teoria": "~0.4.0",
     "through": "~2.3.4",
+    "uuid": "^3.1.0",
     "wav": "~1.0.1",
     "wave-recorder": "^2.3.0",
     "web-midi": "^2.0.0",
