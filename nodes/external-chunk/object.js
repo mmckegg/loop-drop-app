@@ -2,7 +2,6 @@ var Observ = require('mutant/value')
 var computed = require('mutant/computed')
 var watch = require('mutant/watch')
 var resolveNode = require('lib/resolve-node')
-var getDirectory = require('path').dirname
 var Event = require('geval')
 var Property = require('lib/property')
 var ProxyDict = require('mutant/proxy-dict')
@@ -14,17 +13,18 @@ var ExternalRouter = require('lib/external-router')
 var BaseChunk = require('lib/base-chunk')
 var extendParams = require('lib/extend-params')
 var Param = require('lib/param')
+var resolve = require('mutant/resolve')
 
 var forEach = require('mutant/for-each')
 var forEachPair = require('mutant/for-each-pair')
 
-var relative = require('path').relative
-var resolve = require('path').resolve
+var Path = require('path')
 
 module.exports = External
 
 function External (parentContext) {
   var context = Object.create(parentContext)
+  context.cwd = Observ()
 
   var volume = Property(1)
   var overrideVolume = Property(1)
@@ -111,11 +111,11 @@ function External (parentContext) {
   })
 
   obs.resolvePath = function (src) {
-    return resolve(context.cwd, src)
+    return Path.resolve(resolve(context.cwd), src)
   }
 
   obs.relative = function (path) {
-    var value = relative(context.cwd, path)
+    var value = Path.relative(resolve(context.cwd), path)
     if (/^\./.exec(value)) {
       return value
     } else {
@@ -144,6 +144,7 @@ function External (parentContext) {
       nodeReleases.pop()()
     }
 
+    unwatchPath()
     broadcastClose()
     Param.destroy(obs)
   }
@@ -155,9 +156,9 @@ function External (parentContext) {
     }
   }
 
-  watch(obs.src, function (src) {
-    var path = src ? resolve(parentContext.cwd, src) : null
+  var path = computed([parentContext.cwd, obs.src], (a, b) => a && b && Path.resolve(a, b) || null)
 
+  var unwatchPath = watch(path, function (path) {
     if (obs.file && obs.file.path() !== path) {
       while (fileReleases.length) {
         fileReleases.pop()()
@@ -172,6 +173,7 @@ function External (parentContext) {
         loading = true
         obs.file = ObservFile(path)
         updateFile = JsonFile(obs.file, updateNode)
+        context.cwd.set(Path.dirname(path))
         fileReleases.push(
           watch(obs.file.path, obs.path.set)
         )
@@ -195,7 +197,6 @@ function External (parentContext) {
       }
 
       if (descriptor && ctor) {
-        context.cwd = getDirectory(obs.file.path())
         obs.node = ctor(context)
         obs.node.set(descriptor)
         nodeReleases.push(

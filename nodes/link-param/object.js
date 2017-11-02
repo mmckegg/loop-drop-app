@@ -4,10 +4,13 @@ var Prop = require('lib/property')
 var computed = require('mutant/computed')
 var watch = require('mutant/watch')
 var ParamSource = require('lib/param-source')
+var when = require('mutant/when')
 
 var Param = require('lib/param')
 var Multiply = require('lib/param-multiply')
 var Sum = require('lib/param-sum')
+var Abs = require('lib/param-abs')
+var Square = require('lib/param-square')
 var Negate = require('lib/param-negate')
 var Quantize = require('lib/param-quantize')
 
@@ -44,25 +47,22 @@ function LinkParam (context) {
   })
 
   var inverted = computed([range], range => {
-    return isNegative(range, context.audio.currentTime)
+    return getValue(range, context.audio.currentTime) < 0
   })
 
   obs.currentValue = computed([obs.mode, obs.quantize, inverted, param], function (mode, quantize, inverted, param) {
-    if (param) {
+    if (param != null) {
+      if (inverted) {
+        param = Sum([1, Negate(param)])
+      }
+
       if (mode === 'exp') {
-        if (inverted) {
-          var oneMinusParam = Sum([param, -1])
-          param = Sum([
-            1, Negate(Multiply([oneMinusParam, oneMinusParam]))
-          ])
-        } else {
-          param = Multiply([param, param])
-        }
+        param = Square(param)
       }
 
       var result = Sum([
-        Multiply([param, range]),
-        obs.minValue
+        Multiply([param, Abs(range)]),
+        when(inverted, obs.maxValue, obs.minValue)
       ])
 
       if (quantize) {
@@ -93,10 +93,10 @@ function LinkParam (context) {
   return obs
 }
 
-function isNegative (value, at) {
-  if (typeof value === 'number') {
-    return value < 0
-  } else if (value && value.getValueAtTime) {
-    return value.getValueAtTime(at) < 0
+function getValue (param, at) {
+  if (typeof param === 'number') {
+    return param
+  } else if (param && param.getValueAtTime) {
+    return param.getValueAtTime(at)
   }
 }

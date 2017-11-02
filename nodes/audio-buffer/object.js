@@ -1,7 +1,8 @@
 var Observ = require('mutant/value')
 var watch = require('mutant/watch')
 var ObservAudioBuffer = require('lib/observ-audio-buffer')
-var resolve = require('path').resolve
+var Path = require('path')
+var computed = require('mutant/computed')
 
 module.exports = ObservAudioBufferCached
 
@@ -19,16 +20,13 @@ function ObservAudioBufferCached (context) {
   }
 
   var release = null
-  var lastSrc = null
+  var src = computed(obs, descriptor => descriptor.src)
+  var path = computed([context.cwd, src], (a, b) => a && b && Path.resolve(a, b) || null)
 
-  obs(function (data) {
-    if (lastSrc !== data.src) {
-      lastSrc = data.src
-      update(data.src)
-    }
-  })
+  var unwatch = watch(path, update)
 
   obs.destroy = function () {
+    unwatch()
     update(null)
   }
 
@@ -36,12 +34,11 @@ function ObservAudioBufferCached (context) {
 
   // scoped
 
-  function update (src) {
+  function update (path) {
     release && release()
     release = null
 
-    if (src) {
-      var path = resolve(context.cwd, src)
+    if (path) {
       var instance = cache[path]
 
       if (!instance) {

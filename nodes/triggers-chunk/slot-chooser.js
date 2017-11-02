@@ -3,6 +3,7 @@ var send = require('mutant/send')
 var when = require('mutant/when')
 var computed = require('mutant/computed')
 var Keys = require('mutant/keys')
+var resolve = require('mutant/resolve')
 
 var MPE = require('lib/mouse-position-event.js')
 var importSample = require('lib/import-sample')
@@ -145,7 +146,7 @@ function drop (ev) {
     if (!target) {
       target = ev.data.spawnSlot({id: ev.data.id, chunk: ev.data.chunk})
     }
-    importAssociatedFiles(descriptor, cwd, targetCollection.context.cwd, function (err) {
+    importAssociatedFiles(descriptor, cwd, resolve(targetCollection.context.cwd), function (err) {
       if (err) throw err
       target.sources.push(data)
     })
@@ -175,7 +176,7 @@ function drop (ev) {
           sourceCollection.remove(source)
         }
 
-        importAssociatedFiles(descriptor, sourceCollection.context.cwd, targetCollection.context.cwd, function (err) {
+        importAssociatedFiles(descriptor, resolve(sourceCollection.context.cwd), resolve(targetCollection.context.cwd), function (err) {
           if (err) throw err
           targetCollection.push(descriptor)
         })

@@ -67,11 +67,10 @@ Holder {
 
             -active {
               background: #573236;
-              -webkit-animation: redBorderPulse 4s infinite
+              border-color: #BD8489;
 
               :after {
                 background: #D18282;
-                -webkit-animation: redPulse 1s infinite
               }
             }
 

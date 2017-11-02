@@ -36,7 +36,6 @@ module.exports = function (context) {
 
     if (port) {
       port.write(turnOffAll)
-      port.on('data', console.log)
     }
   })
 

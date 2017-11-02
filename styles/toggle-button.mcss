@@ -47,11 +47,9 @@ ToggleButton {
 
     -active {
       background: #573236;
-      -webkit-animation: redBorderPulse 4s infinite
 
       :after {
         background: #D18282;
-        -webkit-animation: redPulse 1s infinite
       }
     }
   }

@@ -22,12 +22,14 @@ var SessionRecorder = require('lib/session-recorder')
 var Cleaner = require('lib/cleaner')
 
 var getDirectory = require('path').dirname
+var getFile = require('path').basename
 var getExt = require('path').extname
 var join = require('path').join
 var pathSep = require('path').sep
 var resolvePath = require('path').resolve
 var resolveAvailable = require('lib/resolve-available')
 var onceIdle = require('mutant/once-idle')
+var ncp = require('ncp')
 
 var moveItemToTrash = require('electron').shell.moveItemToTrash
 
@@ -71,10 +73,11 @@ function Project (parentContext) {
   obs.speed = Observ(1)
   obs.selected = Observ()
   obs.renaming = Observ(false)
+  obs.duplicating = Observ(false)
 
-  obs.entries = ObservDirectory(context.cwd)
+  obs.entries = ObservDirectory(resolve(context.cwd))
 
-  obs.recordingEntries = ObservDirectory(resolvePath(context.cwd, '~recordings'))
+  obs.recordingEntries = ObservDirectory(resolvePath(resolve(context.cwd), '~recordings'))
 
   obs.outputRms = ObservRms(masterOutput)
 
@@ -204,8 +207,36 @@ function Project (parentContext) {
       tapTempo.tap()
     },
 
+    duplicateCurrent: function () {
+      if (obs.selected()) {
+        obs.duplicating.set(true)
+        var path = getDirectory(obs.selected())
+        var setupPath = join(path, 'index.json')
+        var item = findItemByPath(obs.items, setupPath)
+
+        if (item) {
+          resolveAvailable(path, context.fs, function (err, newPath) {
+            if (err) throw err
+            ncp(path, newPath, (err) => {
+              obs.duplicating.set(false)
+
+              if (err) throw err
+              obs.entries.refresh()
+              obs.recordingEntries.refresh()
+
+              var newSetupPath = join(newPath, 'index.json')
+              console.log(`Duplicated "${path}"`)
+              item.load(newSetupPath)
+              obs.selected.set(resolve(item.path))
+              obs.renaming.set(newPath)
+            })
+          })
+        }
+      }
+    },
+
     newSetup: function () {
-      var path = join(context.cwd, 'New Setup')
+      var path = join(resolve(context.cwd), 'New Setup')
       resolveAvailable(path, context.fs, function (err, path) {
         if (err) throw err
         context.fs.mkdir(path, function (err) {
