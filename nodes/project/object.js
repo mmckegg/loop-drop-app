@@ -81,23 +81,29 @@ function Project (parentContext) {
 
   obs.outputRms = ObservRms(masterOutput)
 
-  obs.availableGlobalControllers = computed([context.midiPorts], function (portNames) {
-    var result = []
+  obs.availableGlobalControllers = computed([context.midiPorts, context.midiPorts.output, context.midiPorts.input], function (both, input, output) {
+    var result = {}
     var controllers = context.nodeInfo.groupLookup['global-controllers']
     if (controllers) {
       controllers.forEach(function (info) {
-        var port = findMatch(portNames, info.portMatch)
-        if (!info.portMatch || port) {
-          result.push({
-            name: info.name,
-            node: info.node,
-            port: port
+        var portNames = info.inputOnly ? input : info.outputOnly
+          ? output
+          : both
+
+        var ports = findMatches(portNames, info.portMatch)
+        if (ports.length) {
+          result[info.node] = ports.map(port => {
+            return {
+              name: info.name,
+              node: info.node,
+              port: port
+            }
           })
         }
       })
     }
     return result
-  })
+  }, {nextTick: true})
 
   // apply tempo
   watch(obs.tempo, scheduler.setTempo.bind(scheduler))
@@ -441,8 +447,8 @@ function copyExternalFilesTo (fs, path, target) {
   })
 }
 
-function findMatch (array, match) {
+function findMatches (array, match) {
   return Array.isArray(array) && match && array.filter(function (value) {
     return match.exec(value)
-  })[0]
+  })
 }
