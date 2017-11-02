@@ -6,14 +6,28 @@ var Map = require('mutant/map')
 var when = require('mutant/when')
 
 module.exports = function (collection) {
-  var spawners = collection.context.project.availableGlobalControllers()
+  var context = collection.context
   var options = computed([
-    collection, collection.context.project.availableGlobalControllers
+    collection, context.project.availableGlobalControllers
   ], function (collection, globalControllers) {
     var result = []
-    spawners.forEach(function (descriptor) {
-      if (!hasNode(collection, descriptor.node)) {
-        result.push([descriptor.name, descriptor])
+    Object.keys(globalControllers).forEach(key => {
+      var info = context.nodeInfo.lookup[key]
+      if (info.portMatch) {
+        var items = []
+        globalControllers[key].forEach(descriptor => {
+          if (!hasNode(collection, descriptor)) {
+            items.push([descriptor.port, descriptor])
+          }
+        })
+        if (items.length && info) {
+          result.push([info.name, items])
+        }
+      } else {
+        result.push([info.name, {
+          name: info.name,
+          node: info.node
+        }])
       }
     })
     return result
@@ -23,16 +37,23 @@ module.exports = function (collection) {
   return h('div.controllers', [
     Map(collection, function (controller) {
       if (controller) {
-        return h('GlobalControllerNode', [
-          h('header', [
-            h('span.name', [
-              h('strong', ['Global: ']), controller().name
-            ]),
-            h('button.remove Button -warn', {
-              'ev-click': send(collection.remove, controller)
-            }, 'X')
+        var info = context.nodeInfo.lookup[controller().node]
+        if (info.render) {
+          return info.render(controller)
+        } else {
+          var name = computed(controller, x => x.name)
+          var port = controller.port
+          return h('GlobalControllerNode', [
+            h('header', [
+              h('span.name', [
+                h('strong', name), when(shouldShowPort(port, name), [h('br'), port])
+              ]),
+              h('button.remove Button -warn', {
+                'ev-click': send(collection.remove, controller)
+              }, 'X')
+            ])
           ])
-        ])
+        }
       }
     }),
     when(hasSpawners, h('div.spawn', [
@@ -44,9 +65,15 @@ module.exports = function (collection) {
   ])
 }
 
-function hasNode (collection, node) {
+function shouldShowPort (port, name) {
+  return computed([port, name], (port, name) => {
+    return port && port !== name
+  })
+}
+
+function hasNode (collection, spawner) {
   return Array.isArray(collection) && collection.some(function (item) {
-    return item && item.node === node
+    return item && item.node === spawner.node && item.port === spawner.port
   })
 }
 

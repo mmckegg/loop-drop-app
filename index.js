@@ -25,6 +25,8 @@ electron.webFrame.setZoomLevelLimits(1, 1)
 
 // midi ports
 var midiPorts = Observ()
+midiPorts.output = Observ()
+midiPorts.input = Observ()
 midiPorts.open = MidiStream
 midiPorts.openInput = MidiStream.openInput
 midiPorts.openOutput = MidiStream.openOutput
@@ -32,6 +34,14 @@ midiPorts.openOutput = MidiStream.openOutput
 MidiStream.watchPortNames(function (ports) {
   midiPorts.set(ports)
 })
+
+MidiStream.watchPortNames(function (ports) {
+  midiPorts.output.set(ports)
+}, {outputs: true})
+
+MidiStream.watchPortNames(function (ports) {
+  midiPorts.input.set(ports)
+}, {inputs: true})
 
 // make sure recording has saved to disk before closing
 electron.ipcRenderer.on('close', function () {
