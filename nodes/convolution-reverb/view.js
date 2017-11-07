@@ -22,6 +22,36 @@ module.exports = function renderReverb (node) {
         options: nodeChoices
       }),
       SampleChooser(node),
+      ModRange(node.low, {
+        title: 'low',
+        defaultValue: 0,
+        format: 'dBn',
+        flex: 'small'
+      }),
+      ModRange(node.mid, {
+        title: 'mid',
+        defaultValue: 0,
+        format: 'dBn',
+        flex: 'small'
+      }),
+      ModRange(node.high, {
+        title: 'high',
+        defaultValue: 0,
+        format: 'dBn',
+        flex: 'small'
+      }),
+      ModRange(node.highcut, {
+        title: 'highcut',
+        format: 'arfo',
+        flex: 'small',
+        defaultValue: 20000
+      }),
+      ModRange(node.lowcut, {
+        title: 'lowcut',
+        format: 'arfo',
+        flex: 'small',
+        defaultValue: 0
+      }),
       ModRange(node.wet, {
         title: 'wet',
         defaultValue: 1,
