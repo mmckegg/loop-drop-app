@@ -2,7 +2,7 @@ var h = require('lib/h')
 var Collection = require('lib/widgets/collection')
 var Spawner = require('lib/widgets/spawner')
 var Range = require('lib/params/range')
-var Select = require('lib/params/select')
+var ToggleButton = require('lib/params/toggle-button')
 var QueryParam = require('lib/query-param')
 var ToggleChooser = require('lib/params/toggle-chooser')
 
@@ -27,11 +27,14 @@ module.exports = function renderSlot (node) {
     // NOTE: this check could be error prone - consider revising?
     checkIsTrigger(node) ? [
       h('section', [
-        h('div', {style: {'display': 'flex', 'align-items': 'center', 'flex': '1'}}, [
+        h('header', [
           h('h1', 'Sources'),
           ToggleChooser(QueryParam(node, 'chokeGroup'), {
             title: 'Choke Group',
             options: [['None', null], 'A', 'B', 'C', 'D']
+          }),
+          ToggleButton(node.sustain, {
+            title: 'Sustain'
           })
         ]),
 

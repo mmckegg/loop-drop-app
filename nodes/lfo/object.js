@@ -32,6 +32,7 @@ function LFO (context) {
   })
 
   obs.context = context
+  obs.getAttackDuration = Param.getAttackDuration.bind(this, obs)
   obs.getReleaseDuration = Param.getReleaseDuration.bind(this, obs)
   obs.id.context = context
 

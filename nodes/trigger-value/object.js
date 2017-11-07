@@ -41,6 +41,7 @@ function ValueModulator (parentContext) {
     return stopAt
   }
 
+  obs.getAttackDuration = Param.getAttackDuration.bind(this, obs)
   obs.getReleaseDuration = Param.getReleaseDuration.bind(this, obs)
 
   obs.destroy = function () {

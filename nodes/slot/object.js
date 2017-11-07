@@ -36,9 +36,23 @@ function AudioSlot (parentContext, defaultValue) {
     sources: Slots(context),
     processors: Slots(context),
     noteOffset: Param(context, 0),
+    sustain: Property(true),
     output: Property(null),
     volume: Property(1)
   }, input, output, releases)
+
+  obs.getAttackDuration = function () {
+    var duration = 0
+    forEachAll([obs.sources, obs.modulators, obs.processors], function (node) {
+      if (node && node.getAttackDuration) {
+        var value = node.getAttackDuration()
+        if (value && (value > duration)) {
+          duration = value
+        }
+      }
+    })
+    return duration || 0.0001
+  }
 
   obs._type = 'AudioSlot'
   context.noteOffset = obs.noteOffset
@@ -124,11 +138,15 @@ function AudioSlot (parentContext, defaultValue) {
     }
 
     if (offTime) {
-      obs.triggerOff(offTime)
+      triggerOff(offTime)
+    } else if (!obs.sustain()) {
+      triggerOff(at + obs.getAttackDuration())
     }
   }
 
   obs.triggerOff = function (at) {
+    if (!obs.sustain()) return // ignore triggerOff
+
     if (!initialized) {
       queue.push(function () {
         obs.triggerOff(at)
@@ -136,6 +154,40 @@ function AudioSlot (parentContext, defaultValue) {
       return false
     }
 
+    triggerOff(at)
+  }
+
+  obs.choke = function (at) {
+    obs.sources.forEach(function (source) {
+      source.choke && source.choke(at)
+    })
+  }
+
+  releases.push(
+    function () {
+      if (isOn()) {
+        // force trigger off on removal
+        obs.triggerOff(context.audio.currentTime)
+      }
+    }
+  )
+
+  if (defaultValue) {
+    obs.set(defaultValue)
+  }
+
+  setImmediate(function () {
+    initialized = true
+    while (queue.length) {
+      queue.shift()()
+    }
+  })
+
+  return obs
+
+  // scoped
+
+  function triggerOff (at) {
     var maxProcessorDuration = 0
     var maxSourceDuration = 0
 
@@ -180,36 +232,6 @@ function AudioSlot (parentContext, defaultValue) {
       lastTriggerOff = offTime
     }
   }
-
-  obs.choke = function (at) {
-    obs.sources.forEach(function (source) {
-      source.choke && source.choke(at)
-    })
-  }
-
-  releases.push(
-    function () {
-      if (isOn()) {
-        // force trigger off on removal
-        obs.triggerOff(context.audio.currentTime)
-      }
-    }
-  )
-
-  if (defaultValue) {
-    obs.set(defaultValue)
-  }
-
-  setImmediate(function () {
-    initialized = true
-    while (queue.length) {
-      queue.shift()()
-    }
-  })
-
-  return obs
-
-  // scoped
 
   function triggerIfOn (node) {
     if (isOn() && node.triggerOn) {

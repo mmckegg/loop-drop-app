@@ -1,5 +1,12 @@
 AudioSlot {
   section {
+    header {
+      display: flex
+      align-items: center
+      button {
+        margin-left: 10px
+      }
+    }
     border-radius: 3px
     background: #333
     padding: 6px 8px
