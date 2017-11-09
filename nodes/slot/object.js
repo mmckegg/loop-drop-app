@@ -241,7 +241,7 @@ function AudioSlot (parentContext, defaultValue) {
   }
 
   function isOn () {
-    return (lastTriggerOn < context.audio.currentTime && (!lastTriggerOff || lastTriggerOff < lastTriggerOn))
+    return lastTriggerOn && (lastTriggerOn < context.audio.currentTime && (!lastTriggerOff || lastTriggerOff < lastTriggerOn))
   }
 
   function updateProcessors () {
