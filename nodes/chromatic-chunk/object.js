@@ -42,8 +42,6 @@ function ChromaticChunk (parentContext) {
   obs.chokeAll = context.chokeAll
   obs.context = context
 
-  window.thing = obs.templateSlot.slots
-
   obs.slotLookup = merge([
     lookup(obs.templateSlot.slots, (x) => x && x['id']),
     lookup(obs.slots, (y) => y && y['id'])
