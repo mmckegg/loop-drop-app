@@ -5,7 +5,6 @@ var Property = require('lib/property')
 var Slots = require('lib/slots')
 var TemplateSlot = require('lib/template-slot')
 
-var computed = require('mutant/computed')
 var lookup = require('mutant/lookup')
 var merge = require('mutant/merge')
 
@@ -21,21 +20,11 @@ function ChromaticChunk (parentContext) {
     notes: [0, 2, 4, 5, 7, 9, 11]
   }
 
-  var scale = Property(defaultScale)
-
-  var computedScale = computed([scale, context.globalScale], function (scale, globalScale) {
-    if (scale === '$global' && globalScale) {
-      return globalScale
-    } else if (scale instanceof Object) {
-      return scale
-    } else {
-      return defaultScale
-    }
-  })
+  context.scale = Property(defaultScale)
 
   var obs = ObservStruct({
-    scale: scale,
-    templateSlot: TemplateSlot(context, context.shape, computedScale),
+    scale: context.scale,
+    templateSlot: TemplateSlot(context, context.shape),
     slots: Slots(context),
     inputs: Property([]),
     outputs: Property(['output']),
@@ -53,9 +42,11 @@ function ChromaticChunk (parentContext) {
   obs.chokeAll = context.chokeAll
   obs.context = context
 
+  window.thing = obs.templateSlot.slots
+
   obs.slotLookup = merge([
-    lookup(obs.templateSlot.slots, 'id'),
-    lookup(obs.slots, 'id')
+    lookup(obs.templateSlot.slots, (x) => x && x['id']),
+    lookup(obs.slots, (y) => y && y['id'])
   ])
 
   obs.spawnParam = function (id) {

@@ -1,15 +1,13 @@
 var Property = require('lib/property')
 var Param = require('lib/param')
-var Slots = require('lib/slots')
+var watch = require('mutant/watch')
 var Struct = require('mutant/struct')
 var BaseChunk = require('lib/base-chunk')
 var ExternalRouter = require('lib/external-router')
-var lookup = require('mutant/lookup')
 var computed = require('mutant/computed')
-var watch = require('mutant/watch')
-var extend = require('xtend')
 var applyMixerParams = require('lib/apply-mixer-params')
 var destroyAll = require('lib/destroy-all')
+var watchNodesChanged = require('lib/watch-nodes-changed')
 
 module.exports = SynthChunk
 
@@ -18,10 +16,63 @@ function SynthChunk (parentContext) {
   context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
-  var slots = Slots(context)
-  context.slotLookup = lookup(slots, 'id')
+  var offset = Param(context, 0)
+  var shape = Property([1, 4])
+  context.shape = shape
+  context.offset = offset
+
+  var innerChunk = context.nodes['chunk/scale'](context)
+  innerChunk.set({
+    scale: '$global',
+    templateSlot: {
+      id: { $param: 'id' },
+      node: 'slot',
+      output: 'output',
+      sources: [],
+      noteOffset: {
+        node: 'modulator/scale',
+        scale: '$inherit',
+        value: { $param: 'value' }
+      }
+    }
+  })
+
+  var outputSlot = innerChunk.slots.push({
+    node: 'slot',
+    id: 'output'
+  })
+
+  var templateSlot = innerChunk.templateSlot.node
+  var sources = templateSlot.sources
+  var processors = templateSlot.processors
+
+  var osc1 = sources.push({
+    node: 'source/oscillator'
+  })
+
+  var osc2 = null
+  var osc3 = null
+  var oscMult = null
+
+  var filter = processors.push({
+    node: 'processor/filter'
+  })
+
+  var eq = processors.push({
+    node: 'processor/eq'
+  })
+
+  var amp = processors.push({
+    node: 'processor/gain'
+  })
+
+  context.slotLookup = innerChunk.slotLookup
+
+  var overrideVolume = Property(1)
+  var volume = Property(1)
 
   var obs = BaseChunk(context, {
+    shape,
     osc1: Osc(context),
     osc2: Osc(context, {
       optional: true
@@ -30,108 +81,52 @@ function SynthChunk (parentContext) {
       optional: true,
       allowMultiply: true
     }),
-    offset: Param(context, 0),
-    amp: Param(context, 1),
+    offset,
+    amp: amp.gain,
     filter: Filter(context),
     eq: EQ(context),
-    outputs: Property(['output']),
-    volume: Property(1),
-    routes: ExternalRouter(context, {output: '$default'})
+    outputs: innerChunk.outputs,
+    volume: outputSlot.volume,
+    routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply))
   })
 
   applyMixerParams(obs)
-  obs.overrideVolume = Property(1)
+  obs.overrideVolume = overrideVolume
 
-  var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {
-    return a * b
+  watch(obs.eq, eq.set)
+  watch(obs.filter, filter.set)
+  watch(obs.osc1, osc1.set)
+  watch(obs.osc2, value => {
+    if (value.enabled) {
+      if (!osc2) osc2 = sources.push({node: 'source/oscillator'})
+      osc2.set(value)
+    } else if (osc2) {
+      sources.remove(osc2)
+    }
   })
+  watch(obs.osc3, value => {
+    if (value.enabled && !value.multiply) {
+      if (!osc3) osc3 = sources.push({node: 'source/oscillator'})
+      osc3.set(value)
+    } else if (osc3) {
+      sources.remove(osc3)
+    }
 
-  context.offset = obs.offset
+    if (value.enabled && value.multiply) {
+      if (!oscMult) oscMult = processors.insert({node: 'processor/ring-modulator'}, 0)
+      oscMult.carrier.set(value)
+    } else if (oscMult) {
+      processors.remove(oscMult)
+    }
+  })
 
   obs.amp.triggerable = true
 
-  var scale = Property({
-    offset: 0,
-    notes: [0, 2, 4, 5, 7, 9, 11]
-  })
-
-  if (context.globalScale) {
-    var releaseGlobalScale = watch(context.globalScale, scale.set)
-  }
-
-  var computedSlots = computed([
-    obs.shape, obs.osc1, obs.osc2, obs.osc3, obs.filter, obs.amp, obs.eq, volume, scale
-  ], function (shape, osc1, osc2, osc3, filter, amp, eq, volume, scale) {
-    var length = shape[0] * shape[1]
-
-    var result = [{
-      node: 'slot',
-      id: 'output',
-      volume: volume,
-      processors: [
-        extend(eq, {node: 'processor/eq'})
-      ]
-    }]
-
-    for (var i = 0; i < length; i++) {
-      var noteOffset = {
-        node: 'modulator/scale',
-        value: i,
-        scale: scale
-      }
-
-      var sources = [
-        extend(osc1, { node: 'source/oscillator' })
-      ]
-
-      var processors = [
-        extend(filter, {node: 'processor/filter'}),
-        { node: 'processor/gain',
-          gain: amp
-        }
-      ]
-
-      if (osc2.enabled) {
-        sources.push(extend(osc2, {
-          node: 'source/oscillator'
-        }))
-      }
-
-      if (osc3.enabled) {
-        if (osc3.multiply) {
-          processors.unshift({
-            node: 'processor/ring-modulator',
-            carrier: osc3
-          })
-        } else {
-          sources.push(extend(osc3,
-            {node: 'source/oscillator'
-          }))
-        }
-      }
-
-      result.push({
-        node: 'slot',
-        id: String(i),
-        output: 'output',
-        noteOffset: noteOffset,
-        sources: sources,
-        processors: processors
-      })
-    }
-
-    return result
-  })
-
-  computedSlots(slots.set)
-
-  slots.onNodeChange(obs.routes.refresh)
+  watchNodesChanged(context.slotLookup, obs.routes.refresh)
 
   obs.destroy = function () {
     destroyAll(obs)
-    slots.destroy()
-    releaseGlobalScale && releaseGlobalScale()
-    releaseGlobalScale = null
+    innerChunk.destroy()
   }
 
   return obs
@@ -184,4 +179,8 @@ function EQ (context) {
     mid: Param(context, 0),
     high: Param(context, 0)
   })
+}
+
+function multiply (a, b) {
+  return a * b
 }

@@ -19,7 +19,16 @@ function ScaleModulator (context) {
     scale: Property(defaultScale)
   })
 
-  obs.currentValue = computed([obs.value.currentValue, context.offset.currentValue || context.offset, obs.scale], lambda, {
+  var scale = computed([obs.scale, context.globalScale, context.scale], (scale, globalScale, scopeScale) => {
+    if (scale === '$inherit') scale = (scopeScale || globalScale)
+    if (scale === '$global') scale = globalScale
+    if (!scale) scale = defaultScale
+    return scale
+  })
+
+  var offset = (context.offset && (context.offset.currentValue || context.offset)) || 0
+
+  obs.currentValue = computed([obs.value.currentValue, offset, scale], lambda, {
     context: { audioContext: context.audio },
     comparer: ParamTransform.deepEqual
   })
