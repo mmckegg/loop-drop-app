@@ -7,6 +7,17 @@ ChunkNode {
   div.options {
     flex: 1
     padding: 8px
+
+    div.publishedUrl {
+      user-select: text;
+      word-wrap: normal;
+      width: 300px;
+      text-overflow: ellipsis;
+      font-size: 8px;
+      color: white;
+      margin: 3px 1px;
+    }
+
   }
 
   div.slot {
@@ -16,5 +27,6 @@ ChunkNode {
     box-shadow: 0 0 5px black
     overflow-y: scroll
   }
+
 
 }

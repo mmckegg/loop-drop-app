@@ -4,6 +4,7 @@ var computed = require('mutant/computed')
 var ParamEditor = require('lib/widgets/param-editor')
 
 var Range = require('lib/params/range')
+var Text = require('lib/params/text')
 var ToggleButton = require('lib/params/toggle-button')
 var IndexParam = require('lib/index-param')
 
@@ -30,7 +31,12 @@ function renderTriggersChunk (chunk) {
         ])
       ]),
       h('h1', 'Params'),
-      ParamEditor(chunk)
+      ParamEditor(chunk),
+      h('h1', 'Publish'),
+      Text(chunk.publishedName, {placeholder: 'Published Name', size: 15}),
+      Text(chunk.publishedTags, {placeholder: 'bass,funk', size: 15}),
+      ToggleButton(chunk.publish, {title: 'publish', offTitle: 'publish'}),
+      h('div.publishedUrl', chunk.publishedUrl)
     ]),
     h('div.slot', [
       currentSlotEditor(chunk)

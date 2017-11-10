@@ -6,6 +6,7 @@ var ParamEditor = require('lib/widgets/param-editor')
 var Range = require('lib/params/range')
 var ToggleButton = require('lib/params/toggle-button')
 var ScaleChooser = require('lib/params/scale-chooser')
+var Text = require('lib/params/text')
 var QueryParam = require('lib/query-param')
 var renderNode = require('lib/render-node')
 
@@ -44,7 +45,12 @@ function renderChromaticChunk (chunk) {
       ]),
 
       h('h1', 'Params'),
-      ParamEditor(chunk)
+      ParamEditor(chunk),
+      h('h1', 'Publish'),
+      Text(chunk.publishedName, {placeholder: 'Published Name', size: 15}),
+      Text(chunk.publishedTags, {placeholder: 'bass,funk', size: 15}),
+      ToggleButton(chunk.publish, {title: 'publish', offTitle: 'publish'}),
+      h('div.publishedUrl', chunk.publishedUrl)
     ]),
 
     h('div.slot', [
