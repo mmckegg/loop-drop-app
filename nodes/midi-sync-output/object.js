@@ -6,7 +6,7 @@ module.exports = MidiSync
 
 function MidiSync (context) {
   var offset = window.performance.now() - context.audio.currentTime * 1000
-  var midiPort = MidiPort(context, null, {output: true})
+  var midiPort = MidiPort(context, null, {output: true, shared: true})
   var obs = ObservStruct({
     port: midiPort
   })

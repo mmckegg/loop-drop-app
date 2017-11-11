@@ -16,6 +16,8 @@ function SynthChunk (parentContext) {
   context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
+  var overrideParams = applyMixerParams(context)
+
   var offset = Param(context, 0)
   var shape = Property([1, 4])
   context.shape = shape
@@ -90,7 +92,8 @@ function SynthChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply))
   })
 
-  applyMixerParams(obs)
+  obs.overrideParams = overrideParams
+  obs.params = applyMixerParams.params(obs)
   obs.overrideVolume = overrideVolume
 
   watch(obs.eq, eq.set)

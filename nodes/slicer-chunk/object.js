@@ -22,6 +22,8 @@ function SlicerChunk (parentContext) {
   context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
 
+  var overrideParams = applyMixerParams(context)
+
   var releases = []
   var refreshing = false
   var slots = Slots(context)
@@ -44,7 +46,8 @@ function SlicerChunk (parentContext) {
 
   var resolvedBuffer = obs.sample.buffer.currentValue
 
-  applyMixerParams(obs)
+  obs.overrideParams = overrideParams
+  obs.params = applyMixerParams.params(obs)
   obs.overrideVolume = Property(1)
 
   var volume = computed([obs.volume, obs.overrideVolume], function (a, b) {

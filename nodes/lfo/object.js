@@ -10,6 +10,7 @@ var Multiply = require('lib/param-multiply')
 var Negate = require('lib/param-negate')
 var Sum = require('lib/param-sum')
 var Quantize = require('lib/param-quantize')
+var clamp = require('lib/clamp')
 
 module.exports = LFO
 
@@ -170,10 +171,6 @@ function LFO (context) {
     }
     return at
   }
-}
-
-function clamp (value, min, max) {
-  return Math.min(max, Math.max(min, value))
 }
 
 function refreshBuffer (buffer, curve, skew) {

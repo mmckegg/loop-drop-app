@@ -2,7 +2,7 @@ ValueSlots {
   padding: 3px
 
   div.slot {
-    
+
     -trigger {
       display: flex;
       padding: 3px;
@@ -24,8 +24,8 @@ ValueSlots {
       width: 100%;
       position: relative;
       text-align: center;
-      opacity: 0.3
-      color: #3C493C
+      opacity: 0.5
+      color: white
 
       :hover {
         opacity: 1

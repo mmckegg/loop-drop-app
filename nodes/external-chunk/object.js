@@ -6,6 +6,7 @@ var Event = require('geval')
 var Property = require('lib/property')
 var ProxyDict = require('mutant/proxy-dict')
 var SlotsDict = require('lib/slots-dict')
+var onceIdle = require('mutant/once-idle')
 
 var ObservFile = require('lib/observ-file')
 var JsonFile = require('lib/json-file')
@@ -89,6 +90,7 @@ function External (parentContext) {
   var nodeReleases = []
   var fileReleases = []
 
+  var initialized = false // wait for onceIdle after load before accpting data back
   var loading = false
 
   var currentNodeName = null
@@ -168,6 +170,8 @@ function External (parentContext) {
 
     if (!updateFile) {
       if (path) {
+        initialized = false
+        onceIdle(() => { initialized = true })
         loading = true
         obs.file = ObservFile(path)
         updateFile = JsonFile(obs.file, updateNode)
@@ -200,7 +204,9 @@ function External (parentContext) {
         nodeReleases.push(
           watch(obs.node.resolved || obs.node, obs.resolved.set),
           obs.node(function (data) {
-            if (!setting) {
+            // don't update the file if we are currently upading from file
+            // also wait until idle before accepting update
+            if (!setting && initialized) {
               updateFile(data)
             }
           })
