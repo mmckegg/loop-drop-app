@@ -49,7 +49,7 @@
     "observ-grid": "~2.10.1",
     "observ-grid-stack": "~2.0.1",
     "observ-midi": "~2.3.0",
-    "pseudo-audio-param": "^1.2.0",
+    "pseudo-audio-param": "^1.3.1",
     "pull-cat": "^1.1.11",
     "pull-stream": "^3.4.5",
     "pull-stream-to-stream": "github:mmckegg/pull-stream-to-stream#e436acee18b71af8e71d1b5d32eee642351517c7",
