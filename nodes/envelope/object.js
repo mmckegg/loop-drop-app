@@ -26,17 +26,21 @@ function Envelope (context) {
     at = Math.max(at, context.audio.currentTime)
     outputParam.cancelAndHoldAtTime(at)
 
-    var startValue = obs.retrigger() ? 0 : outputParam.getValueAtTime(at)
-    outputParam.setValueAtTime(startValue, at)
-
     Param.triggerOn(obs, at)
 
-    var attackDuration = obs.attack.getValueAtTime(at) || 0.005
+    var attackDuration = obs.attack.getValueAtTime(at)
+    var releaseDuration = obs.release.getValueAtTime(at)
     var decayDuration = obs.decay.getValueAtTime(at) || 0.005
     var peakTime = at + attackDuration
     var value = obs.value.getValueAtTime(at)
 
-    outputParam.linearRampToValueAtTime(value, peakTime)
+    if (attackDuration) {
+      var startValue = (obs.retrigger() || !releaseDuration) ? 0 : outputParam.getValueAtTime(at)
+      outputParam.setValueAtTime(startValue, at)
+      outputParam.linearRampToValueAtTime(value, peakTime)
+    } else {
+      outputParam.setValueAtTime(value, at)
+    }
 
     // decay / sustain
     var sustain = obs.sustain.getValueAtTime(at) * value
@@ -48,18 +52,21 @@ function Envelope (context) {
   obs.triggerOff = function (at) {
     at = Math.max(at, context.audio.currentTime)
 
-    var releaseTime = obs.release.getValueAtTime(at) || 0.0001
-    var stopAt = at + releaseTime
+    var releaseTime = obs.release.getValueAtTime(at)
 
-    Param.triggerOff(obs, stopAt)
-    outputParam.cancelAndHoldAtTime(at)
+    if (releaseTime) {
+      var stopAt = at + releaseTime
 
-    outputParam.setTargetAtTime(0, at, releaseTime / 8)
+      Param.triggerOff(obs, stopAt)
+      outputParam.cancelAndHoldAtTime(at)
 
-    // HACK: clean up hanging target
-    outputParam.setValueAtTime(0, stopAt)
+      outputParam.setTargetAtTime(0, at, releaseTime / 8)
 
-    return stopAt
+      // HACK: clean up hanging target
+      outputParam.setValueAtTime(0, stopAt)
+
+      return stopAt
+    }
   }
 
   obs.getAttackDuration = function () {
