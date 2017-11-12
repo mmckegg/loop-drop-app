@@ -35,10 +35,12 @@ function TriggersChunk (parentContext) {
   obs.flags = context.flags
   obs.chokeAll = context.chokeAll
   obs.slotLookup = lookup(obs.slots, 'id')
+  obs.paramValues = context.paramValues
 
   obs.spawnParam = function (id) {
     var key = context.fileObject.resolveAvailableParam(id || 'New Param')
     obs.params.push(key)
+    obs.paramValues.put(key, 0)
     return key
   }
 

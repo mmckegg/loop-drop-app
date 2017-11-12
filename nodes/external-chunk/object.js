@@ -5,7 +5,7 @@ var resolveNode = require('lib/resolve-node')
 var Event = require('geval')
 var Property = require('lib/property')
 var ProxyDict = require('mutant/proxy-dict')
-var SlotsDict = require('lib/slots-dict')
+var MutantMappedDict = require('mutant/mapped-dict')
 var onceIdle = require('mutant/once-idle')
 
 var ObservFile = require('lib/observ-file')
@@ -16,6 +16,7 @@ var extendParams = require('lib/extend-params')
 var Param = require('lib/param')
 var resolve = require('mutant/resolve')
 var watchNodesChanged = require('lib/watch-nodes-changed')
+var doubleBind = require('lib/double-bind')
 
 var Path = require('path')
 
@@ -40,7 +41,12 @@ function External (parentContext) {
     src: Observ(),
     offset: Param(parentContext, 0),
     routes: ExternalRouter(context, {output: '$default'}, computed([volume, overrideVolume], multiply)),
-    paramValues: SlotsDict(parentContext),
+    paramValues: MutantMappedDict([], (key, item) => {
+      var param = Param(context)
+      doubleBind(item, param)
+      param.triggerOn(context.audio.currentTime)
+      return [key, param]
+    }),
     volume: volume
   })
 
@@ -52,6 +58,7 @@ function External (parentContext) {
   context.flags = obs.flags
   context.chokeAll = obs.chokeAll
   context.activeSlots = obs.activeSlots
+  context.paramValues = obs.paramValues
 
   if (context.setup) {
     obs.selected = computed([obs.id, context.setup.selectedChunkId], function (id, selectedId) {

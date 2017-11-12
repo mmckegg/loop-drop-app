@@ -40,6 +40,7 @@ function MeddlerChunk (parentContext) {
   obs.flags = context.flags
   obs.chokeAll = context.chokeAll
   obs.activeSlots = context.activeSlots
+  obs.paramValues = context.paramValues
 
   // HACK: allow triggered effects (such as LFOs and ring modulator) to work on non-triggerable slots
   obs.slots.onAdd(function (slot) {
@@ -77,6 +78,7 @@ function MeddlerChunk (parentContext) {
   obs.spawnParam = function (id) {
     var key = context.fileObject.resolveAvailableParam(id || 'New Param')
     obs.params.push(key)
+    obs.paramValues.put(key, 0)
     return key
   }
 

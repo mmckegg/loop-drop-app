@@ -40,6 +40,7 @@ function ChromaticChunk (parentContext) {
   context.externalChunk = obs
   obs.flags = context.flag
   obs.chokeAll = context.chokeAll
+  obs.paramValues = context.paramValues
   obs.context = context
 
   obs.slotLookup = merge([
@@ -50,6 +51,7 @@ function ChromaticChunk (parentContext) {
   obs.spawnParam = function (id) {
     var key = context.fileObject.resolveAvailableParam(id || 'New Param')
     obs.params.push(key)
+    obs.paramValues.put(key, 0)
     return key
   }
 
