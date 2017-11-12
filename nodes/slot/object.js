@@ -189,40 +189,52 @@ function AudioSlot (parentContext, defaultValue) {
 
   function triggerOff (at) {
     var maxProcessorDuration = 0
+    var maxModulatorDuration = 0
     var maxSourceDuration = 0
 
     var offEvents = []
 
-    forEachAll([obs.modulators, obs.sources], function (node) {
+    obs.modulators.forEach(function (node) {
+      var releaseDuration = (node.getReleaseDuration && node.getReleaseDuration()) || 0
+      if (releaseDuration > maxModulatorDuration) {
+        maxModulatorDuration = releaseDuration
+      }
+
+      offEvents.push([node, releaseDuration, 'modulator'])
+    })
+
+    obs.sources.forEach(function (node) {
       var releaseDuration = (node.getReleaseDuration && node.getReleaseDuration()) || 0
       if (releaseDuration > maxSourceDuration) {
         maxSourceDuration = releaseDuration
       }
 
-      offEvents.push([node, releaseDuration])
+      offEvents.push([node, releaseDuration, 'source'])
     })
 
     obs.processors.forEach(function (node) {
       if (node && node.triggerOff) {
         var releaseDuration = (node.getReleaseDuration && node.getReleaseDuration()) || 0
-        offEvents.push([node, releaseDuration, true])
+        offEvents.push([node, releaseDuration, 'processor'])
         if (releaseDuration > maxProcessorDuration) {
           maxProcessorDuration = releaseDuration
         }
       }
     })
 
-    var difference = maxProcessorDuration - maxSourceDuration
-    var maxDuration = Math.max(maxSourceDuration, maxProcessorDuration)
+    var difference = Math.max(maxModulatorDuration, maxProcessorDuration) - maxSourceDuration
+    var maxDuration = Math.max(maxSourceDuration, maxProcessorDuration, maxModulatorDuration)
 
     offEvents.forEach(function (event) {
       var target = event[0]
       var releaseDuration = event[1]
 
-      if (event[2]) {
+      if (event[2] === 'processor') {
         target.triggerOff(at + maxDuration - releaseDuration)
-      } else {
+      } else if (event[2] === 'source') {
         target.triggerOff(at + Math.max(0, difference))
+      } else {
+        target.triggerOff(at)
       }
     })
 
