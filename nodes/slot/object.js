@@ -193,18 +193,18 @@ function AudioSlot (parentContext, defaultValue) {
 
     var offEvents = []
 
-    obs.sources.forEach(function (source) {
-      var releaseDuration = source.getReleaseDuration && source.getReleaseDuration() || 0
+    forEachAll([obs.modulators, obs.sources], function (node) {
+      var releaseDuration = (node.getReleaseDuration && node.getReleaseDuration()) || 0
       if (releaseDuration > maxSourceDuration) {
         maxSourceDuration = releaseDuration
       }
 
-      offEvents.push([source, releaseDuration])
+      offEvents.push([node, releaseDuration])
     })
 
-    forEachAll([obs.modulators, obs.processors], function (node) {
+    obs.processors.forEach(function (node) {
       if (node && node.triggerOff) {
-        var releaseDuration = node.getReleaseDuration && node.getReleaseDuration() || 0
+        var releaseDuration = (node.getReleaseDuration && node.getReleaseDuration()) || 0
         offEvents.push([node, releaseDuration, true])
         if (releaseDuration > maxProcessorDuration) {
           maxProcessorDuration = releaseDuration
