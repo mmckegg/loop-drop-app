@@ -3,11 +3,14 @@ var Header = require('lib/widgets/header')
 
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
+var extend = require('xtend')
 
 var shapeChoices = require('./shape-choices')
 
 module.exports = function renderOscillator (node) {
-  return h('SourceNode -oscillator', [
+  return h('SourceNode -oscillator', {
+    hooks: [SwitchNodeHook(node)]
+  }, [
     Header(node, h('span', [
       h('strong', 'Oscillator:'), ' ',
       h('span', node.shape)
@@ -49,4 +52,16 @@ module.exports = function renderOscillator (node) {
       })
     ])
   ])
+}
+
+function SwitchNodeHook (node) {
+  return function (element) {
+    return node.shape(value => {
+      if (value === 'pulse') {
+        node.set(extend(node(), {
+          node: 'source/oscillator-pulse'
+        }))
+      }
+    })
+  }
 }

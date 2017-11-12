@@ -2,13 +2,7 @@ module.exports = {
   name: 'Oscillator (pulse)',
   node: 'source/oscillator-pulse',
   group: 'sources',
-  spawn: {
-    amp: {
-      node: 'modulator/adsr',
-      value: 0.6,
-      release: 0.01
-    }
-  },
+  spawn: false, // spawned by source/oscillator by setting type
   object: require('./object'),
   render: require('./view')
 }

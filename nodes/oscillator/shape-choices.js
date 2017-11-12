@@ -2,6 +2,7 @@ module.exports = [
   ['Basic Shapes', [
     ['Sine', 'sine'],
     ['Square', 'square'],
+    ['Pulse', 'pulse'], // spawns source/oscillator-pulse
     ['Sawtooth', 'sawtooth'],
     ['Triangle', 'triangle']
   ]],

@@ -2,14 +2,32 @@ var h = require('lib/h')
 var Header = require('lib/widgets/header')
 
 var ModRange = require('lib/params/mod-range')
+var Select = require('lib/params/select')
+var Value = require('mutant/value')
+var extend = require('xtend')
+
+var shapeChoices = require('../oscillator/shape-choices')
 
 module.exports = function renderOscillator (node) {
-  return h('SourceNode -oscillator', [
+  var shape = Value('pulse')
+  shape(value => {
+    if (value !== 'pulse') {
+      node.set(extend(node(), {
+        node: 'source/oscillator',
+        shape: value
+      }))
+    }
+  })
+
+  return h('SourceNode -oscillatorPulse', [
     Header(node, h('span', [
       h('strong', 'Oscillator:'), ' ',
       h('span', 'Pulse')
     ])),
     h('ParamList', [
+      Select(shape, {
+        options: shapeChoices
+      }),
       ModRange(node.amp, {
         title: 'amp',
         defaultValue: 1,
