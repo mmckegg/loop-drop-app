@@ -95,7 +95,7 @@ function LFO (context) {
     if (obs.trigger()) {
       start(at, 0)
     } else {
-      var cycleTime = 1 / obs.rate()
+      var cycleTime = 1 / obs.rate.getValueAtTime(at)
       var offset = typeof rate() === 'number'
         ? obs.sync()
           ? (context.scheduler.getPositionAt(at) % cycleTime) / cycleTime
@@ -134,17 +134,15 @@ function LFO (context) {
     var offset = 0
 
     if (obs.trigger()) {
-      var cycleTime = 1 / rate()
+      var cycleTime = 1 / rate.getValueAtTime(at)
       if (currentEvent && (!currentEvent.to || currentEvent.to < at)) {
         offset = (at - currentEvent.from) / cycleTime
       }
     } else {
-      var cycleLength = 1 / obs.rate()
-      offset = typeof rate() === 'number'
-        ? obs.sync()
-          ? (context.scheduler.getPositionAt(at) % cycleLength) / cycleLength
-          : (at % cycleLength) / cycleLength
-        : 0
+      var cycleLength = 1 / obs.rate.getValueAtTime(at)
+      offset = obs.sync()
+        ? (context.scheduler.getPositionAt(at) % cycleLength) / cycleLength
+        : (at % cycleLength) / cycleLength
     }
 
     return mod(obs.phaseOffset.getValueAtTime(at) + (offset || 0), 1)
