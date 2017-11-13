@@ -9,10 +9,16 @@ var ToggleButton = require('lib/params/toggle-button')
 var SampleTrimmer = require('lib/params/sample-trimmer')
 var SampleChooser = require('lib/params/sample-chooser')
 var SampleRecorder = require('lib/params/sample-recorder')
+var QueryParam = require('lib/query-param')
 
 var modeChoices = [
   ['Loop', 'loop'],
   ['Oneshot', 'oneshot']
+]
+
+var nodeChoices = [
+  ['Sample', 'source/sample'],
+  ['Granular', 'source/granular']
 ]
 
 module.exports = function renderGranular (node) {
@@ -22,6 +28,9 @@ module.exports = function renderGranular (node) {
       h('span', computed(node.buffer, getSampleName))
     ])),
     h('ParamList', [
+      Select(QueryParam(node, 'node'), {
+        options: nodeChoices
+      }),
       SampleRecorder(node),
       SampleChooser(node),
       Select(node.mode, {
