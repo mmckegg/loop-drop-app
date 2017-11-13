@@ -21,6 +21,10 @@ function CymbalNode (context) {
     amp: Param(context, 0.4)
   }, trigger, releases)
 
+  // don't allow envelopes on these params
+  obs.tune.readMode = 'trigger'
+  obs.decay.readMode = 'trigger'
+
   var currentParams = {}
 
   var ctor = HiHat(context.audio, currentParams)

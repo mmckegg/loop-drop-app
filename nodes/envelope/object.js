@@ -17,6 +17,13 @@ function Envelope (context) {
     value: Param(context, 1)
   })
 
+  // don't allow envelopes on this params
+  obs.attack.readMode = 'trigger'
+  obs.decay.readMode = 'trigger'
+  obs.release.readMode = 'trigger'
+  obs.sustain.readMode = 'trigger'
+  obs.value.readMode = 'trigger'
+
   var outputParam = ParamSource(context, 0)
   obs.currentValue = outputParam// Multiply([obs.value, outputParam])
   obs.context = context

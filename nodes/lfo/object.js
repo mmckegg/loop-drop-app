@@ -32,6 +32,9 @@ function LFO (context) {
     skew: Property(0)
   })
 
+  // flag as sample&hold
+  obs.phaseOffset.readMode = 'trigger'
+
   obs.context = context
   obs.getAttackDuration = Param.getAttackDuration.bind(this, obs)
   obs.getReleaseDuration = Param.getReleaseDuration.bind(this, obs)

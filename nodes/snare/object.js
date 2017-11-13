@@ -29,6 +29,12 @@ function SnareNode (context) {
     amp: Param(context, 0.6)
   }, trigger, releases)
 
+  // don't allow envelopes on these params
+  obs.tune.readMode = 'trigger'
+  obs.tone.readMode = 'trigger'
+  obs.decay.readMode = 'trigger'
+  obs.snappy.readMode = 'trigger'
+
   var currentParams = {}
 
   var getCtor = computed([obs.type], function (type) {

@@ -39,6 +39,11 @@ function KickNode (context) {
 
   obs.context = context
 
+  // don't allow envelopes on this params
+  obs.tone.readMode = 'trigger'
+  obs.decay.readMode = 'trigger'
+  obs.tune.readMode = 'trigger'
+
   releases.push(
     Apply(context.audio, amp.gain, obs.amp)
   )

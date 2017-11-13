@@ -22,6 +22,11 @@ function ClapNode (context) {
     amp: Param(context, 0.6)
   }, trigger, releases)
 
+  // don't allow envelopes on these params
+  obs.tone.readMode = 'trigger'
+  obs.decay.readMode = 'trigger'
+  obs.density.readMode = 'trigger'
+
   var currentParams = {}
 
   var ctor = Clappy(context.audio, currentParams)
