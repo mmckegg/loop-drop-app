@@ -32,8 +32,7 @@ function renderChromaticChunk (chunk) {
       h('section.options', [
         h('ParamList', [
           h('div -block', [
-            h('div.extTitle', 'Choke Mode'),
-            h('div', ToggleButton(chunk.chokeAll, {title: 'All', offTitle: 'Single'}))
+            h('div', ToggleButton(chunk.chokeAll, {title: 'Choke All'}))
           ])
         ])
       ]),
