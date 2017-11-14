@@ -3,6 +3,7 @@ var Slots = require('lib/slots')
 var lookup = require('mutant/lookup')
 var merge = require('mutant/merge')
 var updateParamReferences = require('lib/update-param-references')
+var resolveAvailable = require('lib/resolve-available')
 
 var Param = require('lib/param')
 var Property = require('lib/property')
@@ -83,17 +84,8 @@ function AudioSlot (parentContext, defaultValue) {
     context.modulatorLookup
   ])
 
-  obs.modulators.resolveAvailable = function (id) {
-    var base = id
-    var lookup = context.paramLookup()
-    var incr = 0
-
-    while (lookup[id]) {
-      incr += 1
-      id = base + ' ' + (incr + 1)
-    }
-
-    return id
+  obs.modulators.resolveAvailable = function (id, lastValue) {
+    return resolveAvailable(context.paramLookup(), id, lastValue)
   }
 
   // reconnect processors on add / update

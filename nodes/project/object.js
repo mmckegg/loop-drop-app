@@ -22,12 +22,11 @@ var SessionRecorder = require('lib/session-recorder')
 var Cleaner = require('lib/cleaner')
 
 var getDirectory = require('path').dirname
-var getFile = require('path').basename
 var getExt = require('path').extname
 var join = require('path').join
 var pathSep = require('path').sep
 var resolvePath = require('path').resolve
-var resolveAvailable = require('lib/resolve-available')
+var resolveFileAvailable = require('lib/resolve-file-available')
 var onceIdle = require('mutant/once-idle')
 var ncp = require('ncp')
 
@@ -221,7 +220,7 @@ function Project (parentContext) {
         var item = findItemByPath(obs.items, setupPath)
 
         if (item) {
-          resolveAvailable(path, context.fs, function (err, newPath) {
+          resolveFileAvailable(path, context.fs, function (err, newPath) {
             if (err) throw err
             ncp(path, newPath, (err) => {
               obs.duplicating.set(false)
@@ -243,7 +242,7 @@ function Project (parentContext) {
 
     newSetup: function () {
       var path = join(resolve(context.cwd), 'New Setup')
-      resolveAvailable(path, context.fs, function (err, path) {
+      resolveFileAvailable(path, context.fs, function (err, path) {
         if (err) throw err
         context.fs.mkdir(path, function (err) {
           if (err) throw err
@@ -271,7 +270,7 @@ function Project (parentContext) {
 
       var isSelected = path === obs.selected() || filePath === obs.selected()
 
-      resolveAvailable(newPath, context.fs, function (err, newPath) {
+      resolveFileAvailable(newPath, context.fs, function (err, newPath) {
         if (err) return cb && cb(err)
         context.fs.rename(path, newPath, function (err) {
           if (err) return cb && cb(err)

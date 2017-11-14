@@ -21,7 +21,10 @@ module.exports = function renderLfo (node) {
     Header(node, h('span', [
       h('strong', 'LFO:'), ' ',
       h('span', {
-        hooks: [ EditableHook(node.id, { onChange: onRename }) ]
+        hooks: [ EditableHook(node.id, {
+          onChange: onRename,
+          formatter: node.context.collection.resolveAvailable
+        }) ]
       })
     ])),
     h('ParamList', [

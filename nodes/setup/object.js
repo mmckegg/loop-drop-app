@@ -8,6 +8,7 @@ var Event = require('geval')
 var updateParamReferences = require('lib/update-param-references')
 var lookup = require('mutant/lookup')
 var merge = require('mutant/merge')
+var resolveAvailable = require('lib/resolve-available')
 
 var Path = require('path')
 var extend = require('xtend')
@@ -91,17 +92,8 @@ function Setup (parentContext) {
     triggerEvents(context, node.onTrigger)
   ]
 
-  node.chunks.resolveAvailable = function (id) {
-    var base = id
-    var lookup = context.chunkLookup()
-    var incr = 0
-
-    while (lookup[id]) {
-      incr += 1
-      id = base + ' ' + (incr + 1)
-    }
-
-    return id
+  node.chunks.resolveAvailable = function (id, lastValue) {
+    return resolveAvailable(context.chunkLookup(), id, lastValue)
   }
 
   // deprecated: use chunks.resolveAvailable
