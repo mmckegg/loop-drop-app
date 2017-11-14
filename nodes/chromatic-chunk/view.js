@@ -4,15 +4,22 @@ var when = require('mutant/when')
 var computed = require('mutant/computed')
 var ParamEditor = require('lib/widgets/param-editor')
 var Range = require('lib/params/range')
+var ModRange = require('lib/params/mod-range')
+var Select = require('lib/params/select')
 var ToggleButton = require('lib/params/toggle-button')
 var ScaleChooser = require('lib/params/scale-chooser')
 var QueryParam = require('lib/query-param')
 var renderNode = require('lib/render-node')
+var nodeOptions = [
+  ['Polyphonic', 'chunk/scale'],
+  ['Monophonic', 'chunk/scale-mono']
+]
 
 module.exports = renderChromaticChunk
 
 function renderChromaticChunk (chunk) {
-  var customScale = computed(chunk.scale, value => value !== '$global')
+  var nodeName = QueryParam(chunk, 'node')
+  var customScale = computed(chunk.scale, v => v !== '$global')
   return h('ChunkNode', [
     h('div.options', [
       h('h1', 'Slots'),
@@ -31,9 +38,17 @@ function renderChromaticChunk (chunk) {
       h('h1', 'Chunk Options'),
       h('section.options', [
         h('ParamList', [
-          h('div -block', [
-            h('div', ToggleButton(chunk.chokeAll, {title: 'Choke All'}))
-          ])
+          Select(nodeName, {
+            options: nodeOptions
+          }),
+          chunk.chokeAll ? ToggleButton(chunk.chokeAll, {title: 'Choke All'}) : null,
+          chunk.legato ? ToggleButton(chunk.legato, {title: 'Legato'}) : null,
+          chunk.glide ? ModRange(chunk.glide, {
+            title: 'glide',
+            flex: 'small',
+            defaultValue: 0,
+            format: 'ms1'
+          }) : null
         ])
       ]),
 

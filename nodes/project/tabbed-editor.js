@@ -21,14 +21,14 @@ function TabbedEditor (project) {
 
   var tabs = Map(project.items, function (fileObject) {
     return computed([fileObject.path], function (path) {
-      var item = fileObject.node
-      if (path && item) {
+      var nodeName = fileObject.nodeName
+      if (path) {
         var selected = computed([project.selected], s => s === path)
-        var editor = computed([project.rawMode], function renderTab (rawMode) {
+        var editor = computed([project.rawMode, nodeName], function renderTab (rawMode, nodeName) {
           if (rawMode) {
-            return rawEditor(item)
+            return rawEditor(fileObject.node)
           } else {
-            return renderNode(item)
+            return renderNode(fileObject.node)
           }
         })
         return h('div.tab', {

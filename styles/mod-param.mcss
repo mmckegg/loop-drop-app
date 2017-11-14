@@ -2,6 +2,7 @@ ModParam {
   display: flex
   flex-wrap: wrap
   position: relative
+  color: white
 
   -flex {
     flex: 1

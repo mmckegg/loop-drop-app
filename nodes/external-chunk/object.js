@@ -215,6 +215,11 @@ function External (parentContext) {
             // also wait until idle before accepting update
             if (!setting && initialized) {
               updateFile(data)
+
+              // if the node has changed, regenerate!
+              if (getNode(data) !== currentNodeName) {
+                updateNode(data)
+              }
             }
           })
         )
