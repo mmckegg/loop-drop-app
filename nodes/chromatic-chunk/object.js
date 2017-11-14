@@ -1,5 +1,5 @@
 var ObservStruct = require('mutant/struct')
-var MutantArray = require('mutant/array')
+var KeyCollection = require('lib/key-collection')
 var Observ = require('mutant/value')
 var Property = require('lib/property')
 var Slots = require('lib/slots')
@@ -28,7 +28,7 @@ function ChromaticChunk (parentContext) {
     slots: Slots(context),
     inputs: Property([]),
     outputs: Property(['output']),
-    params: MutantArray([]),
+    params: KeyCollection(context),
     selectedSlotId: Observ()
   })
 
@@ -49,10 +49,9 @@ function ChromaticChunk (parentContext) {
   ])
 
   obs.spawnParam = function (id) {
-    var key = context.fileObject.resolveAvailableParam(id || 'New Param')
-    obs.params.push(key)
+    var key = context.fileObject.resolveAvailableParam(id || 'Param 1')
     obs.paramValues.put(key, 0)
-    return key
+    return obs.params.push(key)
   }
 
   obs.destroy = function () {

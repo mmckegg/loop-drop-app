@@ -4,7 +4,7 @@ var lookup = require('mutant/lookup')
 var Property = require('lib/property')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('mutant/resolve')
-var MutantArray = require('mutant/array')
+var KeyCollection = require('lib/key-collection')
 
 module.exports = TriggersChunk
 
@@ -15,7 +15,7 @@ function TriggersChunk (parentContext) {
     slots: Slots(context),
     inputs: Property([]),
     outputs: Property([]),
-    params: MutantArray([]),
+    params: KeyCollection(context),
     selectedSlotId: Property()
   })
 
@@ -38,10 +38,9 @@ function TriggersChunk (parentContext) {
   obs.paramValues = context.paramValues
 
   obs.spawnParam = function (id) {
-    var key = context.fileObject.resolveAvailableParam(id || 'New Param')
-    obs.params.push(key)
+    var key = context.fileObject.resolveAvailableParam(id || 'Param 1')
     obs.paramValues.put(key, 0)
-    return key
+    return obs.params.push(key)
   }
 
   obs.destroy = function () {

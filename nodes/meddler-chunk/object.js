@@ -7,8 +7,8 @@ var Dict = require('mutant/dict')
 var merge = require('mutant/merge')
 var destroyAll = require('lib/destroy-all')
 var resolve = require('mutant/resolve')
-var MutantArray = require('mutant/array')
 var destroySourceNode = require('lib/destroy-source-node')
+var KeyCollection = require('lib/key-collection')
 
 module.exports = MeddlerChunk
 
@@ -24,7 +24,7 @@ function MeddlerChunk (parentContext) {
     slots: Slots(context),
     inputs: Property(['input']),
     outputs: Property(['output']),
-    params: MutantArray([]),
+    params: KeyCollection(context),
     selectedSlotId: Property()
   })
 
@@ -76,10 +76,9 @@ function MeddlerChunk (parentContext) {
   context.externalChunk = obs
 
   obs.spawnParam = function (id) {
-    var key = context.fileObject.resolveAvailableParam(id || 'New Param')
-    obs.params.push(key)
+    var key = context.fileObject.resolveAvailableParam(id || 'Param 1')
     obs.paramValues.put(key, 0)
-    return key
+    return obs.params.push(key)
   }
 
   obs.destroy = function () {
