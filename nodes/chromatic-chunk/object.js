@@ -30,7 +30,7 @@ function ChromaticChunk (parentContext) {
     outputs: Property(['output']),
     params: KeyCollection(context),
     selectedSlotId: Observ()
-  })
+  }, {merge: true})
 
   obs.slots.onAdd(function (slot) {
     slot.triggerOn(context.audio.currentTime)
