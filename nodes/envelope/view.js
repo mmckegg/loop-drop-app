@@ -44,7 +44,7 @@ module.exports = function renderLfo (node) {
 
       ModRange(node.sustain, {
         flex: true,
-        defaultValue: 0.5,
+        defaultValue: 1,
         title: 'sustain',
         format: 'ratio'
       }),
