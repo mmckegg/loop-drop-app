@@ -23,6 +23,7 @@ function MidiOutNode (context) {
     note: Param(context, 69),
     velocity: Param(context, 100),
     aftertouch: Param(context, 0),
+    triggerOffset: Property(10),
 
     // when used as a slot in midi-out-chunk
     id: Property(),
@@ -51,7 +52,8 @@ function MidiOutNode (context) {
       output,
       channel: resolve(obs.channel),
       note: noteOffset.getValueAtTime(at),
-      velocity: obs.velocity.getValueAtTime(at)
+      velocity: obs.velocity.getValueAtTime(at),
+      offset: obs.triggerOffset()
     })
     var aftertouchMessage = [ 160 + clamp(Math.round(resolve(obs.channel)), 1, 16) - 1, noteId ]
     lastEvent = new ScheduleEvent(at, note, null, [

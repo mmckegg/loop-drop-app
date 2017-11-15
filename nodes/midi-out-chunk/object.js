@@ -80,6 +80,7 @@ function MidiOutChunk (parentContext) {
     noteOffset,
     octave,
     velocity,
+    triggerOffset: midiNote.triggerOffset,
     aftertouch: midiNote.aftertouch,
     offset
   })

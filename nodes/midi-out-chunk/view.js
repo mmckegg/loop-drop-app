@@ -120,6 +120,12 @@ module.exports = function renderMidiOutChunk (node) {
             defaultValue: 0,
             format: 'midi',
             flex: true
+          }),
+          Range(node.triggerOffset, {
+            title: 'trigger offset',
+            defaultValue: 0,
+            format: 'syncMs',
+            flex: true
           })
         ])
       ]),
