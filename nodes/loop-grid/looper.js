@@ -64,12 +64,16 @@ function Looper (loopGrid) {
     })
 
     undos.push(base())
+
+    result.loopLength = loopGrid.loopLength()
     base.set(result)
   }
 
   obs.flatten = function () {
     undos.push(base())
-    base.set(transformedOutput())
+    var result = transformedOutput()
+    result.loopLength = loopGrid.loopLength()
+    base.set(result)
     transforms.set([])
   }
 
@@ -77,6 +81,10 @@ function Looper (loopGrid) {
     if (undos.length) {
       redos.push(base())
       base.set(undos.pop())
+
+      if (base().loopLength) {
+        loopGrid.loopLength.set(base().loopLength)
+      }
     }
   }
 
@@ -84,6 +92,10 @@ function Looper (loopGrid) {
     if (redos.length) {
       undos.push(base())
       base.set(redos.pop() || [])
+
+      if (base().loopLength) {
+        loopGrid.loopLength.set(base().loopLength)
+      }
     }
   }
 
