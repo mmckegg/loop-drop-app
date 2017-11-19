@@ -197,7 +197,7 @@ module.exports = function (context) {
 
   var releaseLoopLengthLights = []
   var storeHeldPosition = Observ()
-  var storeHold = true
+  var storeHold = false
   var startRecordTimeout = null
 
   watchButtons(buttons, {
