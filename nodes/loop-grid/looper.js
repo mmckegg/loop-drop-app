@@ -49,9 +49,9 @@ function Looper (loopGrid) {
     }
   })
 
-  obs.store = function () {
-    var length = loopGrid.loopLength() || 8
-    var pos = context.scheduler.getCurrentPosition()
+  obs.store = function (pos, length) {
+    length = length || loopGrid.loopLength() || 8
+    pos = pos || context.scheduler.getCurrentPosition()
     var from = pos - length
     var result = loopGrid.targets().map(function (target, i) {
       var events = record.getRange(target, from, pos).map(function (data) {

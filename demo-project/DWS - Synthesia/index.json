@@ -93,7 +93,10 @@
       "routes": {
         "output": "$default"
       },
-      "paramValues": {},
+      "paramValues": {
+        "lowcut": 0,
+        "highcut": 0
+      },
       "volume": 0.7796,
       "node": "externalChunk"
     },
@@ -185,7 +188,11 @@
       "routes": {
         "output": "$default"
       },
-      "paramValues": {},
+      "paramValues": {
+        "highpass": 0,
+        "lowpass": 0,
+        "wet": 0
+      },
       "volume": 1,
       "node": "externalChunk"
     },
@@ -271,7 +278,11 @@
       "routes": {
         "output": "$default"
       },
-      "paramValues": {},
+      "paramValues": {
+        "lowcut": 0,
+        "highcut": 0,
+        "feedback": 0
+      },
       "volume": 1,
       "node": "externalChunk"
     },
@@ -302,7 +313,10 @@
       "routes": {
         "output": "$default"
       },
-      "paramValues": {},
+      "paramValues": {
+        "lowcut": 0,
+        "highcut": 0
+      },
       "volume": 1,
       "node": "externalChunk"
     },

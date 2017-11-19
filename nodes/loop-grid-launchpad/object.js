@@ -180,14 +180,14 @@ module.exports = function (context) {
 
       if (value) {
         storeHold = false
-        var downPosition = scheduler.getCurrentPosition()
+        this.downPosition = scheduler.getCurrentPosition()
 
         // used by flatten to lock in the down
-        storeHeldPosition.set(downPosition)
+        storeHeldPosition.set(this.downPosition)
 
         // track down time, decide action based on duration
         startRecordTimeout = setTimeout(() => {
-          obs.recordingLoop.set(downPosition)
+          obs.recordingLoop.set(this.downPosition)
         }, 400)
       } else {
         storeHeldPosition.set(false)
@@ -202,7 +202,7 @@ module.exports = function (context) {
           this.flash(stateLights.red)
         } else {
           // not recording, loop the last `loopLength`
-          looper.store()
+          looper.store(this.downPosition)
           this.flash(stateLights.green)
         }
 
