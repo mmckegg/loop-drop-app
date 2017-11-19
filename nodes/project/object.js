@@ -85,19 +85,26 @@ function Project (parentContext) {
     var controllers = context.nodeInfo.groupLookup['global-controllers']
     if (controllers) {
       controllers.forEach(function (info) {
-        var portNames = info.inputOnly ? input : info.outputOnly
-          ? output
-          : both
+        if (info.portMatch) {
+          var portNames = info.inputOnly ? input : info.outputOnly
+            ? output
+            : both
 
-        var ports = findMatches(portNames, info.portMatch)
-        if (ports.length) {
-          result[info.node] = ports.map(port => {
-            return {
-              name: info.name,
-              node: info.node,
-              port: port
-            }
-          })
+          var ports = findMatches(portNames, info.portMatch)
+          if (ports && ports.length) {
+            result[info.node] = ports.map(port => {
+              return {
+                name: info.name,
+                node: info.node,
+                port: port
+              }
+            })
+          }
+        } else {
+          result[info.node] = {
+            name: info.name,
+            node: info.node
+          }
         }
       })
     }

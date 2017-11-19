@@ -13,12 +13,14 @@
   "license": "AGPL-3.0",
   "scripts": {
     "start": "node scripts/start",
-    "postinstall": "node scripts/link-lib"
+    "postinstall": "node scripts/link-lib && npm run rebuild",
+    "rebuild": "electron-rebuild -f -w abletonlink"
   },
   "bin": {
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
+    "abletonlink": "0.0.5",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",
@@ -33,6 +35,7 @@
     "electron": "~1.6.15",
     "electron-default-menu": "~1.0.0",
     "electron-json-storage": "~2.0.0",
+    "electron-rebuild": "^1.6.0",
     "frac": "^0.3.1",
     "freeverb": "~1.1.0",
     "geval": "^2.1.1",
