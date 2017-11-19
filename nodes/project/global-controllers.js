@@ -24,10 +24,12 @@ module.exports = function (collection) {
           result.push([info.name, items])
         }
       } else {
-        result.push([info.name, {
-          name: info.name,
-          node: info.node
-        }])
+        if (!hasNode(collection, info)) {
+          result.push([info.name, {
+            name: info.name,
+            node: info.node
+          }])
+        }
       }
     })
     return result
