@@ -177,8 +177,21 @@ module.exports = function (context) {
     store: function (value) {
       // cancel recording if press state changes before time passses
       clearTimeout(startRecordTimeout)
+      storeHeldPosition.set(false)
 
-      if (value) {
+      if (!storeHold && typeof obs.recordingLoop() === 'number') {
+        // button up or down, when active recording
+        // loop the duration of recording
+
+        var duration = scheduler.getCurrentPosition() - obs.recordingLoop()
+        obs.loopLength.set(quantizeDuration(duration))
+        looper.store()
+        this.flash(stateLights.red)
+
+        // stop recording
+        obs.recordingLoop.set(null)
+      } else if (value) {
+        // button down
         storeHold = false
         this.downPosition = scheduler.getCurrentPosition()
 
@@ -190,24 +203,11 @@ module.exports = function (context) {
           obs.recordingLoop.set(this.downPosition)
         }, 400)
       } else {
-        storeHeldPosition.set(false)
-
+        // button up
         if (storeHold) return // don't end until triggered again!
-
-        if (typeof obs.recordingLoop() === 'number') {
-          // loop the duration of recording
-          var duration = scheduler.getCurrentPosition() - obs.recordingLoop()
-          obs.loopLength.set(quantizeDuration(duration))
-          looper.store()
-          this.flash(stateLights.red)
-        } else {
-          // not recording, loop the last `loopLength`
-          looper.store(this.downPosition)
-          this.flash(stateLights.green)
-        }
-
-        // stop recording
-        obs.recordingLoop.set(null)
+        // not recording, loop the last `loopLength`
+        looper.store(this.downPosition)
+        this.flash(stateLights.green)
       }
     },
 
