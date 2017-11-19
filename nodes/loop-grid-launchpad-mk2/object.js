@@ -57,7 +57,8 @@ var stateLights = {
 module.exports = function (context) {
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
-  var recording = computedRecording(loopGrid)
+  var recordingLoop = Observ()
+  var recording = computedRecording(loopGrid, recordingLoop)
 
   var scheduler = context.scheduler
   var gridMapping = getLaunchpadGridMapping()
@@ -99,7 +100,7 @@ module.exports = function (context) {
   obs.playback = loopGrid
   obs.looper = looper
   obs.repeatLength = Observ(2)
-  obs.recordingLoop = Observ()
+  obs.recordingLoop = recordingLoop
 
   var repeatOffbeat = Observ(false)
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)

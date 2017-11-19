@@ -1,7 +1,8 @@
 var Observ = require('mutant/value')
 var ArrayGrid = require('array-grid')
+var resolve = require('mutant/resolve')
 
-module.exports = function (loopGrid) {
+module.exports = function (loopGrid, recordingLoop) {
   var scheduler = loopGrid.context.scheduler
   var grid = loopGrid.grid
   var loopLength = loopGrid.loopLength
@@ -26,8 +27,9 @@ module.exports = function (loopGrid) {
 
   function onSchedule (schedule) {
     var changed = false
+    var recordedFrom = resolve(recordingLoop) ? resolve(recordingLoop) : schedule.to - (loopLength() || 8)
     Object.keys(lastTriggeredAt).forEach(function (key) {
-      var value = (lastTriggeredAt[key] > schedule.to - (loopLength() || 8))
+      var value = (lastTriggeredAt[key] > recordedFrom)
       if (value !== recording[key]) {
         recording[key] = value
         changed = true
