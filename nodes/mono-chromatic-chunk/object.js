@@ -113,7 +113,7 @@ function MonoChromaticChunk (parentContext) {
   }
 
   obs.destroy = function () {
-    triggerSlot.choke(context.audio.currentTime)
+    triggerSlot.destroy()
     destroyAll(obs)
   }
 
