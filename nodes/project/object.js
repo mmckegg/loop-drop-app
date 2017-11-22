@@ -33,6 +33,7 @@ var ncp = require('ncp')
 var moveItemToTrash = require('electron').shell.moveItemToTrash
 
 var scrollIntoView = require('scroll-into-view')
+var MultiChannelOutput = require('lib/multi-channel-output')
 
 module.exports = Project
 
@@ -41,8 +42,14 @@ function Project (parentContext) {
 
   // main output and monitoring
   var masterOutput = context.audio.createGain()
-  masterOutput.connect(context.audio.destination)
+  masterOutput.channelCount = 2
   context.masterOutput = masterOutput
+
+  // setup multichannel output
+  var multiChannelOutput = MultiChannelOutput(context.audio.destination)
+  multiChannelOutput.set({
+    '1,2': masterOutput
+  })
 
   context.cleaner = Cleaner(context.audio)
 
