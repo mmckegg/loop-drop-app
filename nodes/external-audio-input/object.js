@@ -28,7 +28,12 @@ function ExternalAudioInputNode (context) {
 
   var releases = [
     watch(deviceId, (deviceId) => {
-      navigator.mediaDevices.getUserMedia({audio: {deviceId}}).then((result) => {
+      navigator.mediaDevices.getUserMedia({
+        audio: {
+          deviceId,
+          echoCancellation: false
+        }
+      }).then((result) => {
         if (mediaStream) mediaStream.getAudioTracks()[0].stop()
         if (input) input.disconnect()
 
