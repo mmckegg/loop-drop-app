@@ -198,15 +198,13 @@ module.exports = function (context) {
   var releaseLoopLengthLights = []
   var storeHeldPosition = Observ()
   var storeHold = false
-  var startRecordTimeout = null
 
   watchButtons(buttons, {
     store: function (value) {
       // cancel recording if press state changes before time passses
-      clearTimeout(startRecordTimeout)
       storeHeldPosition.set(false)
 
-      if (!storeHold && typeof obs.recordingLoop() === 'number') {
+      if (!storeHold && typeof obs.recordingLoop() === 'number' && scheduler.getCurrentPosition() - obs.recordingLoop() > 0.9) {
         // button up or down, when active recording
         // loop the duration of recording
 
@@ -219,27 +217,40 @@ module.exports = function (context) {
         obs.recordingLoop.set(null)
       } else if (value) {
         // button down
-        storeHold = false
-        this.downPosition = scheduler.getCurrentPosition()
+        if (shiftHeld) {
+          // start recording from next % 4 beats quantized
+          storeHold = true
 
-        // used by flatten to lock in the down
-        storeHeldPosition.set(this.downPosition)
+          // calculate quantized loop recorder start
+          var currentPosition = scheduler.getCurrentPosition()
+          var startPosition = Math.floor(currentPosition + 1)
 
-        // track down time, decide action based on duration
-        startRecordTimeout = setTimeout(() => {
-          obs.recordingLoop.set(this.downPosition)
-        }, 400)
+          obs.recordingLoop.set(startPosition)
+        } else {
+          storeHold = false
+          var downPosition = scheduler.getCurrentPosition()
+
+          // used by flatten to lock in the down
+          storeHeldPosition.set(downPosition)
+
+          // lets assume we're recording a loop, but if the duration is too short, we'll loop the last x bars
+          obs.recordingLoop.set(downPosition)
+        }
       } else {
         // button up
         if (storeHold) return // don't end until triggered again!
-        // not recording, loop the last `loopLength`
-        looper.store(this.downPosition)
+
+        // record key was pressed quickly, just loop the last `loopLength`
+        looper.store(obs.recordingLoop())
+
+        // cancel recording
+        obs.recordingLoop.set(null)
+
         this.flash(stateLights.green)
       }
     },
 
     flatten: function (value) {
-      clearTimeout(startRecordTimeout)
       if (value) {
         if (storeHeldPosition()) {
           // store is held, lock in the recording
@@ -404,15 +415,22 @@ module.exports = function (context) {
 
     if (recordingLoop) {
       var duration = scheduler.getCurrentPosition() - recordingLoop
-      var currentIndex = Math.floor(duration / 32 * 8)
       for (let i = 0; i < 8; i++) {
-        if (currentIndex === i && loopPosition[0] >= currentBeat && loopPosition[0] < currentBeat + 0.1) {
-          // flash light on beat
-          result[i] = stateLights.red
-        } else if (currentIndex >= i) {
-          result[i] = stateLights.redLow
-        } else if (repeatIndex === i) {
-          result[i] = stateLights.grey
+        if (duration < 0) {
+          // counting down to record
+          if (i >= Math.floor(8 + duration * 2)) {
+            result[i] = stateLights.yellow
+          }
+        } else {
+          var currentIndex = Math.floor(duration / 32 * 8)
+          if (currentIndex === i && loopPosition[0] >= currentBeat && loopPosition[0] < currentBeat + 0.1) {
+            // flash light on beat
+            result[i] = stateLights.red
+          } else if ((duration > 0 && currentIndex >= i) || (duration < 0 && currentIndex <= i)) {
+            result[i] = stateLights.redLow
+          } else if (repeatIndex === i) {
+            result[i] = stateLights.grey
+          }
         }
       }
     } else {

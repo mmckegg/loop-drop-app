@@ -48,7 +48,7 @@ function Project (parentContext) {
   // setup multichannel output
   var multiChannelOutput = MultiChannelOutput(context.audio.destination)
   multiChannelOutput.set({
-    '1,2': masterOutput
+    '5,6': masterOutput
   })
 
   context.cleaner = Cleaner(context.audio)
@@ -158,6 +158,7 @@ function Project (parentContext) {
   })
 
   var chunkScroller = null
+  var lastPurgeTime = 30
 
   obs.isReadyToClose = computed([recorder.recording], (recording) => {
     return !recording
@@ -170,9 +171,13 @@ function Project (parentContext) {
 
     purge: function () {
       if (global.gc) {
+        // schedule twice the length last gc() took of audio
+        context.scheduler.schedule(lastPurgeTime / 1000 * 2)
+
         var startAt = window.performance.now()
         global.gc()
-        console.log(`purge took ${Math.round(window.performance.now() - startAt)} ms`)
+        lastPurgeTime = window.performance.now() - startAt
+        console.log(`purge took ${Math.round(lastPurgeTime)} ms`)
         return true
       }
     },
@@ -400,6 +405,7 @@ function Project (parentContext) {
 
       object.onClose(function () {
         console.log('closing', resolve(object.path))
+        var nodeName = object.nodeName && object.nodeName()
         var index = obs.items.indexOf(object)
         if (~index) {
           obs.items.delete(object)
@@ -407,6 +413,11 @@ function Project (parentContext) {
         if (resolve(object.path) === obs.selected()) {
           var lastSelectedSetup = obs.items.get(index) || obs.items.get(index - 1) || obs.items.get(0)
           obs.selected.set(lastSelectedSetup ? resolve(lastSelectedSetup.path) : null)
+        }
+        if (nodeName === 'setup') {
+          window.requestIdleCallback(() => {
+            actions.purge()
+          })
         }
       })
 
