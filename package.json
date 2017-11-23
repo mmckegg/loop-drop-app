@@ -14,7 +14,7 @@
   "scripts": {
     "start": "node scripts/start",
     "postinstall": "node scripts/link-lib && npm run rebuild",
-    "rebuild": "electron-rebuild -f -w abletonlink"
+    "rebuild": "electron-rebuild -f -w abletonlink,naudiodon"
   },
   "bin": {
     "loop-drop": "scripts/start.js"
@@ -45,6 +45,7 @@
     "micro-css": "~2.0.0",
     "mkdirp": "^0.5.0",
     "mutant": "~3.22.1",
+    "naudiodon": "^0.4.2",
     "ncp": "^2.0.0",
     "next-tick": "^0.2.2",
     "noise-buffer": "^2.0.1",
@@ -62,6 +63,7 @@
     "tap-tempo": "~0.0.0",
     "teoria": "~0.4.0",
     "through": "~2.3.4",
+    "to-arraybuffer": "^1.0.1",
     "wav": "~1.0.1",
     "wave-recorder": "^2.3.0",
     "web-midi": "^2.1.0",
