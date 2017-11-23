@@ -20,7 +20,7 @@ function ExternalAudioInputNode (context) {
     if (item) {
       return item.deviceId
     }
-  })
+  }, {nextTick: true})
 
   var input = null
   var mediaStream = null
@@ -28,38 +28,46 @@ function ExternalAudioInputNode (context) {
 
   var releases = [
     watch(deviceId, (deviceId) => {
-      navigator.mediaDevices.getUserMedia({
-        audio: {
-          deviceId,
-          echoCancellation: false
-        }
-      }).then((result) => {
-        if (mediaStream) mediaStream.getAudioTracks()[0].stop()
-        if (input) input.disconnect()
+      if (deviceId) {
+        navigator.mediaDevices.getUserMedia({
+          audio: {
+            deviceId,
+            echoCancellation: {exact: false}
+          }
+        }).then((result) => {
+          window.thing = result
+          if (mediaStream) mediaStream.getAudioTracks()[0].stop()
+          if (input) input.disconnect()
 
-        mediaStream = result
-        input = context.audio.createMediaStreamSource(mediaStream)
-        input.connect(obs.output)
-        obs.connected.set(true)
-      }, () => {
-        if (mediaStream) mediaStream.getAudioTracks()[0].stop()
-        if (input) input.disconnect()
-        mediaStream = null
-        input = null
-        obs.connected.set(false)
-      })
+          mediaStream = result
+          input = context.audio.createMediaStreamSource(mediaStream)
+          input.connect(obs.output)
+          obs.connected.set(true)
+        }).catch(() => {
+          close()
+        })
+      } else {
+        close()
+      }
     })
   ]
 
   obs.context = context
 
   obs.destroy = function () {
-    if (mediaStream) mediaStream.getAudioTracks()[0].stop()
-    if (input) input.disconnect()
+    close()
     while (releases.length) {
       releases.pop()()
     }
   }
 
   return obs
+
+  function close () {
+    if (mediaStream) mediaStream.getAudioTracks()[0].stop()
+    if (input) input.disconnect()
+    mediaStream = null
+    input = null
+    obs.connected.set(false)
+  }
 }
