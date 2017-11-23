@@ -20,6 +20,8 @@ function AudioTimelineClip (context) {
   var channels = Value(2)
 
   var obs = Struct({
+    id: Property(),
+    linkTo: Property(),
     startOffset: Property(0),
     duration: Property(),
     flags: Property([]),

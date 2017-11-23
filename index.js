@@ -23,6 +23,23 @@ var version = require('./package.json').version
 insertCss(require('./styles'))
 electron.webFrame.setZoomLevelLimits(1, 1)
 
+// audio devices
+var audioDevices = Observ([])
+audioDevices.output = Observ([])
+audioDevices.input = Observ([])
+audioDevices.deviceIdLookup = Observ({})
+
+refreshAudioDevices()
+navigator.mediaDevices.addEventListener('devicechange', refreshAudioDevices)
+
+function refreshAudioDevices () {
+  navigator.mediaDevices.enumerateDevices().then((devices) => {
+    audioDevices.set(devices.filter(d => d.kind.startsWith('audio')))
+    audioDevices.output.set(devices.filter(d => d.kind === 'audiooutput'))
+    audioDevices.input.set(devices.filter(d => d.kind === 'audioinput'))
+  })
+}
+
 // midi ports
 var midiPorts = Observ()
 midiPorts.output = Observ()
@@ -62,6 +79,7 @@ var rootContext = window.rootContext = {
   audio: audioContext,
   periodicWaves: PeriodicWaves(audioContext),
   midiPorts: midiPorts,
+  audioDevices: audioDevices,
   nodes: nodes.objectLookup,
   nodeInfo: nodes,
   zoom: Property(1.1),

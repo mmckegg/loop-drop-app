@@ -13,7 +13,7 @@ module.exports = function (collection) {
     var result = []
     Object.keys(globalControllers).forEach(key => {
       var info = context.nodeInfo.lookup[key]
-      if (info.portMatch) {
+      if (Array.isArray(globalControllers[key])) {
         var items = []
         globalControllers[key].forEach(descriptor => {
           if (!hasNode(collection, descriptor)) {

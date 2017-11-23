@@ -5,6 +5,7 @@ var computed = require('mutant/computed')
 var MutantMap = require('mutant/map')
 var pullCat = require('pull-cat')
 var pull = require('pull-stream')
+var lookup = require('mutant/lookup')
 var StreamProgress = require('lib/stream-progress')
 
 module.exports = AudioTimeline
@@ -15,8 +16,11 @@ function AudioTimeline (parentContext) {
   output.connect(parentContext.output || parentContext.audio.destination)
 
   var obs = Struct({
-    primary: Slots(context)
+    primary: Slots(context),
+    secondary: Slots(context)
   })
+
+  var secondaryLookup = lookup(obs.secondary, 'linkTo')
 
   obs.context = context
 
@@ -44,24 +48,12 @@ function AudioTimeline (parentContext) {
     offset = offset || 0
 
     var currentTime = at - offset
-    obs.primary.forEach(function (clip, i) {
-      var endTime = currentTime + clip.duration.resolved()
-      if (at < endTime) {
-        if (at > currentTime) {
-          if (stopAt) {
-            clip.start(at, at - currentTime, stopAt - at)
-          } else {
-            clip.start(at, at - currentTime)
-          }
-        } else {
-          if (stopAt) {
-            clip.start(currentTime, 0, stopAt - currentTime)
-          } else {
-            clip.start(currentTime)
-          }
-        }
-      }
-      currentTime = endTime
+    obs.primary.forEach(function (primaryClip, i) {
+      var linked = selectLinked(obs.secondary, resolve(primaryClip.id))
+      playClip(primaryClip, at, currentTime, stopAt)
+      linked.forEach((clip, i) => {
+        playClip(clip, at, currentTime, stopAt)
+      })
     })
 
     return currentTime
@@ -69,6 +61,9 @@ function AudioTimeline (parentContext) {
 
   obs.stop = function (at) {
     obs.primary.forEach(function (clip) {
+      clip.stop(at)
+    })
+    obs.secondary.forEach(function (clip) {
       clip.stop(at)
     })
   }
@@ -113,8 +108,37 @@ function AudioTimeline (parentContext) {
   }
 
   return obs
+
+  function playClip (clip, at, currentTime, stopAt) {
+    var endTime = currentTime + clip.duration.resolved()
+    if (at < endTime) {
+      if (at > currentTime) {
+        if (stopAt) {
+          clip.start(at, at - currentTime, stopAt - at)
+        } else {
+          clip.start(at, at - currentTime)
+        }
+      } else {
+        if (stopAt) {
+          clip.start(currentTime, 0, stopAt - currentTime)
+        } else {
+          clip.start(currentTime)
+        }
+      }
+    }
+  }
 }
 
 function getResolved (node) {
   return node && node.resolved || node
+}
+
+function selectLinked (collection, id) {
+  var result = []
+  collection.forEach(item => {
+    if (resolve(item.linkTo) === id) {
+      result.push(item)
+    }
+  })
+  return result
 }
