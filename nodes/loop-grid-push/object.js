@@ -383,6 +383,7 @@ module.exports = function(context){
     display.init()
     output.destroy()
     loopGrid.destroy()
+    looper.destroy()
     releaseLooper()
   }
 

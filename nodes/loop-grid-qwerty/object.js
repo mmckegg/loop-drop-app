@@ -193,6 +193,7 @@ function LoopQwerty (context) {
     keysDown.close()
     recording.destroy()
     loopGrid.destroy()
+    looper.destroy()
     releaseLooper()
     releasesGlobalRepeatLength()
   }

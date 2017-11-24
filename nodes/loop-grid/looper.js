@@ -9,16 +9,26 @@ module.exports = Looper
 function Looper (loopGrid) {
   var base = Observ([])
   var transforms = MutantArray([])
+  var releases = []
   var undos = []
   var redos = []
 
   var swing = loopGrid.context.swing || Observ(0)
 
+  releases.push(
+    loopGrid.loopLength(length => {
+      var current = base()
+      if (current) {
+        current.loopLength = length
+      }
+    })
+  )
+
   var transformedOutput = computed([base, transforms], function (base, transforms) {
     if (transforms.length) {
       var input = ArrayGrid(base.map(cloneLoop), loopGrid.shape())
       var result = transforms.slice().sort(prioritySort).reduce(performTransform, input)
-      return result && result.data || []
+      return (result && result.data) || []
     } else {
       return base
     }
@@ -131,6 +141,12 @@ function Looper (loopGrid) {
     return !!obs.transforms.getLength()
   }
 
+  obs.destroy = function () {
+    while (releases.length) {
+      releases.pop()()
+    }
+  }
+
   return obs
 
   // scoped
@@ -213,7 +229,7 @@ function swingPosition (position, center, grid) {
 }
 
 function prioritySort (a, b) {
-  return (a && a.priority || 0) - (b && b.priority || 0)
+  return ((a && a.priority) || 0) - ((b && b.priority) || 0)
 }
 
 function byPosition (a, b) {

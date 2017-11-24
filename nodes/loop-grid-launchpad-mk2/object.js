@@ -462,6 +462,7 @@ module.exports = function (context) {
     output.destroy()
     loopGrid.destroy()
     releaseLooper()
+    looper.destroy()
   }
 
   return obs
