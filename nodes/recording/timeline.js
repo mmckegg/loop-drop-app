@@ -20,7 +20,7 @@ function AudioTimeline (parentContext) {
     secondary: Slots(context)
   })
 
-  var secondaryLookup = lookup(obs.secondary, 'linkTo')
+  obs.secondary.getLinkedTo = (id) => selectLinked(obs.secondary, id)
 
   obs.context = context
 

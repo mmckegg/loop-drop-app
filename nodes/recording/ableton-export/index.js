@@ -13,7 +13,12 @@ var pull = require('pull-stream')
 var StreamProgress = require('lib/stream-progress')
 
 module.exports = function (timeline, outputPath, cb) {
-  var clips = []
+  var primaryClips = []
+  var lastTrackId = 8
+  var tracks = [{
+    clips: primaryClips,
+    id: lastTrackId++
+  }]
   var tempoEvents = []
   var tempo = 0
   var currentDuration = 0
@@ -28,16 +33,16 @@ module.exports = function (timeline, outputPath, cb) {
     return values.reduce((a, b) => a + b) / values.length
   })
 
-  timeline.primary.forEach(clip => {
-    if (resolve(clip.resolved.duration)) {
-      var fileName = Path.basename(resolve(clip.src), '.json') + '.wav'
+  timeline.primary.forEach(primaryClip => {
+    if (resolve(primaryClip.resolved.duration)) {
+      var fileName = Path.basename(resolve(primaryClip.src), '.json') + '.wav'
       var name = Path.basename(fileName, Path.extname(fileName))
-      var warpMarkers = clip.getWarpMarkers()
+      var warpMarkers = primaryClip.getWarpMarkers()
       var start = 0
-      var end = resolve(clip.cuePoints).length / 2
+      var end = resolve(primaryClip.cuePoints).length / 2
 
-      clips.push({
-        name, fileName, start, end, warpMarkers, at: currentDuration
+      primaryClips.push({
+        name, fileName, start, end, warpMarkers, at: currentDuration, isTempoMaster: true
       })
       warpMarkers.forEach(marker => {
         if (!tempo) tempo = marker.tempo
@@ -49,8 +54,31 @@ module.exports = function (timeline, outputPath, cb) {
       var p = Value(0)
       progressElements.push(p)
       toExport.push({
-        clip, outputPath: Path.join(projectPath, fileName), onProgress: p.set
+        clip: primaryClip, outputPath: Path.join(projectPath, fileName), onProgress: p.set
       })
+
+      var linked = timeline.secondary.getLinkedTo(resolve(primaryClip.id))
+      linked.forEach(clip => {
+        var clips = []
+        tracks.push({
+          id: lastTrackId++,
+          clips: clips
+        })
+        var fileName = Path.basename(resolve(clip.src), '.json') + '.wav'
+        var name = Path.basename(fileName, Path.extname(fileName))
+        var warpMarkers = clip.getWarpMarkers(clip.startOffset())
+        var start = 0
+        var end = resolve(clip.cuePoints).length / 2
+        clips.push({
+          name, fileName, start, end, warpMarkers, at: currentDuration, isTempoMaster: false
+        })
+        var p = Value(0)
+        progressElements.push(p)
+        toExport.push({
+          clip, outputPath: Path.join(projectPath, fileName), onProgress: p.set
+        })
+      })
+
       currentDuration += end - start
     }
   })
@@ -62,7 +90,7 @@ module.exports = function (timeline, outputPath, cb) {
       forEach(toExport, exportClip, (err) => {
         if (err) return cb && cb(err)
         var setContent = template({
-          clips, tempo, tempoEvents
+          tracks, tempo, tempoEvents
         })
         fs.writeFile(setPath, setContent, cb)
       })

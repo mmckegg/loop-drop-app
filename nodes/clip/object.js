@@ -171,7 +171,7 @@ function AudioTimelineClip (context) {
     )
   }
 
-  obs.getWarpMarkers = function () {
+  obs.getWarpMarkers = function (offset = 0) {
     var lastTempo = 0
     var items = []
     var cuePoints = resolve(obs.cuePoints)
@@ -180,7 +180,7 @@ function AudioTimelineClip (context) {
       var beat = i / 2
       var tempo = tempoAt(cuePoints, i)
       if (isFinite(tempo) && (lastTempo !== tempo || !next)) {
-        items.push({ time: time + 0.032, beat, tempo })
+        items.push({ time: time + 0.032 + offset, beat, tempo })
       }
       lastTempo = tempo
     })
