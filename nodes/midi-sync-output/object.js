@@ -39,7 +39,7 @@ function MidiSync (context) {
         if (event[1] && midiPort.stream) {
           var delta = (event[0] - schedule.from) * schedule.beatDuration
           var at = schedule.time + delta
-          midiPort.stream.write([248], getMidiTime(at, offset) + 40)
+          midiPort.stream.write([248], getMidiTime(at) + 40)
         }
       })
     })
@@ -76,7 +76,7 @@ function MidiSync (context) {
 
   return obs
 
-  function getMidiTime (at, offset) {
+  function getMidiTime (at) {
     return at ? (at * 1000) + offset : window.performance.now()
   }
 }
