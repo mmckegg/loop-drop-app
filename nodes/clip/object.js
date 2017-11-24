@@ -180,7 +180,7 @@ function AudioTimelineClip (context) {
       var beat = i / 2
       var tempo = tempoAt(cuePoints, i)
       if (isFinite(tempo) && (lastTempo !== tempo || !next)) {
-        items.push({ time: time + 0.032 + offset, beat, tempo })
+        items.push({ time: time + offset, beat, tempo })
       }
       lastTempo = tempo
     })

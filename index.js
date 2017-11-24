@@ -73,6 +73,10 @@ electron.ipcRenderer.on('close', function () {
 
 // create root context
 var audioContext = new global.AudioContext()
+
+// monkey patch until we upgrade to chrome > 60
+audioContext.baseLatency = 1 / audioContext.sampleRate * 256
+
 var nodes = require('./nodes')
 var rootContext = window.rootContext = {
   fs: fs,
