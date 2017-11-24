@@ -27,7 +27,6 @@ function MidiSync (context) {
     if (lastDifference !== -difference && currentOffset !== offset) {
       lastDifference = currentOffset - offset
       offset = Math.round(currentOffset)
-      console.log(offset)
     }
   }
 
