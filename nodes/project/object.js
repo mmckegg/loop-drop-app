@@ -87,7 +87,7 @@ function Project (parentContext) {
 
   obs.outputRms = ObservRms(masterOutput)
 
-  obs.availableGlobalControllers = computed([context.midiPorts, context.midiPorts.output, context.midiPorts.input], function (both, input, output) {
+  obs.availableGlobalControllers = computed([context.midiPorts, context.midiPorts.output, context.midiPorts.input, context.audioDevices], function (both, input, output) {
     var result = {}
     var controllers = context.nodeInfo.groupLookup['global-controllers']
     if (controllers) {
@@ -106,6 +106,11 @@ function Project (parentContext) {
                 port: port
               }
             })
+          }
+        } else if (typeof info.spawners === 'function') {
+          var spawners = info.spawners(context)
+          if (Array.isArray(spawners) && spawners.length) {
+            result[info.node] = spawners
           }
         } else {
           result[info.node] = {
@@ -142,8 +147,20 @@ function Project (parentContext) {
     return values.some(x => x)
   })
 
+  var externalInputsToRecord = computed([map(obs.globalControllers, (controller, invalidateWith) => {
+    if (controller.includeInRecording && controller.output) {
+      invalidateWith(controller.includeInRecording)
+      if (resolve(controller.includeInRecording)) {
+        return controller.output
+      }
+    }
+  })], (items) => items.filter(Boolean))
+
   // recording
-  var recorder = SessionRecorder(context, active)
+  var recorder = SessionRecorder(context, {
+    active, externalInputs: externalInputsToRecord
+  })
+
   obs.recording = recorder.recording
   obs.recordPosition = recorder.recordPosition
   obs.recordingPath = recorder.recordingPath
