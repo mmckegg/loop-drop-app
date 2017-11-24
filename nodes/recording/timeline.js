@@ -50,10 +50,11 @@ function AudioTimeline (parentContext) {
     var currentTime = at - offset
     obs.primary.forEach(function (primaryClip, i) {
       var linked = selectLinked(obs.secondary, resolve(primaryClip.id))
-      playClip(primaryClip, at, currentTime, stopAt)
+      var endTime = playClip(primaryClip, at, currentTime, stopAt)
       linked.forEach((clip, i) => {
         playClip(clip, at, currentTime, stopAt)
       })
+      currentTime = endTime
     })
 
     return currentTime
@@ -126,6 +127,7 @@ function AudioTimeline (parentContext) {
         }
       }
     }
+    return endTime
   }
 }
 
