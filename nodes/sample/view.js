@@ -35,6 +35,12 @@ module.exports = function renderSample (node) {
       Select(node.mode, {
         options: modeChoices
       }),
+      ModRange(node.startDelay, {
+        title: 'start delay',
+        format: 'ms1',
+        flex: true,
+        defaultValue: 0
+      }),
       ModRange(node.amp, {
         title: 'amp',
         defaultValue: 1,

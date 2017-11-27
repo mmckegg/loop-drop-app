@@ -22,6 +22,7 @@ function SampleNode (context) {
     offset: Property([0, 1]),
     buffer: Param(context),
 
+    startDelay: Param(context, 0),
     amp: Param(context, 1),
     transpose: Param(context, 0),
     tune: Param(context, 0)
@@ -59,6 +60,8 @@ function SampleNode (context) {
   // scoped
   function trigger (at) {
     var mode = obs.mode()
+
+    at = obs.startDelay.getValueAtTime(at) + at
 
     if (currentBuffer instanceof window.AudioBuffer) {
       var choker = context.audio.createGain()
