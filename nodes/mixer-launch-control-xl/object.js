@@ -235,7 +235,7 @@ module.exports = function (context) {
 
       if (val) {
         recordStarts[i] = Date.now()
-      } else if (Date.now() - recordStarts[i] < 200) {
+      } else if (Date.now() - recordStarts[i] < 400) {
         paramLoopers[i].forEach(looper => looper.set(0))
       }
     })
