@@ -68,7 +68,7 @@ function MidiOutChunk (parentContext) {
   var octave = midiNote.note.node.value.node.offset.node.value
   var noteOffset = midiNote.note.node.offset
   var velocity = midiNote.velocity.node.value
-  var velocityMultiplier = midiNote.velocity.node.value
+  var velocityMultiplier = midiNote.velocity.node.multiplier
 
   var obs = BaseChunk(context, {
     shape,

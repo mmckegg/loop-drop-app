@@ -16,6 +16,7 @@ var renderNode = require('lib/render-node')
 
 var MidiStream = require('web-midi')
 var PeriodicWaves = require('lib/periodic-waves')
+var MidiClockOffset = require('lib/midi-clock-offset')
 
 var version = require('./package.json').version
 
@@ -82,6 +83,7 @@ var rootContext = window.rootContext = {
   fs: fs,
   audio: audioContext,
   periodicWaves: PeriodicWaves(audioContext),
+  midiClockOffset: MidiClockOffset(audioContext),
   midiPorts: midiPorts,
   audioDevices: audioDevices,
   nodes: nodes.objectLookup,

@@ -1,36 +1,22 @@
 var getEvents = require('lib/get-events')
 var MidiPort = require('lib/midi-port')
 var ObservStruct = require('mutant/struct')
+var Property = require('lib/property')
+var resolve = require('mutant/resolve')
 
 module.exports = MidiSync
 
 function MidiSync (context) {
-  var offset = window.performance.now() - context.audio.currentTime * 1000
   var midiPort = MidiPort(context, null, {output: true, shared: true})
   var obs = ObservStruct({
-    port: midiPort
+    port: midiPort,
+    minimised: Property(false)
   })
 
   var clockLoop = {
     events: [[0, true], [1 / 48, false]],
     length: 1 / 24
   }
-
-  var clockDriftChecker = context.audio.createScriptProcessor(1024 * 8, 0, 1)
-  var lastDifference = 0
-
-  clockDriftChecker.onaudioprocess = function (e) {
-    var currentOffset = Math.round(window.performance.now() - context.audio.currentTime * 1000)
-    var difference = currentOffset - offset
-
-    // remove jitter
-    if (lastDifference !== -difference && currentOffset !== offset) {
-      lastDifference = currentOffset - offset
-      offset = Math.round(currentOffset)
-    }
-  }
-
-  clockDriftChecker.connect(context.audio.destination)
 
   var releases = [
     context.scheduler.onSchedule(schedule => {
@@ -68,14 +54,12 @@ function MidiSync (context) {
     while (releases.length) {
       releases.pop()()
     }
-    clockDriftChecker.disconnect()
-    clockDriftChecker.onaudioprocess = null
     midiPort.destroy()
   }
 
   return obs
 
   function getMidiTime (at) {
-    return at ? (at * 1000) + offset : window.performance.now()
+    return at ? (at * 1000) + resolve(context.midiClockOffset) : window.performance.now()
   }
 }
