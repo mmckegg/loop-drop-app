@@ -9,8 +9,15 @@ function renderMidiSync (controller) {
   var collection = controller.context.collection
   var name = computed(controller, x => x.name)
   var port = controller.port
-  return h('GlobalControllerNode', [
+  return h('GlobalControllerNode', {
+    classList: [
+      when(controller.minimised, '-minimised')
+    ]
+  }, [
     h('header', [
+      h('button.twirl', {
+        'ev-click': send(toggleParam, controller.minimised)
+      }),
       h('span.name', [
         h('strong', name), when(port, [': ', port])
       ]),
@@ -30,4 +37,8 @@ function renderMidiSync (controller) {
       ])
     ])
   ])
+}
+
+function toggleParam (param) {
+  param.set(!param())
 }
