@@ -12,9 +12,6 @@ module.exports = SampleNode
 
 function SampleNode (context) {
   var output = context.audio.createGain()
-  var amp = context.audio.createGain()
-  amp.gain.value = 0
-  amp.connect(output)
 
   var releases = []
   var obs = Triggerable(context, {
@@ -48,8 +45,7 @@ function SampleNode (context) {
 
   var currentBuffer = null
   releases.push(
-    obs.buffer.currentValue(v => currentBuffer = v),
-    Apply(context.audio, amp.gain, obs.amp)
+    obs.buffer.currentValue(v => currentBuffer = v)
   )
 
   obs.connect = output.connect.bind(output)
@@ -66,17 +62,23 @@ function SampleNode (context) {
     if (currentBuffer instanceof window.AudioBuffer) {
       var choker = context.audio.createGain()
       var player = context.audio.createBufferSource()
-      player.connect(choker)
-      choker.connect(amp)
+      var amp = context.audio.createGain()
+      amp.connect(choker)
+      player.connect(amp)
+      choker.connect(output)
 
       player.buffer = currentBuffer
       player.loopStart = currentBuffer.duration * obs.offset()[0]
       player.loopEnd = currentBuffer.duration * obs.offset()[1]
 
+      var releaseAmp = Apply(context.audio, amp.gain, obs.amp, at)
+
       var event = new ScheduleEvent(at, player, choker, [
-        Apply(context.audio, player.detune, detune, at)
+        Apply(context.audio, player.detune, detune, at),
+        releaseAmp
       ])
 
+      event.onChoke = releaseAmp
       event.maxTo = at + (currentBuffer.duration - player.loopStart) / playbackRate()
       event.to = at + (player.loopEnd - player.loopStart) / playbackRate()
 

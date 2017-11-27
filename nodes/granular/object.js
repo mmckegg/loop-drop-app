@@ -12,10 +12,6 @@ module.exports = GranularNode
 
 function GranularNode (context) {
   var output = context.audio.createGain()
-  var amp = context.audio.createGain()
-  amp.gain.value = 0
-  amp.connect(output)
-
   var offset = Property([0, 1])
   var buffer = Param(context)
   var duration = Property(1)
@@ -54,7 +50,6 @@ function GranularNode (context) {
 
   var currentBuffer = null
   releases.push(
-    Apply(context.audio, amp.gain, obs.amp),
     obs.buffer.currentValue(v => currentBuffer = v)
   )
 
@@ -62,7 +57,7 @@ function GranularNode (context) {
 
   // scoped
   function trigger (at) {
-    return new GranularSample(obs, amp, detune, currentBuffer, at)
+    return new GranularSample(obs, output, detune, currentBuffer, at)
   }
 }
 
@@ -98,6 +93,11 @@ function GranularSample (obs, output, detune, buffer, from) {
     this.to = from + length
   }
 
+  this.amp = obs.context.audio.createGain()
+  this.amp.connect(this.choker)
+
+  this.releaseAmp = Apply(obs.context.audio, this.amp.gain, obs.amp, from)
+  this.releases.push(this.releaseAmp)
   this.choker.connect(output)
 
   if (handleSchedule.call(this, schedule)) {
@@ -111,6 +111,7 @@ GranularSample.prototype.choke = function (at) {
     this.choker.gain.setTargetAtTime(0, at, 0.02)
     this.choker.gain.setValueAtTime(0, at + 0.1)
     this.to = at + 0.1
+    this.releaseAmp()
   }
 }
 
@@ -201,7 +202,7 @@ function play (at, startOffset, grainDuration) {
       envelope.gain.setTargetAtTime(1, at, attack / 4)
     }
     envelope.gain.setTargetAtTime(0, releaseAt, release / 4)
-    envelope.connect(this.choker)
+    envelope.connect(this.amp)
 
     var event = new ScheduleEvent(at, source, envelope, [
       Apply(context.audio, source.detune, this.detune)
