@@ -21,9 +21,11 @@ function EQNode (context) {
 
   var lowpass = context.audio.createBiquadFilter()
   lowpass.type = 'lowpass'
+  lowpass.Q.value = -3.0102999566398125 // no resonance
 
   var highpass = context.audio.createBiquadFilter()
   highpass.type = 'highpass'
+  highpass.Q.value = -3.0102999566398125 // no resonance
 
   // chain
   lowshelf.connect(peaking)
