@@ -20,7 +20,12 @@ function MidiCCNode (context) {
   Param.triggerOn(obs, context.audio.currentTime)
 
   var message = computed([channel, obs.code], (channel, code) => {
-    return [176 + clamp(channel, 1, 16) - 1, code]
+    var channelOffset = clamp(channel, 1, 16) - 1
+    if (code === 'PC') {
+      return [192 + channelOffset]
+    } else {
+      return [176 + channelOffset, code]
+    }
   })
 
   var releaseMidiParam = applyMidiParam(context, { port, message }, obs.value)

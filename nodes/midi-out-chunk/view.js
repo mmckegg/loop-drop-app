@@ -9,23 +9,35 @@ var Select = require('lib/params/select')
 var send = require('mutant/send')
 var map = require('mutant/map')
 var resolve = require('mutant/resolve')
+var when = require('mutant/when')
+var computed = require('mutant/computed')
 
 var channelOptions = getRange(1, 16).map(number => [`Channel ${number}`, number])
 var ccOptions = getRange(0, 119).map(number => [`CC ${number}`, number])
+ccOptions.unshift(['PC', 'PC'])
 
 module.exports = function renderMidiOutChunk (node) {
   var ccSlots = map(node.continuousControllers, slot => {
+    var isProgramChange = computed(slot.code, x => x === 'PC')
     return h('div.slot -trigger', [
       Select(slot.code, {
         options: ccOptions,
         flex: true
       }),
-      ModRange(slot.value, {
-        flex: true,
-        format: 'midi',
-        defaultValue: 0,
-        allowSpawnModulator: true
-      }),
+      when(isProgramChange,
+        ModRange(slot.value, {
+          flex: true,
+          format: 'midi+1',
+          defaultValue: 0,
+          allowSpawnModulator: true
+        }),
+        ModRange(slot.value, {
+          flex: true,
+          format: 'midi',
+          defaultValue: 0,
+          allowSpawnModulator: true
+        })
+      ),
       h('button.remove Button -warn', {
         'ev-click': send(node.continuousControllers.remove, slot)
       }, 'X')
@@ -164,7 +176,10 @@ function lastCode (collection) {
   if (collection && collection.get && collection.getLength && collection.getLength()) {
     var last = collection.get(collection.getLength() - 1)
     if (last && last.code) {
-      return resolve(last.code)
+      var code = resolve(last.code)
+      if (typeof code === 'number') {
+        return code
+      }
     }
   }
   return 0
