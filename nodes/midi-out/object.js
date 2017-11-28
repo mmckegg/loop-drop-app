@@ -46,13 +46,14 @@ function MidiOutNode (context) {
   // scoped
   function trigger (at) {
     var output = midiPort.stream()
-    if (!output) return
+    var velocity = obs.velocity.getValueAtTime(at)
+    if (!output || !velocity) return
     var noteId = noteOffset.getValueAtTime(at)
     var note = MidiNote(context, {
       output,
       channel: resolve(obs.channel),
       note: noteOffset.getValueAtTime(at),
-      velocity: obs.velocity.getValueAtTime(at),
+      velocity,
       offset: obs.triggerOffset()
     })
     var aftertouchMessage = [ 160 + clamp(Math.round(resolve(obs.channel)), 1, 16) - 1, noteId ]
