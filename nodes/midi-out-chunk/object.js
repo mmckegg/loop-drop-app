@@ -7,6 +7,7 @@ var applyMixerParams = require('lib/apply-mixer-params')
 var applyMidiParam = require('lib/apply-midi-param')
 var Slots = require('lib/slots')
 var clamp = require('lib/clamp')
+var onceIdle = require('mutant/once-idle')
 
 module.exports = MidiOutChunk
 
@@ -105,6 +106,8 @@ function MidiOutChunk (parentContext) {
       slot.resend && slot.resend()
     })
   }
+
+  onceIdle(obs.resend)
 
   obs.pitchBend.triggerOn(context.audio.currentTime)
   obs.globalAftertouch.triggerOn(context.audio.currentTime)
