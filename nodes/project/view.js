@@ -32,7 +32,7 @@ module.exports = function (project) {
           ]),
           h('div.sub', [
             h('div', [
-              Range(project.swing, {format: 'ratio1', title: 'swing', flex: true}),
+              Range(project.swing, {format: 'offset1', title: 'swing', flex: true}),
               h('button.action -slow', {
                 'ev-mousedown': send(setValue, project.speed, 0.95),
                 'ev-mouseup': send(setValue, project.speed, 1)
