@@ -14,9 +14,14 @@ var base = Path.basename(input, '.json')
 
 fs.readdir(dir, function (err, files) {
   if (err) throw err
-  files = files.filter(f => f.startsWith(base + '-'))
+  files = files.filter(f => matches(base, f))
 
   fs.writeFileSync(output + '.txt', files.map(x => `file '${Path.join(dir, x)}'`).join('\n'))
   var args = ['-f', 'concat', '-safe', '0', '-i', output + '.txt', '-af', 'volume=0.8', output]
   spawn('ffmpeg', args, {stdio: 'inherit'})
 })
+
+function matches (base, fileName) {
+  var match = fileName.match(/^(.+)-([0-9]+)\.wav$/)
+  return (match && match[1] === base)
+}
