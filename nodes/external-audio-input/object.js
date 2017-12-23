@@ -9,7 +9,9 @@ module.exports = ExternalAudioInputNode
 function ExternalAudioInputNode (context) {
   var obs = Struct({
     port: Property(),
-    includeInRecording: Property(true)
+    minimised: Property(false),
+    includeInRecording: Property(true),
+    monitor: Property(false)
   })
 
   // read this for status in UI
@@ -24,6 +26,7 @@ function ExternalAudioInputNode (context) {
 
   var input = null
   var mediaStream = null
+  var monitoring = false
   obs.output = context.audio.createGain()
 
   var releases = [
@@ -49,6 +52,15 @@ function ExternalAudioInputNode (context) {
       } else {
         close()
       }
+    }),
+    watch(obs.monitor, (value) => {
+      if (value && !monitoring) {
+        monitoring = true
+        obs.output.connect(context.masterOutput)
+      } else if (!value && monitoring) {
+        monitoring = false
+        obs.output.disconnect(context.masterOutput)
+      }
     })
   ]
 
@@ -58,6 +70,13 @@ function ExternalAudioInputNode (context) {
     close()
     while (releases.length) {
       releases.pop()()
+    }
+    if (monitoring) {
+      try {
+        obs.output.disconnect(context.masterOutput)
+      } catch (ex) {
+        // already disconnect, never mind!
+      }
     }
   }
 

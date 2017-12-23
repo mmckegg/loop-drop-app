@@ -4,7 +4,8 @@ module.exports = {
   name: 'External Audio Input',
   node: 'global/external-audio-input',
   group: 'global-controllers',
-  object: require('./object')
+  object: require('./object'),
+  render: require('./view')
 }
 
 module.exports.spawners = function (context) {
