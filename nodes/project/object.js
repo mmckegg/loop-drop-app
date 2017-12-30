@@ -81,9 +81,9 @@ function Project (parentContext) {
   obs.renaming = Observ(false)
   obs.duplicating = Observ(false)
 
-  obs.entries = ObservDirectory(resolve(context.cwd))
+  obs.entries = ObservDirectory(resolve(context.cwd), context.fs)
 
-  obs.recordingEntries = ObservDirectory(resolvePath(resolve(context.cwd), '~recordings'))
+  obs.recordingEntries = ObservDirectory(resolvePath(resolve(context.cwd), '~recordings'), context.fs)
 
   obs.outputRms = ObservRms(masterOutput)
 
