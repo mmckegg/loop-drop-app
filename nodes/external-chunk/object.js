@@ -180,7 +180,7 @@ function External (parentContext) {
         initialized = false
         onceIdle(() => { initialized = true })
         loading = true
-        obs.file = ObservFile(path)
+        obs.file = ObservFile(path, context.fs)
         updateFile = JsonFile(obs.file, updateNode)
         context.cwd.set(Path.dirname(path))
         fileReleases.push(
