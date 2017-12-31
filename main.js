@@ -12,6 +12,7 @@ var storage = require('electron-json-storage')
 
 // expose manual gc()
 electron.app.commandLine.appendSwitch('js-flags', '--expose_gc')
+electron.app.commandLine.appendSwitch('enable-precise-memory-info')
 
 var menu = defaultMenu(electron.app, electron.shell)
 menu.splice(1, 0, {

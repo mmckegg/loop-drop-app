@@ -78,9 +78,18 @@ var audioContext = new global.AudioContext()
 // monkey patch until we upgrade to chrome > 60
 audioContext.baseLatency = 1 / audioContext.sampleRate * 256
 
+var heapSize = Observ(0)
+setInterval(() => {
+  var newValue = Math.round(window.performance.memory.usedJSHeapSize / 1024)
+  if (heapSize() !== newValue) {
+    heapSize.set(newValue)
+  }
+}, 1000)
+
 var nodes = require('./nodes')
 var rootContext = window.rootContext = {
   fs: fs,
+  heapSize,
   audio: audioContext,
   periodicWaves: PeriodicWaves(audioContext),
   midiClockOffset: MidiClockOffset(audioContext),

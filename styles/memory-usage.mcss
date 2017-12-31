@@ -1,0 +1,21 @@
+MemoryUsage {
+  padding: 3px 6px;
+  font-size: 10px;
+  border: 1px solid #6e7b6e;
+  background: #000;
+  color: #ACA;
+  margin-right: 3px
+  cursor: pointer
+
+  -critical {
+    border: 1px solid #ff6b6b;
+    background: #711313;
+    color: #ffd6d6;
+  }
+
+  -warn {
+    border: 1px solid #b5ad53;
+    background: #655907;
+    color: #fffb07;
+  }
+}
