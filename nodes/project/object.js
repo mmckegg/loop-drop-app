@@ -399,13 +399,13 @@ function Project (parentContext) {
       var object = FileObject(context)
 
       // HACK: avoid audio glitches by scheduling 1 second ahead
-      scheduler.schedule(0.5)
-      var timer = setInterval(() => scheduler.schedule(0.5), 460)
+      scheduler.schedule(1)
+      //var timer = setInterval(() => scheduler.schedule(0.5), 460)
 
       object.onLoad(function () {
         broadcastItemLoaded(object)
         onceIdle(() => {
-          clearInterval(timer)
+          //clearInterval(timer)
           if (object.node && object.node.grabInput) {
             object.node.grabInput()
           }
