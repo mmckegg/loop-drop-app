@@ -161,7 +161,8 @@ function SlicerChunk (parentContext) {
       }
     } else if (sliceMode === 'snap') {
       if (buffer) {
-        gridSlicePeaks(buffer.getChannelData(0), count, offset, function (peaks) {
+        gridSlicePeaks(buffer.getChannelData(0), count, offset, function (err, peaks) {
+          if (err) throw err
           obs.sample.slices.set(sliceOffsets(peaks, offset, playToEnd))
         })
       }
