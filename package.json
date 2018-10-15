@@ -32,10 +32,8 @@
     "decibels": "^2.0.0",
     "deep-equal": "^0.2.1",
     "ejs": "^2.5.6",
-    "electron": "~1.6.15",
     "electron-default-menu": "~1.0.0",
     "electron-json-storage": "~2.0.0",
-    "electron-rebuild": "^1.6.0",
     "frac": "^0.3.1",
     "freeverb": "~1.1.0",
     "geval": "^2.1.1",
@@ -66,5 +64,9 @@
     "wave-recorder": "^2.3.0",
     "web-midi": "^2.1.0",
     "xtend": "^4.0.1"
+  },
+  "devDependencies": {
+    "electron": "~1.6.15",
+    "electron-rebuild": "^1.6.0"
   }
 }
