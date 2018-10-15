@@ -11,6 +11,8 @@ var pull = require('pull-stream')
 var StreamProgress = require('lib/stream-progress')
 
 module.exports = function (timeline, outputPath, cb) {
+  var context = timeline.context
+  var fs = context.fs
   var primaryClips = []
   var lastTrackId = 8
   var tracks = [{
@@ -96,6 +98,18 @@ module.exports = function (timeline, outputPath, cb) {
   })
 
   return progress
+
+  // scoped
+
+  function addProjectInfo (project, cb) {
+    var dir = Path.join(project, 'Ableton Project Info')
+    var from = Path.join(__dirname, 'Project8_1.cfg')
+    var to = Path.join(dir, 'Project8_1.cfg')
+    fs.mkdir(dir, (err) => {
+      if (err) return cb && cb(err)
+      fs.createReadStream(from).pipe(fs.createWriteStream(to)).on('finish', cb).on('error', cb)
+    })
+  }
 }
 
 function exportClip ({clip, outputPath, onProgress}, cb) {
@@ -132,14 +146,4 @@ function forEach (array, fn, cb) {
     }
   }
   next()
-}
-
-function addProjectInfo (project, cb) {
-  var dir = Path.join(project, 'Ableton Project Info')
-  var from = Path.join(__dirname, 'Project8_1.cfg')
-  var to = Path.join(dir, 'Project8_1.cfg')
-  fs.mkdir(dir, (err) => {
-    if (err) return cb && cb(err)
-    fs.createReadStream(from).pipe(fs.createWriteStream(to)).on('finish', cb).on('error', cb)
-  })
 }
