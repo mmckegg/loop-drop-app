@@ -186,15 +186,16 @@ function Project (parentContext) {
       return recorder.stop(cb)
     },
 
-    purge: function () {
+    purge: function (noSchedule) {
       if (global.gc) {
         // schedule twice the length last gc() took of audio
-        context.scheduler.schedule(lastPurgeTime / 1000 * 2)
-
-        var startAt = window.performance.now()
-        global.gc()
-        lastPurgeTime = window.performance.now() - startAt
-        console.log(`purge took ${Math.round(lastPurgeTime)} ms`)
+        if (!noSchedule) context.scheduler.schedule(lastPurgeTime / 1000 * 2)
+        setTimeout(() => {
+          var startAt = window.performance.now()
+          global.gc()
+          lastPurgeTime = window.performance.now() - startAt
+          console.log(`purge took ${Math.round(lastPurgeTime)} ms`)
+        }, 20)
         return true
       }
     },
@@ -421,6 +422,7 @@ function Project (parentContext) {
       })
 
       object.onClose(function () {
+        context.scheduler.schedule(lastPurgeTime / 1000 * 2)
         console.log('closing', resolve(object.path))
         var nodeName = object.nodeName && object.nodeName()
         var index = obs.items.indexOf(object)
@@ -433,7 +435,7 @@ function Project (parentContext) {
         }
         if (nodeName === 'setup') {
           window.requestIdleCallback(() => {
-            actions.purge()
+            actions.purge(true)
           })
         }
       })
