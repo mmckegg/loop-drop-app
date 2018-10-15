@@ -20,7 +20,7 @@
     "loop-drop": "scripts/start.js"
   },
   "dependencies": {
-    "abletonlink": "0.0.5",
+    "abletonlink": "github:mmckegg/node-abletonlink#add-prebuild",
     "animate-prop": "^1.0.0",
     "array-grid": "~1.4.0",
     "array-union": "^1.0.2",
