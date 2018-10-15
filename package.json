@@ -13,7 +13,7 @@
   "license": "AGPL-3.0",
   "scripts": {
     "start": "node scripts/start",
-    "postinstall": "node scripts/link-lib && npm run rebuild",
+    "postinstall": "npm run rebuild",
     "rebuild": "electron-rebuild -f -w abletonlink"
   },
   "bin": {
@@ -39,6 +39,7 @@
     "geval": "^2.1.1",
     "insert-css": "^0.2.0",
     "json-query": "^1.4.0",
+    "lib": "file:lib",
     "make-distortion-curve": "^1.0.0",
     "micro-css": "~2.0.0",
     "mkdirp": "^0.5.0",
