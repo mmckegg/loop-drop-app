@@ -9,8 +9,8 @@ var clamp = require('lib/clamp')
 module.exports = MidiCCNode
 
 function MidiCCNode (context) {
-  var port = context.midiPort
-  var channel = context.midiChannel
+  var port = context.outputMidiPort
+  var channel = context.outputMidiChannel
 
   var obs = Struct({
     code: Property(1),

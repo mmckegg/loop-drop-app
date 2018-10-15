@@ -2,6 +2,7 @@ var h = require('lib/h')
 var renderChunk = require('lib/widgets/chunk')
 var renderRouting = require('lib/widgets/routing')
 var renderParams = require('lib/widgets/params')
+var renderMidiOutputOptions = require('lib/widgets/midi-output')
 var ToggleButton = require('lib/params/toggle-button')
 var Range = require('lib/params/range')
 var ModRange = require('lib/params/mod-range')
@@ -62,6 +63,10 @@ function renderExternalChromaticChunk (external) {
           ]),
           renderRouting(external)
         ])
+      ]),
+      h('h1', 'Midi Output'),
+      h('section', [
+        renderMidiOutputOptions(external)
       ])
     ]
   })

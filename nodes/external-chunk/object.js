@@ -17,6 +17,7 @@ var Param = require('lib/param')
 var resolve = require('mutant/resolve')
 var watchNodesChanged = require('lib/watch-nodes-changed')
 var doubleBind = require('lib/double-bind')
+var MidiPort = require('lib/midi-port')
 
 var Path = require('path')
 
@@ -37,6 +38,14 @@ function External (parentContext) {
     onAdd: onSlotsChanged
   })
 
+  var outputMidiPort = MidiPort(context, null, {output: true, shared: true})
+  var outputMidiChannel = Property(1)
+  var outputMidiTriggerOffset = Property(10)
+
+  context.outputMidiPort = outputMidiPort
+  context.outputMidiChannel = outputMidiChannel
+  context.outputMidiTriggerOffset = outputMidiTriggerOffset
+
   var obs = BaseChunk(context, {
     src: Observ(),
     offset: Param(parentContext, 0),
@@ -47,6 +56,9 @@ function External (parentContext) {
       param.triggerOn(context.audio.currentTime)
       return [key, param]
     }),
+    outputMidiChannel,
+    outputMidiPort,
+    outputMidiTriggerOffset,
     volume: volume
   })
 

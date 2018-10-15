@@ -8,6 +8,7 @@ var applyMidiParam = require('lib/apply-midi-param')
 var Slots = require('lib/slots')
 var clamp = require('lib/clamp')
 var onceIdle = require('mutant/once-idle')
+var MidiPort = require('lib/midi-port')
 
 module.exports = MidiOutChunk
 
@@ -17,7 +18,9 @@ function MidiOutChunk (parentContext) {
   var offset = Param(context, 0)
   var shape = Property([1, 4])
   context.shape = shape
-  context.offset = offset
+
+  // HACK: disabled to fix memory leak
+  // context.offset = offset
 
   var overrideParams = applyMixerParams(context)
   var innerChunk = context.nodes['chunk/scale'](context)
@@ -63,8 +66,13 @@ function MidiOutChunk (parentContext) {
     channel: 1
   })
 
-  context.midiPort = midiNote.port
-  context.midiChannel = midiNote.channel
+  var outputMidiPort = MidiPort(context, null, {output: true, shared: true})
+  var outputMidiChannel = Property(1)
+  var outputMidiTriggerOffset = Property(10)
+
+  context.outputMidiPort = outputMidiPort
+  context.outputMidiChannel = outputMidiChannel
+  context.outputMidiTriggerOffset = outputMidiTriggerOffset
 
   var octave = midiNote.note.node.value.node.offset.node.value
   var noteOffset = midiNote.note.node.offset
@@ -73,15 +81,15 @@ function MidiOutChunk (parentContext) {
 
   var obs = BaseChunk(context, {
     shape,
-    port: midiNote.port,
-    channel: midiNote.channel,
+    port: outputMidiPort,
+    channel: outputMidiChannel,
     globalAftertouch: Param(context, 0),
     continuousControllers: Slots(context),
     pitchBend: Param(context, 0), // 14 bit midi param, -1 to +1
     noteOffset,
     octave,
     velocity,
-    triggerOffset: midiNote.triggerOffset,
+    triggerOffset: outputMidiTriggerOffset,
     aftertouch: midiNote.aftertouch,
     offset
   })
@@ -117,7 +125,6 @@ function MidiOutChunk (parentContext) {
   obs.velocity.readMode = 'trigger'
 
   obs.overrideVolume = velocityMultiplier
-  context.offset = obs.offset
 
   obs.overrideParams = overrideParams
   obs.params = applyMixerParams.params(obs)
