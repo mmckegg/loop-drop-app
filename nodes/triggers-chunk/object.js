@@ -16,6 +16,7 @@ function TriggersChunk (parentContext) {
     inputs: Property([]),
     outputs: Property([]),
     params: KeyCollection(context),
+    midiOutputEnabled: Property(false),
     selectedSlotId: Property()
   })
 

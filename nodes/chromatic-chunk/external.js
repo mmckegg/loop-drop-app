@@ -1,4 +1,5 @@
 var h = require('lib/h')
+var when = require('mutant/when')
 var renderChunk = require('lib/widgets/chunk')
 var renderRouting = require('lib/widgets/routing')
 var renderParams = require('lib/widgets/params')
@@ -64,9 +65,11 @@ function renderExternalChromaticChunk (external) {
           renderRouting(external)
         ])
       ]),
-      h('h1', 'Midi Output'),
-      h('section', [
-        renderMidiOutputOptions(external)
+      when(node.midiOutputEnabled, [
+        h('h1', 'Midi Output'),
+        h('section', [
+          renderMidiOutputOptions(external)
+        ])
       ])
     ]
   })

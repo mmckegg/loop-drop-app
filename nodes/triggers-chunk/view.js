@@ -23,9 +23,8 @@ function renderTriggersChunk (chunk) {
       h('h1', 'Chunk Options'),
       h('section.options', [
         h('ParamList', [
-          h('div -block', [
-            h('div', ToggleButton(chunk.chokeAll, {title: 'Choke All'}))
-          ])
+          ToggleButton(chunk.chokeAll, {title: 'Choke All'}),
+          ToggleButton(chunk.midiOutputEnabled, {title: 'Midi Output'})
         ])
       ]),
       h('h1', 'Params'),

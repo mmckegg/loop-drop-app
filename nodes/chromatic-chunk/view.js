@@ -38,6 +38,7 @@ function renderChromaticChunk (chunk) {
       h('h1', 'Chunk Options'),
       h('section.options', [
         h('ParamList', [
+          ToggleButton(chunk.midiOutputEnabled, {title: 'Midi Output'}),
           Select(nodeName, {
             options: nodeOptions
           }),

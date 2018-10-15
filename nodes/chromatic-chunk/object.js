@@ -28,6 +28,7 @@ function ChromaticChunk (parentContext) {
     slots: Slots(context),
     inputs: Property([]),
     outputs: Property(['output']),
+    midiOutputEnabled: Property(false),
     params: KeyCollection(context),
     selectedSlotId: Observ()
   }, {merge: true})

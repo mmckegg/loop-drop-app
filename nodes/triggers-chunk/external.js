@@ -1,4 +1,6 @@
 var h = require('lib/h')
+var when = require('mutant/when')
+
 var renderRouting = require('lib/widgets/routing')
 var renderChunk = require('lib/widgets/chunk')
 var renderParams = require('lib/widgets/params')
@@ -7,6 +9,7 @@ var ToggleButton = require('lib/params/toggle-button')
 var FlagParam = require('lib/flag-param')
 
 module.exports = function (external) {
+  var node = external.node
   return renderChunk(external, {
     volume: true,
     external: true,
@@ -27,10 +30,11 @@ module.exports = function (external) {
           renderRouting(external)
         ])
       ]),
-
-      h('h1', 'Midi Output'),
-      h('section', [
-        renderMidiOutputOptions(external)
+      when(node.midiOutputEnabled, [
+        h('h1', 'Midi Output'),
+        h('section', [
+          renderMidiOutputOptions(external)
+        ])
       ])
     ]
   })
