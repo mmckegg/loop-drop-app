@@ -119,27 +119,29 @@ function drop (ev) {
   var cwd = ev.dataTransfer.getData('cwd')
 
   if (containsFiles(ev.dataTransfer) || ev.dataTransfer.types.includes('loop-drop/sample-path')) {
-    var path = ev.dataTransfer.items[0].kind === 'file'
-      ? ev.dataTransfer.items[0].getAsFile().path
-      : ev.dataTransfer.getData('loop-drop/sample-path')
-
     if (target) {
       targetCollection.remove(target)
     }
 
-    var node = targetCollection.push({
-      id: ev.data.id,
-      node: 'slot',
-      output: 'output',
-      sources: [
-        { node: 'source/sample', mode: 'oneshot' }
-      ]
-    })
+    var paths = ev.dataTransfer.items[0].kind === 'file'
+      ? Object.keys(ev.dataTransfer.items).map( item => ev.dataTransfer.items[item].getAsFile().path)
+      : [ev.dataTransfer.getData('loop-drop/sample-path')]
 
-    importSample(targetCollection.context, path, function (err, descriptor) {
-      var player = node.sources.get(0)
-      player.set(extend(player(), descriptor))
-      ev.data.select(ev.data.id)
+    paths.forEach( (path, i) => {
+      var newId = 1 * ev.data.id + i
+      var node = targetCollection.push({
+        id: newId,
+        node: 'slot',
+        output: 'output',
+        sources: [
+          { node: 'source/sample', mode: 'oneshot' }
+        ]
+      })
+      importSample(targetCollection.context, path, function (err, descriptor) {
+        var player = node.sources.get(0)
+        player.set(extend(player(), descriptor))
+        ev.data.select(newId)
+      })
     })
   } else if (ev.dataTransfer.types.includes('loop-drop/source')) {
     var data = JSON.parse(ev.dataTransfer.getData('loop-drop/source'))
