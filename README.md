@@ -5,12 +5,23 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 
 Written in **JavaScript** and powered by [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), [Web MIDI](https://webaudio.github.io/web-midi-api/), and [electron](http://electron.atom.io/).
 
+![](http://loopjs.com/loop-drop-with-launchpads.jpg)]
+
+
+## Currently Unmaintained
+
+I'm taking a (possibly permanent) break from this project. My efforts are now mostly focused on a [hardware only version of this project](https://github.com/mmckegg/rust-loop-drop) for my own personal use.
+
+The latest master is more recent than the releases, so I suggest that if you can, install from source! (master includes Ableton Link support and midi outputs).
+
+I put a lot of work into this project over the years, but it was always a struggle trying to get Web Audio to work the way I wanted. That combined with trying to also make this an app for other people to use, took up way to much energy. I just want to get back to making music. 
+
+So long, and thanks for all the fish. :heart:
+
 ## Overview
 
 - [Watch a video of Loop Drop in action](https://www.youtube.com/watch?v=EBkmdNDIR6E)
-- [Visit the website](http://loopjs.com)
 - [Listen to music created with Loop Drop!](https://soundcloud.com/destroy-with-science)
-- [Support this project on Patreon](https://www.patreon.com/MattMcKegg) 💖
 
 #### Create sounds and load samples
 
@@ -28,10 +39,6 @@ Use beat repeat and hold down buttons to trigger at different rates relative to 
 
 Select, move, repeat, suppress. All using your hardware controller.
 
-
-## Download the app and get help at [loopjs.com](http://loopjs.com)
-
-[![](http://loopjs.com/loop-drop-with-launchpads.jpg)](http://loopjs.com)
 
 ## ...or Build and Install from source
 
