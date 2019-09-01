@@ -5,9 +5,6 @@ MIDI looper, modular synth and sampler app built around Novation Launchpad contr
 
 Written in **JavaScript** and powered by [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), [Web MIDI](https://webaudio.github.io/web-midi-api/), and [electron](http://electron.atom.io/).
 
-![](http://loopjs.com/loop-drop-with-launchpads.jpg)]
-
-
 ## Currently Unmaintained
 
 I'm taking a (possibly permanent) break from this project. My efforts are now mostly focused on a [hardware only version of this project](https://github.com/mmckegg/rust-loop-drop) for my own personal use.
@@ -87,24 +84,6 @@ $ loop-drop
 # install update
 $ npm update -g loop-drop
 ```
-
-## Supported Controllers
-
-More controllers will be supported soon. **Pull requests accepted!**
-
-### Qwerty Keyboard
-
-![](http://loopjs.com/loop-drop-qwerty.png)
-
-[Watch "Using Loop Drop with a Qwerty Keyboard" on YouTube](http://youtu.be/tOpbRsDwYH4)
-
-### Novation Launchpad
-
-![](http://loopjs.com/loop-drop-launchpad.png)
-
-### Ableton Push (experimental)
-
-https://www.youtube.com/watch?v=2oVcNaDpPz0
 
 ## Module Overview
 
