@@ -35,7 +35,8 @@ function Setup (parentContext) {
     globalScale: Property({
       offset: 0,
       notes: [0, 2, 4, 5, 7, 9, 11]
-    })
+    }),
+    selectedOutputId: Property('default')
   })
 
   node.overrideVolume = Property(1)
@@ -62,7 +63,12 @@ function Setup (parentContext) {
   context.output.connect(outputLowPass)
   outputLowPass.connect(outputHighPass)
   node.output = YankSilence(audioContext, outputHighPass)
-  node.output.connect(parentContext.output)
+  //node.output.connect(parentContext.output)//
+  var dest = audioContext.createMediaStreamDestination()
+  node.output.connect(dest)
+  node.audioElement = new Audio()
+  node.audioElement.srcObject = dest.stream
+  node.audioElement.play()
 
   context.active = node.output.active
 
@@ -71,6 +77,17 @@ function Setup (parentContext) {
   })
 
   var releases = [
+    watch(node.selectedOutputId, function (value) {
+      node.output.disconnect()
+      node.audioElement = new Audio()
+      node.audioElement.setSinkId(value).then(() => {
+        var dest = audioContext.createMediaStreamDestination()
+        node.output.connect(dest)
+        node.audioElement.srcObject = dest.stream
+        node.audioElement.play()
+      })
+    }),
+
     watch(computed([node.volume, node.overrideVolume], (a, b) => a * b), function (value) {
       node.output.gain.value = value
     }),

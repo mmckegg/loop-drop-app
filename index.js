@@ -98,8 +98,22 @@ var rootContext = window.rootContext = {
   nodes: nodes.objectLookup,
   nodeInfo: nodes,
   zoom: Property(1.1),
-  version: version
+  version: version,
+  alternateOutputs: [],
+  alternateInputs: []
 }
+
+function addAlternates(deviceInfos) {
+  deviceInfos.forEach(function (device) {
+    var miniInfo = { label: device.label, deviceId: device.deviceId }
+    if (device.kind === 'audioinput') rootContext.alternateInputs.push(miniInfo)
+    if (device.kind === 'audiooutput') rootContext.alternateOutputs.push(miniInfo)
+  })
+}
+
+navigator.mediaDevices.enumerateDevices().then(addAlternates).catch(function (e) {
+  console.log('unable to get any alternate devices', e)
+});
 
 watch(rootContext.zoom, function (value) {
   electron.webFrame.setZoomFactor(value || 1)
