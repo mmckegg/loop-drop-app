@@ -36,8 +36,65 @@ Use beat repeat and hold down buttons to trigger at different rates relative to 
 
 Select, move, repeat, suppress. All using your hardware controller.
 
+### Using with a launchpad
 
-## ...or Build and Install from source
+<div class='ImageSteps'>
+  <img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds02.jpg?raw=true' /> <img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds03.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds04.jpg?raw=true' />
+</div>
+          
+Add as many Launchpad controllers as your need.</em><br/> Loop Drop supports the MK1, Mini, MK2 and Pro editions!
+
+![](https://github.com/mmckegg/loopjs-www/blob/master/public/loop-drop-launchpad.png?raw=true)
+
+<a href='https://www.youtube.com/channel/UC2wAgvZBPlRoqHRQ7vS0RZg'>📺 Check out the Loop Drop YouTube channel!</a> </br>
+or Matt's <a href='https://www.youtube.com/channel/UCx4PC9z3Os2gp0BYfdUK07A'>personal YouTube channel</a> (full of Loop Drop gigs)
+
+### Using with qwerty keys
+
+To get the most out of Loop Drop, you should use it with a <em>hardware controller</em>, but you can <em>try it out</em> using your computer's <em>qwerty keyboard</em>.
+
+![](https://github.com/mmckegg/loopjs-www/blob/master/public/loop-drop-qwerty.png?raw=true)
+
+<em>Video:</em> <a href='https://www.youtube.com/watch?v=tOpbRsDwYH4'>Using Loop Drop with a Qwerty Keyboard</a>
+
+### Loading <em>Audio Samples</em>
+
+#### Create <em>Triggers Chunk</em> and <em>drag to controller</em>
+<img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds05.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds07.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds09.jpg?raw=true' />
+<em>Trigger chunks are blocks of related sounds</em> e.g. drumkit, sliced sample, vocals, etc. They <em>must</em> be added to a controller before they do anything.
+
+
+#### Select <em>shape</em> and <em>drag in audio samples</em>
+
+<img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds11.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds12.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds13.jpg?raw=true' />
+
+<em>Tip:</em> You can also manually add the slot, add a sample source, then click 'Choose File' to browse.
+
+#### <em>Play!</em>
+
+<img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds14.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds15.jpg?raw=true' />
+
+### <em>Synthesize!</em>
+
+#### Create <em>Chromatic Chunk</em> and <em>drag to controller</em>
+
+<img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds16.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds18.jpg?raw=true' /> <img height="150"  src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds19.jpg?raw=true' />
+
+<em>Chromatic chunks are like trigger chunks, except that they only have one editable trigger ('template').</em><br/> This is repeated for all triggers in the block, except that the pitch increases chromatically. You can create pitched instruments using samples or synthesis.
+
+#### Add <em>Oscillators</em> and tweak<
+      
+<img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds20.jpg?raw=true' /> <img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds25.jpg?raw=true' /> <img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds23.jpg?raw=true' />
+
+Clicking <em>ENV</em> adds an <em>ADSR</em> (attack, decay, sustain, release) envelope to the chosen param.
+
+#### Choose <em>Output Effects</em></h1>
+
+<img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds26.jpg?raw=true' /> <img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds27.jpg?raw=true' /> <img height="150" src='https://github.com/mmckegg/loopjs-www/blob/master/public/image-steps/sounds32.jpg?raw=true' />
+
+<em>Tip:</em> Effects like 'reverb' should be added to the 'Output' slot instead of the triggers to avoid unnecessary CPU usage.
+
+## Build and Install from source
 
 ```bash
 $ git clone https://github.com/mmckegg/loop-drop-app.git
