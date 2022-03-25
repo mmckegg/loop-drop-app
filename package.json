@@ -67,7 +67,7 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "electron": "~1.6.15",
+    "electron": "~13.6.6",
     "electron-rebuild": "^1.6.0"
   }
 }
