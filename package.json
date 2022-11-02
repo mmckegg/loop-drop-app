@@ -28,7 +28,7 @@
     "bitcrusher": "~0.3.0",
     "bopper": "~2.11.0",
     "brace": "~0.8.0",
-    "bulk-require": "~0.2.1",
+    "bulk-require": "~1.0.1",
     "decibels": "^2.0.0",
     "deep-equal": "^0.2.1",
     "ejs": "^2.5.6",
